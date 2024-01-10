@@ -1,0 +1,39 @@
+import { relations, sql, type InferModel } from 'drizzle-orm'
+import { integer, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { createInsertSchema } from 'drizzle-zod'
+import { z } from 'zod'
+
+import { venueTable } from './venue'
+
+export const eventTable = pgTable('event', {
+	id: uuid('id')
+		.default(sql`uuid_generate_v4()`)
+		.primaryKey()
+		.notNull(),
+	name: text('name').notNull(),
+	type: text('type').default('main'),
+	venueId: uuid('venue_id').references(() => venueTable.id, { onDelete: 'cascade' }),
+	eventId: uuid('event_id'),
+	domainId: text('domain_id').unique(),
+	description: text('description'),
+	note: text('note'),
+	startsAt: timestamp('created_at', { withTimezone: true, mode: 'string' }),
+	endsAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }),
+	maxAttendees: integer('max_attendees').default(0),
+	numAttendees: integer('num_attendees').default(0),
+	createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
+	updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
+})
+
+export const eventSchema = createInsertSchema(eventTable, {
+	name: (schema) => schema.name.min(1).default(''),
+})
+export type Event = typeof eventTable.$inferSelect
+export type EventSchemaType = typeof eventSchema
+
+// export const createEventSchema = eventSchema.extend({})
+// export const adminAddEventSchema = createEventSchema.extend({
+// 	userId: z.string().optional(),
+// 	companyId: z.string(),
+// 	action: z.string(),
+// })

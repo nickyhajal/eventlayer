@@ -1,0 +1,3 @@
+__dirname not defined electron issue
+
+https://github.com/electron/electron/issues/24005

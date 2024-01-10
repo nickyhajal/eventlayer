@@ -1,0 +1,40 @@
+{
+  "name": "@matterloop/db",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "db:introspect": "drizzle-kit introspect:pg",
+		"db:gen": "drizzle-kit generate:pg",
+		"db:push": "drizzle-kit push:pg",
+		"db:drop": "drizzle-kit drop",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "@matterloop/eslint-config/base"
+    ]
+  },
+  "prettier": "@matterloop/prettier-config",
+  "dependencies": {
+    "@libsql/client": "^0.3.5",
+    "dotenv": "^16.0.3",
+    "drizzle-orm": "^0.28.5",
+    "drizzle-zod": "^0.5.1",
+    "pg": "^8.11.3",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@matterloop/eslint-config": "^0.2.0",
+    "@matterloop/prettier-config": "^0.1.0",
+    "@matterloop/tsconfig": "^0.1.0",
+    "dotenv-cli": "^7.3.0",
+    "drizzle-kit": "^0.19.13",
+    "prettier": "^3.0.3",
+    "typescript": "^5.2.2"
+  }
+}
