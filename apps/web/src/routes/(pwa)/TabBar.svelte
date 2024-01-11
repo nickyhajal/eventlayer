@@ -39,6 +39,7 @@ const tabs = [
 	<div class="mx-auto flex w-full items-center justify-around md:max-w-2xl">
 		{#each tabs as { label, icon, href }, i}
 			<Button
+				href={href}
 				variant="ghost"
 				class="flex h-full flex-col items-center gap-0.5 py-1 text-[0.7rem] text-slate-600"
 			>
