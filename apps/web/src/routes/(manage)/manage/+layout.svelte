@@ -13,8 +13,8 @@ let links = [
 		label: 'Dashboard',
 	},
 	{
-		path: '/users',
-		label: 'Users',
+		path: '/people',
+		label: 'People',
 	},
 	{
 		path: '/events',

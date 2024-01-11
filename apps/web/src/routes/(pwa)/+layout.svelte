@@ -8,6 +8,8 @@ import { onMount, setContext } from 'svelte'
 import { Toaster } from 'svelte-french-toast'
 import { writable, type Writable } from 'svelte/store'
 
+import EventAppLayout from './EventAppLayout.svelte'
+
 // import { initOpenReplay } from '$lib/openreplay'
 // import { initWorkers, NotificationWorker } from '$lib/ServiceWorkerController'
 export let data
@@ -93,7 +95,9 @@ function setMe() {
 </div> -->
 <div class="sheets" />
 {#if data.event}
-	<slot />
+	<EventAppLayout>
+		<slot />
+	</EventAppLayout>
 {:else}
 	Marketing site
 {/if}

@@ -98,8 +98,6 @@ function setMe() {
 </div> -->
 <div class="sheets" />
 
-mnage lay
-
 <slot />
 <Toaster toastOptions={{ position: 'bottom-center' }} />
 <Confirmations />
