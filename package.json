@@ -25,6 +25,11 @@
   "dependencies": {
     "@electron/packager": "^18.0.0"
   },
+	"pnpm": {
+		"overrides": {
+			"sharp": "0.32.6"
+		}
+	},
 	"overrides": {
 		"sharp": "0.32.6"
 	}
