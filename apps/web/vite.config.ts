@@ -1,12 +1,13 @@
+import { enhancedImages } from '@sveltejs/enhanced-img'
 import { sveltekit } from '@sveltejs/kit/vite'
 import tsConfigPaths from 'vite-tsconfig-paths'
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
-	plugins: [tsConfigPaths(), sveltekit()],
+	plugins: [tsConfigPaths(), enhancedImages(), sveltekit()],
 	server: {
 		cors: false,
-		port: 4424,
+		port: 8884,
 		host: '0.0.0.0',
 	},
 	test: {

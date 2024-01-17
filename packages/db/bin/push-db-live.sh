@@ -1,1 +1,1 @@
-pnpm run db:push --connectionString="postgresql://nickyhajal:Z9TEUXxVtz1J@ep-bitter-pine-63351793.us-east-2.aws.neon.tech/neondb?sslmode=require" --schema=./src/lib/schema --driver=pg
+pnpm run db:push --connectionString="postgresql://postgres:PV7Ueoqbkc4s3pCgq7bDF8MvU4dMjWKK@db.hxvgpqqckncorkhzydkv.supabase.co:5432/postgres" --schema=./schema --driver=pg

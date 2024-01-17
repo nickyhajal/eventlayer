@@ -35,7 +35,7 @@ const tabs = [
 ]
 </script>
 
-<div class="order-1 flex items-center border-t-2 border-slate-300 bg-slate-200 lg:order-first">
+<div class="order-1 flex items-center border-t border-slate-200 bg-slate-100 lg:order-first">
 	<div class="mx-auto flex w-full items-center justify-around md:max-w-2xl">
 		{#each tabs as { label, icon, href }, i}
 			<Button

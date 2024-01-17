@@ -4,8 +4,9 @@ import '../../app.postcss'
 import { page } from '$app/stores'
 // import RequestNotificationPermission from '$lib/components/RequestNotificationPermission.svelte'
 import Confirmations from '$lib/components/Confirmations.svelte'
+import { Toaster } from '$lib/components/ui/sonner'
 import { onMount, setContext } from 'svelte'
-import { Toaster } from 'svelte-french-toast'
+// import { Toaster } from 'svelte-french-toast'
 import { writable, type Writable } from 'svelte/store'
 
 // import v4 from 'uuid/v4';
@@ -97,7 +98,6 @@ function setMe() {
 	</div>
 </div> -->
 <div class="sheets" />
-
 <slot />
 <Toaster toastOptions={{ position: 'bottom-center' }} />
 <Confirmations />

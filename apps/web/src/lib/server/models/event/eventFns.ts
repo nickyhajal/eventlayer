@@ -1,21 +1,65 @@
-import { and, db, eq, eventTable, eventUserTable } from '@matterloop/db'
+import { and, asc, db, eq, eventTable, eventUserTable, mediaTable, userTable } from '@matterloop/db'
+import { omit } from '@matterloop/util'
 
 interface Args {
 	eventId: string
 	load?: boolean
 }
 
-export const EventFns = (eventId: string) => ({
-	getUsers: async () => {
-		console.log('get users')
-		const users = await db.query.eventUserTable.findMany({
-			where: and(eq(eventUserTable.eventId, eventId)),
-		})
-		return users
-	},
-	getEvents: async () => {
-		const users = await db.query.eventTable.findMany({
-			where: and(eq(eventTable.eventId, eventId)),
-		})
-	},
-})
+export const EventFns = (args: string | Args) => {
+	const eventId = typeof args === 'string' ? args : args.eventId
+	return {
+		get: async () => {
+			const event = await db.query.eventTable.findFirst({
+				where: and(eq(eventTable.id, eventId)),
+				with: { users: { with: { user: true } } },
+			})
+			return event
+		},
+		getUsers: async () => {
+			const userRows = await db
+				.select()
+				.from(eventUserTable)
+				.where(and(eq(eventUserTable.eventId, eventId)))
+				.leftJoin(userTable, eq(userTable.id, eventUserTable.userId))
+				.leftJoin(mediaTable, eq(mediaTable.id, userTable.mediaId))
+			if (userRows.length) {
+				return userRows.map((user) => {
+					return {
+						...user.auth_user,
+						...user.event_user,
+					}
+				})
+			}
+		},
+		getUser: async (userId: string) => {
+			const userRows = await db
+				.select()
+				.from(eventUserTable)
+				.where(and(eq(eventUserTable.eventId, eventId), eq(eventUserTable.userId, userId)))
+				.leftJoin(userTable, eq(userTable.id, eventUserTable.userId))
+				.leftJoin(mediaTable, eq(mediaTable.id, userTable.mediaId))
+			if (userRows.length) {
+				const user = userRows[0]
+				return {
+					...user.auth_user,
+					...user.event_user,
+					photo: user.media,
+				}
+			}
+		},
+		getEvents: async () => {
+			const events = await db.query.eventTable.findMany({
+				where: and(eq(eventTable.eventId, eventId)),
+				orderBy: asc(eventTable.startsAt),
+			})
+			return events
+		},
+		getVenues: async () => {
+			const venues = await db.query.venueTable.findMany({
+				where: and(eq(eventTable.eventId, eventId)),
+			})
+			return venues
+		},
+	}
+}

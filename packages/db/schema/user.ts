@@ -13,6 +13,8 @@ import {
 import { createInsertSchema } from 'drizzle-zod'
 import { z } from 'zod'
 
+import { mediaTable } from './media'
+
 export const userTable = pgTable(
 	'auth_user',
 	{
@@ -22,6 +24,7 @@ export const userTable = pgTable(
 			.notNull(),
 		firstName: text('first_name'),
 		lastName: text('last_name'),
+		mediaId: uuid('media_id'),
 		email: text('email'),
 		isSuperAdmin: boolean('is_super_admin'),
 		settings: jsonb('settings'),
@@ -35,6 +38,12 @@ export const userTable = pgTable(
 	},
 )
 
+export const userRelations = relations(userTable, ({ many, one }) => ({
+	photo: one(mediaTable, {
+		fields: [userTable.id],
+		references: [mediaTable.parentId],
+	}),
+}))
 export const session = pgTable('auth_session', {
 	id: varchar('id', {
 		length: 128,
@@ -88,5 +97,3 @@ export interface Context {
 	meId?: string
 	me?: User
 }
-
-// export const userRelations = relations(userTable, ({ many, one }) => ({}))

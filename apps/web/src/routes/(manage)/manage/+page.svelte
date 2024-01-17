@@ -1,7 +1,8 @@
 <script lang="ts">
-import { Button, Input } from '@matterloop/ui'
 import { invalidate, invalidateAll } from '$app/navigation'
 import { superForm } from 'sveltekit-superforms/client'
+
+import { Button, Input } from '@matterloop/ui'
 
 export let data
 
@@ -14,6 +15,6 @@ const { form, validate, enhance, message, errors, allErrors, delayed } = superFo
 })
 </script>
 
-<div class="px-4">
+<div class="">
 	<div class="text-2xl font-semibold">Dashboard</div>
 </div>

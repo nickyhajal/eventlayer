@@ -1,8 +1,7 @@
+import { Event, User } from '@matterloop/db'
 import { error, type RequestEvent } from '@sveltejs/kit'
 import { initTRPC, type inferAsyncReturnType } from '@trpc/server'
 import superjson from 'superjson'
-
-import { User } from '@matterloop/db'
 
 // import { NotAuthdError } from '$lib/server/core/Errors'
 // import {
@@ -16,10 +15,12 @@ export async function createContext(req: RequestEvent) {
 		cookies: typeof req.cookies
 		auth: import('lucia-auth').AuthRequest
 		meId?: string | false | undefined
+		event: Event
 		me?: User
 	} = {
 		req,
 		auth: req.locals.auth,
+		event: req.locals.event,
 		cookies: req.locals.cookies,
 		me: req.locals.me,
 		meId: req.locals.meId,
@@ -59,3 +60,26 @@ export const verifyMe = () =>
 			},
 		})
 	})
+export const verifyEvent = () =>
+	middleware(async ({ ctx, input, next }) => {
+		if (!ctx.req.locals?.event?.id) {
+			throw error(401, 'No Valid Event')
+		}
+		return next({
+			ctx: {
+				event: ctx.req.locals.event,
+			},
+		})
+	})
+export function verifyHasPermission<T>({ me, key = 'userId', entity }: VerifyArgs<T>) {
+	if (!entity) throw error(401, 'Not Authorized')
+	if (
+		!(
+			(me?.id === entity?.[key] || me?.isSuperAdmin)
+			// ||
+			// me?.event?.role === 'owner'
+		)
+	) {
+		throw error(401, 'Not Authorized')
+	}
+}

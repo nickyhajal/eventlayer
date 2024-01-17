@@ -12,7 +12,7 @@ export const connection = new postgres.Pool({
 	connectionString: DB_URL,
 })
 export const db = drizzle(connection, {
-	logger: true,
+	logger: false,
 	schema: {
 		...userSchema,
 		...eventSchema,

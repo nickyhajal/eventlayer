@@ -3,6 +3,7 @@ import { integer, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { createInsertSchema } from 'drizzle-zod'
 import { z } from 'zod'
 
+import { eventUserTable } from './event_user'
 import { venueTable } from './venue'
 
 export const eventTable = pgTable('event', {
@@ -17,13 +18,21 @@ export const eventTable = pgTable('event', {
 	domainId: text('domain_id').unique(),
 	description: text('description'),
 	note: text('note'),
-	startsAt: timestamp('created_at', { withTimezone: true, mode: 'string' }),
-	endsAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }),
+	startsAt: timestamp('starts_at', { withTimezone: false, mode: 'string' }),
+	endsAt: timestamp('end_at', { withTimezone: false, mode: 'string' }),
 	maxAttendees: integer('max_attendees').default(0),
 	numAttendees: integer('num_attendees').default(0),
 	createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
 	updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
 })
+
+export const eventRelations = relations(eventTable, ({ many, one }) => ({
+	users: many(eventUserTable),
+	venue: one(venueTable, {
+		fields: [eventTable.venueId],
+		references: [venueTable.id],
+	}),
+}))
 
 export const eventSchema = createInsertSchema(eventTable, {
 	name: (schema) => schema.name.min(1).default(''),

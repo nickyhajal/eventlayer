@@ -91,7 +91,6 @@ const handleEventContext: Handle = async ({ event, resolve }) => {
 			const mainEvent = await db.query.eventTable.findFirst({
 				where: eq(eventTable.domainId, bits[0]),
 			})
-			console.log('ev', mainEvent)
 			if (event) event.locals.event = mainEvent
 		}
 	} else {

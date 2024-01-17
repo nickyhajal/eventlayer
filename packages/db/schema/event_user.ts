@@ -1,8 +1,9 @@
 import { relations, sql } from 'drizzle-orm'
 import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { createInsertSchema } from 'drizzle-zod'
 
 import { eventTable } from './event'
-import { userTable } from './user'
+import { User, userSchema, userTable } from './user'
 
 export const eventUserTable = pgTable('event_user', {
 	id: uuid('id')
@@ -11,18 +12,29 @@ export const eventUserTable = pgTable('event_user', {
 		.notNull(),
 	type: text('type'),
 	status: text('status'),
+	proBio: text('pro_bio'),
+	bio: text('bio'),
 	userId: uuid('user_id').references(() => userTable.id, { onDelete: 'cascade' }),
 	eventId: uuid('event_id').references(() => eventTable.id, { onDelete: 'cascade' }),
 	createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
 	updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
 })
 
-// export const eventUserRelations = relations(eventUserTable, ({ many, one }) => ({
-// 	events: many(eventTable),
-// }))
+export const eventUserRelations = relations(eventUserTable, ({ many, one }) => ({
+	event: one(eventTable, {
+		fields: [eventUserTable.userId],
+		references: [eventTable.id],
+	}),
+	user: one(userTable, {
+		fields: [eventUserTable.userId],
+		references: [userTable.id],
+	}),
+}))
 
-// export const eventUserSchema = createInsertSchema(eventUserTable, {
-// 	name: (schema) => schema.name.min(1).default(''),
-// })
-export type eventUser = typeof eventUserTable.$inferSelect
+export const eventUserSchema = createInsertSchema(eventUserTable, {
+	type: (schema) => schema.type.min(1).default(''),
+})
+export const upsertEventUserSchema = userSchema.merge(eventUserSchema)
+export type EventUser = typeof eventUserTable.$inferSelect
+export type FullEventUser = EventUser & User
 // export type eventUserSchemaType = typeof eventUserSchema

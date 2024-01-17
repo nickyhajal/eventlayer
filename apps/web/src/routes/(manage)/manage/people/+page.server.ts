@@ -7,6 +7,6 @@ export const load = async ({ locals }) => {
 	if (!locals.event.id) {
 		error(404, 'Event not found')
 	}
-	const eventFns = EventFns(locals.event.id)
+	const eventFns = EventFns({ eventId: locals.event.id })
 	return { users: await eventFns.getUsers() }
 }

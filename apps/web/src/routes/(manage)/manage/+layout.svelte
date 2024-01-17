@@ -1,12 +1,12 @@
 <script lang="ts">
-import { Button, Input } from '@matterloop/ui'
 import { invalidate, invalidateAll } from '$app/navigation'
 import { page } from '$app/stores'
 import { superForm } from 'sveltekit-superforms/client'
 
+import { Button, Input } from '@matterloop/ui'
+
 export let data
-$: currPath = $page.url.pathname.replace('manage', '')
-$: console.log(currPath)
+$: currPath = $page.url.pathname.replace('/manage', '')
 let links = [
 	{
 		path: '/',
@@ -19,6 +19,10 @@ let links = [
 	{
 		path: '/events',
 		label: 'Events',
+	},
+	{
+		path: '/venues',
+		label: 'Venues',
 	},
 	{
 		path: '/notifications',
@@ -45,12 +49,14 @@ let links = [
 			class="flex h-full flex-col gap-0.5 border-r-2 border-stone-100 bg-stone-50 px-2 py-3 text-sm font-medium text-stone-600"
 		>
 			{#each links as link}
+				{@const thisBits = link.path.substr(1).split('/')}
+				{@const currBits = currPath.substr(1).split('/')}
 				<a
-					class="rounded-md px-2 py-2 {link.path === currPath ? 'bg-stone-200/50 text-stone-600' : 'text-stone-500/80 hover:bg-stone-100'}"
+					class="rounded-md px-2 py-2 {thisBits[0] === currBits[0] ? 'bg-stone-200/50 text-stone-600' : 'text-stone-500/80 hover:bg-stone-100'}"
 					href="/manage{link.path}">{link.label}</a
 				>
 			{/each}
 		</div>
-		<div class="bg-white"><slot /></div>
+		<div class="bg-white px-10 py-6"><slot /></div>
 	</div>
 </div>
