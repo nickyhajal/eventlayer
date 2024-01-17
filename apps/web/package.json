@@ -68,7 +68,7 @@
 		"@matterloop/tsconfig": "^0.1.0",
 		"@matterloop/ui": "*",
 		"@matterloop/util": "*",
-		"@sveltejs/enhanced-img": "0.1.5",
+		"@sveltejs/enhanced-img": "^0.1.8",
 		"@tailwindcss/nesting": "0.0.0-insiders.565cd3e",
 		"@tanstack/svelte-table": "^8.11.6",
 		"@trpc/client": "^10.38.1",
@@ -105,5 +105,8 @@
 		"tailwind-variants": "^0.1.20",
 		"trpc-sveltekit": "^3.5.20",
 		"vite-tsconfig-paths": "^4.2.0"
+	},
+	"overrides": {
+		"sharp": "0.32.6"
 	}
 }
