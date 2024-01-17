@@ -68,7 +68,7 @@
 		"@matterloop/tsconfig": "^0.1.0",
 		"@matterloop/ui": "*",
 		"@matterloop/util": "*",
-		"@sveltejs/enhanced-img": "^0.1.8",
+		"@sveltejs/enhanced-img": "0.1.5",
 		"@tailwindcss/nesting": "0.0.0-insiders.565cd3e",
 		"@tanstack/svelte-table": "^8.11.6",
 		"@trpc/client": "^10.38.1",
