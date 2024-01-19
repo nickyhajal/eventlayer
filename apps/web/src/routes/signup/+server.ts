@@ -20,7 +20,7 @@ export const POST = async ({ request, locals }) => {
 		const { email, password, firstName, lastName } = schema.parse(formData)
 		const existing = await db.query.userTable.findFirst({ where: eq(userTable.email, email) })
 		if (existing) {
-			throw error(401, 'An account already exists with this email')
+			error(401, 'An account already exists with this email')
 		}
 		const user = await auth.createUser({
 			userId: crypto.randomUUID(),
@@ -40,6 +40,6 @@ export const POST = async ({ request, locals }) => {
 		return new Response(user)
 	} catch (e) {
 		console.log(e)
-		throw error(401, { ...e })
+		error(401, { ...e })
 	}
 }

@@ -11,11 +11,11 @@ const schema = z.object({
 
 export const load = async ({ locals, params }) => {
 	if (!params.eventId) {
-		throw error(404, 'No event id')
+		return error(404, 'No event id')
 	}
 	const event = await EventFns(params.eventId).get()
 	if (!event) {
-		throw error(404, 'Event not found')
+		return error(404, 'Event not found')
 	}
 	return { event }
 }

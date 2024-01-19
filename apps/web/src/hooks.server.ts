@@ -27,7 +27,7 @@ import { createTRPCHandle } from 'trpc-sveltekit'
 
 const handleRouteRedirect = (defaultRedirect = '/', route: RouteConfig) => {
 	const { failedAuthRedirect } = route
-	throw redirect(303, failedAuthRedirect?.base || defaultRedirect)
+	return redirect(303, failedAuthRedirect?.base || defaultRedirect)
 }
 
 export const handleCors: Handle = async ({ resolve, event }) => {
@@ -107,7 +107,7 @@ const handleLogout: Handle = async ({ event, resolve }) => {
 		if (!session) throw fail(401)
 		await auth.invalidateSession(session.sessionId) // invalidate session
 		event.locals.auth.setSession(null) // remove cookie
-		throw redirect(303, '/')
+		redirect(303, '/')
 	}
 	return resolve(event)
 }
@@ -120,7 +120,7 @@ const handleRouteConfig: Handle = async ({ event, resolve }) => {
 	} else if (auth === 'logged-in' && !me) {
 		handleRouteRedirect('/login', routeConfig)
 	} else if (auth === 'super-admin' && !me?.isSuperAdmin) {
-		throw error(404, {
+		error(404, {
 			message: 'Page not found',
 		})
 	}

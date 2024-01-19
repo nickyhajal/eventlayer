@@ -18,6 +18,6 @@ export const POST = async ({ request, locals }) => {
 		return json({ status: 'success' })
 	} catch (e) {
 		console.log(e)
-		throw error(401, e)
+		return error(401, e)
 	}
 }

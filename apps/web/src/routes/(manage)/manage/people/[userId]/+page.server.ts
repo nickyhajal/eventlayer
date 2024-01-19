@@ -12,12 +12,12 @@ const schema = z.object({
 
 export const load = async ({ locals, params }) => {
 	if (!params.userId) {
-		throw error(404, 'No user id')
+		return error(404, 'No user id')
 	}
 	const eventFns = EventFns({ eventId: locals.event.id })
 	const user = eventFns.getUser(params.userId)
 	if (!user) {
-		throw error(404, 'User not found')
+		return error(404, 'User not found')
 	}
 	return { user }
 }

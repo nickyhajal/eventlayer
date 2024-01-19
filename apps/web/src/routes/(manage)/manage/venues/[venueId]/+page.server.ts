@@ -12,11 +12,11 @@ const schema = z.object({
 
 export const load = async ({ locals, params }) => {
 	if (!params.venueId) {
-		throw error(404, 'No venue id')
+		return error(404, 'No venue id')
 	}
 	const venue = await VenueFns({ venueId: params.venueId, eventId: locals.event.id }).get()
 	if (!venue) {
-		throw error(404, 'Venue not found')
+		return error(404, 'Venue not found')
 	}
 	return { venue }
 }
