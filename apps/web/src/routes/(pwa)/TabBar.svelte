@@ -41,7 +41,7 @@ const tabs = [
 			<Button
 				href={href}
 				variant="ghost"
-				class="flex h-full flex-col items-center gap-0.5 py-1 text-[0.7rem] text-slate-600"
+				class="flex h-full w-20 flex-none flex-col items-center gap-0.5 py-1 text-[0.7rem] text-slate-600"
 			>
 				<svelte:component this={icon} class="w-[1.5rem] text-slate-700" />
 				<div>{label}</div>
