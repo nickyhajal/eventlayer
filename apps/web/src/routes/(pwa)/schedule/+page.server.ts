@@ -1,12 +1,11 @@
 import { redirect } from '@sveltejs/kit'
+import { EventFns } from '$lib/server/models/event/eventFns.js'
 
 export const load = async (req) => {
 	const { locals, url } = req
-	if (locals.me?.canCreateCompany && url.pathname === '/') {
-		throw redirect(303, '/manage')
-	} else {
-		return {
-			me: req.locals.me ? req.locals.me : null,
-		}
+	const eventFns = EventFns({ eventId: locals.event.id })
+	const events = await eventFns.getEvents()
+	return {
+		events,
 	}
 }

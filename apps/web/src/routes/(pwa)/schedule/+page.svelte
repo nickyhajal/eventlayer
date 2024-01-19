@@ -2,6 +2,8 @@
 import Screen from '$lib/components/Screen.svelte'
 import { getMeContext } from '$lib/state/getContexts'
 
+export let data
+$: events = data.events
 const me = getMeContext()
 </script>
 
