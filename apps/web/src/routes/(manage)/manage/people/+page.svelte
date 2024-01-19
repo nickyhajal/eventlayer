@@ -10,7 +10,6 @@ export let data
 
 let addOpen = false
 let loading = false
-$: console.log(data.users)
 </script>
 
 <div class="">
