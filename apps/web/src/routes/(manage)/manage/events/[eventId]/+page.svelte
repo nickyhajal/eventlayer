@@ -23,14 +23,12 @@ let eventTypes = [
 	{ value: 'excursion', label: 'Excursion' },
 ]
 let event = data.event
-let type = eventTypes.find((t) => t.value === event.type)
+let type = eventTypes.find((t) => t.value === event.type || t.value === 'program')
 $: event.type = type.value
 async function createEvent() {
 	const res = await trpc().event.upsert.mutate(event)
 	toast.success('Saved')
 }
-
-$: console.log('ev', event.startsAt)
 </script>
 
 <div class="grid grid-cols-[20rem_1fr] px-4">
