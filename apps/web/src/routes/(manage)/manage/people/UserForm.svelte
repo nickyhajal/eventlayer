@@ -21,7 +21,6 @@ export let user: Partial<FullEventUser> = {
 	email: '',
 	type: 'attendee',
 }
-$: console.log(user)
 export let simplified = false
 export let inDialog = false
 export let titleClass = ''
@@ -29,12 +28,14 @@ let emailConfirmed: string = user?.id ? 'existing-user' : ''
 $: buttonMsg = emailConfirmed ? (user?.id ? 'Save User' : 'Add User') : 'Check Email'
 $: editing = user?.id ? true : false
 $: title = editing ? `${user?.firstName} ${user?.lastName}` : 'Add a User'
-let type = { value: 'attendee', label: 'Attendee' }
 let userTypes = [
 	{ value: 'attendee', label: 'Attendee' },
 	{ value: 'speaker', label: 'Speaker' },
 	{ value: 'staff', label: 'Staff' },
 ]
+let type = user?.type
+	? userTypes.find(({ value }) => value === user.type)
+	: { value: 'attendee', label: 'Attendee' }
 $: user.type = type.value
 let image = ''
 async function saveUser() {

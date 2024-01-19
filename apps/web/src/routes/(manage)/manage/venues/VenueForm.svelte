@@ -27,11 +27,13 @@ export let titleClass = ''
 $: buttonMsg = venue?.id ? 'Save Venue' : 'Add Venue'
 $: editing = venue?.id ? true : false
 $: title = editing ? venue?.name : 'Add a Venue'
-let type = { value: 'building', label: 'Building' }
 let venueTypes = [
 	{ value: 'building', label: 'Building' },
 	{ value: 'room', label: 'Room' },
 ]
+let type = venue?.type
+	? venueTypes.find(({ value }) => value === venue?.type)
+	: { value: 'building', label: 'Building' }
 $: venue.type = type.value
 let image = ''
 async function createVenue() {
