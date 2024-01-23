@@ -131,7 +131,7 @@ const noTypeCheck = (x: any) => x
 let headerGroups = $table.getHeaderGroups()
 </script>
 
-{#if !rows.length}
+{#if !rows?.length}
 	<div class="mt-6 w-7/12 rounded-xl bg-stone-50 p-6 text-center text-sm text-slate-600">
 		{emptyMsg || 'No rows yet'}
 	</div>

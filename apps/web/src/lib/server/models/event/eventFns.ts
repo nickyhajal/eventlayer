@@ -31,6 +31,7 @@ export const EventFns = (args: string | Args) => {
 					}
 				})
 			}
+			return []
 		},
 		getUser: async (userId: string) => {
 			const userRows = await db
