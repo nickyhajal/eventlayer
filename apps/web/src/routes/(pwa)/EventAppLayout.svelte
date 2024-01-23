@@ -2,9 +2,17 @@
 import TabBar from './TabBar.svelte'
 </script>
 
-<div class="grid h-full grid-rows-[1fr_3.6rem] lg:grid-rows-[3.6rem_1fr]">
-	<TabBar />
+<div class="">
 	<div>
 		<slot />
 	</div>
+	<div class="tabbar fixed w-full">
+		<TabBar />
+	</div>
 </div>
+
+<style>
+.tabbar {
+	bottom: env(safe-area-inset-bottom);
+}
+</style>
