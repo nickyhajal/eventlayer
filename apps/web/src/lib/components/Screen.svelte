@@ -16,7 +16,7 @@ let bigTitleOpacity = 1
 let mainTitleOpacity = bigTitle ? 0 : 1
 
 function handleContentScroll() {
-	const scrollY = contentElm.scrollTop
+	const scrollY = window.scrollY
 	if (bigTitle) {
 		if (scrollY > 0) {
 			bigTitleOpacity = (100 - scrollY * 4) / 100
@@ -29,11 +29,12 @@ function handleContentScroll() {
 }
 </script>
 
+<svelte:window on:scroll={handleContentScroll} />
 <div
-	class=" relative mx-auto grid grid-rows-[3rem_1fr] lg:mt-4 lg:h-[80vh] lg:max-w-2xl lg:overflow-hidden lg:rounded-3xl lg:border lg:border-slate-100 lg:shadow-lg"
+	class=" relative mx-auto bg-slate-800 pt-12 lg:mt-4 lg:h-[80vh] lg:max-w-2xl lg:overflow-hidden lg:rounded-3xl lg:border lg:border-slate-100 lg:bg-white lg:shadow-lg"
 >
 	<div
-		class="relative z-50 flex w-full items-center justify-between bg-slate-800 py-2"
+		class="fixed top-0 z-50 flex h-12 w-full items-center justify-between bg-slate-800 py-2"
 		style="--tw-bg-opacity: {photo ? mainTitleOpacity : 1}"
 	>
 		<div>
@@ -54,7 +55,7 @@ function handleContentScroll() {
 		<div class=""></div>
 	</div>
 	<div
-		class="relative {photo ? '-mt-12' : ''} h-[calc(100vh-6.6rem)] overflow-auto"
+		class="relative bg-slate-100 pb-20 {photo ? '-mt-12' : ''}"
 		bind:this={contentElm}
 		on:scroll={handleContentScroll}
 	>
