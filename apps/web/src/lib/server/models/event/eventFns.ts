@@ -1,5 +1,16 @@
-import { and, asc, db, eq, eventTable, eventUserTable, mediaTable, userTable } from '@matterloop/db'
+import {
+	and,
+	asc,
+	db,
+	eq,
+	eventTable,
+	eventUserTable,
+	mediaTable,
+	ne,
+	userTable,
+} from '@matterloop/db'
 import { omit } from '@matterloop/util'
+import { alias } from 'drizzle-orm/pg-core'
 
 interface Args {
 	eventId: string
@@ -68,6 +79,23 @@ export const EventFns = (args: string | Args) => {
 				where: and(eq(eventTable.eventId, eventId)),
 			})
 			return content
+		},
+		getSubEventSpecialUsers: async () => {
+			const mainEventUser = alias(eventUserTable, 'mainEventUser')
+			const userAlias = alias(userTable, 'user')
+			const users = await db
+				.selectDistinctOn([eventUserTable.userId])
+				.from(eventUserTable)
+				.leftJoin(eventTable, eq(eventUserTable.eventId, eventTable.id))
+				.leftJoin(userAlias, eq(eventUserTable.userId, userAlias.id))
+				.leftJoin(mediaTable, eq(userAlias.mediaId, mediaTable.id))
+				.leftJoin(
+					mainEventUser,
+					and(eq(eventUserTable.userId, mainEventUser.userId), eq(mainEventUser.eventId, eventId)),
+				)
+				.where(and(eq(eventTable.eventId, eventId), ne(eventUserTable.type, 'attendee')))
+			console.log(users)
+			return users
 		},
 	}
 }

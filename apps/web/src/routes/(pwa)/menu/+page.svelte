@@ -7,9 +7,9 @@ import { getMeContext } from '$lib/state/getContexts'
 const me = getMeContext()
 const tabs = [
 	{
-		label: 'Speakers',
+		label: 'Panelists & Moderators',
 		// icon: Home,
-		href: '/',
+		href: '/speakers',
 	},
 	{
 		label: 'FAQs',

@@ -38,7 +38,7 @@ const tabs = [
 $: bits = $page.url.pathname.split('/')
 </script>
 
-<div class="order-1 flex items-center border-t border-slate-200 bg-slate-100 lg:order-first">
+<div class="order-1 flex items-center border-t border-slate-200 bg-slate-50 lg:order-first">
 	<div class="mx-auto flex w-full items-center justify-around md:max-w-2xl">
 		{#each tabs as { label, icon, href }, i}
 			{@const currBits = href.split('/')}
