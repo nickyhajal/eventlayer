@@ -30,18 +30,22 @@ let links = [
 		path: '/faqs',
 		label: 'FAQs',
 	},
-	{
-		path: '/notifications',
-		label: 'Notifications',
-	},
+	// {
+	// 	path: '/notifications',
+	// 	label: 'Notifications',
+	// },
 ]
 setContext('venues', writable(data.venues))
 </script>
 
 <div class="grid h-full grid-rows-[6rem_1fr]">
 	<div class="bg-whitefont-semibold grid grid-cols-[15rem_1fr] items-center">
-		<div class="flex h-full items-center border-r-2 border-stone-100 bg-stone-50 px-4">
-			{data.event.name}
+		<div
+			class="flex h-full w-full flex-1 items-center border-r-2 border-stone-100 bg-stone-50 px-4 text-center"
+		>
+			<div class="w-full rounded-xl bg-stone-200/40 py-3 font-semibold text-stone-600">
+				{data.event.name}
+			</div>
 		</div>
 		<div class="border-b border-stone-100 px-4 pb-3.5">
 			<input

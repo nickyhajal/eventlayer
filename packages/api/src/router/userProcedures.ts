@@ -7,6 +7,9 @@ import {
 	eventTable,
 	EventUser,
 	eventUserTable,
+	like,
+	makeFullEventUser,
+	or,
 	upsertEventUserSchema,
 	userSchema,
 	venueSchema,
@@ -24,8 +27,54 @@ import {
 	type TrpcContext,
 } from '../procedureWithContext'
 
+function scoreMatch(query: string, value: string): number {
+	if (value.toLowerCase().startsWith(query.toLowerCase())) {
+		return 2 // Higher score if the string starts with the query
+	} else if (value.toLowerCase().includes(query.toLowerCase())) {
+		return 1 // Lower score for a substring match
+	}
+	return 0 // No match
+}
+
+function sortBestMatches(query: string, people: User[]): User[] {
+	return people.sort((a, b) => {
+		// Calculate the total score for each person
+		const scoreA =
+			scoreMatch(query, a.firstName) + scoreMatch(query, a.lastName) + scoreMatch(query, a.email)
+		const scoreB =
+			scoreMatch(query, b.firstName) + scoreMatch(query, b.lastName) + scoreMatch(query, b.email)
+
+		// Sort by the total score in descending order
+		if (scoreA > scoreB) return -1
+		if (scoreA < scoreB) return 1
+
+		// If scores are equal, you can add more sorting criteria here
+		return 0
+	})
+}
+
 const t = initTRPC.context<TrpcContext>().create()
 export const userProcedures = t.router({
+	search: procedureWithContext.input(z.object({ q: z.string() })).query(async ({ ctx, input }) => {
+		const users = await db
+			.select()
+			.from(userTable)
+			.leftJoin(eventUserTable, eq(eventUserTable.userId, userTable.id))
+			.where(
+				and(
+					eq(eventUserTable.eventId, ctx.event?.id),
+					or(
+						like(userTable.firstName, `%${input.q}%`),
+						like(userTable.lastName, `%${input.q}%`),
+						like(userTable.email, `%${input.q}%`),
+					),
+				),
+			)
+		return sortBestMatches(
+			input.q,
+			users.map((user) => makeFullEventUser({ user: user.auth_user, eventUser: user.event_user })),
+		)
+	}),
 	checkEmail: procedureWithContext
 		.input(
 			z.object({
@@ -33,13 +82,13 @@ export const userProcedures = t.router({
 			}),
 		)
 		.query(async ({ ctx, input }) => {
-			let emailExists: User | boolean = false
-			let eventUserExists: EventUser | boolean = false
+			let emailExists: User | false = false
+			let eventUserExists: EventUser | false = false
 			const user = await db.query.userTable.findFirst({
 				where: eq(userTable.email, input.email),
 			})
 			if (user?.id) {
-				emailExists = true
+				emailExists = user
 				if (ctx.event?.id) {
 					const eventUser = await db.query.eventUserTable.findFirst({
 						where: and(
@@ -83,43 +132,48 @@ export const userProcedures = t.router({
 				lastName,
 				mediaId,
 			}
-			if (userId) {
-				await db.update(userTable).set(userData).where(eq(userTable.id, userId))
-				const user = await db.query.userTable.findFirst({
+
+			let user: User | undefined | null
+			let eventUser: EventUser | undefined | null
+			if (!userId) {
+				const users = await db.insert(userTable).values(userData).returning()
+				user = users[0]
+			} else {
+				if (Object.values(userData).length) {
+					await db.update(userTable).set(userData).where(eq(userTable.id, userId))
+				}
+				user = await db.query.userTable.findFirst({
 					where: and(eq(userTable.id, userId)),
 				})
-				let eventUser: EventUser | undefined | null
-				if (eventId) {
-					await db
-						.update(eventUserTable)
-						.set(eventUserData)
-						.where(and(eq(eventUserTable.userId, userId), eq(eventUserTable.eventId, eventId)))
-						.returning()
-					eventUser = await db.query.eventUserTable.findFirst({
-						where: and(eq(eventUserTable.userId, userId), eq(eventUserTable.eventId, eventId)),
-					})
-				}
-				return {
-					user,
-					eventUser,
-				}
-			} else {
-				const users = await db.insert(userTable).values(userData).returning()
-				const user = users[0]
-				let eventUser: EventUser | undefined | null
-				if (user && eventId) {
+			}
+			if (eventId && user) {
+				eventUser = await db.query.eventUserTable.findFirst({
+					where: and(eq(eventUserTable.userId, user.id), eq(eventUserTable.eventId, eventId)),
+				})
+				if (!id && !eventUser) {
 					await db
 						.insert(eventUserTable)
-						.values({ type, userId: user.id, eventId: eventId })
+						.values({ type: eventUserData.type, userId: user.id, eventId: eventId })
 						.returning()
 					eventUser = await db.query.eventUserTable.findFirst({
 						where: and(eq(eventUserTable.userId, user.id), eq(eventUserTable.eventId, eventId)),
 					})
+				} else if (userId) {
+					if (Object.values(eventUserData).length) {
+						await db
+							.update(eventUserTable)
+							.set(eventUserData)
+							.where(and(eq(eventUserTable.userId, userId), eq(eventUserTable.eventId, eventId)))
+							.returning()
+					}
+					eventUser = await db.query.eventUserTable.findFirst({
+						where: and(eq(eventUserTable.userId, userId), eq(eventUserTable.eventId, eventId)),
+					})
 				}
-				return {
-					user,
-					eventUser,
-				}
+			}
+			return {
+				user,
+				eventUser,
 			}
 		}),
 })

@@ -122,7 +122,7 @@ export const mediaProcedures = t.router({
 						}
 					}
 				} else {
-					row = await db
+					const insertedRows = await db
 						.insert(mediaTable)
 						.values({
 							userId: ctx.meId,
@@ -134,6 +134,9 @@ export const mediaProcedures = t.router({
 							parentType,
 						})
 						.returning()
+					if (insertedRows.length) {
+						row = insertedRows[0]
+					}
 				}
 				if (row?.id) {
 					const source = `${dir}/${path}/${row.id}-${row.version}.${ext}`

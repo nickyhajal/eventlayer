@@ -14,6 +14,9 @@ export const eventUserTable = pgTable('event_user', {
 	status: text('status'),
 	proBio: text('pro_bio'),
 	bio: text('bio'),
+	url: text('url'),
+	company: text('company'),
+	title: text('title'),
 	userId: uuid('user_id').references(() => userTable.id, { onDelete: 'cascade' }),
 	eventId: uuid('event_id').references(() => eventTable.id, { onDelete: 'cascade' }),
 	createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
@@ -38,3 +41,15 @@ export const upsertEventUserSchema = userSchema.merge(eventUserSchema)
 export type EventUser = typeof eventUserTable.$inferSelect
 export type FullEventUser = EventUser & User
 // export type eventUserSchemaType = typeof eventUserSchema
+export function makeFullEventUser({
+	user,
+	eventUser,
+}: {
+	user: User
+	eventUser: EventUser
+}): FullEventUser {
+	return {
+		...user,
+		...eventUser,
+	}
+}

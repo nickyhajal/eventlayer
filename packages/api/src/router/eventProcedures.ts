@@ -1,7 +1,8 @@
 // lib/trpc/router.ts
-import { db, eq, eventSchema, eventTable } from '@matterloop/db'
+import { and, db, eq, eventSchema, eventTable, eventUserTable } from '@matterloop/db'
 import { userTable, type User } from '@matterloop/db/types'
 import { pick } from '@matterloop/util'
+import { error } from '@sveltejs/kit'
 import { initTRPC } from '@trpc/server'
 import { z } from 'zod'
 
@@ -34,6 +35,35 @@ export const eventProcedures = t.router({
 				where: eq(userTable.id, ctx.meId),
 				with: {},
 			})
+		}),
+	addUser: procedureWithContext
+		.input(z.object({ userId: z.string(), eventId: z.string(), type: z.string() }))
+		.mutation(async ({ ctx, input }) => {
+			console.log(1)
+			const event = await db.query.eventTable.findFirst({
+				where: and(eq(eventTable.id, input.eventId), eq(eventTable.eventId, ctx.event?.id)),
+			})
+			console.log(2)
+			if (!event) return error(404, 'Event not found')
+			const existing = await db.query.eventUserTable.findFirst({
+				where: and(
+					eq(eventUserTable.userId, input.userId),
+					eq(eventUserTable.eventId, input.eventId),
+				),
+			})
+			if (existing) {
+				await console.log(3)
+				db.update(eventUserTable)
+					.set({ type: input.type })
+					.where(eq(eventUserTable.id, existing.id))
+			} else {
+				console.log(4)
+				await db
+					.insert(eventUserTable)
+					.values({ ...input })
+					.returning()
+			}
+			return true
 		}),
 	upsert: procedureWithContext
 		// .use(verifyMe())
