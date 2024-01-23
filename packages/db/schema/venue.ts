@@ -14,6 +14,7 @@ export const venueTable = pgTable('venue', {
 	type: text('type'),
 	description: text('description'),
 	eventId: uuid('event_id').references((): AnyPgColumn => eventTable.id, { onDelete: 'cascade' }),
+	venueId: uuid('venue_id').references((): AnyPgColumn => venueTable.id, { onDelete: 'cascade' }),
 	maxAttendees: integer('max_attendees'),
 	address: text('address'),
 	street: text('street'),
@@ -34,6 +35,12 @@ export const venueRelations = relations(venueTable, ({ many, one }) => ({
 		fields: [venueTable.id],
 		references: [mediaTable.parentId],
 	}),
+	parent: one(venueTable, {
+		fields: [venueTable.venueId],
+		references: [venueTable.id],
+		relationName: 'parent_child',
+	}),
+	children: many(venueTable, { relationName: 'parent_child' }),
 	event: one(eventTable, {
 		fields: [venueTable.eventId],
 		references: [eventTable.id],

@@ -35,9 +35,11 @@ export const userProcedures = t.router({
 		.query(async ({ ctx, input }) => {
 			let emailExists: User | boolean = false
 			let eventUserExists: EventUser | boolean = false
+			console.log('> CHECK', input.email)
 			const user = await db.query.userTable.findFirst({
 				where: eq(userTable.email, input.email),
 			})
+			console.log(user)
 			if (user?.id) {
 				emailExists = true
 				if (ctx.event?.id) {
@@ -47,6 +49,7 @@ export const userProcedures = t.router({
 							eq(eventUserTable.eventId, ctx.event.id),
 						),
 					})
+					console.log(eventUser)
 					if (eventUser) {
 						eventUserExists = eventUser
 					}
@@ -83,8 +86,6 @@ export const userProcedures = t.router({
 				lastName,
 				mediaId,
 			}
-			console.log('> u', userData)
-			console.log(' > e ', eventUserData)
 			if (userId) {
 				await db.update(userTable).set(userData).where(eq(userTable.id, userId))
 				const user = await db.query.userTable.findFirst({

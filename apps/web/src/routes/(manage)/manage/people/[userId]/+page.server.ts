@@ -15,7 +15,7 @@ export const load = async ({ locals, params }) => {
 		return error(404, 'No user id')
 	}
 	const eventFns = EventFns({ eventId: locals.event.id })
-	const user = eventFns.getUser(params.userId)
+	const user = await eventFns.getUser(params.userId)
 	if (!user) {
 		return error(404, 'User not found')
 	}

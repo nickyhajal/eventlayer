@@ -59,7 +59,7 @@ const options = writable<TableOptions<T>>({
 	state: {
 		globalFilter,
 		pagination: {
-			pageSize: 7,
+			pageSize: 50,
 			pageIndex: 0,
 		},
 	},

@@ -10,6 +10,7 @@ import * as Select from '$lib/components/ui/select'
 import { trpc } from '$lib/trpc/client.js'
 import Plus from 'lucide-svelte/icons/plus'
 
+import EventForm from './[eventId]/EventForm.svelte'
 import EventTable from './EventTable.svelte'
 
 export let data
@@ -50,37 +51,6 @@ async function createEvent() {
 
 <Dialog.Root bind:open={addOpen}>
 	<Dialog.Content class="sm:max-w-[425px]">
-		<form on:submit={createEvent}>
-			<Dialog.Header>
-				<Dialog.Title>Add an Event</Dialog.Title>
-			</Dialog.Header>
-			<div class="grid gap-4 py-4">
-				<div class="flex flex-col items-start justify-center gap-1">
-					<Label for="event_name" class="text-right">Event Title</Label>
-					<Input id="event_name" bind:value={event.name} class="col-span-3" />
-				</div>
-				<div class="flex flex-col items-start justify-center gap-1">
-					<Label for="event_name" class="text-right">Event Type</Label>
-					<Select.Root bind:selected={type}>
-						<Select.Trigger class="w-[180px]">
-							<Select.Value placeholder="Select Type" />
-						</Select.Trigger>
-						<Select.Content>
-							<Select.Group>
-								<Select.Label>Event Type</Select.Label>
-								{#each eventTypes as { label, value }}
-									<Select.Item value={value} label={label}>{label}</Select.Item>
-								{/each}
-							</Select.Group>
-						</Select.Content>
-						<Select.Input name="favoriteFruit" />
-					</Select.Root>
-				</div>
-				<DatetimePicker bind:value={event.startsAt} />
-			</div>
-			<Dialog.Footer>
-				<Button type="submit">Add Event</Button>
-			</Dialog.Footer>
-		</form>
+		<EventForm simplified={true} inDialog={true} />
 	</Dialog.Content>
 </Dialog.Root>

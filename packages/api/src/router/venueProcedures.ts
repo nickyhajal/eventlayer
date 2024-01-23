@@ -49,7 +49,7 @@ export const venueProcedures = t.router({
 				}
 				await db
 					.update(venueTable)
-					.set({...pick(input, ['name', 'description', 'type', 'eventId', 'address', 'mediaId']), ...geo})
+					.set({...pick(input, ['name', 'description', 'type', 'eventId', 'address', 'mediaId', 'venueId']), ...geo})
 					.where(eq(venueTable.id, input.id))
 					.returning()
 				const updated = await db.select().from(venueTable).where(eq(venueTable.id, input.id))
@@ -58,7 +58,7 @@ export const venueProcedures = t.router({
 				input.eventId = ctx.event.id
 				const newForm = await db
 					.insert(venueTable)
-					.values(pick(input, ['name', 'description', 'type', 'eventId', 'address', 'mediaId']))
+					.values(pick(input, ['name', 'description', 'type', 'eventId', 'address', 'mediaId', 'venueId']))
 					.returning()
 				return newForm[0]
 			}

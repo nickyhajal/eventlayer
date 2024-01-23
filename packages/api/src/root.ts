@@ -1,4 +1,5 @@
 import { trpcApp } from './procedureWithContext'
+import { contentProcedures } from './router/contentProcedures'
 import { eventProcedures } from './router/eventProcedures'
 import { meRouter } from './router/me'
 import { mediaProcedures } from './router/mediaProcedures'
@@ -11,6 +12,7 @@ export const router = trpcApp.router({
 	venue: venueProcedures,
 	user: userProcedures,
 	media: mediaProcedures,
+	content: contentProcedures,
 })
 
 export type Router = typeof router

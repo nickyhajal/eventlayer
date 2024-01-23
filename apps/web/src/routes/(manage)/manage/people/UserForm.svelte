@@ -21,9 +21,11 @@ export let user: Partial<FullEventUser> = {
 	email: '',
 	type: 'attendee',
 }
+$: console.log('user', user)
 export let simplified = false
 export let inDialog = false
 export let titleClass = ''
+let userInEvent = false
 let emailConfirmed: string = user?.id ? 'existing-user' : ''
 $: buttonMsg = emailConfirmed ? (user?.id ? 'Save User' : 'Add User') : 'Check Email'
 $: editing = user?.id ? true : false
@@ -57,8 +59,11 @@ async function updateAvatar(mediaId: string) {
 async function checkEmail() {
 	if (user.email) {
 		const res = await trpc().user.checkEmail.query({ email: user.email })
+		console.log(res)
 		if (res.emailExists) {
 			if (res.eventUserExists) {
+				userInEvent = true
+				emailConfirmed = ''
 				toast.error('This email is already registered for this event')
 				return
 			} else {
@@ -80,9 +85,10 @@ async function checkEmail() {
 		<div class={tw(`mb-2 mt-0 text-lg font-semibold ${titleClass}`)}>{title}</div>
 	{/if}
 	<div class="grid gap-4 py-4">
-		{#if emailConfirmed === 'user-exists'}
+		{#if userInEvent}
 			<div class="text-base">This user is already part of this event.</div>
-		{:else}
+		{/if}
+		{#if emailConfirmed}
 			{#if emailConfirmed}
 				{#if !simplified && user?.id}
 					<div class="flex flex-col items-start justify-center gap-1">
@@ -106,9 +112,11 @@ async function checkEmail() {
 				>
 					<div class="flex items-center gap-2">
 						<Label for="email" class="text-right">E-Mail Address</Label>
-						<div class="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500">
-							<Check class="w-3 text-white" />
-						</div>
+						{#if emailConfirmed}
+							<div class="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500">
+								<Check class="w-3 text-white" />
+							</div>
+						{/if}
 						<!-- <CheckCircle class="w-4 text-emerald-500" /> -->
 					</div>
 					<div class="mb-1 mt-0.5 text-xs font-medium text-gray-500">

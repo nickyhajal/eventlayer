@@ -1,4 +1,4 @@
-import type { Event, User } from '@matterloop/db'
+import type { Event, User, Venue } from '@matterloop/db'
 import { getContext } from 'svelte'
 import type { Writable } from 'svelte/store'
 
@@ -10,4 +10,7 @@ export function getMeContext() {
 // }
 export function getEventContext() {
 	return getContext<Writable<Event>>('event')
+}
+export function getVenuesContext() {
+	return getContext<Writable<Venue[]>>('venues')
 }

@@ -78,6 +78,7 @@
 		"@types/pg": "^8.10.2",
 		"bits-ui": "^0.14.0",
 		"clsx": "^2.1.0",
+		"cmdk-sv": "^0.0.13",
 		"drizzle-orm": "^0.28.5",
 		"drizzle-zod": "^0.5.1",
 		"filepond": "^4.30.6",

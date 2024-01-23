@@ -1,6 +1,8 @@
 <script lang="ts">
 import { invalidate, invalidateAll } from '$app/navigation'
 import { page } from '$app/stores'
+import { setContext } from 'svelte'
+import { writable } from 'svelte/store'
 import { superForm } from 'sveltekit-superforms/client'
 
 import { Button, Input } from '@matterloop/ui'
@@ -25,10 +27,15 @@ let links = [
 		label: 'Venues',
 	},
 	{
+		path: '/faqs',
+		label: 'FAQs',
+	},
+	{
 		path: '/notifications',
 		label: 'Notifications',
 	},
 ]
+setContext('venues', writable(data.venues))
 </script>
 
 <div class="grid h-full grid-rows-[6rem_1fr]">

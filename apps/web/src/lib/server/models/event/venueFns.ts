@@ -9,7 +9,7 @@ export const VenueFns = ({ venueId, eventId }: Args) => ({
 	get: async () => {
 		const event = await db.query.venueTable.findFirst({
 			where: and(eq(venueTable.id, venueId)),
-			with: { events: true, photo: true },
+			with: { events: true, photo: true, parent: true, children: true },
 		})
 		return event
 	},

@@ -4,6 +4,7 @@ import { createInsertSchema } from 'drizzle-zod'
 import { z } from 'zod'
 
 import { eventUserTable } from './event_user'
+import { mediaTable } from './media'
 import { venueTable } from './venue'
 
 export const eventTable = pgTable('event', {
@@ -12,9 +13,11 @@ export const eventTable = pgTable('event', {
 		.primaryKey()
 		.notNull(),
 	name: text('name').notNull(),
+	subtitle: text('subtitle'),
 	type: text('type').default('main'),
 	venueId: uuid('venue_id').references(() => venueTable.id, { onDelete: 'cascade' }),
 	eventId: uuid('event_id'),
+	mediaId: uuid('mediaId'),
 	domainId: text('domain_id').unique(),
 	description: text('description'),
 	note: text('note'),
@@ -31,6 +34,11 @@ export const eventRelations = relations(eventTable, ({ many, one }) => ({
 	venue: one(venueTable, {
 		fields: [eventTable.venueId],
 		references: [venueTable.id],
+		relationName: 'event_venue',
+	}),
+	photo: one(mediaTable, {
+		fields: [eventTable.id],
+		references: [mediaTable.parentId],
 	}),
 }))
 

@@ -12,7 +12,7 @@ export const EventFns = (args: string | Args) => {
 		get: async () => {
 			const event = await db.query.eventTable.findFirst({
 				where: and(eq(eventTable.id, eventId)),
-				with: { users: { with: { user: true } } },
+				with: { users: { with: { user: true } }, photo: true, venue: true },
 			})
 			return event
 		},
@@ -36,7 +36,7 @@ export const EventFns = (args: string | Args) => {
 			const userRows = await db
 				.select()
 				.from(eventUserTable)
-				.where(and(eq(eventUserTable.eventId, eventId), eq(eventUserTable.userId, userId)))
+				.where(and(eq(eventUserTable.eventId, eventId), eq(eventUserTable.id, userId)))
 				.leftJoin(userTable, eq(userTable.id, eventUserTable.userId))
 				.leftJoin(mediaTable, eq(mediaTable.id, userTable.mediaId))
 			if (userRows.length) {
@@ -58,8 +58,15 @@ export const EventFns = (args: string | Args) => {
 		getVenues: async () => {
 			const venues = await db.query.venueTable.findMany({
 				where: and(eq(eventTable.eventId, eventId)),
+				with: { parent: true, children: true, photo: true },
 			})
 			return venues
+		},
+		getContent: async () => {
+			const content = await db.query.contentTable.findMany({
+				where: and(eq(eventTable.eventId, eventId)),
+			})
+			return content
 		},
 	}
 }

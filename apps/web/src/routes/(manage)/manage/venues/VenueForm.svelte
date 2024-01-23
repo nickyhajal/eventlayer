@@ -36,6 +36,7 @@ let type = venue?.type
 	: { value: 'building', label: 'Building' }
 $: venue.type = type.value
 let image = ''
+let addOpen = false
 async function createVenue() {
 	const res = await trpc().venue.upsert.mutate(venue)
 	goto(`/manage/venues/${res.id}`)
@@ -55,53 +56,95 @@ async function updateAvatar(mediaId: string) {
 	{:else}
 		<div class={tw(`mb-2 mt-0 text-lg font-semibold ${titleClass}`)}>{title}</div>
 	{/if}
-	<div class="grid gap-4 py-4">
-		{#if !simplified && venue?.id}
+	<div class="grid grid-cols-[22rem_24rem] gap-8">
+		<div class="grid gap-4 py-4">
+			{#if !simplified && venue?.id}
+				<div class="flex flex-col items-start justify-center gap-1">
+					<Label for="image" class="text-right">Venue Image</Label>
+				</div>
+				<div
+					class="flex flex-col items-center gap-2 overflow-hidden rounded-lg border border-stone-200 bg-stone-50 p-1"
+				>
+					{#if venue.photo}
+						<img src={getMediaUrl(venue.photo)} alt="at" class="w-full" />
+					{/if}
+					<div class="w-full bg-stone-100">
+						<Uploader parentId={venue.id} parentType="venue" onSuccess={updateAvatar} />
+					</div>
+				</div>
+			{/if}
 			<div class="flex flex-col items-start justify-center gap-1">
-				<Label for="image" class="text-right">Venue Image</Label>
+				<Label for="venue_name" class="text-right">Venue Type</Label>
+				<Select.Root bind:selected={type}>
+					<Select.Trigger class="w-[180px]">
+						<Select.Value placeholder="Select Type" />
+					</Select.Trigger>
+					<Select.Content>
+						<Select.Group>
+							<Select.Label>Venue Type</Select.Label>
+							{#each venueTypes as { label, value }}
+								<Select.Item value={value} label={label}>{label}</Select.Item>
+							{/each}
+						</Select.Group>
+					</Select.Content>
+					<Select.Input name="venueType" />
+				</Select.Root>
 			</div>
-			<div
-				class="flex flex-col items-center gap-2 overflow-hidden rounded-lg border border-stone-200 bg-stone-50 p-1"
-			>
-				{#if venue.photo}
-					<img src={getMediaUrl(venue.photo)} alt="at" class="w-full" />
+			<div class="flex flex-col items-start justify-center gap-1">
+				<Label for="venue_name" class="text-right">Venue Name</Label>
+				<Input id="venue_name" bind:value={venue.name} class="col-span-3" />
+			</div>
+			<div class="flex flex-col items-start justify-center gap-1">
+				<Label for="address" class="text-right">Address</Label>
+				<Input id="address" bind:value={venue.address} class="col-span-3" />
+			</div>
+			{#if !simplified}
+				<div class="flex flex-col items-start justify-center gap-1">
+					<Label for="descriptin" class="text-right">Description</Label>
+					<Textarea id="description" bind:value={venue.description} class="col-span-3" />
+				</div>
+			{/if}
+			<div class="flex justify-end"><Button type="submit">{buttonMsg}</Button></div>
+		</div>
+		{#if !simplified}
+			<div class="grip gap-4 px-4 py-4">
+				{#if venue.parent}
+					<Button
+						variant="secondary"
+						href="/manage/venues/{venue.parent.id}"
+						class="group w-full justify-start rounded-b-none rounded-t-lg bg-stone-200/60 text-left text-xs shadow-none hover:bg-stone-200"
+					>
+						<span class="font-semibold">Part of:&nbsp;</span>
+						<span class="text-red-600 group-hover:text-red-500">{venue.parent.name}</span>
+					</Button>
 				{/if}
-				<div class="w-full bg-stone-100">
-					<Uploader parentId={venue.id} parentType="venue" onSuccess={updateAvatar} />
+				<div class="w-full bg-stone-100 p-3 {venue.parent? 'rounded-b-lg' : 'rounded-lg'}">
+					<div class="pb-2 text-sm font-bold">Sub-Venues</div>
+					{#each venue.children || [] as { name, id }}
+						<Button
+							variant="secondary"
+							href="/manage/venues/{id}"
+							class="w-full justify-start bg-stone-100 px-3 text-sm text-red-700 shadow-none hover:bg-stone-200/40"
+							>{name}</Button
+						>
+					{/each}
+					<Button
+						class="mt-3 w-full bg-stone-200 text-[0.85rem] hover:bg-stone-300"
+						variant="secondary"
+						on:click={() => addOpen = true}>Add Venue</Button
+					>
 				</div>
 			</div>
 		{/if}
-		<div class="flex flex-col items-start justify-center gap-1">
-			<Label for="venue_name" class="text-right">Venue Type</Label>
-			<Select.Root bind:selected={type}>
-				<Select.Trigger class="w-[180px]">
-					<Select.Value placeholder="Select Type" />
-				</Select.Trigger>
-				<Select.Content>
-					<Select.Group>
-						<Select.Label>Venue Type</Select.Label>
-						{#each venueTypes as { label, value }}
-							<Select.Item value={value} label={label}>{label}</Select.Item>
-						{/each}
-					</Select.Group>
-				</Select.Content>
-				<Select.Input name="venueType" />
-			</Select.Root>
-		</div>
-		<div class="flex flex-col items-start justify-center gap-1">
-			<Label for="venue_name" class="text-right">Venue Name</Label>
-			<Input id="venue_name" bind:value={venue.name} class="col-span-3" />
-		</div>
-		<div class="flex flex-col items-start justify-center gap-1">
-			<Label for="address" class="text-right">Address</Label>
-			<Input id="address" bind:value={venue.address} class="col-span-3" />
-		</div>
-		{#if !simplified}
-			<div class="flex flex-col items-start justify-center gap-1">
-				<Label for="descriptin" class="text-right">Description</Label>
-				<Textarea id="description" bind:value={venue.description} class="col-span-3" />
-			</div>
-		{/if}
 	</div>
-	<div class="flex justify-end"><Button type="submit">{buttonMsg}</Button></div>
 </form>
+
+<Dialog.Root bind:open={addOpen}>
+	<Dialog.Content class="sm:max-w-[425px]">
+		<svelte:self
+			simplified={true}
+			inDialog={true}
+			venue={{...venue, id: undefined, type: 'room', name: '', mediaId: undefined, venueId: venue.id, description: ''}}
+		/>
+	</Dialog.Content>
+</Dialog.Root>

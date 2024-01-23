@@ -38,12 +38,23 @@ export const eventProcedures = t.router({
 	upsert: procedureWithContext
 		// .use(verifyMe())
 		.use(verifyEvent())
-		.input(eventSchema)
+		.input(eventSchema.partial())
 		.mutation(async ({ ctx, input }) => {
 			if (input.id) {
 				await db
 					.update(eventTable)
-					.set(pick(input, ['name', 'description', 'type', 'eventId', 'startsAt']))
+					.set(
+						pick(input, [
+							'name',
+							'subtitle',
+							'description',
+							'type',
+							'eventId',
+							'startsAt',
+							'mediaId',
+							'venueId',
+						]),
+					)
 					.where(eq(eventTable.id, input.id))
 					.returning()
 				const updated = await db.select().from(eventTable).where(eq(eventTable.id, input.id))
@@ -52,7 +63,17 @@ export const eventProcedures = t.router({
 				input.eventId = ctx.event.id
 				const newForm = await db
 					.insert(eventTable)
-					.values(pick(input, ['name', 'description', 'type', 'eventId', 'startsAt']))
+					.values(
+						pick(input, [
+							'name',
+							'subtitle',
+							'description',
+							'type',
+							'eventId',
+							'startsAt',
+							'venueId',
+						]),
+					)
 					.returning()
 				return newForm[0]
 			}

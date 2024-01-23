@@ -96,6 +96,9 @@ importers:
       clsx:
         specifier: ^2.1.0
         version: 2.1.0
+      cmdk-sv:
+        specifier: ^0.0.13
+        version: 0.0.13(svelte@4.2.8)
       drizzle-orm:
         specifier: ^0.28.5
         version: 0.28.6(@types/pg@8.10.9)(pg@8.11.3)(postgres@3.4.3)
@@ -453,7 +456,7 @@ importers:
         version: 2.0.6
       sveltekit-superforms:
         specifier: ^1.2.0
-        version: 1.13.1(@sveltejs/kit@1.30.3)(svelte@4.2.8)(zod@3.22.4)
+        version: 1.13.1(@sveltejs/kit@2.4.0)(svelte@4.2.8)(zod@3.22.4)
       zod:
         specifier: ^3.21.4
         version: 3.22.4
@@ -2507,6 +2510,20 @@ packages:
     dependencies:
       cross-spawn: 7.0.3
 
+  /@melt-ui/svelte@0.61.2(svelte@4.2.8):
+    resolution: {integrity: sha512-BHkD9G31zQBToA4euDRBgTQRvWxT9scufOVCXgDO6HKTvyxFspbWT2bgiSFqAK4BbAGDn9Ao36Q8F9O71KN4OQ==}
+    peerDependencies:
+      svelte: '>=3 <5'
+    dependencies:
+      '@floating-ui/core': 1.5.2
+      '@floating-ui/dom': 1.5.3
+      '@internationalized/date': 3.5.1
+      dequal: 2.0.3
+      focus-trap: 7.5.4
+      nanoid: 4.0.2
+      svelte: 4.2.8
+    dev: false
+
   /@melt-ui/svelte@0.68.0(svelte@4.2.8):
     resolution: {integrity: sha512-/QvA98hnYEodZtHJ71+ocum/WWp30hVNt3F8uiZKnNYwZDaiQYjlyR9AaGKYcZLCe6R68op1mfCzc0kTzJilyA==}
     peerDependencies:
@@ -4072,6 +4089,16 @@ packages:
       svelte: 4.2.8
     dev: false
 
+  /bits-ui@0.9.9(svelte@4.2.8):
+    resolution: {integrity: sha512-LkdkyTtpXdkjBzPZJVJgpcre4fut6DONoprMfadHFo82HNUhph+02CxDjYEcZcThb5z4YjSxMlCYvQPZm+YtfQ==}
+    peerDependencies:
+      svelte: ^4.0.0
+    dependencies:
+      '@melt-ui/svelte': 0.61.2(svelte@4.2.8)
+      nanoid: 5.0.4
+      svelte: 4.2.8
+    dev: false
+
   /bl@4.1.0:
     resolution: {integrity: sha512-1W07cM9gS6DcLperZfFSj+bWLtaPGSOHWhPiGzXmvVJbRLdG82sH/Kn8EtW1VqWVA54AKf2h5k5BbnIbwF3h6w==}
     dependencies:
@@ -4381,6 +4408,16 @@ packages:
   /cluster-key-slot@1.1.2:
     resolution: {integrity: sha512-RMr0FhtfXemyinomL4hrWcYJxmX6deFdCxpJzhDttxgO1+bcCnkk+9drydLVDmAMG7NE6aN/fl4F7ucU/90gAA==}
     engines: {node: '>=0.10.0'}
+    dev: false
+
+  /cmdk-sv@0.0.13(svelte@4.2.8):
+    resolution: {integrity: sha512-WrYn0MMdVyzJx+KuOQy028/7mv+uMwO1cxVBM0uJ4KA+50PX792epsj8Yw3It8WfWR8Rae7siBCg54mIAlKsiw==}
+    peerDependencies:
+      svelte: ^4.0.0
+    dependencies:
+      bits-ui: 0.9.9(svelte@4.2.8)
+      nanoid: 5.0.4
+      svelte: 4.2.8
     dev: false
 
   /code-red@1.0.4:
@@ -7322,6 +7359,12 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
+  /nanoid@4.0.2:
+    resolution: {integrity: sha512-7ZtY5KTCNheRGfEFxnedV5zFiORN1+Y1N6zvPTnHQd8ENUvfaDBeuJDZb2bN/oXwXxu3qkTXDzy57W5vAmDTBw==}
+    engines: {node: ^14 || ^16 || >=18}
+    hasBin: true
+    dev: false
+
   /nanoid@5.0.4:
     resolution: {integrity: sha512-vAjmBf13gsmhXSgBrtIclinISzFFy22WwCYoyilZlsrRXNIHSwgFQ1bEdjRwMT3aoadeIF6HMuDRlOxzfXV8ig==}
     engines: {node: ^18 || >=20}
@@ -9314,18 +9357,6 @@ packages:
   /sveltefileuploadcomponent@0.1.0:
     resolution: {integrity: sha512-/EKo1u8QTyOQ72MpG1o4RccRzYLcfrh9Y6PAJRqJaAY5xg36eelfKBj+RaKFAJ+uXmHW4uqqFyl8voWfBx+5qA==}
     dev: false
-
-  /sveltekit-superforms@1.13.1(@sveltejs/kit@1.30.3)(svelte@4.2.8)(zod@3.22.4):
-    resolution: {integrity: sha512-aWHAV6t6+7g37IGFNLRtbRIoqfC3a56Hf4/tTUNFZfwO2mOQGfeMb49WWBLdZZTrFRPGngfNRUxQzeoO3GspnQ==}
-    peerDependencies:
-      '@sveltejs/kit': 1.x || 2.x
-      svelte: 3.x || 4.x
-      zod: 3.x
-    dependencies:
-      '@sveltejs/kit': 1.30.3(svelte@4.2.8)(vite@4.5.1)
-      svelte: 4.2.8
-      zod: 3.22.4
-    dev: true
 
   /sveltekit-superforms@1.13.1(@sveltejs/kit@2.4.0)(svelte@4.2.8)(zod@3.22.4):
     resolution: {integrity: sha512-aWHAV6t6+7g37IGFNLRtbRIoqfC3a56Hf4/tTUNFZfwO2mOQGfeMb49WWBLdZZTrFRPGngfNRUxQzeoO3GspnQ==}
