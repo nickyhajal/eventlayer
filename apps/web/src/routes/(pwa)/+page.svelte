@@ -6,7 +6,7 @@ const me = getMeContext()
 </script>
 
 <Screen title="Save Our Sites">
-	<div class="container mx-auto md:max-w-7xl">
+	<div class="container mx-auto pt-1 md:max-w-7xl">
 		{#if $me && false}
 			<div>You're Logged In</div>
 		{:else}

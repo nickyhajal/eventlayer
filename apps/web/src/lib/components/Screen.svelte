@@ -4,6 +4,7 @@ import ChevronLeft from 'lucide-svelte/icons/chevron-left'
 import { fade } from 'svelte/transition'
 
 import type { Media } from '@matterloop/db'
+import { tw } from '@matterloop/ui'
 
 import Button from './ui/button/button.svelte'
 
@@ -11,6 +12,7 @@ export let title = ''
 export let bigTitle = ''
 export let back = ''
 export let photo: Media
+export let bodyClass = ''
 let contentElm: HTMLDivElement
 let bigTitleOpacity = 1
 let mainTitleOpacity = bigTitle ? 0 : 1
@@ -55,7 +57,7 @@ function handleContentScroll() {
 		<div class=""></div>
 	</div>
 	<div
-		class="relative bg-slate-100 pb-20 {photo ? '-mt-12' : ''}"
+		class={tw(`relative bg-white pb-20 ${photo ? '-mt-12' : ''} ${bodyClass}`)}
 		bind:this={contentElm}
 		on:scroll={handleContentScroll}
 	>

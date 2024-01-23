@@ -31,7 +31,7 @@ function isNewHour(event: Event) {
 	<div class="container mx-auto max-w-7xl">
 		<div class="">
 			<div
-				class="sticky top-0 z-40 -mx-3 flex items-center border-b border-slate-300/50 bg-slate-50 py-2"
+				class="sticky top-12 z-40 -mx-3 flex items-center border-b border-slate-300/50 bg-slate-50 py-2"
 			>
 				{#each Object.keys(days) as day}
 					{#if month !== dayjs(day).format('MMMM')}
@@ -48,12 +48,12 @@ function isNewHour(event: Event) {
 			</div>
 			<div class="relative w-[calc(100vw-2.5rem)]">
 				<div
-					class="sticky top-16 z-20 -mb-12 h-10 w-full bg-gradient-to-b from-white to-white/0"
+					class="sticky top-28 z-20 -mb-12 h-10 w-full bg-gradient-to-b from-white to-white/0"
 				></div>
 				{#each data.events as event}
 					{#if isNewHour(event)}
 						<div
-							class="sticky top-20 z-30 mx-auto mb-2 mt-6 w-fit rounded-lg bg-slate-50 px-3 py-1.5 pt-0.5 text-sm font-medium text-slate-700/80"
+							class="sticky top-32 z-30 mx-auto mb-2 mt-6 w-fit rounded-lg bg-slate-50 px-3 py-1.5 pt-0.5 text-sm font-medium text-slate-700/80"
 						>
 							{dayjs(event.startsAt).format('h:mm a')}
 						</div>
