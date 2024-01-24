@@ -9,7 +9,7 @@ $: venues = data.venues
 const me = getMeContext()
 </script>
 
-<Screen title="Venues" bigTitle="Venues">
+<Screen title="Venues" bigTitle="Venues" bodyClass="bg-slate-100">
 	<div class="container mx-auto -mt-2 max-w-7xl bg-slate-100">
 		<div class="mt-2 grid grid-cols-2 gap-3 py-2">
 			{#each venues as venue}

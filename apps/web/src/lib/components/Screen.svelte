@@ -58,13 +58,13 @@ function handleContentScroll(e) {
 		<div class=""></div>
 	</div>
 	<div
-		class={tw(`relative z-20 bg-white pb-20 lg:h-[calc(100dvh-6.6rem)] lg:overflow-auto  ${photo ? '-mt-16' : ''} ${bodyClass}`)}
+		class={tw(`relative z-20 -mt-0.5 bg-white pb-20 lg:h-[calc(100dvh-6.6rem)] lg:overflow-auto  ${photo ? '-mt-16' : ''} ${bodyClass}`)}
 		bind:this={contentElm}
 		on:scroll={handleContentScroll}
 	>
 		{#if bigTitle}
 			<div
-				class="bigTitle relative flex w-full items-center justify-center bg-slate-800 bg-cover py-2 {photo ? 'h-64' : 'h-fit'}"
+				class="bigTitle relative -top-0.5 flex w-full items-center justify-center bg-slate-800 bg-cover py-2 {photo ? 'h-64' : 'h-fit'}"
 				style="background-image: url({getMediaUrl(photo)})"
 			>
 				{#if photo}
