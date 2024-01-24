@@ -33,7 +33,7 @@ function handleContentScroll() {
 
 <svelte:window on:scroll={handleContentScroll} />
 <div
-	class=" relative mx-auto {bigTitle ? 'bg-slate-500' : 'bg-white'} pt-12 lg:mt-4 lg:h-[80vh] lg:max-w-2xl lg:overflow-hidden lg:rounded-3xl lg:border lg:border-slate-100 lg:bg-white lg:shadow-lg"
+	class=" relative mx-auto {bigTitle ? 'bg-slate-800' : 'bg-white'} pt-16 lg:mt-4 lg:h-[80vh] lg:max-w-2xl lg:overflow-hidden lg:rounded-3xl lg:border lg:border-slate-100 lg:bg-white lg:shadow-lg"
 >
 	<div
 		class="fixed top-0 z-50 flex h-12 w-full items-center justify-between bg-slate-800 py-2"
