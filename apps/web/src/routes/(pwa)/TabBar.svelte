@@ -5,6 +5,7 @@ import Calendar from 'lucide-svelte/icons/calendar'
 import Home from 'lucide-svelte/icons/home'
 import Pin from 'lucide-svelte/icons/map-pinned'
 import Menu from 'lucide-svelte/icons/menu'
+import Rocket from 'lucide-svelte/icons/rocket'
 import Send from 'lucide-svelte/icons/send'
 
 const tabs = [
@@ -28,6 +29,11 @@ const tabs = [
 	// 	icon: Send,
 	// 	href: '/info',
 	// },
+	{
+		label: 'Program',
+		icon: Rocket,
+		href: '/program',
+	},
 	{
 		label: 'Menu',
 		icon: Menu,

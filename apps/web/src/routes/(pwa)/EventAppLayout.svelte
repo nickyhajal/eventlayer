@@ -12,4 +12,7 @@ import TabBar from './TabBar.svelte'
 </div>
 
 <style>
+:global(body) {
+	overflow-x: hidden;
+}
 </style>
