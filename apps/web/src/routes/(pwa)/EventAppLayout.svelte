@@ -2,8 +2,8 @@
 import TabBar from './TabBar.svelte'
 </script>
 
-<div class="">
-	<div>
+<div class="bg-slate-800">
+	<div class="bg-red-500">
 		<slot />
 	</div>
 	<div class="tabbar fixed z-50 w-full">
@@ -12,7 +12,4 @@ import TabBar from './TabBar.svelte'
 </div>
 
 <style>
-.tabbar {
-	bottom: env(safe-area-inset-bottom);
-}
 </style>
