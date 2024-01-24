@@ -39,11 +39,9 @@ export const eventProcedures = t.router({
 	addUser: procedureWithContext
 		.input(z.object({ userId: z.string(), eventId: z.string(), type: z.string() }))
 		.mutation(async ({ ctx, input }) => {
-			console.log(1)
 			const event = await db.query.eventTable.findFirst({
 				where: and(eq(eventTable.id, input.eventId), eq(eventTable.eventId, ctx.event?.id)),
 			})
-			console.log(2)
 			if (!event) return error(404, 'Event not found')
 			const existing = await db.query.eventUserTable.findFirst({
 				where: and(
@@ -52,16 +50,36 @@ export const eventProcedures = t.router({
 				),
 			})
 			if (existing) {
-				await console.log(3)
-				db.update(eventUserTable)
+				await db
+					.update(eventUserTable)
 					.set({ type: input.type })
 					.where(eq(eventUserTable.id, existing.id))
 			} else {
-				console.log(4)
 				await db
 					.insert(eventUserTable)
 					.values({ ...input })
 					.returning()
+			}
+			return true
+		}),
+	removeUser: procedureWithContext
+		.input(z.object({ userId: z.string(), eventId: z.string() }))
+		.mutation(async ({ ctx, input }) => {
+			const event = await db.query.eventTable.findFirst({
+				where: and(eq(eventTable.id, input.eventId), eq(eventTable.eventId, ctx.event?.id)),
+			})
+			console.log(1)
+			if (!event) return error(404, 'Event not found')
+			const existing = await db.query.eventUserTable.findFirst({
+				where: and(
+					eq(eventUserTable.userId, input.userId),
+					eq(eventUserTable.eventId, input.eventId),
+				),
+			})
+			console.log(2)
+			if (existing) {
+				console.log(3, existing.id)
+				await db.delete(eventUserTable).where(eq(eventUserTable.id, existing.id))
 			}
 			return true
 		}),
