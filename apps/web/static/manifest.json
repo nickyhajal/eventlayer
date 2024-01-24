@@ -1,5 +1,5 @@
 {
-  "short_name": "sos-app",
+  "short_name": "SOS App",
   "name": "sos-conf-app",
   "start_url": "/",
   "icons": [
@@ -9,18 +9,9 @@
       "sizes": "512x512"
     }
   ],
-  "background_color": "#c10",
+  "background_color": "#c1cff00",
   "display": "fullscreen",
   "scope": "/",
-  "theme_color": "#c10",
-  "shortcuts": [
-    {
-      "name": "How's weather today?",
-      "short_name": "Today",
-      "description": "View weather information for today",
-      "url": "/today?source=pwa",
-      "icons": [{ "src": "/icon.webp", "sizes": "192x192" }]
-    }
-  ],
+  "theme_color": "rgb(30 41 59)",
   "description": "Conference app for Save Our Sites (SOS)"
 }
