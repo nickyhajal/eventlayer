@@ -3,16 +3,15 @@ import { goto, invalidate, invalidateAll } from '$app/navigation'
 import AttendeeSearchInput from '$lib/components/AttendeeSearchInput.svelte'
 import SelectVenue from '$lib/components/SelectVenue.svelte'
 import { Button } from '$lib/components/ui/button'
-import Datepicker from '$lib/components/ui/Datepicker.svelte'
 import DatetimePicker from '$lib/components/ui/DatetimePicker.svelte'
 import * as Dialog from '$lib/components/ui/dialog'
-import * as DropdownMenu from '$lib/components/ui/dropdown-menu'
 import { Input } from '$lib/components/ui/input'
 import Label from '$lib/components/ui/label/label.svelte'
 import * as Select from '$lib/components/ui/select'
 import { Textarea } from '$lib/components/ui/textarea'
 import Uploader from '$lib/components/ui/Uploader.svelte'
 import { trpc } from '$lib/trpc/client.js'
+import X from 'lucide-svelte/icons/x'
 import { toast } from 'svelte-sonner'
 
 import type { Event, FullEventUser, User } from '@matterloop/db'
@@ -73,7 +72,6 @@ async function addUser(user: FullEventUser) {
 </script>
 
 <form on:submit={createEvent}>
-	{event.type}
 	<div class="grid {inDialog ? 'grid-cols-1 px-0' : 'grid-cols-[24rem_24rem] px-4'} gap-8">
 		<div>
 			{#if inDialog}
@@ -145,10 +143,26 @@ async function addUser(user: FullEventUser) {
 					class="mb-1 mt-1 flex flex-col divide-y divide-stone-100 rounded-lg border border-stone-200"
 				>
 					{#each users || [] as user}
-						{@const {firstName, lastName, type} = user}
-						<div class="flex items-center justify-between px-3 py-2">
-							<div class="text-sm font-medium text-stone-600">{firstName} {lastName}</div>
-							<div class="text-xs text-stone-500">{capitalize(type)}</div>
+						{@const {firstName, lastName, type, id} = user}
+						<div class="group relative flex items-center justify-between gap-2 px-2.5 py-2">
+							<div class="flex w-full items-center justify-between">
+								<div class="text-sm font-medium text-stone-600">{firstName} {lastName}</div>
+								<div
+									class="absolute right-3 text-xs text-stone-500 transition-all group-hover:right-10"
+								>
+									{capitalize(type)}
+								</div>
+							</div>
+							<Button
+								variant="ghost"
+								class="my-0 h-6 px-1 py-2 opacity-0 transition-all group-hover:opacity-100"
+								on:click={() => {
+									trpc().event.removeUser.mutate({ eventId: event.id, userId: user.userId })
+									invalidateAll()
+								}}
+							>
+								<X class="h-4 w-4 text-stone-500"></X>
+							</Button>
 						</div>
 					{:else}
 						<div class="text-sm text-center text-gray-500 py-6">No users yet.</div>
