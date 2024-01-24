@@ -50,7 +50,7 @@ let eventTypes = [
 $: buttonMsg = event?.id ? 'Save Event' : 'Add Event'
 $: editing = event?.id ? true : false
 $: title = editing ? event?.name : 'Add an Event'
-let type = eventTypes.find((t) => t.value === event.type || t.value === 'program')
+let type = eventTypes.find((t) => t.value === (event.type || 'program'))
 $: event.type = type.value
 async function createEvent() {
 	const res = await trpc().event.upsert.mutate(event)
@@ -73,6 +73,7 @@ async function addUser(user: FullEventUser) {
 </script>
 
 <form on:submit={createEvent}>
+	{event.type}
 	<div class="grid {inDialog ? 'grid-cols-1 px-0' : 'grid-cols-[24rem_24rem] px-4'} gap-8">
 		<div>
 			{#if inDialog}
