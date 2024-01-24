@@ -21,6 +21,11 @@ const tabs = [
 		// icon: Home,
 		href: '/contact',
 	},
+	{
+		label: 'Test',
+		// icon: Home,
+		href: '/test',
+	},
 ]
 
 $: bits = $page.url.pathname.split('/')
@@ -28,7 +33,7 @@ $: bits = $page.url.pathname.split('/')
 
 <Screen title="Menu">
 	<div class="container mx-auto max-w-7xl">
-		<div class="flex h-[calc(100vh-8rem)] flex-col justify-end gap-2">
+		<div class="flex h-[calc(100dvh-9rem)] flex-col justify-end gap-2">
 			{#each tabs as { label, icon, href }, i}
 				{@const currBits = href.split('/')}
 				<Button
@@ -46,3 +51,9 @@ $: bits = $page.url.pathname.split('/')
 		</div>
 	</div>
 </Screen>
+
+<style>
+.container {
+	padding-bottom: env(safe-area-inset-bottom);
+}
+</style>

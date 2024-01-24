@@ -7,6 +7,7 @@ import {
 	eventUserTable,
 	mediaTable,
 	ne,
+	sponsorTable,
 	userTable,
 } from '@matterloop/db'
 import { omit } from '@matterloop/util'
@@ -74,6 +75,13 @@ export const EventFns = (args: string | Args) => {
 			})
 			return venues
 		},
+		getSponsors: async () => {
+			const rows = await db.query.sponsorTable.findMany({
+				where: and(eq(sponsorTable.eventId, eventId)),
+				with: { photo: true },
+			})
+			return rows
+		},
 		getContent: async () => {
 			const content = await db.query.contentTable.findMany({
 				where: and(eq(eventTable.eventId, eventId)),
@@ -94,7 +102,6 @@ export const EventFns = (args: string | Args) => {
 					and(eq(eventUserTable.userId, mainEventUser.userId), eq(mainEventUser.eventId, eventId)),
 				)
 				.where(and(eq(eventTable.eventId, eventId), ne(eventUserTable.type, 'attendee')))
-			console.log(users)
 			return users
 		},
 	}

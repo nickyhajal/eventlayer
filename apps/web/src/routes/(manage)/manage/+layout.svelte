@@ -27,6 +27,10 @@ let links = [
 		label: 'Venues',
 	},
 	{
+		path: '/sponsors',
+		label: 'Sponsors',
+	},
+	{
 		path: '/faqs',
 		label: 'FAQs',
 	},

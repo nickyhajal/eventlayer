@@ -112,10 +112,12 @@ async function updateAvatar(mediaId: string) {
 					<Button
 						variant="secondary"
 						href="/manage/venues/{venue.parent.id}"
-						class="group w-full justify-start rounded-b-none rounded-t-lg bg-stone-200/60 text-left text-xs shadow-none hover:bg-stone-200"
+						class="group flex w-full justify-start rounded-b-none rounded-t-lg bg-stone-200/60 text-left text-xs shadow-none hover:bg-stone-200"
 					>
-						<span class="font-semibold">Part of:&nbsp;</span>
-						<span class="text-red-600 group-hover:text-red-500">{venue.parent.name}</span>
+						<div class="font-semibold">Part of:&nbsp;</div>
+						<div class="w-full truncate pr-2 text-red-600 group-hover:text-red-500">
+							{venue.parent.name}
+						</div>
 					</Button>
 				{/if}
 				<div class="w-full bg-stone-100 p-3 {venue.parent? 'rounded-b-lg' : 'rounded-lg'}">
