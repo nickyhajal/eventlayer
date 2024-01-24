@@ -44,7 +44,7 @@ export const sponsorProcedures = t.router({
 			if (input.id) {
 				await db
 					.update(sponsorTable)
-					.set({ ...pick(input, ['title', 'description', 'type', 'eventId', 'mediaId']) })
+					.set({ ...pick(input, ['title', 'description', 'url', 'type', 'eventId', 'mediaId']) })
 					.where(eq(sponsorTable.id, input.id))
 					.returning()
 				const updated = await db.select().from(sponsorTable).where(eq(sponsorTable.id, input.id))
@@ -53,7 +53,7 @@ export const sponsorProcedures = t.router({
 				input.eventId = ctx.event.id
 				const newForm = await db
 					.insert(sponsorTable)
-					.values(pick(input, ['title', 'description', 'type', 'eventId', 'mediaId']))
+					.values(pick(input, ['title', 'description', 'url', 'type', 'eventId', 'mediaId']))
 					.returning()
 				return newForm[0]
 			}
