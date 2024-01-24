@@ -36,7 +36,7 @@ $: bits = $page.url.pathname.split('/')
 <Screen title="Menu">
 	<div class="container mx-auto max-w-7xl">
 		<div class="flex flex-col justify-end gap-2">
-			<div class="grid grid-cols-2 gap-2">
+			<div class="menu fixed grid w-full grid-cols-2 gap-2">
 				{#each tabs as { label, icon, href, classes }, i}
 					{@const currBits = href.split('/')}
 					<Button
@@ -57,6 +57,9 @@ $: bits = $page.url.pathname.split('/')
 </Screen>
 
 <style>
+.menu {
+	bottom: calc(4rem + env(safe-area-inset-bottom));
+}
 .container > .flex {
 	height: calc(100vh - 8rem - env(safe-area-inset-bottom));
 }
