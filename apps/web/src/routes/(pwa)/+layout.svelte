@@ -34,6 +34,8 @@ setContext('seed', +new Date() / 1000)
 $: setMe(), $page.data.me
 NProgress.configure({
 	// Full list: https://github.com/rstacruz/nprogress#configuration
+	showSpinner: false,
+	parent: '#tabbar',
 	minimum: 0.16,
 })
 
