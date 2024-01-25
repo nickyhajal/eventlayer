@@ -16,6 +16,7 @@ export const sponsorTable = pgTable('sponsor', {
 	mediaId: uuid('media_id'),
 	title: text('title'),
 	url: text('url'),
+	bookingUrl: text('booking_url'),
 	description: text('description'),
 	createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
 	updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),

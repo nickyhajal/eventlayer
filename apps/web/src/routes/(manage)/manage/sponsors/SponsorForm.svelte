@@ -108,6 +108,10 @@ async function addUser(user: FullEventUser) {
 				<Label for="url" class="text-right">Sponsor Link</Label>
 				<Input id="url" bind:value={sponsor.url} type="url" class="col-span-3" />
 			</div>
+			<div class="flex flex-col items-start justify-center gap-1">
+				<Label for="bookinrl" class="text-right">Booking Link</Label>
+				<Input id="bookingUrl" bind:value={sponsor.bookingUrl} type="url" class="col-span-3" />
+			</div>
 			{#if !simplified}
 				<div class="flex flex-col items-start justify-center gap-1">
 					<Label for="descriptin" class="text-right">Description</Label>
