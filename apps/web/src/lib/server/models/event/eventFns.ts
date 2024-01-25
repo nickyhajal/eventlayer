@@ -7,12 +7,13 @@ import {
 	eq,
 	eventTable,
 	eventUserTable,
+	gt,
 	mediaTable,
 	ne,
 	sponsorTable,
 	userTable,
 } from '@matterloop/db'
-import { keyBy, omit } from '@matterloop/util'
+import { dayjs, keyBy, omit } from '@matterloop/util'
 
 interface Args {
 	eventId: string
@@ -28,6 +29,14 @@ export const EventFns = (args: string | Args) => {
 				with: { users: { with: { user: true } }, photo: true, venue: true },
 			})
 			return event
+		},
+		getNextEvents: async () => {
+			return db.query.eventTable.findMany({
+				where: and(eq(eventTable.eventId, eventId), gt(eventTable.startsAt, dayjs().toISOString())),
+				orderBy: asc(eventTable.startsAt),
+				with: { photo: true, venue: true },
+				limit: 3,
+			})
 		},
 		getUsers: async () => {
 			const userRows = await db

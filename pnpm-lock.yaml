@@ -90,6 +90,9 @@ importers:
       '@types/pg':
         specifier: ^8.10.2
         version: 8.10.9
+      bigger-picture:
+        specifier: ^1.1.14
+        version: 1.1.14
       bits-ui:
         specifier: ^0.14.0
         version: 0.14.0(svelte@4.2.8)
@@ -5207,6 +5210,10 @@ packages:
 
   /base64-js@1.5.1:
     resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
+
+  /bigger-picture@1.1.14:
+    resolution: {integrity: sha512-PD9Lb7xtrmkceSkL/rUxCgROf3bqRfmSBEm5aYYkz+gRtWpQrr8PJUtw236XnEcHiEVtZoSqdNjWyI24iSOsEQ==}
+    dev: false
 
   /binary-extensions@2.2.0:
     resolution: {integrity: sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==}

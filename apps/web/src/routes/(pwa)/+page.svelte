@@ -8,7 +8,13 @@ import Pin from 'lucide-svelte/icons/map-pinned'
 import Menu from 'lucide-svelte/icons/menu'
 import Rocket from 'lucide-svelte/icons/rocket'
 import Users from 'lucide-svelte/icons/users'
+import { ChevronRight } from 'radix-icons-svelte'
+import { get } from 'svelte/store'
 
+import { dayjs, getMediaUrl } from '@matterloop/util'
+
+export let data
+$: upcoming = data.upcoming
 const tabs = [
 	{
 		label: 'Schedule',
@@ -34,11 +40,11 @@ const tabs = [
 </script>
 
 <Screen title="Save Our Sites">
-	<div class="container mx-auto pt-10 md:max-w-7xl">
+	<div class="container mx-auto pt-1 md:max-w-7xl">
 		<enhanced:img
 			src="../../../static/banner.jpg"
 			alt="An alt text"
-			class="mx-auto my-10 w-full md:w-8/12"
+			class="mx-auto my-10 w-10/12 pb-2 md:w-8/12"
 		/>
 		<div class="rounded-t-xl bg-slate-200 p-3 text-center font-medium">
 			<div class="text-lg">Friday, February 2, 2024</div>
@@ -66,9 +72,47 @@ const tabs = [
 				{/each}
 			</div>
 		</div>
-		<div class="mt-8 border-t border-slate-100 pt-8">
-			<div class="text-base font-extrabold uppercase text-slate-500">Next Up</div>
-			<div class="mt-1 text-xl font-bold text-slate-700">Kick-off Get Together</div>
-		</div>
+		{#if upcoming}
+			<div class="mt-8 border-t border-slate-100 pt-8">
+				<div class="flex items-center justify-between">
+					<div class="mb-1.5 text-2xl font-semibold text-slate-700">Upcoming Events</div>
+					<Button
+						href="/schedule"
+						variant="outline"
+						class="flex h-8 items-center gap-1.5 px-2.5 py-1 text-sm font-medium text-red-600"
+					>
+						View All
+						<ChevronRight class="h-4 w-4 text-red-600" />
+					</Button>
+				</div>
+				<div class="w-screen overflow-x-auto pb-2 lg:pb-8">
+					<div class="flex w-[49.5rem] gap-4 pb-4 pr-6">
+						{#each upcoming as event, i}
+							<Button
+								variant="outline"
+								href={`/schedule/${event.id}`}
+								class="h-54 relative mt-2 flex w-[15rem] flex-col items-start justify-start rounded-xl p-1 text-left"
+							>
+								<img
+									alt="{event.name} photo"
+									src={getMediaUrl(event.photo)}
+									class="h-32 w-full rounded-md bg-cover object-cover"
+								/>
+								<div class="px-2">
+									<div
+										class="w-11/12 truncate whitespace-normal pb-1 pt-2 text-base font-semibold leading-tight text-slate-700"
+									>
+										{event.name}
+									</div>
+									<div class="whitespace-normal pb-1.5 text-sm font-medium text-slate-600">
+										{event.venue.name} | {dayjs(event.startsAt).format('MMM D, h:mma')}
+									</div>
+								</div>
+							</Button>
+						{/each}
+					</div>
+				</div>
+			</div>
+		{/if}
 	</div>
 </Screen>

@@ -12,7 +12,8 @@
       "packages/*",
       "apps/*",
       "tooling/*"
-    ]
+    ],
+    "nohoist": ["**/react-native", "**/react-native/**", "**/expo", "**/expo/**"]
   },
   "devDependencies": {
     "@electron-forge/cli": "^6.4.2",
