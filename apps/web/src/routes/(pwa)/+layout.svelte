@@ -11,6 +11,8 @@ import { writable, type Writable } from 'svelte/store'
 
 import 'nprogress/nprogress.css'
 
+import { dayjs } from '@matterloop/util'
+
 import EventAppLayout from './EventAppLayout.svelte'
 
 // import { initOpenReplay } from '$lib/openreplay'
@@ -28,6 +30,7 @@ let me: Writable<MeType> | undefined
 // $: if ($navigating) {
 //   mixpanel.track_pageview()
 // }
+setContext('seed', +new Date() / 1000)
 $: setMe(), $page.data.me
 NProgress.configure({
 	// Full list: https://github.com/rstacruz/nprogress#configuration

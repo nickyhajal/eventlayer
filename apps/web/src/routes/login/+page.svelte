@@ -1,17 +1,17 @@
 <script lang="ts">
-import { Button, Input } from '@matterloop/ui'
-import { invalidate, invalidateAll } from '$app/navigation'
-import { superForm } from 'sveltekit-superforms/client'
+	import { Button, Input } from '@matterloop/ui'
+	import { invalidate, invalidateAll } from '$app/navigation'
+	import { superForm } from 'sveltekit-superforms/client'
 
-export let data
+	export let data
 
-const { form, validate, enhance, message, errors, allErrors, delayed } = superForm(data.form, {
-	onResult: (rsp) => {
-		if (rsp.result.status === 200) {
-			invalidateAll()
-		}
-	},
-})
+	const { form, validate, enhance, message, errors, allErrors, delayed } = superForm(data.form, {
+		onResult: (rsp) => {
+			if (rsp.result.status === 200) {
+				invalidateAll()
+			}
+		},
+	})
 </script>
 
 <div class="shadow-line mx-auto mt-20 w-full max-w-xl rounded-2xl bg-white p-8">

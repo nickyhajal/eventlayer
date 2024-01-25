@@ -13,7 +13,7 @@ $: user = data.user
 $: name = `${user.firstName} ${user.lastName}`
 </script>
 
-<Screen title={name} back="/speakers">
+<Screen title={name} back="/sponsors">
 	<div class="container mx-auto max-w-7xl py-6">
 		<div class="text-base font-semibold text-red-600">
 			<!-- {dayjs(data.v.startsAt).format('dddd MMMM Do [at] h:mma')} -->
@@ -42,6 +42,8 @@ $: name = `${user.firstName} ${user.lastName}`
 				Connect on LinkedIn
 			</Button>
 		{/if}
-		<div class="pr-4 text-slate-600">{user?.proBio}</div>
+		{#if user?.proBio}
+			<div class="pr-4 text-slate-600">{user?.proBio}</div>
+		{/if}
 	</div>
 </Screen>

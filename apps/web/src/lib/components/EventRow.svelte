@@ -9,23 +9,23 @@ export let event: Event
 
 <a
 	href="/schedule/{event.id}"
-	class="relative z-0 mb-2 flex w-full items-center justify-between gap-2 border-b border-slate-100 py-3"
+	class="relative z-0 mb-2 grid w-full grid-cols-[5rem_1fr_1rem] items-center justify-between gap-2 pb-2"
 >
-	<div class="flex gap-2">
-		{#if event.photo || event?.venue?.photo}
-			<img
-				src={getMediaUrl(event.photo || event?.venue?.photo)}
-				class="h-16 w-24 rounded-md bg-cover object-cover"
-			/>
-		{:else}
-			<div class="h-16 w-24 rounded-md bg-slate-50/0"></div>
-		{/if}
-		<div class="flex flex-col">
-			<div class="w-11/12 truncate text-[0.95rem] font-semibold text-slate-800">{event.name}</div>
-			{#if event.venue}
-				<div class="truncate text-[0.95rem] text-slate-600">{event.venue.name}</div>
-			{/if}
+	{#if event.photo || event?.venue?.photo}
+		<img
+			src={getMediaUrl(event.photo || event?.venue?.photo)}
+			class="h-12 w-20 flex-none rounded-md bg-cover object-cover"
+		/>
+	{:else}
+		<div class="h-12 w-20 flex-none rounded-md bg-slate-100"></div>
+	{/if}
+	<div class="flex flex-none flex-col">
+		<div class="-mb-0.5 w-11/12 truncate text-[0.92rem] font-semibold text-slate-800">
+			{event.name}
 		</div>
+		{#if event.venue}
+			<div class="truncate text-[0.86rem] text-slate-600">{event.venue.name}</div>
+		{/if}
 	</div>
-	<ChevronRight class="h-5 w-5 self-center text-slate-400" />
+	<ChevronRight class="h-5 w-5 flex-none self-center text-slate-400" />
 </a>

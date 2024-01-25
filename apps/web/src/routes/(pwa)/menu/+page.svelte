@@ -19,6 +19,12 @@ const tabs = [
 		href: '/sponsors',
 	},
 	{
+		label: 'Venue Map',
+		// icon: Home,
+		classes: 'col-span-2',
+		href: '/map',
+	},
+	{
 		label: 'FAQs',
 		// icon: Home,
 		href: '/faq',

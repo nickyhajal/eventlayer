@@ -1,3 +1,5 @@
+import { alias } from 'drizzle-orm/pg-core'
+
 import {
 	and,
 	asc,
@@ -10,8 +12,7 @@ import {
 	sponsorTable,
 	userTable,
 } from '@matterloop/db'
-import { omit } from '@matterloop/util'
-import { alias } from 'drizzle-orm/pg-core'
+import { keyBy, omit } from '@matterloop/util'
 
 interface Args {
 	eventId: string
@@ -77,11 +78,11 @@ export const EventFns = (args: string | Args) => {
 			return venues
 		},
 		getSponsors: async () => {
-			const rows = await db.query.sponsorTable.findMany({
+			const sponsors = await db.query.sponsorTable.findMany({
 				where: and(eq(sponsorTable.eventId, eventId)),
-				with: { photo: true },
+				with: { photo: true, users: { with: { user: { with: { photo: true } } } } },
 			})
-			return rows
+			return sponsors
 		},
 		getContent: async () => {
 			const content = await db.query.contentTable.findMany({

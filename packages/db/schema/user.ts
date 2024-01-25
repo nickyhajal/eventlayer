@@ -40,8 +40,8 @@ export const userTable = pgTable(
 
 export const userRelations = relations(userTable, ({ many, one }) => ({
 	photo: one(mediaTable, {
-		fields: [userTable.id],
-		references: [mediaTable.parentId],
+		fields: [userTable.mediaId],
+		references: [mediaTable.id],
 	}),
 }))
 export const session = pgTable('auth_session', {

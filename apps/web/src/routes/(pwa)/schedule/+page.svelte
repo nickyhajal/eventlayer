@@ -2,11 +2,28 @@
 import EventRow from '$lib/components/EventRow.svelte'
 import Screen from '$lib/components/Screen.svelte'
 import { getMeContext } from '$lib/state/getContexts'
+import { onMount } from 'svelte'
 
 import type { Event } from '@matterloop/db'
 import { dayjs } from '@matterloop/util'
 
 export let data
+onMount(() => {
+	if (typeof window !== 'undefined') {
+		// var observer = new IntersectionObserver(function (entries) {
+		// 	if (!entries[0].isIntersecting) {
+		// 		console.log('Elvis has LEFT the building ')
+		// 	} else {
+		// 		console.log('Elvis has ENTERED the building ')
+		// 	}
+		// })
+		// observer.observe(document.querySelector('#Elvis'))
+		window.scrollTo({
+			top: document.getElementById(`event-${foundNextEventAt}`)?.offsetTop + 87,
+			behavior: 'smooth',
+		})
+	}
+})
 $: events = data.events
 $: days = events.reduce((acc, event) => {
 	const day = dayjs(event.startsAt).format('YYYY-MM-DD')
@@ -14,6 +31,7 @@ $: days = events.reduce((acc, event) => {
 	acc[day].push(event)
 	return acc
 }, {})
+let foundNextEventAt = -1
 $: selectedDay = Object.keys(days)[0]
 let month = ''
 let hour = ''
@@ -25,17 +43,33 @@ function isNewHour(event: Event) {
 	}
 	return false
 }
+function isNewMonth(datetime: string) {
+	if (month !== dayjs(datetime).format('MMMM')) {
+		month = dayjs(datetime).format('MMMM')
+		return true
+	}
+	return false
+}
+function checkIfUpcoming(event: Event, i: number) {
+	if (foundNextEventAt !== -1) return false
+	if (dayjs(event.startsAt).isAfter(dayjs('2024-02-02 9:05:00'))) {
+		foundNextEventAt = i
+		return i
+	}
+}
 </script>
 
 <Screen title="Schedule" bigTitle="Schedule">
-	<div class="container mx-auto max-w-7xl">
+	<div class="container mx-auto max-w-7xl px-2">
 		<div class="">
 			<div
-				class="sticky top-12 z-40 -mx-3 flex items-center border-b border-slate-300/50 bg-slate-50 py-2"
+				class="sticky top-12 z-40 -mx-3 flex items-center justify-center border-b border-slate-300/50 bg-slate-50 py-2 text-center text-sm text-slate-600"
 			>
-				{#each Object.keys(days) as day}
+				<div>All times listed in Mountain Time (MT)</div>
+				<!-- {#each Object.keys(days) as day}
 					{@const datetime = `${day} 00:00:00`}
-					{#if month !== dayjs(datetime).format('MMMM')}
+					{#if isNewMonth(datetime)}
+						{(month = dayjs(datetime).format('MMMM')), ''}
 						<div class="p-3 text-sm font-semibold uppercase tracking-wide text-slate-600">
 							{dayjs(datetime).format('MMM')}
 						</div>
@@ -45,21 +79,36 @@ function isNewHour(event: Event) {
 					>
 						{dayjs(datetime).format('D')}
 					</button>
-				{/each}
+				{/each} -->
 			</div>
-			<div class="relative w-[calc(100vw-2.5rem)]">
+			<div class="relative w-[calc(100vw-2.5rem)] pb-[25vh]">
 				<div
-					class="sticky top-28 z-20 -mb-12 h-10 w-full bg-gradient-to-b from-white to-white/0"
+					class="sticky top-20 z-20 -mb-7 h-5 w-full bg-gradient-to-b from-white to-white/0"
 				></div>
-				{#each data.events as event}
+				{#each data.events as event, i}
 					{#if isNewHour(event)}
+						{#if checkIfUpcoming(event, i) === i}
+							<span id="scroll-anchor" class="relative left-0 top-10"></span>
+						{/if}
 						<div
-							class="sticky top-32 z-30 mx-auto mb-2 mt-6 w-fit rounded-lg border border-b-2 border-slate-200/50 bg-slate-50 px-3 py-[5px] pt-[5px] text-sm font-medium text-slate-700/80"
+							class="
+								sticky
+								left-0 top-24 z-30
+								-mb-[3.06rem] mt-6 w-16
+								rounded-lg border-0 border-b-2 border-slate-200/70 bg-slate-100
+								px-2 py-[5px] pt-[5px]
+								text-center text-[0.94rem] font-semibold text-slate-700/70"
 						>
-							{dayjs(event.startsAt).format('h:mm a')}
+							<div class="-mb-0.5 text-xs uppercase text-slate-400">
+								{dayjs(event.startsAt).format('MMM D').replace('m', '')}
+							</div>
+							<div>{dayjs(event.startsAt).format('h:mma').replace('m', '')}</div>
 						</div>
 					{/if}
-					<EventRow event={event} />
+					<div class="relative grid grid-cols-[4.4rem_1fr]" id="event-{i}">
+						<div></div>
+						<EventRow event={event} />
+					</div>
 				{/each}
 			</div>
 		</div>
