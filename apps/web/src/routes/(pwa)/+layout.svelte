@@ -1,12 +1,15 @@
 <script lang="ts">
 import '../../app.postcss'
 
-import { page } from '$app/stores'
+import { navigating, page } from '$app/stores'
 // import RequestNotificationPermission from '$lib/components/RequestNotificationPermission.svelte'
 import Confirmations from '$lib/components/Confirmations.svelte'
+import NProgress from 'nprogress'
 import { onMount, setContext } from 'svelte'
 import { Toaster } from 'svelte-french-toast'
 import { writable, type Writable } from 'svelte/store'
+
+import 'nprogress/nprogress.css'
 
 import EventAppLayout from './EventAppLayout.svelte'
 
@@ -15,6 +18,7 @@ import EventAppLayout from './EventAppLayout.svelte'
 export let data
 let mounted = false
 let notificationRequestOpen = false
+let nprogTimo = 0
 type MeType = typeof $page.data.me
 let me: Writable<MeType> | undefined
 
@@ -25,6 +29,22 @@ let me: Writable<MeType> | undefined
 //   mixpanel.track_pageview()
 // }
 $: setMe(), $page.data.me
+NProgress.configure({
+	// Full list: https://github.com/rstacruz/nprogress#configuration
+	minimum: 0.16,
+})
+
+$: {
+	if ($navigating) {
+		nprogTimo = setTimeout(() => {
+			NProgress.start()
+		}, 200)
+	}
+	if (!$navigating) {
+		clearTimeout(nprogTimo)
+		NProgress.done()
+	}
+}
 
 onMount(async () => {
 	mounted = true

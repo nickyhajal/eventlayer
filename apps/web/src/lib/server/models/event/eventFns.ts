@@ -64,6 +64,7 @@ export const EventFns = (args: string | Args) => {
 		getEvents: async () => {
 			const events = await db.query.eventTable.findMany({
 				where: and(eq(eventTable.eventId, eventId)),
+				with: { photo: true, venue: { with: { photo: true } } },
 				orderBy: asc(eventTable.startsAt),
 			})
 			return events

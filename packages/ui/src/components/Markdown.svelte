@@ -10,7 +10,7 @@
   $: html = converter.makeHtml(data)?.replaceAll('&nbsp;', ' ') || ''
 </script>
 
-<div class={className}>
+<div class="md-shell {className}">
   {@html html}
 </div>
 
@@ -22,4 +22,7 @@
       word-break: break-all;
     }
   }
+    .md-shell :global(p) {
+      @apply mb-3;
+    }
 </style>

@@ -3,6 +3,7 @@ import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { createInsertSchema } from 'drizzle-zod'
 
 import { eventTable } from './event'
+import { sponsorTable } from './sponsor'
 import { User, userSchema, userTable } from './user'
 
 export const eventUserTable = pgTable('event_user', {
@@ -16,6 +17,7 @@ export const eventUserTable = pgTable('event_user', {
 	bio: text('bio'),
 	url: text('url'),
 	company: text('company'),
+	sponsorId: uuid('sponsor_id').references(() => sponsorTable.id, { onDelete: 'cascade' }),
 	title: text('title'),
 	userId: uuid('user_id').references(() => userTable.id, { onDelete: 'cascade' }),
 	eventId: uuid('event_id').references(() => eventTable.id, { onDelete: 'cascade' }),
@@ -31,6 +33,10 @@ export const eventUserRelations = relations(eventUserTable, ({ many, one }) => (
 	user: one(userTable, {
 		fields: [eventUserTable.userId],
 		references: [userTable.id],
+	}),
+	sponsor: one(sponsorTable, {
+		fields: [eventUserTable.sponsorId],
+		references: [sponsorTable.id],
 	}),
 }))
 

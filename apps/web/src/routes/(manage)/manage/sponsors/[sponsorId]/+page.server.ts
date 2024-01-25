@@ -17,7 +17,7 @@ export const load = async ({ locals, params }) => {
 	}
 	const sponsor = await db.query.sponsorTable.findFirst({
 		where: eq(sponsorTable.id, params.sponsorId),
-		with: { photo: true },
+		with: { photo: true, users: { with: { user: true } } },
 	})
 	if (!sponsor) {
 		return error(404, 'Sponsor not found')

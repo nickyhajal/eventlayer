@@ -5,6 +5,7 @@ import VenueBlock from '$lib/components/VenueBlock.svelte'
 import { getMeContext } from '$lib/state/getContexts'
 
 import type { Event } from '@matterloop/db'
+import Markdown from '@matterloop/ui/src/components/Markdown.svelte'
 import { dayjs } from '@matterloop/util'
 
 export let data
@@ -28,7 +29,9 @@ $: event = data.event
 			</div>
 		{/if}
 		{#if event.description}
-			<div class="text-slate-600">{event.description}</div>
+			<div class="text-slate-600">
+				<Markdown data={event.description} />
+			</div>
 		{/if}
 		{#if event?.venue}
 			<div class="mt-8">

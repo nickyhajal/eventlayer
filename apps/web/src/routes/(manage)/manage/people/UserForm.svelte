@@ -33,6 +33,7 @@ $: title = editing ? `${user?.firstName} ${user?.lastName}` : 'Add a User'
 let userTypes = [
 	{ value: 'attendee', label: 'Attendee' },
 	{ value: 'speaker', label: 'Speaker' },
+	{ value: 'sponsor', label: 'Sponsor Rep' },
 	{ value: 'staff', label: 'Staff' },
 ]
 let type = user?.type

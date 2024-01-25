@@ -2,6 +2,7 @@ import { relations, sql, type InferModel } from 'drizzle-orm'
 import { integer, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { createInsertSchema } from 'drizzle-zod'
 
+import { eventUserTable } from './event_user'
 import { mediaTable } from './media'
 
 export const sponsorTable = pgTable('sponsor', {
@@ -25,6 +26,7 @@ export const sponsorRelations = relations(sponsorTable, ({ many, one }) => ({
 		fields: [sponsorTable.id],
 		references: [mediaTable.parentId],
 	}),
+	users: many(eventUserTable),
 }))
 
 export const sponsorSchema = createInsertSchema(sponsorTable, {

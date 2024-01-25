@@ -68,6 +68,7 @@ function handleContentScroll(e) {
 				style="background-image: url({getMediaUrl(photo)})"
 			>
 				{#if photo}
+					<div class="absolute top-0 h-24 w-full bg-gradient-to-b from-black/50 to-black/0"></div>
 					<div
 						class="absolute bottom-0 h-24 w-full bg-gradient-to-t from-black/30 to-black/0"
 					></div>

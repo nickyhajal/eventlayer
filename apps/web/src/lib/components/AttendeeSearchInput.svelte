@@ -67,7 +67,7 @@ function handleBaseClick(user: FullEventUser) {
 				Loading...
 			{:else if results.length}
 				<div class="flex flex-col gap-1.5">
-					{#each results as user}
+					{#each results.slice(0, 12) as user}
 						<Button
 							on:click={handleBaseClick(user)}
 							variant="secondary"
