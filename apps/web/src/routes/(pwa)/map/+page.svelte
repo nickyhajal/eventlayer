@@ -1,6 +1,5 @@
 <script lang="ts">
 import Screen from '$lib/components/Screen.svelte'
-import { getMeContext } from '$lib/state/getContexts'
 import BiggerPicture from 'bigger-picture/svelte'
 
 import '$lib/bigger-picture.css'
@@ -26,7 +25,7 @@ function open() {
 </script>
 
 <Screen title="Venue Map" back="/menu">
-	<div id="bp" class="inline-gallery container mx-auto h-full pt-0 md:max-w-7xl">
+	<div id="bp" class="inline-gallery container mx-auto h-full pt-12 md:max-w-7xl">
 		<div
 			on:click={() => open()}
 			data-img="/map.jpg"

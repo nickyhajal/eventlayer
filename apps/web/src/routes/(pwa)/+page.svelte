@@ -85,7 +85,7 @@ const tabs = [
 						<ChevronRight class="h-4 w-4 text-red-600" />
 					</Button>
 				</div>
-				<div class="w-screen overflow-x-auto pb-2 lg:pb-8">
+				<div class="mb-6 w-[calc(100dvw-0.9rem)] overflow-x-auto lg:pb-8">
 					<div class="flex w-[49.5rem] gap-4 pb-4 pr-6">
 						{#each upcoming as event, i}
 							<Button

@@ -6,8 +6,10 @@ import TabBar from './TabBar.svelte'
 	<div class="">
 		<slot />
 	</div>
-	<div id="tabbar" class="tabbar fixed bottom-0 z-50 w-full bg-green-500">
-		<TabBar />
+	<div class="tabbar fixed bottom-0 z-50 w-full bg-green-500">
+		<div id="tabbar">
+			<TabBar />
+		</div>
 	</div>
 </div>
 
