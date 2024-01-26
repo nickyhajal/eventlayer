@@ -9,28 +9,35 @@ import { onMount } from 'svelte'
 
 let bp
 onMount(() => {
-	bp = BiggerPicture({
-		target: document.body,
-	})
+	if (typeof window !== 'undefined') {
+		bp = BiggerPicture({
+			target: document.body,
+		})
+	}
 })
-
-// open (will be a child of the target element above)
 function open() {
-	console.log('open')
 	bp.open({
-		items: document.querySelectorAll('.container > div'),
+		items: document.querySelectorAll('#bp > div'),
+		scale: 1,
+		intro: 'fadeup',
+		maxZoom: 3,
 	})
 }
 </script>
 
 <Screen title="Venue Map" back="/menu">
-	<div class="container mx-auto pt-0 md:max-w-7xl">
-		<div on:click={() => open()} data-height="2000" data-width="3000">
-			<enhanced:img
-				src="../../../../static/map.jpg"
-				alt="An alt text"
-				class="mx-auto my-0 w-full md:w-8/12"
-			/>
+	<div id="bp" class="inline-gallery container mx-auto h-full pt-0 md:max-w-7xl">
+		<div
+			on:click={() => open()}
+			data-img="/map.jpg"
+			data-alt="image description"
+			data-height="2000"
+			data-width="1545"
+		>
+			<img src="/map.jpg" alt="venue map" />
 		</div>
 	</div>
 </Screen>
+
+<style>
+</style>
