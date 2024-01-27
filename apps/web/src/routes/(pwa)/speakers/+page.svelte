@@ -12,7 +12,7 @@ $: console.log(users[0].mainEventUser)
 
 <Screen title="Panelists & Moderators" bigTitle="Panelists & Moderators">
 	<div class="container mx-auto -mt-2 max-w-7xl bg-slate-100">
-		<div class="mt-2 grid grid-cols-2 gap-4 py-2">
+		<div class="mt-2 grid grid-cols-2 gap-4 py-2 md:grid-cols-3">
 			{#each users as user}
 				{@const {user: {id, firstName, lastName}, media, mainEventUser} = user}
 				<a

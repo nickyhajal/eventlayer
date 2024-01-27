@@ -53,7 +53,7 @@ $: bits = $page.url.pathname.split('/')
 <Screen title="Menu">
 	<div class="container mx-auto max-w-7xl">
 		<div class="flex flex-col justify-end gap-2">
-			<div class="menu fixed grid w-[calc(100dvw-1.5rem)] grid-cols-2 gap-2">
+			<div class="menu fixed grid w-[calc(100dvw-1.5rem)] grid-cols-2 gap-2 lg:relative lg:w-full">
 				{#each tabs as { label, icon, href, classes }, i}
 					{@const currBits = href.split('/')}
 					<Button

@@ -25,4 +25,7 @@
     .md-shell :global(p) {
       @apply mb-3;
     }
+    li {
+      @apply list-disc;
+    }
 </style>

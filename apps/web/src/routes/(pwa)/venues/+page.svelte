@@ -14,7 +14,7 @@ const me = getMeContext()
 	<div class="container mx-auto -mt-2 max-w-7xl bg-slate-100">
 		<Button variant="outline" class="mt-5 w-full bg-white" href="/venues/map">View Venue Map</Button
 		>
-		<div class="mt-2 grid grid-cols-1 gap-3 py-2">
+		<div class="mt-2 grid grid-cols-1 gap-3 py-2 md:grid-cols-2">
 			{#each venues as venue}
 				{#if venue.name}
 					<a href="/venues/{venue.id}" class="relative z-0 flex flex-col rounded-2xl bg-white p-1">
