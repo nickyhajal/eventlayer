@@ -18,9 +18,9 @@ export let venue: Venue
 		href="/venues/{venue.id}"
 		class="flex h-fit w-full items-center justify-between gap-2 rounded-lg bg-slate-100 px-4 py-3 text-left hover:bg-slate-200"
 	>
-		<div>
+		<div class="whitespace-normal">
 			<div class="text-xl font-semibold">{venue.name}</div>
-			<div class="text-slate-600">{venue.description}</div>
+			<div class="line-clamp-1 text-slate-600">{venue.description}</div>
 			<div class="text-slate-600">{venue.street}</div>
 			<div class="text-slate-600">{venue.city}, {venue.region} {venue.postalCode}</div>
 		</div>

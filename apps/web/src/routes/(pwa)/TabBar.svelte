@@ -24,11 +24,6 @@ const tabs = [
 		icon: Pin,
 		href: '/venues',
 	},
-	// {
-	// 	label: 'Info',
-	// 	icon: Send,
-	// 	href: '/info',
-	// },
 	{
 		label: 'Program',
 		icon: Rocket,

@@ -13,6 +13,7 @@ export let bigTitle = ''
 export let back = ''
 export let photo: Media
 export let bodyClass = ''
+export let preferHistoryBack = true
 let contentElm: HTMLDivElement
 let bigTitleOpacity = 1
 let mainTitleOpacity = bigTitle ? 0 : 1
@@ -26,6 +27,15 @@ function handleContentScroll(e) {
 		} else {
 			mainTitleOpacity = 0
 			bigTitleOpacity = 1
+		}
+	}
+}
+function handleBack(e: MouseEvent) {
+	if (preferHistoryBack) {
+		if (window.history.length) {
+			e.stopPropagation()
+			e.preventDefault()
+			window.history.back()
 		}
 	}
 }
@@ -49,7 +59,12 @@ function handleContentScroll(e) {
 		<div>
 			{#if back}
 				<div transition:fade>
-					<Button variant="ghost" href={back} class="px-1 hover:bg-transparent">
+					<Button
+						on:click={(e) => handleBack(e)}
+						variant="ghost"
+						href={back}
+						class="px-1 hover:bg-transparent"
+					>
 						<ChevronLeft class="h-8 w-8 px-0 text-white hover:bg-transparent"></ChevronLeft>
 					</Button>
 				</div>

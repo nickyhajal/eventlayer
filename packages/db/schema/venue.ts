@@ -25,6 +25,7 @@ export const venueTable = pgTable('venue', {
 	mediaId: uuid('mediaId'),
 	lat: text('lat'),
 	lon: text('lon'),
+	ord: integer('ord'),
 	createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
 	updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
 })

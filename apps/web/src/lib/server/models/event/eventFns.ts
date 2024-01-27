@@ -12,8 +12,9 @@ import {
 	ne,
 	sponsorTable,
 	userTable,
+	venueTable,
 } from '@matterloop/db'
-import { dayjs, keyBy, omit } from '@matterloop/util'
+import { dayjs, keyBy, omit, orderBy } from '@matterloop/util'
 
 interface Args {
 	eventId: string
@@ -74,7 +75,11 @@ export const EventFns = (args: string | Args) => {
 		getEvents: async () => {
 			const events = await db.query.eventTable.findMany({
 				where: and(eq(eventTable.eventId, eventId)),
-				with: { photo: true, venue: { with: { photo: true } } },
+				with: {
+					photo: true,
+					venue: { with: { photo: true } },
+					users: { with: { user: { with: { photo: true } } } },
+				},
 				orderBy: asc(eventTable.startsAt),
 			})
 			return events
@@ -83,6 +88,7 @@ export const EventFns = (args: string | Args) => {
 			const venues = await db.query.venueTable.findMany({
 				where: and(eq(eventTable.eventId, eventId)),
 				with: { parent: true, children: true, photo: true },
+				orderBy: asc(venueTable.ord),
 			})
 			return venues
 		},
@@ -90,6 +96,7 @@ export const EventFns = (args: string | Args) => {
 			const sponsors = await db.query.sponsorTable.findMany({
 				where: and(eq(sponsorTable.eventId, eventId)),
 				with: { photo: true, users: { with: { user: { with: { photo: true } } } } },
+				orderBy: asc(sponsorTable.title),
 			})
 			return sponsors
 		},
@@ -113,7 +120,7 @@ export const EventFns = (args: string | Args) => {
 					and(eq(eventUserTable.userId, mainEventUser.userId), eq(mainEventUser.eventId, eventId)),
 				)
 				.where(and(eq(eventTable.eventId, eventId), ne(eventUserTable.type, 'attendee')))
-			return users
+			return orderBy(users, ['user.lastName', 'user.firstName'], ['asc', 'asc'])
 		},
 	}
 }
