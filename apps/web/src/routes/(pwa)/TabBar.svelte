@@ -46,7 +46,7 @@ $: bits = $page.url.pathname.split('/')
 			<Button
 				href={href}
 				variant="ghost"
-				class="flex h-full w-20 flex-none flex-col items-center gap-0.5 py-1 text-[0.7rem] transition-none {bits[1] === currBits[1]? 'text-main hover:text-main' : 'text-slate-600'}"
+				class="flex h-full w-20 flex-none flex-col items-center gap-0.5 py-1 text-[0.7rem] transition-none hover:bg-transparent focus:bg-transparent {bits[1] === currBits[1]? 'text-main hover:text-main' : 'text-slate-600'}"
 			>
 				<svelte:component
 					this={icon}
