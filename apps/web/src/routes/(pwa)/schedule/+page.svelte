@@ -63,7 +63,7 @@ function checkIfUpcoming(event: Event, i: number) {
 	<div class="container mx-auto max-w-7xl px-2">
 		<div class="">
 			<div
-				class="topNav sticky z-40 -mx-3 flex items-center justify-center border-b border-slate-300/50 bg-slate-50 py-2 text-center text-sm text-slate-600"
+				class="topNav sticky z-40 -mx-3 flex w-[calc(100dvw+0.25rem)] items-center justify-center border-b border-slate-300/50 bg-slate-50 py-2 text-center text-sm text-slate-600"
 			>
 				<div>All times listed in Mountain Time (MT)</div>
 				<!-- {#each Object.keys(days) as day}
@@ -81,7 +81,7 @@ function checkIfUpcoming(event: Event, i: number) {
 					</button>
 				{/each} -->
 			</div>
-			<div class="relative w-[calc(100vw-2.5rem)] pb-[5vh]">
+			<div class="relative w-[calc(100dvw-2rem)] pb-[5vh]">
 				<div
 					class="fadeRect sticky z-20 -mb-7 h-5 w-full bg-gradient-to-b from-white to-white/0"
 				></div>
@@ -124,12 +124,12 @@ function checkIfUpcoming(event: Event, i: number) {
 <style lang="postcss">
 .topNav {
 	/* top: 3rem; */
-	top: calc(env(safe-area-inset-top) + 2.5rem);
+	top: calc((env(safe-area-inset-top) * 0.885) + 3rem);
 }
 .fadeRect {
-	top: calc(env(safe-area-inset-top) + 4.8rem);
+	top: calc((env(safe-area-inset-top) * 0.885) + 5.1rem);
 }
 .timeMarker {
-	top: calc(env(safe-area-inset-top) + 6rem);
+	top: calc((env(safe-area-inset-top) * 0.885) + 6rem);
 }
 </style>
