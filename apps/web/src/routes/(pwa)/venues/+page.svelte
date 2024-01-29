@@ -49,6 +49,6 @@ const me = getMeContext()
 <style lang="postcss">
 .topNav {
 	/* top: 3rem; */
-	top: calc(env(safe-area-inset-top) + 2.5rem);
+	top: calc((env(safe-area-inset-top) * 0.885) + 3rem);
 }
 </style>
