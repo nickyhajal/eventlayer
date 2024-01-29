@@ -1,17 +1,11 @@
 <script lang="ts">
 import Screen from '$lib/components/Screen.svelte'
 import Button from '$lib/components/ui/button/button.svelte'
-import { getMeContext } from '$lib/state/getContexts'
 import BadgeCheck from 'lucide-svelte/icons/badge-check'
 import Calendar from 'lucide-svelte/icons/calendar'
-import Home from 'lucide-svelte/icons/home'
 import Map from 'lucide-svelte/icons/map'
 import Pin from 'lucide-svelte/icons/map-pinned'
-import Menu from 'lucide-svelte/icons/menu'
-import Rocket from 'lucide-svelte/icons/rocket'
-import Users from 'lucide-svelte/icons/users'
 import { ChevronRight } from 'radix-icons-svelte'
-import { get } from 'svelte/store'
 
 import { dayjs, getMediaUrl } from '@matterloop/util'
 

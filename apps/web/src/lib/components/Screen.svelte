@@ -120,7 +120,7 @@ function handleBack(e: MouseEvent) {
 	padding-bottom: calc(env(safe-area-inset-top) * 0.5);
 }
 .contentSlot {
-	padding-bottom: calc(env(safe-area-inset-top) * 1);
+	padding-bottom: calc(env(safe-area-inset-top) * 2);
 	padding-top: 0;
 }
 .bigTitle {
