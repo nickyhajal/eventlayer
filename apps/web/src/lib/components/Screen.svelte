@@ -108,7 +108,9 @@ function handleBack(e: MouseEvent) {
 		{/if}
 
 		<!-- the content -->
-		<slot />
+		<div class="contentSlot">
+			<slot />
+		</div>
 	</div>
 </div>
 
@@ -117,7 +119,8 @@ function handleBack(e: MouseEvent) {
 	padding-top: calc(env(safe-area-inset-top) * 1.2);
 	padding-bottom: calc(env(safe-area-inset-top) * 0.5);
 }
-.contentShell {
+.contentSlot {
+	padding-bottom: calc(env(safe-area-inset-top) * 1);
 	padding-top: 0;
 }
 .bigTitle {

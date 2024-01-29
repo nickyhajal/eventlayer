@@ -50,6 +50,7 @@ const tabs = [
 $: bits = $page.url.pathname.split('/')
 </script>
 
+<!-- class="flex w-full flex-none flex-col items-start justify-center gap-0.5 border border-b-2 border-slate-200/50 border-b-slate-300/50 bg-slate-100/70 py-9 text-left text-sm font-semibold text-slate-600 {bits[1] === currBits[1]?'' : ''} {classes ||''}" -->
 <Screen title="Menu">
 	<div class="container mx-auto max-w-7xl">
 		<div class="flex flex-col justify-end gap-2">
@@ -59,11 +60,11 @@ $: bits = $page.url.pathname.split('/')
 					<Button
 						href={href}
 						variant="secondary"
-						class="flex w-full flex-none flex-col items-start justify-center gap-0.5 border border-b-2 border-slate-200/50 border-b-slate-300/50 bg-slate-100/70 py-9 text-left text-sm font-semibold text-slate-600 {bits[1] === currBits[1]?'' : ''} {classes ||''}"
+						class="bg-main border-main border-b-main/10 flex w-full flex-none flex-col items-start justify-center gap-0.5 border border-b-2 border-opacity-[0.06] bg-opacity-[0.04] py-9 text-left text-sm font-semibold text-red-700 {bits[1] === currBits[1]?'' : ''} {classes ||''}"
 					>
 						{#if icon}
-							<div class="mb-0.5 rounded-full border border-slate-400/20 bg-slate-300/40 p-1.5">
-								<svelte:component this={icon} class="h-[1rem] w-[1rem] flex-none text-slate-600" />
+							<div class="bg-main/10 border-main/20 mb-0.5 rounded-full border p-1.5 opacity-80">
+								<svelte:component this={icon} class="text-main/70  h-[1rem] w-[1rem] flex-none" />
 							</div>
 						{/if}
 						<div>{label}</div>
