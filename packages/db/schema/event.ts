@@ -37,8 +37,8 @@ export const eventRelations = relations(eventTable, ({ many, one }) => ({
 		relationName: 'event_venue',
 	}),
 	photo: one(mediaTable, {
-		fields: [eventTable.id],
-		references: [mediaTable.parentId],
+		fields: [eventTable.mediaId],
+		references: [mediaTable.id],
 	}),
 }))
 
