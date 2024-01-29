@@ -19,11 +19,13 @@ import { dayjs, keyBy, omit, orderBy } from '@matterloop/util'
 
 interface Args {
 	eventId: string
+	mainEventId?: string
 	load?: boolean
 }
 
 export const EventFns = (args: string | Args) => {
 	const eventId = typeof args === 'string' ? args : args.eventId
+	const mainEventId = (typeof args === 'string' ? args : args.mainEventId) || undefined
 	return {
 		get: async () => {
 			const event = await db.query.eventTable.findFirst({
@@ -41,17 +43,31 @@ export const EventFns = (args: string | Args) => {
 			})
 		},
 		getUsers: async () => {
-			const userRows = await db
+			const usersQuery = db
 				.select()
 				.from(eventUserTable)
 				.where(and(eq(eventUserTable.eventId, eventId)))
 				.leftJoin(userTable, eq(userTable.id, eventUserTable.userId))
 				.leftJoin(mediaTable, eq(mediaTable.id, userTable.mediaId))
+			if (mainEventId) {
+				const mainEventUser = alias(eventUserTable, 'mainEventUser')
+				usersQuery.leftJoin(
+					mainEventUser,
+					and(
+						eq(eventUserTable.userId, mainEventUser.userId),
+						eq(mainEventUser.eventId, mainEventId),
+					),
+				)
+			}
+			const userRows = await usersQuery
 			if (userRows.length) {
 				return userRows.map((user) => {
+					console.log(user)
 					return {
+						photo: user.media,
 						...user.auth_user,
 						...user.event_user,
+						...user.mainEventUser,
 					}
 				})
 			}

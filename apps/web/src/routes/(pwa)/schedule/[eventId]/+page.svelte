@@ -11,6 +11,7 @@ import { capitalize, dayjs, orderBy } from '@matterloop/util'
 
 export let data
 $: event = data.event
+$: console.log(data.user)
 $: users = orderBy(data.users, ['type'])
 let lastType = ''
 function getLastType(user: EventUser) {
@@ -55,7 +56,7 @@ function getLastType(user: EventUser) {
 							{capitalize(user.type)}s
 						</div>
 					{/if}
-					<UserBlock user={{photo: user.photo, ...user.user, ...user}} />
+					<UserBlock user={{photo: user.photo, ...user}} />
 				{/each}
 			</div>
 		{/if}

@@ -2,6 +2,7 @@
 import ChevronRight from 'lucide-svelte/icons/chevron-right'
 
 import type { Venue } from '@matterloop/db'
+import { Markdown } from '@matterloop/ui'
 
 import Button from './ui/button/button.svelte'
 
@@ -20,7 +21,9 @@ export let venue: Venue
 	>
 		<div class="whitespace-normal">
 			<div class="text-xl font-semibold">{venue.name}</div>
-			<div class="line-clamp-1 text-slate-600">{venue.description}</div>
+			<div class="line-clamp-1 text-slate-600">
+				<Markdown data={venue.description} />
+			</div>
 			<div class="text-slate-600">{venue.street}</div>
 			<div class="text-slate-600">{venue.city}, {venue.region} {venue.postalCode}</div>
 		</div>
