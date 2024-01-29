@@ -60,7 +60,7 @@ $: bits = $page.url.pathname.split('/')
 					<Button
 						href={href}
 						variant="secondary"
-						class="bg-main border-main hover:bg-main border-b-main/10 flex w-full flex-none flex-col items-start justify-center gap-0.5 border border-b-2 border-opacity-[0.06] bg-opacity-[0.04] py-9 text-left text-sm font-semibold text-red-700 hover:bg-opacity-[0.07] "
+						class="bg-main border-main hover:bg-main border-b-main/10 flex w-full flex-none flex-col items-start justify-center gap-0.5 border border-b-2 border-opacity-[0.06] bg-opacity-[0.04] py-9 text-left text-sm font-semibold text-red-700 hover:bg-opacity-[0.07] {bits[1] === currBits[1]?'' : ''} {classes ||''} "
 					>
 						{#if icon}
 							<div class="border-main/20 mb-0.5 rounded-full border bg-white/40 p-1.5 opacity-80">

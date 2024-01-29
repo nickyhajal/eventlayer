@@ -81,7 +81,7 @@ function checkIfUpcoming(event: Event, i: number) {
 					</button>
 				{/each} -->
 			</div>
-			<div class="relative w-[calc(100vw-2.5rem)] pb-[25vh]">
+			<div class="relative w-[calc(100vw-2.5rem)] pb-[5vh]">
 				<div
 					class="sticky top-20 z-20 -mb-7 h-5 w-full bg-gradient-to-b from-white to-white/0"
 				></div>

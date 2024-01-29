@@ -80,7 +80,7 @@ function handleBack(e: MouseEvent) {
 
 	<!-- content -->
 	<div
-		class={tw(`contentShell relative z-20 -mt-0.5 bg-white pb-20 lg:h-[calc(100dvh-6.6rem)] lg:overflow-auto  ${photo ? '-mt-16' : ''} ${bodyClass}`)}
+		class={tw(`contentShell relative z-20 -mt-0.5 bg-white pb-6 lg:h-[calc(100dvh-6.6rem)] lg:overflow-auto  ${photo ? '-mt-16' : ''} ${bodyClass}`)}
 		bind:this={contentElm}
 		on:scroll={handleContentScroll}
 	>
