@@ -2,8 +2,10 @@
 import Screen from '$lib/components/Screen.svelte'
 import Button from '$lib/components/ui/button/button.svelte'
 import { getMeContext } from '$lib/state/getContexts'
+import BadgeCheck from 'lucide-svelte/icons/badge-check'
 import Calendar from 'lucide-svelte/icons/calendar'
 import Home from 'lucide-svelte/icons/home'
+import Map from 'lucide-svelte/icons/map'
 import Pin from 'lucide-svelte/icons/map-pinned'
 import Menu from 'lucide-svelte/icons/menu'
 import Rocket from 'lucide-svelte/icons/rocket'
@@ -27,14 +29,14 @@ const tabs = [
 		href: '/venues',
 	},
 	{
-		label: 'Panelists',
-		icon: Users,
-		href: '/speakers',
+		label: 'Venue Map',
+		icon: Map,
+		href: '/map',
 	},
 	{
-		label: 'Program',
-		icon: Rocket,
-		href: '/program',
+		label: 'Sponsors',
+		icon: BadgeCheck,
+		href: '/sponsors',
 	},
 ]
 </script>

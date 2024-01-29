@@ -3,7 +3,7 @@ import { page } from '$app/stores'
 import Screen from '$lib/components/Screen.svelte'
 import Button from '$lib/components/ui/button/button.svelte'
 import { getMeContext } from '$lib/state/getContexts'
-import Badge from 'lucide-svelte/icons/badge'
+import BadgeCheck from 'lucide-svelte/icons/badge-check'
 import HelpCircle from 'lucide-svelte/icons/help-circle'
 import Mail from 'lucide-svelte/icons/mail'
 import Map from 'lucide-svelte/icons/map'
@@ -19,7 +19,7 @@ const tabs = [
 	},
 	{
 		label: 'Sponsors',
-		icon: Badge,
+		icon: BadgeCheck,
 		classes: 'col-span-2',
 		href: '/sponsors',
 	},
