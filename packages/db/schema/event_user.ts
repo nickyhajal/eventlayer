@@ -21,13 +21,15 @@ export const eventUserTable = pgTable('event_user', {
 	title: text('title'),
 	userId: uuid('user_id').references(() => userTable.id, { onDelete: 'cascade' }),
 	eventId: uuid('event_id').references(() => eventTable.id, { onDelete: 'cascade' }),
+	parentId: uuid('parent_id').references(() => eventTable.id, { onDelete: 'cascade' }),
+	mainId: uuid('main_id').references(() => eventTable.id, { onDelete: 'cascade' }),
 	createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
 	updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
 })
 
 export const eventUserRelations = relations(eventUserTable, ({ many, one }) => ({
 	event: one(eventTable, {
-		fields: [eventUserTable.userId],
+		fields: [eventUserTable.eventId],
 		references: [eventTable.id],
 	}),
 	user: one(userTable, {

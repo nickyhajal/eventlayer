@@ -1,15 +1,24 @@
 <script lang="ts">
 import EventRow from '$lib/components/EventRow.svelte'
 import Screen from '$lib/components/Screen.svelte'
+import UserBlock from '$lib/components/UserBlock.svelte'
 import VenueBlock from '$lib/components/VenueBlock.svelte'
 import { getMeContext } from '$lib/state/getContexts'
 
-import type { Event } from '@matterloop/db'
+import type { Event, EventUser } from '@matterloop/db'
 import Markdown from '@matterloop/ui/src/components/Markdown.svelte'
-import { dayjs } from '@matterloop/util'
+import { capitalize, dayjs, orderBy } from '@matterloop/util'
 
 export let data
 $: event = data.event
+$: users = orderBy(data.users, ['type'])
+let lastType = ''
+function getLastType(user: EventUser) {
+	if (user.type !== lastType && user.type) {
+		lastType = user.type
+		return true
+	}
+}
 </script>
 
 <Screen
@@ -36,6 +45,18 @@ $: event = data.event
 		{#if event?.venue}
 			<div class="mt-8">
 				<VenueBlock venue={event.venue} />
+			</div>
+		{/if}
+		{#if data.users}
+			<div class="mt-3 flex flex-col gap-2">
+				{#each data.users as user}
+					{#if getLastType(user)}
+						<div class="text-main mb-0 mt-2 text-lg font-semibold">
+							{capitalize(user.type)}s
+						</div>
+					{/if}
+					<UserBlock user={{photo: user.photo, ...user.user, ...user}} />
+				{/each}
 			</div>
 		{/if}
 	</div>

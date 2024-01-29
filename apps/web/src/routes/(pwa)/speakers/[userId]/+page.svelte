@@ -6,10 +6,17 @@ import VenueBlock from '$lib/components/VenueBlock.svelte'
 import { getMeContext } from '$lib/state/getContexts'
 
 import type { Event } from '@matterloop/db'
-import { dayjs, getMediaUrl } from '@matterloop/util'
+import { Markdown } from '@matterloop/ui'
+import { capitalize, dayjs, getMediaUrl } from '@matterloop/util'
 
 export let data
 $: user = data.user
+$: events = data.events
+$: eventStr = events.reduce((acc, event, i) => {
+	return `${acc}${capitalize(event.type)}: ${event.event.name}${
+		events.length - 1 === i ? '' : ', '
+	}`
+}, '')
 $: name = `${user.firstName} ${user.lastName}`
 </script>
 
@@ -32,6 +39,11 @@ $: name = `${user.firstName} ${user.lastName}`
 				{/if}
 			</div>
 		</div>
+		<div class="flex flex-wrap gap-2">
+			<div class="text-main -mt-3 mb-5 text-xs">
+				{eventStr}
+			</div>
+		</div>
 		{#if user?.url}
 			<Button
 				href={user.url}
@@ -42,6 +54,6 @@ $: name = `${user.firstName} ${user.lastName}`
 				Connect on LinkedIn
 			</Button>
 		{/if}
-		<div class="pr-4 text-slate-600">{user?.proBio}</div>
+		<Markdown data={user.proBio} class="pr-4 text-slate-600" />
 	</div>
 </Screen>

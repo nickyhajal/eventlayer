@@ -33,8 +33,8 @@ export const venueTable = pgTable('venue', {
 export const venueRelations = relations(venueTable, ({ many, one }) => ({
 	events: many(eventTable),
 	photo: one(mediaTable, {
-		fields: [venueTable.id],
-		references: [mediaTable.parentId],
+		fields: [venueTable.mediaId],
+		references: [mediaTable.id],
 	}),
 	parent: one(venueTable, {
 		fields: [venueTable.venueId],

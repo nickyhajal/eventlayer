@@ -8,6 +8,7 @@ import {
 	eventTable,
 	eventUserTable,
 	gt,
+	isNotNull,
 	mediaTable,
 	ne,
 	sponsorTable,
@@ -83,6 +84,22 @@ export const EventFns = (args: string | Args) => {
 				orderBy: asc(eventTable.startsAt),
 			})
 			return events
+		},
+		getUserEvents: async (userId: string) => {
+			const user = await db.query.eventUserTable.findFirst({
+				where: and(eq(eventUserTable.id, userId), eq(eventUserTable.eventId, eventId)),
+			})
+			if (user?.userId) {
+				return db.query.eventUserTable.findMany({
+					where: and(
+						eq(eventUserTable.userId, user.userId),
+						eq(eventUserTable.mainId, eventId),
+						isNotNull(eventUserTable.mainId),
+					),
+					with: { event: true },
+				})
+			}
+			return []
 		},
 		getVenues: async () => {
 			const venues = await db.query.venueTable.findMany({

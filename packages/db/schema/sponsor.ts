@@ -24,8 +24,8 @@ export const sponsorTable = pgTable('sponsor', {
 
 export const sponsorRelations = relations(sponsorTable, ({ many, one }) => ({
 	photo: one(mediaTable, {
-		fields: [sponsorTable.id],
-		references: [mediaTable.parentId],
+		fields: [sponsorTable.mediaId],
+		references: [mediaTable.id],
 	}),
 	users: many(eventUserTable),
 }))
