@@ -25,7 +25,16 @@ $: console.log(users[0].mainEventUser)
 					></div>
 					<div class="px-2 pb-2">
 						<div class="mb-0.5 truncate text-sm font-semibold">{firstName} {lastName}</div>
-						<div class="line-clamp-4 pr-4 text-sm text-stone-600">{mainEventUser?.proBio}</div>
+						<div class="line-clamp-1 text-xs font-semibold text-slate-600">
+							{#if mainEventUser.company}
+								{mainEventUser.title}, {mainEventUser.company}
+							{:else if user.company}
+								{mainEventUser.company}
+							{:else if user.title}
+								{mainEventUser.title}
+							{/if}
+						</div>
+						<div class="line-clamp-2 pr-4 text-xs text-stone-600">{mainEventUser?.proBio}</div>
 					</div>
 				</a>
 			{/each}
