@@ -13,7 +13,7 @@ const me = getMeContext()
 
 <Screen title="Venues" bigTitle="Venues" bodyClass="bg-slate-100">
 	<div
-		class="sticky top-12 z-40 flex items-center justify-center border-b border-slate-300/50 bg-slate-50 px-4 py-2 text-center text-sm text-slate-600"
+		class="topNav sticky top-12 z-40 flex items-center justify-center border-b border-slate-300/50 bg-slate-50 px-4 py-2 text-center text-sm text-slate-600"
 	>
 		<Button
 			variant="outline"
@@ -45,3 +45,10 @@ const me = getMeContext()
 		</div>
 	</div>
 </Screen>
+
+<style lang="postcss">
+.topNav {
+	/* top: 3rem; */
+	top: calc(env(safe-area-inset-top) + 2.5rem);
+}
+</style>

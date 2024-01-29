@@ -63,7 +63,7 @@ function checkIfUpcoming(event: Event, i: number) {
 	<div class="container mx-auto max-w-7xl px-2">
 		<div class="">
 			<div
-				class="sticky top-12 z-40 -mx-3 flex items-center justify-center border-b border-slate-300/50 bg-slate-50 py-2 text-center text-sm text-slate-600"
+				class="topNav sticky z-40 -mx-3 flex items-center justify-center border-b border-slate-300/50 bg-slate-50 py-2 text-center text-sm text-slate-600"
 			>
 				<div>All times listed in Mountain Time (MT)</div>
 				<!-- {#each Object.keys(days) as day}
@@ -83,21 +83,23 @@ function checkIfUpcoming(event: Event, i: number) {
 			</div>
 			<div class="relative w-[calc(100vw-2.5rem)] pb-[5vh]">
 				<div
-					class="sticky top-20 z-20 -mb-7 h-5 w-full bg-gradient-to-b from-white to-white/0"
+					class="fadeRect sticky z-20 -mb-7 h-5 w-full bg-gradient-to-b from-white to-white/0"
 				></div>
 				{#each data.events as event, i}
-					{#if isNewHour(event)}
+					{@const isNew = isNewHour(event)}
+					{#if isNew}
 						{#if checkIfUpcoming(event, i) === i}
-							<span id="scroll-anchor" class="relative left-0 top-10"></span>
+							<span id="scroll-anchor" class=" relative left-0"></span>
 						{/if}
 						<div
 							class="
+								timeMarker
 								sticky
-								left-0 top-24 z-30
-								-mb-[3.06rem] mt-6 w-16
-								rounded-lg border-0 border-b-2 border-slate-200/70 bg-slate-100
-								px-2 py-[5px] pt-[5px]
-								text-center text-[0.94rem] font-semibold text-slate-700/70"
+								left-0 z-30
+								-mb-[2.48rem] mt-6 w-16
+								rounded-lg border-0 border-slate-200/30 bg-white
+								px-2 pb-[5px]
+								text-left text-[0.94rem] font-semibold text-slate-700/70"
 						>
 							<div class="-mb-0.5 text-xs uppercase text-slate-400">
 								{dayjs(event.startsAt).format('MMM D').replace('m', '')}
@@ -106,7 +108,11 @@ function checkIfUpcoming(event: Event, i: number) {
 						</div>
 					{/if}
 					<div class="relative grid grid-cols-[4.4rem_1fr]" id="event-{i}">
-						<div></div>
+						<div class="relative">
+							{#if !isNew}
+								<div class="relative -top-4 left-7 h-full w-1 bg-slate-100"></div>
+							{/if}
+						</div>
 						<EventRow event={event} />
 					</div>
 				{/each}
@@ -114,3 +120,16 @@ function checkIfUpcoming(event: Event, i: number) {
 		</div>
 	</div>
 </Screen>
+
+<style lang="postcss">
+.topNav {
+	/* top: 3rem; */
+	top: calc(env(safe-area-inset-top) + 2.5rem);
+}
+.fadeRect {
+	top: calc(env(safe-area-inset-top) + 4.8rem);
+}
+.timeMarker {
+	top: calc(env(safe-area-inset-top) + 6rem);
+}
+</style>

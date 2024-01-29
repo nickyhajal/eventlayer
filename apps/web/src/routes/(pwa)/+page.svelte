@@ -43,12 +43,12 @@ const tabs = [
 			class="mx-auto my-10 w-10/12 pb-2 md:w-8/12"
 		/>
 		<div class="rounded-t-xl bg-slate-200 p-3 text-center font-medium">
-			<div class="text-lg">Friday, February 2, 2024</div>
+			<div class="text-base">Friday, February 2, 2024</div>
 			<div>8AM-5PM</div>
 		</div>
 		<div class="mb-2 rounded-b-xl bg-slate-100 p-8 text-center font-medium">
 			<div>
-				<div class="mb-1 px-4 text-lg leading-tight">
+				<div class="mb-1 px-4 text-base leading-tight">
 					The University of Arizona Student Union Grand Ballroom
 				</div>
 				1303 E. University Blvd, Tucson, AZ 85719
