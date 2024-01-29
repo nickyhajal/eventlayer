@@ -124,12 +124,12 @@ function checkIfUpcoming(event: Event, i: number) {
 <style lang="postcss">
 .topNav {
 	/* top: 3rem; */
-	top: calc((env(safe-area-inset-top) * 0.885) + 3rem);
+	top: calc((env(safe-area-inset-top) * 0.68) + 3rem);
 }
 .fadeRect {
-	top: calc((env(safe-area-inset-top) * 0.885) + 5.1rem);
+	top: calc((env(safe-area-inset-top) * 0.68) + 5.1rem);
 }
 .timeMarker {
-	top: calc((env(safe-area-inset-top) * 0.885) + 6rem);
+	top: calc((env(safe-area-inset-top) * 0.68) + 6rem);
 }
 </style>
