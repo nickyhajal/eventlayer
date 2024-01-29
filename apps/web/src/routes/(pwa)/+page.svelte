@@ -64,11 +64,23 @@ const tabs = [
 				{#each tabs as { label, icon, href }}
 					<Button
 						href={href}
+						variant="secondary"
+						class="bg-main border-main hover:bg-main border-b-main/10 flex w-full flex-none flex-col items-start justify-center gap-0.5 border border-b-2 border-opacity-[0.06] bg-opacity-[0.04] py-9 text-left text-sm font-semibold text-red-700 hover:bg-opacity-[0.07] "
+					>
+						{#if icon}
+							<div class="border-main/20 mb-0.5 rounded-full border bg-white/40 p-1.5 opacity-80">
+								<svelte:component this={icon} class="text-main/70  h-[1rem] w-[1rem] flex-none" />
+							</div>
+						{/if}
+						<div>{label}</div>
+					</Button>
+					<!-- <Button
+						href={href}
 						class="flex h-fit flex-col items-center justify-center border-b-2 border-slate-200/60 bg-blue-100/40 pb-2.5 pt-3 text-slate-800 shadow-none hover:bg-blue-50/60"
 					>
 						<svelte:component this={icon} class="mb-10.5 w-6 text-slate-600" />
 						<div class="text-xs">{label}</div>
-					</Button>
+					</Button> -->
 				{/each}
 			</div>
 		</div>
