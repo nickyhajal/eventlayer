@@ -46,12 +46,17 @@ const tabs = [
 			<div class="text-base">Friday, February 2, 2024</div>
 			<div>8AM-5PM</div>
 		</div>
-		<div class="mb-2 rounded-b-xl bg-slate-100/70 p-8 text-center text-sm font-medium md:text-base">
+		<div
+			class="mb-2 rounded-b-xl bg-slate-100/70 p-8 text-center text-sm font-medium leading-snug md:text-base"
+		>
 			<div>
-				<div class="mb-1 px-4 text-sm leading-tight md:text-base">
-					The University of Arizona Student Union Grand Ballroom
+				<div class=" px-4 text-sm leading-tight md:text-lg">The University of Arizona</div>
+				<div class="mt-2 px-4 text-sm leading-tight md:text-base">
+					Student Union Memorial Center
 				</div>
-				1303 E. University Blvd, Tucson, AZ 85719
+				<div class="px-4 text-sm leading-tight md:text-base">3rd Floor - Grand Ballroom</div>
+				<div class="mt-2 px-4 text-xs leading-tight md:text-sm">1303 E. University Blvd</div>
+				<div class="px-4 text-xs leading-tight md:text-sm">Tucson, AZ 85719</div>
 			</div>
 		</div>
 		<div class="mt-8">

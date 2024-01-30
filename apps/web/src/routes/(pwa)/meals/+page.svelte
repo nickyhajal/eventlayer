@@ -10,9 +10,9 @@ const me = getMeContext()
 	<div class="container mx-auto px-6 pt-2 md:max-w-7xl">
 		<div class="pb-12 text-slate-600">
 			<div class="mb-3 mt-5 pr-6 text-2xl font-semibold text-slate-600/70">
-				Here's what do expect if you're hungry
+				Here's what to expect if you're hungry
 			</div>
-			<div class="mb-1 mt-6 text-lg font-semibold">Deluxe Continental Breakfast</div>
+			<div class="mb-1 mt-10 text-xl font-semibold">Deluxe Continental Breakfast</div>
 			<ul>
 				<li>Seasonal fruit salad</li>
 				<li>Assorted Individual Yogurts with Granola</li>
@@ -21,7 +21,7 @@ const me = getMeContext()
 				<li>Freshly Brewed Coffees, Teas, and Iced Water</li>
 			</ul>
 
-			<div class="mb-1 mt-6 text-lg font-semibold">Morning Snack Break</div>
+			<div class="mb-1 mt-10 text-xl font-semibold">Morning Snack Break</div>
 			<ul>
 				<li>
 					Hot Beverages: Freshly Brewed Wildcat Regular and Decaf Coffee, Hot Water with Tazo Teas
@@ -31,7 +31,7 @@ const me = getMeContext()
 				<li>Southwestern Trail Mix</li>
 			</ul>
 
-			<div class="mb-1 mt-6 text-lg font-semibold">Lunch Buffet</div>
+			<div class="mb-1 mt-10 text-xl font-semibold">Lunch Buffet</div>
 			<div class="mb-1 mt-4 text-base font-semibold">Salads</div>
 			<ul>
 				<li>
@@ -60,7 +60,7 @@ const me = getMeContext()
 			</ul>
 
 			<div class="mb-1 mt-4 text-base font-semibold">Drinks</div>
-			<ul>
+			<ul class="mb-8">
 				<li>Iced Water, Iced Tea, and Lemonade</li>
 			</ul>
 		</div>
