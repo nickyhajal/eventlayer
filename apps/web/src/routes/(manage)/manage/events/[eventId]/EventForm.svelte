@@ -34,8 +34,10 @@ let eventUserTypes = [
 	{ value: 'attendee', label: 'Attendee' },
 	{ value: 'host', label: 'Host' },
 	{ value: 'moderator', label: 'Moderator' },
+	{ value: 'mc', label: 'MC' },
 	{ value: 'speaker', label: 'Speaker' },
 	{ value: 'panelist', label: 'Panelist' },
+	{ value: 'facilitator', label: 'Facilitator' },
 	{ value: 'staff', label: 'Staff' },
 	{ value: 'volunteer', label: 'Volunteer' },
 ].filter((t) => t.value !== 'attendee')
