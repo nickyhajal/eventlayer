@@ -3,7 +3,7 @@ import Screen from '$lib/components/Screen.svelte'
 import { getMeContext } from '$lib/state/getContexts'
 import { getContext } from 'svelte'
 
-import { getMediaUrl } from '@matterloop/util'
+import { getMediaUrl, orderBy } from '@matterloop/util'
 
 import type { Snapshot } from '../$types.js'
 
@@ -41,7 +41,13 @@ function shuffle(array: Array<any>, seed: number) {
 	}
 	return array
 }
-$: sponsors = typeof window !== 'undefined' ? data.sponsors : []
+$: sponsors =
+	typeof window !== 'undefined'
+		? orderBy(
+				data.sponsors.map((sponsor) => ({ ...sponsor, nameLower: sponsor.title.toLowerCase() })),
+				['nameLower'],
+			)
+		: []
 </script>
 
 <Screen title="Sponsors" bigTitle="Sponsors" bodyClass="bg-slate-100">
@@ -83,7 +89,7 @@ $: sponsors = typeof window !== 'undefined' ? data.sponsors : []
 						{/if}
 					</div>
 					<div
-						class="mt-2 flex h-12 w-full items-center justify-around border-t border-slate-100 font-semibold text-slate-600"
+						class="text-main mt-2 flex h-12 w-full items-center justify-around border-t border-slate-100 font-semibold"
 					>
 						{#if url}
 							<a
