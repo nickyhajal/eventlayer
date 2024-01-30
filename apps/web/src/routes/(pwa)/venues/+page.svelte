@@ -13,7 +13,7 @@ const me = getMeContext()
 
 <Screen title="Venues" bigTitle="Venues" bodyClass="bg-slate-100 ">
 	<div
-		class="topNav sticky top-12 z-40 flex items-center justify-center border-b border-slate-300/50 bg-slate-50 px-4 py-2 text-center text-sm text-slate-600"
+		class="topNav sticky z-40 flex items-center justify-center border-b border-slate-300/50 bg-slate-50 px-4 py-2 text-center text-sm text-slate-600 lg:mt-1 lg:rounded-2xl lg:border"
 	>
 		<Button
 			variant="outline"
@@ -50,5 +50,8 @@ const me = getMeContext()
 .topNav {
 	/* top: 3rem; */
 	top: calc((env(safe-area-inset-top) * 0.68) + 3rem);
+	@media screen and (min-width: 1024px) {
+		top: 0.5rem;
+	}
 }
 </style>
