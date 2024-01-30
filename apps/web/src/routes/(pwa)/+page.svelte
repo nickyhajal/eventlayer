@@ -42,13 +42,13 @@ const tabs = [
 			alt="An alt text"
 			class="mx-auto my-10 w-10/12 pb-2 md:w-8/12"
 		/>
-		<div class="rounded-t-xl bg-slate-200 p-3 text-center font-medium">
+		<div class="rounded-t-xl bg-slate-200/70 p-3 text-center font-medium">
 			<div class="text-base">Friday, February 2, 2024</div>
 			<div>8AM-5PM</div>
 		</div>
-		<div class="mb-2 rounded-b-xl bg-slate-100 p-8 text-center font-medium">
+		<div class="mb-2 rounded-b-xl bg-slate-100/70 p-8 text-center text-sm font-medium md:text-base">
 			<div>
-				<div class="mb-1 px-4 text-base leading-tight">
+				<div class="mb-1 px-4 text-sm leading-tight md:text-base">
 					The University of Arizona Student Union Grand Ballroom
 				</div>
 				1303 E. University Blvd, Tucson, AZ 85719
@@ -61,7 +61,7 @@ const tabs = [
 					<Button
 						href={href}
 						variant="secondary"
-						class="bg-main border-main hover:bg-main border-b-main/10 flex w-full flex-none flex-col items-start justify-center gap-0.5 border border-b-2 border-opacity-[0.06] bg-opacity-[0.04] py-9 text-left text-sm font-semibold text-red-700 hover:bg-opacity-[0.07] "
+						class="bg-main border-main hover:bg-main border-b-main/10 text-main flex w-full flex-none flex-col items-start justify-center gap-0.5 border border-b border-opacity-[0.07] bg-opacity-[0.02] py-9 text-left text-sm font-semibold hover:bg-opacity-[0.07] "
 					>
 						{#if icon}
 							<div class="border-main/20 mb-0.5 rounded-full border bg-white/40 p-1.5 opacity-80">
@@ -93,13 +93,13 @@ const tabs = [
 						<ChevronRight class="h-4 w-4 text-red-600" />
 					</Button>
 				</div>
-				<div class="mb-6 w-[calc(100dvw-0.9rem)] overflow-x-auto lg:pb-8">
-					<div class="flex w-[49.5rem] gap-4 pb-4 pr-6">
+				<div class="mb-6 w-[calc(100dvw-0.9rem)] overflow-x-auto lg:w-[calc(100%)] lg:pb-8">
+					<div class="flex w-[49.5rem] gap-4 pb-4 pr-6 lg:w-[calc(100%)] lg:pr-0">
 						{#each upcoming as event, i}
 							<Button
 								variant="outline"
 								href={`/schedule/${event.id}`}
-								class="h-54 relative mt-2 flex w-[15rem] flex-col items-start justify-start rounded-xl p-1 text-left"
+								class="h-54 relative mt-2 flex w-[15rem] flex-col items-start justify-start rounded-xl p-1 text-left lg:w-[33%]"
 							>
 								<img
 									alt="{event.name} photo"

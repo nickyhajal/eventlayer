@@ -46,7 +46,7 @@ $: sponsors = typeof window !== 'undefined' ? data.sponsors : []
 
 <Screen title="Sponsors" bigTitle="Sponsors" bodyClass="bg-slate-100">
 	<div class="container mx-auto -mt-2 max-w-7xl bg-slate-100">
-		<div class="mt-2 grid grid-cols-1 gap-4 py-2">
+		<div class="mt-2 grid grid-cols-1 gap-4 py-2 lg:grid-cols-2">
 			{#each sponsors as sponsor}
 				{@const {id, title, url, bookingUrl, photo, description} = sponsor}
 				<div class="relative z-0 flex flex-col rounded-2xl bg-white p-1">

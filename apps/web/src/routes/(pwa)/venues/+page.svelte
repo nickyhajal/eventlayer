@@ -11,7 +11,7 @@ $: venues = data.venues
 const me = getMeContext()
 </script>
 
-<Screen title="Venues" bigTitle="Venues" bodyClass="bg-slate-100">
+<Screen title="Venues" bigTitle="Venues" bodyClass="bg-slate-100 ">
 	<div
 		class="topNav sticky top-12 z-40 flex items-center justify-center border-b border-slate-300/50 bg-slate-50 px-4 py-2 text-center text-sm text-slate-600"
 	>

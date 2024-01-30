@@ -36,7 +36,7 @@ const me = getMeContext()
 				series that explores this exact question:
 			</p>
 			<Button
-				class="mt-6 w-full bg-red-600 text-white"
+				class="mb-16 mt-6 w-full bg-red-600 text-white"
 				href="https://saveoursites.com/webinars"
 				target="_blank"
 			>
