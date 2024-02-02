@@ -1,6 +1,8 @@
 <script lang="ts">
 import Screen from '$lib/components/Screen.svelte'
+import Button from '$lib/components/ui/button/button.svelte'
 import { getMeContext } from '$lib/state/getContexts'
+import ChevronRight from 'lucide-svelte/icons/chevron-right'
 import { getContext } from 'svelte'
 
 import { getMediaUrl, orderBy } from '@matterloop/util'
@@ -51,7 +53,19 @@ $: sponsors =
 </script>
 
 <Screen title="Sponsors" bigTitle="Sponsors" bodyClass="bg-slate-100">
-	<div class="container mx-auto -mt-2 max-w-7xl bg-slate-100">
+	<div
+		class="topNav sticky z-40 flex items-center justify-center border-b border-slate-300/50 bg-slate-50 px-4 py-2 text-center text-sm text-slate-600 lg:mt-1 lg:rounded-2xl lg:border"
+	>
+		<Button
+			variant="outline"
+			class="text-main mt-0 grid w-full grid-cols-[1fr_0.7rem] items-center justify-center bg-white"
+			href="/venues/map"
+		>
+			<div>View Sponsor Map</div>
+			<ChevronRight class="text-main relative -top-[1px] h-5 w-5" />
+		</Button>
+	</div>
+	<div class="container relative mx-auto -mt-2 max-w-7xl bg-slate-100">
 		<div class="mt-2 grid grid-cols-1 gap-4 py-2 lg:grid-cols-2">
 			{#each sponsors as sponsor}
 				{@const {id, title, url, bookingUrl, photo, description} = sponsor}
@@ -112,3 +126,13 @@ $: sponsors =
 		</div>
 	</div>
 </Screen>
+
+<style lang="postcss">
+.topNav {
+	/* top: 3rem; */
+	top: calc((env(safe-area-inset-top) * 0.68) + 3rem);
+	@media screen and (min-width: 1024px) {
+		top: 0.5rem;
+	}
+}
+</style>
