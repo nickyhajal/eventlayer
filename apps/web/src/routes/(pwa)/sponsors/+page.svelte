@@ -59,7 +59,7 @@ $: sponsors =
 		<Button
 			variant="outline"
 			class="text-main mt-0 grid w-full grid-cols-[1fr_0.7rem] items-center justify-center bg-white"
-			href="/venues/map"
+			href="/sponsors/map"
 		>
 			<div>View Sponsor Map</div>
 			<ChevronRight class="text-main relative -top-[1px] h-5 w-5" />
