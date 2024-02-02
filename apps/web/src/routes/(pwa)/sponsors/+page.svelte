@@ -117,7 +117,7 @@ $: sponsors =
 							<a
 								href={bookingUrl}
 								target="_blank"
-								class="flex h-full w-1/2 items-center justify-center text-center">Book Session</a
+								class="flex h-full w-1/2 items-center justify-center text-center">Contact Sponsor</a
 							>
 						{/if}
 					</div>
