@@ -105,7 +105,7 @@ function handleBack(e: MouseEvent) {
 					</div>
 				</div>
 			{/if}
-			<div class="hidden pt-10 text-3xl font-semibold lg:block">{title}</div>
+			<!-- <div class="hidden pt-10 text-3xl font-semibold lg:block">{title}</div> -->
 			<!-- the content -->
 			<div class="contentSlot">
 				<slot />
