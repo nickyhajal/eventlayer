@@ -14,7 +14,7 @@ interface ISend {
 
 const resend = new Resend(RESEND_KEY)
 
-export default {
+export const mailer = {
 	async send({ template = 'default', subject, to, more_params, opts = {} }: ISend) {
 		if (more_params == null) {
 			more_params = []
@@ -24,8 +24,8 @@ export default {
 		}
 		const NODE_ENV = process.env.NODE_ENV || ''
 		to = ['staging', 'production'].includes(NODE_ENV) ? to : 'nhajal@gmail.com'
-		const from = opts.from != null ? opts.from : 'support@matterloop.co'
-		const from_name = opts.from_name != null ? opts.from_name : 'Arena Support'
+		const from = opts.from != null ? opts.from : 'support@email.eventlayer.co'
+		const from_name = opts.from_name != null ? opts.from_name : 'Event Support'
 		const merge: any = {}
 		for (let i in more_params) {
 			const p = more_params[i]
@@ -48,7 +48,8 @@ export default {
 		const html = juice(htmlRaw)
 		const req = {
 			from: `${from_name} <${from}>`,
-			subject: `[ReportNorth] ${subject}`,
+			subject: `${subject}`,
+			reply_to: 'nhajal@gmail.com',
 			to,
 			html,
 		}
@@ -56,7 +57,7 @@ export default {
 			console.log('SEND EMAIL: ', req)
 		} else {
 			try {
-				resend.emails.send(req)
+				return resend.emails.send(req)
 			} catch (e) {
 				console.error('mail', e)
 			}
