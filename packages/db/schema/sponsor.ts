@@ -7,7 +7,7 @@ import { mediaTable } from './media'
 
 export const sponsorTable = pgTable('sponsor', {
 	id: uuid('id')
-		.default(sql`uuid_generate_v4()`)
+		.default(sql`extensions.uuid_generate_v4()`)
 		.primaryKey()
 		.notNull(),
 	type: text('type'),
