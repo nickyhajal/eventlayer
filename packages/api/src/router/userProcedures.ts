@@ -1,6 +1,11 @@
 // lib/trpc/router.ts
+import { error } from '@sveltejs/kit'
+import { initTRPC } from '@trpc/server'
+import { z } from 'zod'
+
 import {
 	and,
+	createUserSchema,
 	db,
 	eq,
 	eventSchema,
@@ -8,6 +13,8 @@ import {
 	EventUser,
 	eventUserTable,
 	like,
+	loginLinkTable,
+	lt,
 	makeFullEventUser,
 	or,
 	upsertEventUserSchema,
@@ -16,10 +23,9 @@ import {
 	venueTable,
 } from '@matterloop/db'
 import { userTable, type User } from '@matterloop/db/types'
-import { omit, pick } from '@matterloop/util'
-import { initTRPC } from '@trpc/server'
-import { z } from 'zod'
+import { dayjs, getId, omit, pick } from '@matterloop/util'
 
+import { mailer } from '../../../../apps/web/src/lib/server/core/mailer'
 import {
 	procedureWithContext,
 	verifyEvent,
@@ -104,6 +110,96 @@ export const userProcedures = t.router({
 			return {
 				emailExists,
 				eventUserExists,
+			}
+		}),
+	createAccount: procedureWithContext.input(createUserSchema).mutation(async ({ ctx, input }) => {
+		if (!input.id) {
+			throw error(401, 'No user id provided')
+		}
+		if (input.firstName && !input.lastName) {
+			const space = input.firstName.indexOf(' ')
+			input.lastName = input.firstName.slice(space + 1)
+			input.firstName = input.firstName.slice(0, space)
+		}
+		const existing = await db.query.userTable.findFirst({
+			where: and(eq(userTable.id, input.id)),
+		})
+		if (existing?.id) {
+			throw error(401, 'User already exists')
+		}
+		await db.insert(userTable).values(input).returning()
+		const user = await db.query.userTable.findFirst({
+			where: and(eq(userTable.id, input.id)),
+		})
+		if (user?.id) {
+			const loginLink = await db
+				.insert(loginLinkTable)
+				.values({
+					userId: user?.id,
+					publicId: getId('short'),
+					expires: dayjs().add(1, 'day').toISOString(),
+				})
+				.returning()
+			if (loginLink[0]) {
+				const res = await mailer.send({
+					to: user?.email || '',
+					subject: 'Welcome to Dayglow!',
+					more_params: {
+						body: `Hey ${user?.firstName},
+						<br><br>I am so excited you're trying out Dayglow.
+						<br><br>I'm extremely committed to creating a valuable tool that helps you get your most important work done everyday.
+						<br><br>If there's anything I can to do improve the experience for you, please let me know.
+						<br><br>Mind me asking what kind of work you do and what you're hoping for from Dayglow?
+						<br><br>Thanks!<br>Nicky from Dayglow`,
+					},
+				})
+				return {
+					user,
+					code: loginLink[0].publicId,
+				}
+			}
+		}
+	}),
+	sendMagicLinkEmail: procedureWithContext
+		.input(z.object({ email: z.string(), to: z.string().optional() }))
+		.mutation(async ({ ctx, input }) => {
+			const user = await db.query.userTable.findFirst({ where: eq(userTable.email, input.email) })
+			console.log(user)
+			if (!user) {
+				return error(401, 'No user found')
+			}
+			await db
+				.update(loginLinkTable)
+				.set({ publicId: '' })
+				.where(lt(loginLinkTable.expires, dayjs().toISOString()))
+			const loginLink = await db
+				.insert(loginLinkTable)
+				.values({
+					userId: user.id,
+					publicId: getId('short'),
+					expires: dayjs().add(1, 'day').toISOString(),
+				})
+				.returning()
+			if (loginLink[0]) {
+				const res = await mailer.send({
+					to: user?.email || '',
+					subject: 'Your Magic Login Link',
+					more_params: {
+						body: `Hey ${user?.firstName},
+						<br><br>Here's your login code:<div style="font-size: 30pt; margin-top: -24px; margin-bottom: 16px;">${
+							loginLink[0].publicId
+						}</div>
+						Or, click this link from your computer: https://eventlayer.co/login/${loginLink[0].publicId}${
+							input.to ? `?to=${input.to}` : ''
+						}
+						<br>It expires in 24 hours.<br><br>If you didn't request this, you can ignore this email.
+						<br><br>Thanks,<br>Nicky from Dayglow`,
+					},
+				})
+				console.log('send res', res)
+			}
+			return {
+				success: true,
 			}
 		}),
 	upsert: procedureWithContext

@@ -1,17 +1,54 @@
 // lib/trpc/router.ts
-import { and, db, eq, eventSchema, eventTable, eventUserTable } from '@matterloop/db'
-import { userTable, type User } from '@matterloop/db/types'
-import { pick } from '@matterloop/util'
+import crypto from 'crypto'
 import { error } from '@sveltejs/kit'
 import { initTRPC } from '@trpc/server'
 import { z } from 'zod'
 
+import {
+	and,
+	AttendeeStore,
+	db,
+	eq,
+	Event,
+	eventSchema,
+	eventTable,
+	eventUserTable,
+} from '@matterloop/db'
+import { userTable, type User } from '@matterloop/db/types'
+import { dayjs, pick } from '@matterloop/util'
+
+import { redis } from '../core/redis'
+import { EventFns } from '../models/eventFns'
 import {
 	procedureWithContext,
 	verifyEvent,
 	verifyMe,
 	type TrpcContext,
 } from '../procedureWithContext'
+
+async function getAttendeeStore(event: Event) {
+	if (!event?.id) return false
+	let store = await redis.get(`${event.id}_attendeeStore`)
+	if (store) return JSON.parse(store) as AttendeeStore
+	const attendees = await EventFns({ eventId: event.id }).getUsers()
+	const simpleAttendees = attendees.map(({ id, firstName, lastName, email, photo }) => ({
+		id,
+		photo,
+		firstName,
+		email,
+		lastName,
+	}))
+	const hash = crypto.createHash('md5').update(JSON.stringify(simpleAttendees)).digest('hex')
+	const newStore = {
+		attendees: attendees,
+		num: attendees.length,
+		hash,
+		lastUpdate: dayjs().toISOString(),
+	}
+	redis.set(`${event.id}_attendeeStore`, JSON.stringify(newStore))
+	redis.expire(`${event.id}_attendeeStore`, 5000)
+	return newStore
+}
 
 const t = initTRPC.context<TrpcContext>().create()
 export const eventProcedures = t.router({
@@ -35,6 +72,21 @@ export const eventProcedures = t.router({
 				where: eq(userTable.id, ctx.meId),
 				with: {},
 			})
+		}),
+	getAttendeeStore: procedureWithContext
+		.input(
+			z.object({
+				hash: z.string(),
+				lastUpdate: z.string(),
+				num: z.number(),
+			}),
+		)
+		.query(async ({ input, ctx }) => {
+			const store = await getAttendeeStore(ctx.event)
+			if (store && store.hash && store.hash !== input.hash) {
+				return store
+			}
+			return false
 		}),
 	addUser: procedureWithContext
 		.input(z.object({ userId: z.string(), eventId: z.string(), type: z.string() }))
@@ -76,9 +128,7 @@ export const eventProcedures = t.router({
 					eq(eventUserTable.eventId, input.eventId),
 				),
 			})
-			console.log(2)
 			if (existing) {
-				console.log(3, existing.id)
 				await db.delete(eventUserTable).where(eq(eventUserTable.id, existing.id))
 			}
 			return true
@@ -100,6 +150,8 @@ export const eventProcedures = t.router({
 							'eventId',
 							'startsAt',
 							'mediaId',
+							'faviconId',
+							'largeLogoId',
 							'venueId',
 						]),
 					)

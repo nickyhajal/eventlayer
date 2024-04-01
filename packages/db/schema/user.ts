@@ -19,7 +19,7 @@ export const userTable = pgTable(
 	'auth_user',
 	{
 		id: uuid('id')
-			.default(sql`uuid_generate_v4()`)
+			.default(sql`extensions.uuid_generate_v4()`)
 			.primaryKey()
 			.notNull(),
 		firstName: text('first_name'),
@@ -38,24 +38,21 @@ export const userTable = pgTable(
 	},
 )
 
+
+
 export const userRelations = relations(userTable, ({ many, one }) => ({
 	photo: one(mediaTable, {
 		fields: [userTable.mediaId],
 		references: [mediaTable.id],
 	}),
 }))
-export const session = pgTable('auth_session', {
-	id: varchar('id', {
-		length: 128,
-	}).primaryKey(),
+export const authSessionTable = pgTable('auth_session', {
+	id: text('id').primaryKey(),
 	userId: uuid('user_id')
 		.notNull()
 		.references(() => userTable.id),
-	activeExpires: bigint('active_expires', {
-		mode: 'number',
-	}).notNull(),
-	idleExpires: bigint('idle_expires', {
-		mode: 'number',
+	expiresAt: timestamp('expires_at', {
+		mode: 'date',
 	}).notNull(),
 })
 
@@ -79,7 +76,6 @@ export const userSchema = createInsertSchema(userTable, {
 })
 export type User = typeof userTable.$inferSelect
 export type UserSchemaType = typeof userSchema
-export type UserWithTodaysTasks = User & { tasks: Task[] }
 
 export const signupSchema = z.object({
 	email: z.string().email(),

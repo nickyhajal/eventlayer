@@ -1,37 +1,27 @@
 import crypto from 'crypto'
-import { pg } from '@lucia-auth/adapter-postgresql'
-import { redis } from '@lucia-auth/adapter-session-redis'
-import { NODE_ENV } from '$env/static/private'
-import { lucia } from 'lucia'
-import { sveltekit } from 'lucia/middleware'
+import { authSessionTable, connection, db, userTable } from '@dailyflow/db'
+import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle'
+import { Lucia } from 'lucia'
 import { createClient } from 'redis'
-
-import { connection } from '@matterloop/db'
 
 export const sessionClient = createClient({})
 export const userSessionClient = createClient()
 
-export const auth = lucia({
-	adapter: pg(connection, {
-		user: 'auth_user',
-		key: 'auth_key',
-		session: 'auth_session',
-	}),
+const adapter = new DrizzlePostgreSQLAdapter(db, authSessionTable, userTable)
 
-	env: NODE_ENV ? 'DEV' : 'PROD',
-	csrfProtection: false,
-	// session: redis(sessionClient),
-	middleware: sveltekit(),
-	generateCustomUserId: () => {
-		return crypto.randomUUID()
-	},
-	getUserAttributes: (userData) => {
-		return {
-			userId: userData.id,
-			email: userData.email,
-			first_name: userData.first_name,
-			last_name: userData.last_name,
-		}
+export const lucia = new Lucia(adapter, {
+	sessionCookie: {
+		attributes: {
+			secure: process.env.NODE_ENV === 'production',
+		},
 	},
 })
-export type Auth = typeof auth
+
+interface DatabaseUserAttributes {
+	email: string
+}
+declare module 'lucia' {
+	interface Register {
+		Lucia: typeof lucia
+	}
+}
