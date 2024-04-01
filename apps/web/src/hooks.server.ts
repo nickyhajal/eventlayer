@@ -5,6 +5,7 @@ import { NODE_ENV } from '$env/static/private'
 import { PUBLIC_BASE_URL } from '$env/static/public'
 import type { RouteConfig } from '$lib/server/core/routeConfig'
 import { getConfigForRoute } from '$lib/server/core/routeHelper'
+import { loadUsers } from '$lib/server/loadUsers'
 import { createTRPCHandle } from 'trpc-sveltekit'
 
 import { lucia } from '@matterloop/api'
@@ -26,6 +27,8 @@ import { userTable } from '@matterloop/db/types'
 // 	tracesSampleRate: 1.0 // Capture 100% of the transactions. Adjust this value in production as necessary.
 // });
 // export const handleError = Sentry.handleErrorWithSentry();
+
+loadUsers()
 
 const handleRouteRedirect = (defaultRedirect = '/', route: RouteConfig) => {
 	const { failedAuthRedirect } = route

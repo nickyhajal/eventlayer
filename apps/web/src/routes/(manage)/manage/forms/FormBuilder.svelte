@@ -20,7 +20,7 @@ let opens: { [key: string]: boolean } = {}
 let selectedElement = $form?.elements?.[0] || null
 let lastElement = ''
 $: selectedIndex = $form.elements?.findIndex((el) => el.id === selectedElement.id)
-$: selectedId = selectedElement.id
+$: selectedId = selectedElement?.id
 $: console.log(selectedElement)
 $: {
 	if (lastElement !== JSON.stringify(selectedElement)) {
