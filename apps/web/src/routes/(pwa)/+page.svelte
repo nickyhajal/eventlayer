@@ -39,6 +39,7 @@ function getContent(key: string) {
 	}
 	return ''
 }
+$: console.log('>> data', data)
 </script>
 
 <Screen title="Save Our Sites">
