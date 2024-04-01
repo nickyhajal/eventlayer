@@ -44,6 +44,12 @@ const tabs = [
 		classes: 'hidden lg:flex',
 	},
 	{
+		label: 'Attendees',
+		icon: Users,
+		href: '/attendees',
+		classes: 'hidden lg:flex',
+	},
+	{
 		label: 'Sponsors',
 		icon: BadgeCheck,
 		href: '/sponsors',
@@ -86,46 +92,48 @@ const bottomTabs = [
 $: bits = $page.url.pathname.split('/')
 </script>
 
-<div
-	class="tabbar relative flex items-center border-t border-slate-200 bg-slate-50 lg:flex-col lg:border-0 lg:bg-slate-800"
->
+{#if ['/login', '/welcome'].includes(!$page.url.pathname)}
 	<div
-		class="mx-auto flex w-full items-center justify-around md:max-w-2xl lg:fixed lg:top-4 lg:w-[14rem] lg:flex-col"
+		class="tabbar relative flex items-center border-t border-slate-200 bg-slate-50 lg:flex-col lg:border-0 lg:bg-slate-800"
 	>
-		{#each tabs as { label, icon, href, classes }, i}
-			{@const currBits = href.split('/')}
-			<Button
-				href={href}
-				variant="ghost"
-				class={tw(`flex h-full w-20 flex-none flex-col items-center gap-0.5 py-1 text-[0.7rem] transition-none hover:bg-transparent focus:bg-transparent lg:w-full lg:flex-row lg:items-center lg:justify-start lg:gap-3 lg:rounded-lg lg:bg-slate-800 lg:px-2.5 lg:py-2 lg:text-sm lg:text-white  lg:hover:text-white ${bits[1] === currBits[1]? 'text-main hover:text-main lg:bg-slate-900 lg:hover:bg-slate-900' : 'text-slate-600 hover:lg:bg-slate-700'} ${classes}`)}
-			>
-				<svelte:component
-					this={icon}
-					class="w-[1.5rem] lg:w-[1.2rem]  {bits[1] === currBits[1]? 'text-main w-[1.5rem] lg:text-white' : 'text-slate-600  lg:text-white/50'}"
-				/>
-				<div>{label}</div>
-			</Button>
-		{/each}
+		<div
+			class="mx-auto flex w-full items-center justify-around md:max-w-2xl lg:fixed lg:top-4 lg:w-[14rem] lg:flex-col"
+		>
+			{#each tabs as { label, icon, href, classes }, i}
+				{@const currBits = href.split('/')}
+				<Button
+					href={href}
+					variant="ghost"
+					class={tw(`flex h-full w-20 flex-none flex-col items-center gap-0.5 py-1 text-[0.7rem] transition-none hover:bg-transparent focus:bg-transparent lg:w-full lg:flex-row lg:items-center lg:justify-start lg:gap-3 lg:rounded-lg lg:bg-slate-800 lg:px-2.5 lg:py-2 lg:text-sm lg:text-white  lg:hover:text-white ${bits[1] === currBits[1]? 'text-main hover:text-main lg:bg-slate-900 lg:hover:bg-slate-900' : 'text-slate-600 hover:lg:bg-slate-700'} ${classes}`)}
+				>
+					<svelte:component
+						this={icon}
+						class="w-[1.5rem] lg:w-[1.2rem]  {bits[1] === currBits[1]? 'text-main w-[1.5rem] lg:text-white' : 'text-slate-600  lg:text-white/50'}"
+					/>
+					<div>{label}</div>
+				</Button>
+			{/each}
+		</div>
+		<div
+			class="fixed bottom-4 mx-auto hidden w-[14rem] items-center justify-around md:max-w-2xl lg:flex lg:flex-col"
+		>
+			{#each bottomTabs as { label, icon, href, classes }, i}
+				{@const currBits = href.split('/')}
+				<Button
+					href={href}
+					variant="ghost"
+					class={tw(`flex h-full w-20 flex-none flex-col items-center gap-0.5 py-1 text-[0.7rem] transition-none hover:bg-transparent focus:bg-transparent lg:w-full lg:flex-row lg:items-center lg:justify-start lg:gap-3 lg:rounded-lg lg:bg-slate-800 lg:px-2.5 lg:py-2 lg:text-sm lg:text-white  lg:hover:text-white ${bits[1] === currBits[1]? 'text-main hover:text-main lg:bg-slate-900 lg:hover:bg-slate-900' : 'text-slate-600 hover:lg:bg-slate-700'} ${classes}`)}
+				>
+					<svelte:component
+						this={icon}
+						class="w-[1.5rem] lg:w-[1.2rem]  {bits[1] === currBits[1]? 'text-main w-[1.5rem] lg:text-white' : 'text-slate-600  lg:text-white/50'}"
+					/>
+					<div>{label}</div>
+				</Button>
+			{/each}
+		</div>
 	</div>
-	<div
-		class="fixed bottom-4 mx-auto hidden w-[14rem] items-center justify-around md:max-w-2xl lg:flex lg:flex-col"
-	>
-		{#each bottomTabs as { label, icon, href, classes }, i}
-			{@const currBits = href.split('/')}
-			<Button
-				href={href}
-				variant="ghost"
-				class={tw(`flex h-full w-20 flex-none flex-col items-center gap-0.5 py-1 text-[0.7rem] transition-none hover:bg-transparent focus:bg-transparent lg:w-full lg:flex-row lg:items-center lg:justify-start lg:gap-3 lg:rounded-lg lg:bg-slate-800 lg:px-2.5 lg:py-2 lg:text-sm lg:text-white  lg:hover:text-white ${bits[1] === currBits[1]? 'text-main hover:text-main lg:bg-slate-900 lg:hover:bg-slate-900' : 'text-slate-600 hover:lg:bg-slate-700'} ${classes}`)}
-			>
-				<svelte:component
-					this={icon}
-					class="w-[1.5rem] lg:w-[1.2rem]  {bits[1] === currBits[1]? 'text-main w-[1.5rem] lg:text-white' : 'text-slate-600  lg:text-white/50'}"
-				/>
-				<div>{label}</div>
-			</Button>
-		{/each}
-	</div>
-</div>
+{/if}
 
 <style>
 .tabbar {
