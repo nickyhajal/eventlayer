@@ -30,8 +30,12 @@ $: editing = sponsor?.id ? true : false
 $: title = editing ? sponsor?.title : 'Add a Sponsor'
 let sponsorTypes = [
 	{ value: 'sponsor', label: 'Sponsor' },
-	{ value: 'impact', label: 'Impact Partner' },
-	{ value: 'organize', label: 'Organizing Partner' },
+	{ value: 'impact-partner', label: 'Impact Partner' },
+	{ value: 'organizing-partner', label: 'Organizing Partner' },
+]
+let sponsorExpoOptions = [
+	{ value: '0', label: 'No' },
+	{ value: '1', label: 'Yes' },
 ]
 let image = ''
 let addOpen = false
@@ -81,8 +85,16 @@ async function addUser(user: FullEventUser) {
 				</div>
 			{/if}
 			<div class="flex flex-col items-start justify-center gap-1">
+				<Label for="title" class="text-right">Sponsor Title</Label>
+				<Input id="title" bind:value={sponsor.title} class="col-span-3" />
+			</div>
+			<div class="flex flex-col items-start justify-center gap-1">
 				<Label for="image" class="text-right">Sponsor Type</Label>
 				<Select options={sponsorTypes} bind:value={sponsor.type} />
+			</div>
+			<div class="flex flex-col items-start justify-center gap-1">
+				<Label for="image" class="text-right">Participating in Expo</Label>
+				<Select options={sponsorExpoOptions} bind:value={sponsor.expoLocation} />
 			</div>
 			<!-- <div class="flex flex-col items-start justify-center gap-1">
 					<Label for="sponsor_name" class="text-right">Sponsor Type</Label>
@@ -101,10 +113,6 @@ async function addUser(user: FullEventUser) {
 						<Select.Input name="sponsorType" />
 					</Select.Root>
 				</div> -->
-			<div class="flex flex-col items-start justify-center gap-1">
-				<Label for="title" class="text-right">Sponsor Title</Label>
-				<Input id="title" bind:value={sponsor.title} class="col-span-3" />
-			</div>
 			<div class="flex flex-col items-start justify-center gap-1">
 				<Label for="url" class="text-right">Sponsor Link</Label>
 				<Input id="url" bind:value={sponsor.url} type="url" class="col-span-3" />
