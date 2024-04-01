@@ -134,9 +134,11 @@ $: console.log('>> data', data)
 									>
 										{event.name}
 									</div>
-									<div class="whitespace-normal pb-1.5 text-sm font-medium text-slate-600">
-										{event.venue.name} | {dayjs(event.startsAt).format('MMM D, h:mma')}
-									</div>
+									{#if event.venue}
+										<div class="whitespace-normal pb-1.5 text-sm font-medium text-slate-600">
+											{event.venue.name} | {dayjs(event.startsAt).format('MMM D, h:mma')}
+										</div>
+									{/if}
 								</div>
 							</Button>
 						{/each}
