@@ -8,7 +8,7 @@ import { userTable, type User } from '@matterloop/db/types'
 import { dayjs } from '@matterloop/util'
 import { today } from '@matterloop/util/src/lib/dayjs'
 
-import { auth } from '../core/auth'
+// import { auth } from '../core/auth'
 import { procedureWithContext, type TrpcContext } from '../procedureWithContext'
 
 const t = initTRPC.context<TrpcContext>().create()
