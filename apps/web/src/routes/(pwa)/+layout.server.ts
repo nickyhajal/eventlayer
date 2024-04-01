@@ -1,6 +1,15 @@
+import { redirect } from '@sveltejs/kit'
+
+import { EventFns } from '@matterloop/api'
+
 export const load = async (req) => {
+	const eventFns = EventFns({ eventId: req.locals.event.id })
+	const event = await eventFns.get()
+	if (event?.id && req?.locals?.me.onboardStatus === 'pending' && req.url.pathname !== '/welcome') {
+		redirect(303, '/welcome')
+	}
 	return {
 		me: req.locals.me ? req.locals.me : null,
-		event: req.locals.event ? req.locals.event : null,
+		event: event,
 	}
 }
