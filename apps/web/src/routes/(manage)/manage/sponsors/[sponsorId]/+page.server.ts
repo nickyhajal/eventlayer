@@ -1,10 +1,10 @@
 // routes/login/+page.server.ts
-import { db, eq, sponsorTable } from '@matterloop/db'
 import { error, fail, redirect } from '@sveltejs/kit'
-import { EventFns } from '$lib/server/models/event/eventFns.js'
-import { VenueFns } from '$lib/server/models/event/venueFns.js'
 import { message, setError, superValidate } from 'sveltekit-superforms/server'
 import { z } from 'zod'
+
+import { EventFns, VenueFns } from '@matterloop/api'
+import { db, eq, sponsorTable } from '@matterloop/db'
 
 const schema = z.object({
 	email: z.string().email(),

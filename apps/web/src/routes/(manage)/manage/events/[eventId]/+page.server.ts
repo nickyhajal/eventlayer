@@ -1,8 +1,9 @@
 // routes/login/+page.server.ts
 import { error, fail, redirect } from '@sveltejs/kit'
-import { EventFns } from '$lib/server/models/event/eventFns.js'
 import { message, setError, superValidate } from 'sveltekit-superforms/server'
 import { z } from 'zod'
+
+import { EventFns } from '@matterloop/api'
 
 const schema = z.object({
 	email: z.string().email(),

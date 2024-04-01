@@ -1,7 +1,8 @@
 // routes/login/+page.server.ts
 import { error, fail, redirect } from '@sveltejs/kit'
-import { EventFns } from '$lib/server/models/event/eventFns.js'
 import { z } from 'zod'
+
+import { EventFns } from '@matterloop/api'
 
 export const load = async ({ locals }) => {
 	if (!locals.event.id) {

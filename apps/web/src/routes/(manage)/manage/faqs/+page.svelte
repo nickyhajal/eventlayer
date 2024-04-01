@@ -32,7 +32,7 @@ async function save() {
 		<div class="text-2xl font-semibold">FAQs</div>
 	</div>
 
-	<div class="mt-4 flex w-6/12 flex-col rounded-lg bg-stone-100">
+	<div class="mt-4 flex w-6/12 min-w-[42rem] flex-col rounded-lg bg-stone-100">
 		{#each content as { id, title, body }, i}
 			<div class="grid grid-cols-2 gap-2 divide-x px-6 py-2 odd:bg-stone-200/40">
 				<div class="text-base font-medium">
