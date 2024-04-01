@@ -1,11 +1,11 @@
 // routes/signup/+page.server.ts
-import { auth } from '@matterloop/api'
-import { db } from '@matterloop/db'
-import { userTable } from '@matterloop/db/types.js'
 import { error, fail, redirect } from '@sveltejs/kit'
 import { eq } from 'drizzle-orm'
 import { setError, superValidate } from 'sveltekit-superforms/server'
 import { z } from 'zod'
+
+import { db } from '@matterloop/db'
+import { userTable } from '@matterloop/db/types.js'
 
 const schema = z.object({
 	firstName: z.string(),
