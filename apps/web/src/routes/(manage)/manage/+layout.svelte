@@ -1,11 +1,7 @@
 <script lang="ts">
-import { invalidate, invalidateAll } from '$app/navigation'
 import { page } from '$app/stores'
 import { setContext } from 'svelte'
 import { writable } from 'svelte/store'
-import { superForm } from 'sveltekit-superforms/client'
-
-import { Button, Input } from '@matterloop/ui'
 
 export let data
 $: currPath = $page.url.pathname.replace('/manage', '')
@@ -27,12 +23,24 @@ let links = [
 		label: 'Venues',
 	},
 	{
+		path: '/forms',
+		label: 'Forms',
+	},
+	{
 		path: '/sponsors',
 		label: 'Sponsors',
 	},
 	{
 		path: '/faqs',
 		label: 'FAQs',
+	},
+	{
+		path: '/content',
+		label: 'Content',
+	},
+	{
+		path: '/settings',
+		label: 'Settings',
 	},
 	// {
 	// 	path: '/notifications',

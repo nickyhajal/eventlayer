@@ -9,6 +9,8 @@ import { onMount, setContext } from 'svelte'
 // import { Toaster } from 'svelte-french-toast'
 import { writable, type Writable } from 'svelte/store'
 
+import { getMediaUrl } from '@matterloop/util'
+
 // import v4 from 'uuid/v4';
 import TopNav from '../TopNav.svelte'
 
@@ -16,7 +18,7 @@ import TopNav from '../TopNav.svelte'
 // import { initOpenReplay } from '$lib/openreplay'
 // import { initWorkers, NotificationWorker } from '$lib/ServiceWorkerController'
 
-// export let data
+export let data
 let mounted = false
 let notificationRequestOpen = false
 type MeType = typeof $page.data.me
@@ -87,6 +89,7 @@ function setMe() {
 
 <svelte:head>
 	<title>Eventlayer</title>
+	<link rel="icon" href={data.event.favicon ? getMediaUrl(data.event.favicon) : '/favicon.png'} />
 </svelte:head>
 <!-- {#if $page.url.pathname.includes('/') && notificationRequestOpen && $me?.community?.isOnboarded}
       <RequestNotificationPermission notificationWorker={NotificationWorker} />
