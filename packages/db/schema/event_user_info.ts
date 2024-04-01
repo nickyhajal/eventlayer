@@ -1,38 +1,30 @@
 import { relations, sql } from 'drizzle-orm'
-import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { pgTable, text, boolean, timestamp, uuid, index } from 'drizzle-orm/pg-core'
 import { createInsertSchema } from 'drizzle-zod'
 
 import { eventTable } from './event'
 import { sponsorTable } from './sponsor'
 import { User, userSchema, userTable } from './user'
-import { formTable } from './form'
+import { eventUserTable } from './event_user'
 
-export const eventUserTable = pgTable('event_user', {
+export const eventUserInfoTable = pgTable('event_user_info', {
 	id: uuid('id')
 		.default(sql`extensions.uuid_generate_v4()`)
 		.primaryKey()
 		.notNull(),
 	type: text('type'),
-	status: text('status'),
-	proBio: text('pro_bio'),
-	bio: text('bio'),
-	url: text('url'),
-	company: text('company'),
-	sponsorId: uuid('sponsor_id').references(() => sponsorTable.id, { onDelete: 'cascade' }),
-	title: text('title'),
-	onboardFormId: uuid('onboard_form_id'),
-	onboardStatus: text('onboard_status').default('pending'),
-	userId: uuid('user_id').references(() => userTable.id, { onDelete: 'cascade' }),
-	eventId: uuid('event_id').references(() => eventTable.id, { onDelete: 'cascade' }),
-
-	// Tracking a main event_user when a user RSVPs to a sub-event
-	parentId: uuid('parent_id').references(() => eventTable.id, { onDelete: 'cascade' }),
-
-	// Tracking a mainEventId when a user RSVPs to a sub-event
-	mainId: uuid('main_id').references(() => eventTable.id, { onDelete: 'cascade' }),
+	key: text('key'),
+	value: text('value'),
+	public: boolean('public').default(false),
+	userId: uuid('user_id'),
+	eventId: uuid('event_id'),
 	createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
 	updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
-})
+}, 
+(table) => ({
+	userIdeventId: index('event_user_info_user_id_event_id').on(table.userId, table.eventId),
+	eventId: index('event_user_info_event_id').on(table.eventId),
+}))
 
 export const eventUserRelations = relations(eventUserTable, ({ many, one }) => ({
 	event: one(eventTable, {
@@ -46,10 +38,6 @@ export const eventUserRelations = relations(eventUserTable, ({ many, one }) => (
 	sponsor: one(sponsorTable, {
 		fields: [eventUserTable.sponsorId],
 		references: [sponsorTable.id],
-	}),
-	onboardingForm: one(formTable, {
-		fields: [eventUserTable.onboardFormId],
-		references: [formTable.id],
 	}),
 }))
 

@@ -6,10 +6,11 @@ import { z } from 'zod'
 import { eventUserTable } from './event_user'
 import { mediaTable } from './media'
 import { venueTable } from './venue'
+import { contentTable } from './content'
 
 export const eventTable = pgTable('event', {
 	id: uuid('id')
-		.default(sql`uuid_generate_v4()`)
+		.default(sql`extensions.uuid_generate_v4()`)
 		.primaryKey()
 		.notNull(),
 	name: text('name').notNull(),
@@ -18,6 +19,8 @@ export const eventTable = pgTable('event', {
 	venueId: uuid('venue_id').references(() => venueTable.id, { onDelete: 'cascade' }),
 	eventId: uuid('event_id'),
 	mediaId: uuid('mediaId'),
+	largeLogoId: uuid('large_logo_id'),
+	faviconId: uuid('favicon_id'),
 	domainId: text('domain_id').unique(),
 	description: text('description'),
 	note: text('note'),
@@ -40,6 +43,15 @@ export const eventRelations = relations(eventTable, ({ many, one }) => ({
 		fields: [eventTable.mediaId],
 		references: [mediaTable.id],
 	}),
+	favicon: one(mediaTable, {
+		fields: [eventTable.faviconId],
+		references: [mediaTable.id],
+	}),
+	largeLogo: one(mediaTable, {
+		fields: [eventTable.largeLogoId],
+		references: [mediaTable.id],
+	}),
+	content: many(contentTable)
 }))
 
 export const eventSchema = createInsertSchema(eventTable, {
