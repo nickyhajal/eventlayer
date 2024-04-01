@@ -69,7 +69,7 @@ function handleBack(e: MouseEvent) {
 			{/if}
 		</div>
 		<div
-			class="max-w-56 absolute left-0 right-0 mx-auto w-fit truncate text-center text-sm font-semibold text-white"
+			class="absolute left-0 right-0 mx-auto w-fit max-w-56 truncate text-center text-sm font-semibold text-white"
 			style="opacity: {mainTitleOpacity}"
 		>
 			{title}
@@ -105,8 +105,11 @@ function handleBack(e: MouseEvent) {
 					</div>
 				</div>
 			{/if}
-			<!-- <div class="hidden pt-10 text-3xl font-semibold lg:block">{title}</div> -->
-			<div class="hidden h-32 w-full lg:block"></div>
+			{#if bigTitle && !photo}
+				<div class="mb-6 hidden pt-10 text-3xl font-semibold lg:block">{title}</div>
+			{:else}
+				<div class="hidden h-32 w-full lg:block"></div>
+			{/if}
 			<!-- the content -->
 			<div class="contentSlot">
 				<slot />
