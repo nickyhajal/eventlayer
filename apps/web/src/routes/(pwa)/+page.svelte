@@ -33,6 +33,12 @@ const tabs = [
 		href: '/sponsors',
 	},
 ]
+function getContent(key: string) {
+	if (data.event.content[key]) {
+		return data.event.content[key]?.body || ''
+	}
+	return ''
+}
 </script>
 
 <Screen title="Save Our Sites">
@@ -44,28 +50,28 @@ const tabs = [
 		/>
 		<div class="rounded-t-xl bg-slate-200/70 p-3 text-center font-medium">
 			<div class="text-base">
-				{data.event.contentByKey['main-start-date'].body}
+				{getContent('main-start-date')}
 			</div>
-			<div>{data.event.contentByKey['main-start-time'].body}</div>
+			<div>{getContent('main-start-time')}</div>
 		</div>
 		<div
 			class="mb-2 rounded-b-xl bg-slate-100/70 p-8 text-center text-sm font-medium leading-snug md:text-base"
 		>
 			<div>
 				<div class=" px-4 text-sm leading-tight md:text-lg">
-					{data.event.contentByKey['main-location-name'].body}
+					{getContent('main-location-name')}
 				</div>
 				<div class="mt-2 px-4 text-sm leading-tight md:text-base">
-					{data.event.contentByKey['main-location-line-1'].body}
+					{getContent('main-location-line-1')}
 				</div>
 				<div class="px-4 text-sm leading-tight md:text-base">
-					{data.event.contentByKey['main-location-line-2'].body}
+					{getContent('main-location-line-2')}
 				</div>
 				<div class="mt-2 px-4 text-xs leading-tight md:text-sm">
-					{data.event.contentByKey['main-location-line-3'].body}
+					{getContent('main-location-line-3')}
 				</div>
 				<div class="px-4 text-xs leading-tight md:text-sm">
-					{data.event.contentByKey['main-location-line-4'].body}
+					{getContent('main-location-line-4')}
 				</div>
 			</div>
 		</div>
