@@ -37,26 +37,36 @@ const tabs = [
 
 <Screen title="Save Our Sites">
 	<div class="container mx-auto pt-1 md:max-w-7xl">
-		<enhanced:img
-			src="../../../static/banner.jpg"
+		<img
+			src={getMediaUrl(data.event.largeLogo)}
 			alt="An alt text"
-			class="mx-auto my-10 w-10/12 pb-2 md:w-8/12"
+			class="mx-auto mb-10 mt-0 w-10/12 pb-2 md:w-8/12"
 		/>
 		<div class="rounded-t-xl bg-slate-200/70 p-3 text-center font-medium">
-			<div class="text-base">Friday, February 2, 2024</div>
-			<div>8AM-5PM</div>
+			<div class="text-base">
+				{data.event.contentByKey['main-start-date'].body}
+			</div>
+			<div>{data.event.contentByKey['main-start-time'].body}</div>
 		</div>
 		<div
 			class="mb-2 rounded-b-xl bg-slate-100/70 p-8 text-center text-sm font-medium leading-snug md:text-base"
 		>
 			<div>
-				<div class=" px-4 text-sm leading-tight md:text-lg">The University of Arizona</div>
-				<div class="mt-2 px-4 text-sm leading-tight md:text-base">
-					Student Union Memorial Center
+				<div class=" px-4 text-sm leading-tight md:text-lg">
+					{data.event.contentByKey['main-location-name'].body}
 				</div>
-				<div class="px-4 text-sm leading-tight md:text-base">3rd Floor - Grand Ballroom</div>
-				<div class="mt-2 px-4 text-xs leading-tight md:text-sm">1303 E. University Blvd</div>
-				<div class="px-4 text-xs leading-tight md:text-sm">Tucson, AZ 85719</div>
+				<div class="mt-2 px-4 text-sm leading-tight md:text-base">
+					{data.event.contentByKey['main-location-line-1'].body}
+				</div>
+				<div class="px-4 text-sm leading-tight md:text-base">
+					{data.event.contentByKey['main-location-line-2'].body}
+				</div>
+				<div class="mt-2 px-4 text-xs leading-tight md:text-sm">
+					{data.event.contentByKey['main-location-line-3'].body}
+				</div>
+				<div class="px-4 text-xs leading-tight md:text-sm">
+					{data.event.contentByKey['main-location-line-4'].body}
+				</div>
 			</div>
 		</div>
 		<div class="mt-8">
