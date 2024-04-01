@@ -65,6 +65,7 @@ export const mediaProcedures = t.router({
 				id: z.string().optional(),
 				parentType: z.string(),
 				parentId: z.string(),
+				path: z.string().optional(),
 				feedItemId: z.string().optional(),
 				attachToFeedItemId: z.string().optional(),
 				mimetype: z.string(),
@@ -73,7 +74,7 @@ export const mediaProcedures = t.router({
 		.mutation(
 			async ({
 				ctx,
-				input: { id, parentType, parentId, mimetype, feedItemId, attachToFeedItemId },
+				input: { id, parentType, parentId, mimetype, path: inputPath, feedItemId, attachToFeedItemId },
 			}): Promise<MediaResponse | null> => {
 				// if (!ctx.meId || true) {
 				// 	return null
@@ -82,7 +83,7 @@ export const mediaProcedures = t.router({
 				let ext = mime.extension(mimetype) || 'jpg'
 				let singles = ['event', 'user', 'venue']
 				let dir = NODE_ENV === 'production' ? 'prod' : 'dev'
-				let path = parentType === 'user' ? 'avatars' : parentType
+				let path = inputPath || (parentType === 'user' ? 'avatars' : parentType)
 				ext = ext.replace('jpeg', 'jpg')
 				if (parentType && parentId && singles.includes(parentType)) {
 					const existing = await db.query.mediaTable.findFirst({
