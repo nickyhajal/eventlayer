@@ -145,7 +145,12 @@ function setMe() {
 		<slot />
 	</EventAppLayout>
 {:else}
-	Marketing site
+	<div class="py-40 text-center">
+		<div class="text-4xl font-semibold">Your events, running smoothly.</div>
+		<div class="mx-auto w-96 pt-6 text-xl font-medium">
+			EventLayer is a full-service digital platform for running your next big event.
+		</div>
+	</div>
 {/if}
 <Toaster toastOptions={{ position: 'bottom-center' }} />
 <Confirmations />

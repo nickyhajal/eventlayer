@@ -8,7 +8,7 @@ const me = getMeContext()
 
 <Screen title="Program" bigTitle="Program">
 	<div class="container mx-auto px-6 pt-2 md:max-w-7xl">
-		<enhanced:img
+		<img
 			src="../../../../static/banner.jpg"
 			alt="An alt text"
 			class="mx-auto my-10 w-full md:w-8/12"
