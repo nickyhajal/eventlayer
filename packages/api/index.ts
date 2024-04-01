@@ -1,7 +1,10 @@
 import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server'
 
 import type { Router } from './src/root'
-
+export { EventFns } from './src/models/eventFns'
+export { VenueFns } from './src/models/venueFns'
+export { FormFns } from './src/models/formFns'
+// export { UserFns } from './src/models/userFns'
 export { router, type Router } from './src/root'
 
 /**
