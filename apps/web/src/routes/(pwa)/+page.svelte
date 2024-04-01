@@ -34,8 +34,8 @@ const tabs = [
 	},
 ]
 function getContent(key: string) {
-	if (data.event.content[key]) {
-		return data.event.content[key]?.body || ''
+	if (data?.event?.contentByKey?.[key]) {
+		return data.event.contentByKey[key]?.body || ''
 	}
 	return ''
 }
