@@ -1,4 +1,4 @@
-import type { Context, Event } from '@matterloop/db'
+import type { Context, Event, EventUser } from '@dailyflow/db'
 import type { User } from '$lib/schema/user'
 import type { RouteConfig } from '$lib/util/routeConfig'
 
@@ -12,8 +12,10 @@ declare global {
 		interface Locals extends Context {
 			isLocals?: true
 			routeConfig: RouteConfig
+			auth: import().AuthRequest
+			user: (import().User & Partial<EventUser>) | null
 			event: Event
-			auth: import('lucia-auth').AuthRequest
+			session: import().Session | null
 		}
 		// interface Platform {}
 	}
@@ -22,7 +24,7 @@ declare global {
 /// <reference types="lucia" />
 declare global {
 	namespace Lucia {
-		type Auth = import('$lib/server/lucia').Auth
+		type Auth = import().Auth
 		type UserAttributes = {
 			email: string
 			first_name: string
