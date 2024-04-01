@@ -1,6 +1,6 @@
 import { redirect } from '@sveltejs/kit'
-import { EventFns } from '$lib/server/models/event/eventFns.js'
-import { VenueFns } from '$lib/server/models/event/venueFns.js'
+
+import { EventFns, VenueFns } from '@matterloop/api'
 
 export const load = async (req) => {
 	const { locals, url, params } = req

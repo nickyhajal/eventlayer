@@ -1,10 +1,11 @@
 import { redirect } from '@sveltejs/kit'
-import { EventFns } from '$lib/server/models/event/eventFns.js'
+
+import { EventFns } from '@matterloop/api'
 
 export const load = async (req) => {
 	const { locals, url } = req
 	const eventFns = EventFns({ eventId: locals.event.id })
-	const content = await eventFns.getContent()
+	const content = await eventFns.getFaqs()
 	return {
 		content,
 	}
