@@ -16,6 +16,7 @@ export * from './src/lib/transformDeep'
 export * from './src/lib/plural'
 export * from './src/lib/getId'
 export * from './src/ExternalContent'
+export * from './src/lib/makeCleanNumber'
 export { default as uuid } from 'uuid'
 export { default as v4 } from 'uuid/v4'
 export {
