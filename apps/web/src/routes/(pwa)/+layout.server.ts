@@ -5,7 +5,11 @@ import { EventFns } from '@matterloop/api'
 export const load = async (req) => {
 	const eventFns = EventFns({ eventId: req.locals.event.id })
 	const event = await eventFns.get()
-	if (event?.id && req?.locals?.me.onboardStatus === 'pending' && req.url.pathname !== '/welcome') {
+	if (
+		event?.id &&
+		req?.locals?.me?.onboardStatus === 'pending' &&
+		req.url.pathname !== '/welcome'
+	) {
 		redirect(303, '/welcome')
 	}
 	return {
