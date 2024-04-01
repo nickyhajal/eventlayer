@@ -1,15 +1,17 @@
 // hooks.server.ts
-import { auth } from '@matterloop/api'
-import { createContext } from '@matterloop/api/src/procedureWithContext'
-import { router } from '@matterloop/api/src/root'
-import { db, eq, eventTable } from '@matterloop/db'
-import { userTable } from '@matterloop/db/types'
 import { error, fail, redirect, type Handle } from '@sveltejs/kit'
 import { sequence } from '@sveltejs/kit/hooks'
+import { NODE_ENV } from '$env/static/private'
 import { PUBLIC_BASE_URL } from '$env/static/public'
 import type { RouteConfig } from '$lib/server/core/routeConfig'
 import { getConfigForRoute } from '$lib/server/core/routeHelper'
 import { createTRPCHandle } from 'trpc-sveltekit'
+
+import { lucia } from '@matterloop/api'
+import { createContext } from '@matterloop/api/src/procedureWithContext'
+import { router } from '@matterloop/api/src/root'
+import { and, db, eq, eventTable, eventUserTable } from '@matterloop/db'
+import { userTable } from '@matterloop/db/types'
 
 // import { getConfigForRoute } from '$lib/server/core/routeHelper';
 // import type { RouteConfig } from '$lib/server/core/routeConfig';
@@ -69,21 +71,46 @@ const handleInit: Handle = async ({ event, resolve }) => {
 	return resolve(event)
 }
 export const handleUserContext: Handle = async ({ event, resolve }) => {
-	event.locals.auth = auth.handleRequest(event)
-	const sess = await event.locals.auth.validate()
-	if (sess?.user?.userId) {
-		const fullUser = await db
-			.select()
-			.from(userTable)
-			.where(eq(userTable.id, sess.user?.userId))
-		event.locals.me = fullUser[0]
-		event.locals.meId = fullUser[0].id
+	const sessionId = event.cookies.get(lucia.sessionCookieName)
+	if (!sessionId) {
+		event.locals.me = undefined
+		event.locals.meId = undefined
+		return resolve(event)
+	}
+
+	const { session, user } = await lucia.validateSession(sessionId)
+	if (session && session.fresh) {
+		const sessionCookie = lucia.createSessionCookie(session.id)
+		event.cookies.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
+	}
+	if (!session) {
+		const sessionCookie = lucia.createBlankSessionCookie()
+		event.cookies.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
+	}
+	event.locals.session = session
+	event.locals.user = user
+	if (user) {
+		if (user?.id) {
+			const fullUser = await db.select().from(userTable).where(eq(userTable.id, user?.id))
+			event.locals.me = fullUser[0]
+			event.locals.meId = fullUser[0].id
+			if (event.locals.event?.id) {
+				const eventUser = await db.query.eventUserTable.findFirst({
+					where: and(
+						eq(eventUserTable.userId, user?.id),
+						eq(eventUserTable.eventId, event.locals.event.id),
+					),
+				})
+				event.locals.me = { ...fullUser[0], ...eventUser }
+			}
+		}
 	}
 	return await resolve(event)
 }
 const handleEventContext: Handle = async ({ event, resolve }) => {
-	const hostname =
+	let hostname =
 		event.request.headers.get('host')?.replace('http://', '').replace('https://', '') || ''
+	hostname = NODE_ENV === 'development' ? hostname : hostname
 	event.locals.hostname = hostname
 	if (hostname.includes(PUBLIC_BASE_URL || '')) {
 		const bits = hostname.split('.')
@@ -143,8 +170,8 @@ export const handle: Handle = sequence(
 	// Sentry.sentryHandle(),
 	handleCors,
 	handleInit,
-	handleUserContext,
 	handleEventContext,
+	handleUserContext,
 	handleLogout,
 	handleRouteConfig,
 	handleTrpc,
