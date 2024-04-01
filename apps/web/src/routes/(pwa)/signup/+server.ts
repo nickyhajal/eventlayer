@@ -1,10 +1,10 @@
 // routes/signup/+page.server.ts
-import { lucia } from '@dailyflow/api'
 import { error, fail, redirect } from '@sveltejs/kit'
 import { eq } from 'drizzle-orm'
 import { setError, superValidate } from 'sveltekit-superforms/server'
 import { z } from 'zod'
 
+import { lucia } from '@matterloop/api'
 import { db } from '@matterloop/db'
 import { userTable } from '@matterloop/db/types.js'
 
