@@ -1,4 +1,5 @@
 // routes/signup/+page.server.ts
+import { lucia } from '@dailyflow/api'
 import { error, fail, redirect } from '@sveltejs/kit'
 import { eq } from 'drizzle-orm'
 import { setError, superValidate } from 'sveltekit-superforms/server'
@@ -22,20 +23,20 @@ export const POST = async ({ request, locals }) => {
 		if (existing) {
 			error(401, 'An account already exists with this email')
 		}
-		const user = await auth.createUser({
-			userId: crypto.randomUUID(),
-			key: {
-				providerId: 'email',
-				providerUserId: email,
-				password,
-			},
-			attributes: {
-				email,
-				first_name: firstName,
-				last_name: lastName,
-			},
-		})
-		const session = await auth.createSession({ userId: user.userId, attributes: {} })
+		// const user = await lucia.createUser({
+		// 	userId: crypto.randomUUID(),
+		// 	key: {
+		// 		providerId: 'email',
+		// 		providerUserId: email,
+		// 		password,
+		// 	},
+		// 	attributes: {
+		// 		email,
+		// 		first_name: firstName,
+		// 		last_name: lastName,
+		// 	},
+		// })
+		// const session = await auth.createSession({ userId: user.userId, attributes: {} })
 		locals.auth.setSession(session)
 		return new Response(user)
 	} catch (e) {
