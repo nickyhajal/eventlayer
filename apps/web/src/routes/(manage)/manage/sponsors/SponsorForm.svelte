@@ -1,11 +1,11 @@
 <script lang="ts">
 import { goto, invalidateAll } from '$app/navigation'
 import AttendeeSearchInput from '$lib/components/AttendeeSearchInput.svelte'
+import Select from '$lib/components/form/Select.svelte'
 import Button from '$lib/components/ui/button/button.svelte'
 import * as Dialog from '$lib/components/ui/dialog'
 import Input from '$lib/components/ui/input/input.svelte'
 import Label from '$lib/components/ui/label/label.svelte'
-import * as Select from '$lib/components/ui/select'
 import Textarea from '$lib/components/ui/textarea/textarea.svelte'
 import Uploader from '$lib/components/ui/Uploader.svelte'
 import { trpc } from '$lib/trpc/client.js'
@@ -29,13 +29,10 @@ $: buttonMsg = sponsor?.id ? 'Save Sponsor' : 'Add Sponsor'
 $: editing = sponsor?.id ? true : false
 $: title = editing ? sponsor?.title : 'Add a Sponsor'
 let sponsorTypes = [
-	{ value: 'building', label: 'Building' },
-	{ value: 'room', label: 'Room' },
+	{ value: 'sponsor', label: 'Sponsor' },
+	{ value: 'impact', label: 'Impact Partner' },
+	{ value: 'organize', label: 'Organizing Partner' },
 ]
-let type = sponsor?.type
-	? sponsorTypes.find(({ value }) => value === sponsor?.type)
-	: { value: 'building', label: 'Building' }
-$: sponsor.type = type.value
 let image = ''
 let addOpen = false
 async function createSponsor() {
@@ -83,6 +80,10 @@ async function addUser(user: FullEventUser) {
 					</div>
 				</div>
 			{/if}
+			<div class="flex flex-col items-start justify-center gap-1">
+				<Label for="image" class="text-right">Sponsor Type</Label>
+				<Select options={sponsorTypes} bind:value={sponsor.type} />
+			</div>
 			<!-- <div class="flex flex-col items-start justify-center gap-1">
 					<Label for="sponsor_name" class="text-right">Sponsor Type</Label>
 					<Select.Root bind:selected={type}>

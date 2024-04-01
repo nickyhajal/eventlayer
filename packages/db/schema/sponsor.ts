@@ -15,6 +15,7 @@ export const sponsorTable = pgTable('sponsor', {
 	eventId: uuid('event_id'),
 	mediaId: uuid('media_id'),
 	title: text('title'),
+	expoLocation: text('expo_location'),
 	url: text('url'),
 	bookingUrl: text('booking_url'),
 	description: text('description'),

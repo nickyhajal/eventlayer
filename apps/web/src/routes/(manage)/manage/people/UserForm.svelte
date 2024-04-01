@@ -33,6 +33,9 @@ $: title = editing ? `${user?.firstName} ${user?.lastName}` : 'Add a User'
 let userTypes = [
 	{ value: 'attendee', label: 'Attendee' },
 	{ value: 'speaker', label: 'Speaker' },
+	{ value: 'main-stage-speaker', label: 'Main Stage Speaker' },
+	{ value: 'showcase-speaker', label: 'Showcase Speaker' },
+	{ value: 'divesession-facilitator', label: 'Dive-Session Facilitator' },
 	{ value: 'sponsor', label: 'Sponsor Rep' },
 	{ value: 'staff', label: 'Staff' },
 ]
@@ -141,7 +144,7 @@ async function checkEmail() {
 			<div class="flex flex-col items-start justify-center gap-1">
 				<Label for="userType" class="text-right">User Type</Label>
 				<Select.Root bind:selected={type}>
-					<Select.Trigger class="w-[180px]">
+					<Select.Trigger class="w-[220px]">
 						<Select.Value placeholder="Select Type" />
 					</Select.Trigger>
 					<Select.Content>

@@ -7,7 +7,6 @@ import { getMediaUrl } from '@matterloop/util'
 export let data
 $: users = data.users
 const me = getMeContext()
-$: console.log(users[0].mainEventUser)
 </script>
 
 <Screen title="Panelists & Moderators" bigTitle="Panelists & Moderators" bodyClass="bg-slate-100">
