@@ -8,7 +8,7 @@ import { venueTable } from './venue'
 
 export const mediaTable = pgTable('media', {
 	id: uuid('id')
-		.default(sql`uuid_generate_v4()`)
+		.default(sql`extensions.uuid_generate_v4()`)
 		.primaryKey()
 		.notNull(),
 	userId: text('user_id'),
