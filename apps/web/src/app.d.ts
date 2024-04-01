@@ -1,4 +1,4 @@
-import type { Context, Event, EventUser } from '@dailyflow/db'
+import type { Context, Event, EventUser } from '@matterloop/db'
 import type { User } from '$lib/schema/user'
 import type { RouteConfig } from '$lib/util/routeConfig'
 

@@ -1,5 +1,5 @@
 import crypto from 'crypto'
-import { authSessionTable, connection, db, userTable } from '@dailyflow/db'
+import { authSessionTable, connection, db, userTable } from '@matterloop/db'
 import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle'
 import { Lucia } from 'lucia'
 import { createClient } from 'redis'
