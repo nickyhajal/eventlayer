@@ -1,36 +1,62 @@
 <script lang="ts">
-import { Button, Input, Markdown } from '@matterloop/ui'
+import { Button, Markdown } from '@matterloop/ui'
 import { dispatch, tw } from '@matterloop/util'
 
-let receiveProps = {}
+import Input from './Input.svelte'
+
+interface ReceiveProps {
+	id?: string
+	label?: string
+	props?: any
+	handleClick?: () => void
+	class?: string
+	min?: number
+	max?: number
+	component?: string
+	shellClass?: string
+	className?: string
+	placeholder?: string
+	hide?: boolean
+	name?: string
+	style?: string
+	options?: any
+	multi?: boolean
+	type?: string
+	bind?: string
+	containerStyles?: string
+	classes?: string
+	extra?: string
+	hint?: string
+	content?: string
+}
+
+let receiveProps: ReceiveProps = {}
 export { receiveProps as props }
 export let values = {}
 export let includedComponents
-let {
-	id,
-	props,
-	handleClick,
-	class: addedClass,
-	label,
-	min,
-	max,
-	component,
-	shellClass,
-	className,
-	placeholder,
-	hide,
-	name,
-	style,
-	options,
-	multi,
-	type,
-	bind,
-	containerStyles,
-	classes,
-	extra,
-	hint,
-	content,
-} = receiveProps
+$: id = receiveProps.id
+$: label = receiveProps.label
+$: props = receiveProps.props
+$: handleClick = receiveProps.handleClick
+$: addedClass = receiveProps['class']
+$: min = receiveProps.min
+$: max = receiveProps.max
+$: component = receiveProps.component
+$: shellClass = receiveProps.shellClass
+$: className = receiveProps.className
+$: placeholder = receiveProps.placeholder
+$: hide = receiveProps.hide
+$: name = receiveProps.name
+$: style = receiveProps.style
+$: options = receiveProps.options
+$: multi = receiveProps.multi
+$: type = receiveProps.type
+$: bind = receiveProps.bind
+$: containerStyles = receiveProps.containerStyles
+$: classes = receiveProps.classes
+$: extra = receiveProps.extra
+$: hint = receiveProps.hint
+$: content = receiveProps.content
 name = id
 component = component || includedComponents[options?.component || '']
 </script>
@@ -57,6 +83,7 @@ component = component || includedComponents[options?.component || '']
 	{:else}
 		<Input
 			class={className || addedClass}
+			label={label}
 			placeholder={typeof placeholder === 'function'
 				? placeholder({ values })
 				: placeholder || label}
@@ -75,7 +102,7 @@ component = component || includedComponents[options?.component || '']
 			on:keydown
 			on:disableForm
 			on:enableForm
-			bind:value={values[name || bind]}
+			bind:value={values[id]}
 			type={type || 'input'}
 		/>
 	{/if}
