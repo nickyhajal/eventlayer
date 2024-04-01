@@ -8,7 +8,7 @@ import TabBar from './TabBar.svelte'
 	<div class="lg:order-1">
 		<slot />
 	</div>
-	{#if ['/login', '/welcome'].includes(!$page.url.pathname)}
+	{#if !['/login', '/welcome'].includes($page.url.pathname)}
 		<div
 			class="tabbar lg:order-0 fixed bottom-0 z-50 w-full bg-slate-800 lg:relative lg:px-2 lg:py-3"
 		>

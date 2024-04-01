@@ -92,7 +92,7 @@ const bottomTabs = [
 $: bits = $page.url.pathname.split('/')
 </script>
 
-{#if ['/login', '/welcome'].includes(!$page.url.pathname)}
+{#if !['/login', '/welcome'].includes($page.url.pathname)}
 	<div
 		class="tabbar relative flex items-center border-t border-slate-200 bg-slate-50 lg:flex-col lg:border-0 lg:bg-slate-800"
 	>
