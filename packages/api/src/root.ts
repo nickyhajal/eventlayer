@@ -1,6 +1,9 @@
 import { trpcApp } from './procedureWithContext'
 import { contentProcedures } from './router/contentProcedures'
 import { eventProcedures } from './router/eventProcedures'
+import { formElementProcedures } from './router/formElementProcedures'
+import { formProcedures } from './router/formProcedures'
+import { formSessionProcedures } from './router/formSessionProcedures'
 import { meRouter } from './router/me'
 import { mediaProcedures } from './router/mediaProcedures'
 import { sponsorProcedures } from './router/sponsorProcedures'
@@ -11,6 +14,9 @@ export const router = trpcApp.router({
 	me: meRouter,
 	event: eventProcedures,
 	venue: venueProcedures,
+	form: formProcedures,
+	formElement: formElementProcedures,
+	formSession: formSessionProcedures,
 	user: userProcedures,
 	media: mediaProcedures,
 	content: contentProcedures,

@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "db:introspect": "drizzle-kit introspect:pg",
-		"db:gen": "drizzle-kit generate:pg",
-		"db:push": "drizzle-kit push:pg",
-		"db:drop": "drizzle-kit drop",
+    "db:gen": "drizzle-kit generate:pg",
+    "db:push": "drizzle-kit push:pg",
+    "db:drop": "drizzle-kit drop",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -26,6 +26,7 @@
     "drizzle-orm": "^0.28.5",
     "drizzle-zod": "^0.5.1",
     "pg": "^8.11.3",
+    "svelte-persisted-store": "^0.9.1",
     "zod": "^3.22.4"
   },
   "devDependencies": {
