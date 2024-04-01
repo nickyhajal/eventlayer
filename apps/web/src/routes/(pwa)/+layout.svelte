@@ -7,9 +7,15 @@ import Confirmations from '$lib/components/Confirmations.svelte'
 import NProgress from 'nprogress'
 import { onMount, setContext } from 'svelte'
 import { Toaster } from 'svelte-french-toast'
+import { persisted } from 'svelte-persisted-store'
 import { writable, type Writable } from 'svelte/store'
 
 import 'nprogress/nprogress.css'
+
+import { create, insert, remove, search } from '@orama/orama'
+import { browser } from '$app/environment'
+import type { AttendeeStore } from '$lib/types'
+import { loadAttendeeStore } from '$lib/util/loadAttendeeSearch'
 
 import { dayjs } from '@matterloop/util'
 
@@ -23,6 +29,19 @@ let notificationRequestOpen = false
 let nprogTimo = 0
 type MeType = typeof $page.data.me
 let me: Writable<MeType> | undefined
+let attendeeSearcher: Writable<Awaited<ReturnType<typeof loadAttendeeStore>> | (() => void)> =
+	writable(() => {})
+const attendeeStore = persisted<AttendeeStore>('attendees', {
+	attendees: [],
+	num: 0,
+	hash: 'a',
+	lastUpdate: dayjs(0).toISOString(),
+})
+if (browser) {
+	loadAttendeeStore(attendeeStore).then((searcher) => {
+		attendeeSearcher.set(searcher)
+	})
+}
 
 // if (typeof window !== 'undefined') {
 //   updateDevice(window.innerWidth)
@@ -30,7 +49,9 @@ let me: Writable<MeType> | undefined
 // $: if ($navigating) {
 //   mixpanel.track_pageview()
 // }
+setContext('attendeeSearcher', attendeeSearcher)
 setContext('seed', +new Date() / 1000)
+setContext('event', writable(data.event))
 $: setMe(), $page.data.me
 NProgress.configure({
 	// Full list: https://github.com/rstacruz/nprogress#configuration
