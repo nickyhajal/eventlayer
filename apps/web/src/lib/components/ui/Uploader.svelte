@@ -13,6 +13,7 @@ import type { Media } from '@matterloop/db'
 import Image from '@matterloop/ui/src/components/Image.svelte'
 
 export let parentId = ''
+export let path = ''
 export let parentType = ''
 export let existingMedia: Media[] = []
 export let onSuccess: (mediaId: string) => void
@@ -76,6 +77,7 @@ const server: { process: ProcessServerConfigFunction; load: LoadServerConfigFunc
 		const res = await trpc().media.getUploadUrl.mutate({
 			parentId,
 			parentType,
+			path,
 			mimetype: file.type,
 		})
 
