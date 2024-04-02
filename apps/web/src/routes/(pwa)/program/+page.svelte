@@ -1,17 +1,20 @@
 <script lang="ts">
 import Screen from '$lib/components/Screen.svelte'
 import Button from '$lib/components/ui/button/button.svelte'
-import { getMeContext } from '$lib/state/getContexts'
+import { getEventContext, getMeContext } from '$lib/state/getContexts'
+
+import { getMediaUrl } from '@matterloop/util'
 
 const me = getMeContext()
+const event = getEventContext()
 </script>
 
 <Screen title="Program" bigTitle="Program">
 	<div class="container mx-auto px-6 pt-2 md:max-w-7xl">
 		<img
-			src="../../../../static/banner.jpg"
+			src={getMediaUrl($event.largeLogo)}
 			alt="An alt text"
-			class="mx-auto my-10 w-full md:w-8/12"
+			class="mx-auto mb-10 mt-0 w-10/12 pb-2 md:w-8/12"
 		/>
 		<div class="pb-12 text-slate-600">
 			<div class="mb-3 text-2xl font-semibold">About the Conference</div>
@@ -36,7 +39,7 @@ const me = getMeContext()
 				series that explores this exact question:
 			</p>
 			<Button
-				class="mb-16 mt-6 w-full bg-red-600 text-white"
+				class="bg-a-accent mb-16 mt-6 w-full text-white"
 				href="https://saveoursites.com/webinars"
 				target="_blank"
 			>

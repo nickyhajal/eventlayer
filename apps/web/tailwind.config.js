@@ -24,6 +24,9 @@ const config = {
 				background: 'hsl(var(--background) / <alpha-value>)',
 				foreground: 'hsl(var(--foreground) / <alpha-value>)',
 				main: { DEFAULT: '#ec1c3b' },
+				'a-accent': {
+					DEFAULT: 'rgb(var(--a-accent) / <alpha-value>)',
+				},
 				primary: {
 					DEFAULT: 'hsl(var(--primary) / <alpha-value>)',
 					foreground: 'hsl(var(--primary-foreground) / <alpha-value>)',

@@ -1,6 +1,7 @@
 <script lang="ts">
 import Screen from '$lib/components/Screen.svelte'
 import Button from '$lib/components/ui/button/button.svelte'
+import UserAvatar from '$lib/components/UserAvatar.svelte'
 import { getAttendeeSearcherContext, getMeContext } from '$lib/state/getContexts'
 import ChevronRight from 'lucide-svelte/icons/chevron-right'
 import { getContext } from 'svelte'
@@ -69,32 +70,31 @@ $: {
 	>
 		<input
 			type="text"
-			class="bg-transparent py-2.5"
+			class="w-full bg-transparent py-2.5"
 			placeholder="Search attendees..."
 			bind:value={query}
 		/>
 	</div>
 	<div class="container relative mx-auto -mt-2 max-w-7xl bg-slate-100">
-		<div class="mt-2 grid grid-cols-1 gap-4 py-2 lg:grid-cols-2">
+		<div class="mt-4 grid grid-cols-1 gap-4 py-2 lg:grid-cols-2">
 			{#each users as user}
 				{@const {id, firstName, lastName, url, bookingUrl, photo, description} = user}
 				<div
 					class="relative z-0 flex flex-col items-center justify-center rounded-2xl bg-white px-1 py-4"
 				>
-					<a href={url} target="_blank" class="mb-2 flex flex-col items-center">
-						<div
+					<a href="/user/{id}" class="mb-2 mt-3 flex flex-col items-center">
+						<UserAvatar user={user} class="mb-2.5" />
+						<!-- <div
 							class="mb-2 h-20 w-20 rounded-full border border-slate-100 bg-slate-50/80 bg-cover bg-center"
-							style="background-image: url({getMediaUrl(photo)})"
-						></div>
+							style="background-image: url({})"
+						></div> -->
 						<div class="font-semibold text-slate-600">{firstName} {lastName}</div>
 					</a>
 					<div
-						class="text-main mt-2 flex h-12 w-full items-center justify-around border-t border-slate-100 font-semibold"
+						class="text-a-accent -mb-3 mt-2.5 flex h-12 w-full items-center justify-around border-t border-slate-100 font-semibold"
 					>
-						<a
-							href={url}
-							target="_blank"
-							class="flex h-full w-1/2 items-center justify-center text-center">View Profile</a
+						<a href="/user/{id}" class="flex h-full w-1/2 items-center justify-center text-center"
+							>View Profile</a
 						>
 					</div>
 				</div>

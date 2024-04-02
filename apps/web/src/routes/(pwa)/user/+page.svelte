@@ -15,12 +15,12 @@ const me = getMeContext()
 			{#each users as user}
 				{@const {user: {id, firstName, lastName}, media, mainEventUser} = user}
 				<a
-					href="/user/{mainEventUser.id}"
+					href="/speakers/{mainEventUser.id}"
 					class="relative z-0 flex flex-col rounded-2xl bg-white p-1"
 				>
 					<div
 						class="mb-2 h-48 w-full rounded-lg bg-slate-100 bg-cover bg-center"
-						style="background-image: url({getMediaUrl(media, `w=256&h=256&func=face&face_margin=60`)})"
+						style="background-image: url({getMediaUrl(media)})"
 					></div>
 					<div class="px-2 pb-2">
 						<div class="mb-0.5 truncate text-sm font-semibold">{firstName} {lastName}</div>

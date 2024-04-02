@@ -6,6 +6,8 @@ import {
 	ne,
 	db,
 	eq,
+	or,
+	inArray,
 	eventTable,
 	eventUserTable,
 	formTable,
@@ -164,6 +166,7 @@ export const EventFns = (args: string | Args) => {
 		getSubEventSpecialUsers: async () => {
 			const mainEventUser = alias(eventUserTable, 'mainEventUser')
 			const userAlias = alias(userTable, 'user')
+			console.log(eventId)
 			const users = await db
 				.selectDistinctOn([eventUserTable.userId])
 				.from(eventUserTable)
@@ -174,7 +177,13 @@ export const EventFns = (args: string | Args) => {
 					mainEventUser,
 					and(eq(eventUserTable.userId, mainEventUser.userId), eq(mainEventUser.eventId, eventId)),
 				)
-				.where(and(eq(eventTable.eventId, eventId), ne(eventUserTable.type, 'attendee')))
+				.where(
+					or(
+					// the related event has a parentId of the main event
+					and(eq(eventTable.eventId, eventId), ne(eventUserTable.type, 'attendee')),
+					and(inArray(mainEventUser.type, ['speaker', 'host']))
+					),
+				)
 			return orderBy(users, ['user.lastName', 'user.firstName'], ['asc', 'asc'])
 		},
 	}
