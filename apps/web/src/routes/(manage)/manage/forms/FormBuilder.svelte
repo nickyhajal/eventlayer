@@ -19,12 +19,12 @@ let form = writable<FormWithElements>(formInput)
 let opens: { [key: string]: boolean } = {}
 let selectedElement = $form?.elements?.[0] || null
 let lastElement = ''
-$: selectedIndex = $form.elements?.findIndex((el) => el.id === selectedElement.id)
+$: selectedIndex = $form.elements?.findIndex((el) => el.id === selectedElement?.id)
 $: selectedId = selectedElement?.id
 $: console.log(selectedElement)
 $: {
 	if (lastElement !== JSON.stringify(selectedElement)) {
-		const index = $form.elements.findIndex((el) => el.id === selectedElement.id)
+		const index = $form.elements.findIndex((el) => el.id === selectedElement?.id)
 		$form.elements[index] = selectedElement
 		lastElement = JSON.stringify(selectedElement)
 	}
@@ -46,9 +46,10 @@ function addElement(index?: number) {
 	$form.elements.splice(index, 0, {
 		id: getId(),
 		type: 'text',
-		label: '',
+		label: 'New Element Label',
 		formId: $form.id,
 	})
+	selectedElement = $form.elements[index]
 	$form.elements = $form.elements
 }
 function removeElement(index: number) {
@@ -139,38 +140,40 @@ function handleDndFinalize(e) {
 		</div>
 		<div class="flex flex-col gap-4 px-1 py-4">
 			{#if $form.elements.length}
-				<div class="mx-auto max-w-xl">
+				<div class="mx-auto w-full max-w-xl">
 					<FormElements
 						elements={$form.elements}
 						selectedId={selectedElement.id}
-						rowClass="rounded-lg px-6 py-3"
+						rowClass="rounded-lg px-6 py-3 w-full"
 						handleRowClick={(el) => selectedElement = el}
 					/>
 				</div>
 			{/if}
 		</div>
 		{#if $form.elements.length}
-			{#key selectedElement.id}
-				<div class="flex h-full flex-col gap-1 bg-stone-50/80 px-2 pb-2 pt-2">
-					<div class="relative flex-grow">
-						<div class="">
-							<ElementFormRow
-								bind:element={selectedElement}
-								index={selectedIndex}
-								on:delete={() => removeElement(selectedIndex)}
-								on:elementChange={() => handleChangedElements()}
-							/>
+			{#if selectedElement.id}
+				{#key selectedElement.id}
+					<div class="flex h-full flex-col gap-1 bg-stone-50/80 px-2 pb-2 pt-2">
+						<div class="relative flex-grow">
+							<div class="w-full">
+								<ElementFormRow
+									bind:element={selectedElement}
+									index={selectedIndex}
+									on:delete={() => removeElement(selectedIndex)}
+									on:elementChange={() => handleChangedElements()}
+								/>
+							</div>
+						</div>
+						<div class="flex items-end justify-start">
+							<button
+								on:click={() => addElement(i + 1)}
+								class="block w-fit rounded-md bg-slate-50 text-[0.85rem] font-medium text-slate-400/80 opacity-100 transition-all hover:bg-slate-200/80 hover:text-emerald-600/70 group-hover:opacity-100"
+								><HeroIcon src={Plus} class="w-5 text-slate-400" /></button
+							>
 						</div>
 					</div>
-					<div class="flex items-end justify-start">
-						<button
-							on:click={() => addElement(i + 1)}
-							class="block w-fit rounded-md bg-slate-50 text-[0.85rem] font-medium text-slate-400/80 opacity-100 transition-all hover:bg-slate-200/80 hover:text-emerald-600/70 group-hover:opacity-100"
-							><HeroIcon src={Plus} class="w-5 text-slate-400" /></button
-						>
-					</div>
-				</div>
-			{/key}
+				{/key}
+			{/if}
 		{/if}
 	</div>
 </div>
