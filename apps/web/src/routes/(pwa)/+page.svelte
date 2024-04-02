@@ -1,6 +1,7 @@
 <script lang="ts">
 import Screen from '$lib/components/Screen.svelte'
 import Button from '$lib/components/ui/button/button.svelte'
+import { getEventContext } from '$lib/state/getContexts.js'
 import BadgeCheck from 'lucide-svelte/icons/badge-check'
 import Calendar from 'lucide-svelte/icons/calendar'
 import Map from 'lucide-svelte/icons/map'
@@ -11,6 +12,7 @@ import { dayjs, getMediaUrl } from '@matterloop/util'
 
 export let data
 $: upcoming = data.upcoming
+let event = getEventContext()
 const tabs = [
 	{
 		label: 'Schedule',
@@ -44,34 +46,34 @@ function getContent(key: string) {
 <Screen title="Save Our Sites">
 	<div class="container mx-auto pt-1 md:max-w-7xl">
 		<img
-			src={getMediaUrl(data.event.largeLogo)}
+			src={getMediaUrl($event.largeLogo)}
 			alt="An alt text"
 			class="mx-auto mb-10 mt-0 w-10/12 pb-2 md:w-8/12"
 		/>
 		<div class="rounded-t-xl bg-slate-200/70 p-3 text-center font-medium">
 			<div class="text-base">
-				{getContent('main-start-date')}
+				{$event.getContent('main-start-date')}
 			</div>
-			<div>{getContent('main-start-time')}</div>
+			<div>{$event.getContent('main-start-time')}</div>
 		</div>
 		<div
 			class="mb-2 rounded-b-xl bg-slate-100/70 p-8 text-center text-sm font-medium leading-snug md:text-base"
 		>
 			<div>
 				<div class=" px-4 text-sm leading-tight md:text-lg">
-					{getContent('main-location-name')}
+					{$event.getContent('main-location-name')}
 				</div>
 				<div class="mt-2 px-4 text-sm leading-tight md:text-base">
-					{getContent('main-location-line-1')}
+					{$event.getContent('main-location-line-1')}
 				</div>
 				<div class="px-4 text-sm leading-tight md:text-base">
-					{getContent('main-location-line-2')}
+					{$event.getContent('main-location-line-2')}
 				</div>
 				<div class="mt-2 px-4 text-xs leading-tight md:text-sm">
-					{getContent('main-location-line-3')}
+					{$event.getContent('main-location-line-3')}
 				</div>
 				<div class="px-4 text-xs leading-tight md:text-sm">
-					{getContent('main-location-line-4')}
+					{$event.getContent('main-location-line-4')}
 				</div>
 			</div>
 		</div>

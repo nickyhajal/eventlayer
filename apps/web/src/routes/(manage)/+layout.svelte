@@ -88,7 +88,7 @@ function setMe() {
 </script>
 
 <svelte:head>
-	<title>Eventlayer</title>
+	<title>Eventlayer - Manage</title>
 	<link rel="icon" href={data.event.favicon ? getMediaUrl(data.event.favicon) : '/favicon.png'} />
 </svelte:head>
 <!-- {#if $page.url.pathname.includes('/') && notificationRequestOpen && $me?.community?.isOnboarded}

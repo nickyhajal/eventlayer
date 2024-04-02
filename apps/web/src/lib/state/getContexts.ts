@@ -1,3 +1,4 @@
+import type { eventWritable } from '$lib/client/models/eventWritable'
 import { loadAttendeeStore } from '$lib/util/loadAttendeeSearch'
 import { getContext } from 'svelte'
 import type { Writable } from 'svelte/store'
@@ -11,7 +12,7 @@ export function getMeContext() {
 // 	return getContext<Writable<FormWithElements>>('form')
 // }
 export function getEventContext() {
-	return getContext<Writable<Event>>('event')
+	return getContext<ReturnType<typeof eventWritable>>('event')
 }
 export function getVenuesContext() {
 	return getContext<Writable<Venue[]>>('venues')

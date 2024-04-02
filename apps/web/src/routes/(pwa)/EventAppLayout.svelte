@@ -6,7 +6,7 @@ import { getRawRgb } from '$lib/util/getRawRgb'
 import TabBar from './TabBar.svelte'
 
 const event = getEventContext()
-$: cssVars = Object.entries($event.colors)
+$: cssVars = Object.entries($event?.colors)
 	.map(([key, value]) => {
 		return `--a-${key}: ${getRawRgb(value)};`
 	})

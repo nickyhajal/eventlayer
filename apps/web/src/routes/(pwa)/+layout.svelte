@@ -14,10 +14,11 @@ import 'nprogress/nprogress.css'
 
 import { create, insert, remove, search } from '@orama/orama'
 import { browser } from '$app/environment'
+import { eventWritable } from '$lib/client/models/eventWritable'
 import type { AttendeeStore } from '$lib/types'
 import { loadAttendeeStore } from '$lib/util/loadAttendeeSearch'
 
-import { dayjs } from '@matterloop/util'
+import { dayjs, getMediaUrl } from '@matterloop/util'
 
 import EventAppLayout from './EventAppLayout.svelte'
 
@@ -51,7 +52,7 @@ if (browser) {
 // }
 setContext('attendeeSearcher', attendeeSearcher)
 setContext('seed', +new Date() / 1000)
-setContext('event', writable(data.event))
+setContext('event', eventWritable(data.event))
 $: setMe(), $page.data.me
 NProgress.configure({
 	// Full list: https://github.com/rstacruz/nprogress#configuration
@@ -129,6 +130,7 @@ function setMe() {
 
 <svelte:head>
 	<title>Eventlayer</title>
+	<link rel="icon" href={data.event.favicon ? getMediaUrl(data.event.favicon) : '/favicon.png'} />
 </svelte:head>
 <!-- {#if $page.url.pathname.includes('/') && notificationRequestOpen && $me?.community?.isOnboarded}
       <RequestNotificationPermission notificationWorker={NotificationWorker} />

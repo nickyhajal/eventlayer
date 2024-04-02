@@ -60,7 +60,6 @@ async function createEvent() {
 	toast.success('Saved')
 }
 async function updateMedia(mediaId: string, remoteKey: string) {
-	console.log('update', remoteKey)
 	trpc().event.upsert.mutate({ id: event.id, [remoteKey]: mediaId })
 	invalidateAll()
 }
