@@ -154,9 +154,9 @@ onMount(() => {
 			step={step}
 			min={min}
 			max={max}
-			required={required}
-			disabled={disabled}
-			readonly={readonly}
+			{...required ? { required: true } : {}}
+			{...readonly ? { readonly: true } : {}}
+			{...disabled ? { disabled: true } : {}}
 			class={tw(className)}
 			on:input={handleInput}
 			on:keydown
@@ -175,9 +175,9 @@ onMount(() => {
 			step={step}
 			min={min}
 			max={max}
-			required={required}
-			disabled={disabled}
-			readonly={readonly}
+			{...required ? { required: true } : {}}
+			{...readonly ? { readonly: true } : {}}
+			{...disabled ? { disabled: true } : {}}
 			class={tw(className)}
 			on:input={handleInput}
 			on:keydown
