@@ -25,6 +25,7 @@ export let users: FullEventUser[] = []
 export let event: Partial<Event> = {
 	name: '',
 	subtitle: '',
+	colors: { accent: '' },
 }
 
 let loading = false
@@ -51,6 +52,7 @@ let eventUserTypes = [
 // ]
 $: buttonMsg = event?.id ? 'Save Event' : 'Add Event'
 $: editing = event?.id ? true : false
+$: event.colors = event.colors || { accent: '' }
 $: title = editing ? event?.name : 'Add an Event'
 // let type = eventTypes.find((t) => t.value === (event.type || 'program'))
 async function createEvent() {
@@ -182,6 +184,10 @@ async function addUser(user: FullEventUser) {
 							/>
 						</div>
 					</div>
+				</div>
+				<div class="flex flex-col items-start justify-center gap-1">
+					<Label for="event_accent" class="text-right">Accent Color</Label>
+					<Input id="event_accent" bind:value={event.colors.accent} class="col-span-3" />
 				</div>
 			</div>
 		{/if}

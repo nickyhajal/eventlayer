@@ -24,7 +24,7 @@ const smsMessage = 'Hi SOS, this is '
 			{/each}
 		</Accordion.Root>
 		<div class="mt-10 text-2xl font-semibold">Didn't find what you need?</div>
-		<div class="mt-3 pb-2 text-lg font-semibold text-red-700">Our Contact Info</div>
+		<div class="text-a-accent mt-3 pb-2 text-lg font-semibold">Our Contact Info</div>
 		<div class="flex flex-col gap-2">
 			<!-- <Button
 				href="sms://+15038521120;?&body={encodeURIComponent(smsMessage)}"
@@ -48,8 +48,8 @@ const smsMessage = 'Hi SOS, this is '
 					<div class="text-sm text-slate-600">Send us an email</div>
 					<div class="text-sm font-semibold text-slate-800">hello@saveoursites.com</div>
 				</div>
-				<div class="flex h-10 w-10 items-center justify-center rounded-full bg-red-50">
-					<Mail class="-mt-0.5 h-5 w-5 text-red-600" />
+				<div class="bg-a-accent/10 flex h-10 w-10 items-center justify-center rounded-full">
+					<Mail class="text-a-accent -mt-0.5 h-5 w-5" />
 				</div>
 			</Button>
 		</div>

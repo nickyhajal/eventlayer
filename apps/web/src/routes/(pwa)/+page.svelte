@@ -39,7 +39,6 @@ function getContent(key: string) {
 	}
 	return ''
 }
-$: console.log('>> data', data)
 </script>
 
 <Screen title="Save Our Sites">
@@ -83,14 +82,17 @@ $: console.log('>> data', data)
 					<Button
 						href={href}
 						variant="secondary"
-						class="bg-main border-main hover:bg-main border-b-main/10 text-main flex w-full flex-none flex-col items-start justify-center gap-0.5 border border-b border-opacity-[0.07] bg-opacity-[0.02] py-9 text-left text-sm font-semibold hover:bg-opacity-[0.07] "
+						class="bg-a-accent border-a-accent hover:bg-a-accent border-b-main/10 text-a-accent flex w-full flex-none flex-col items-start justify-center gap-0.5 border border-b border-opacity-[0.07] bg-opacity-[0.02] py-9 text-left text-sm font-semibold hover:bg-opacity-[0.07] "
 					>
 						{#if icon}
 							<div class="border-main/20 mb-0.5 rounded-full border bg-white/40 p-1.5 opacity-80">
-								<svelte:component this={icon} class="text-main/70  h-[1rem] w-[1rem] flex-none" />
+								<svelte:component
+									this={icon}
+									class="text-a-accent/70 h-[1rem]  w-[1rem] flex-none brightness-90"
+								/>
 							</div>
 						{/if}
-						<div>{label}</div>
+						<div class="brightness-90">{label}</div>
 					</Button>
 					<!-- <Button
 						href={href}
@@ -109,10 +111,10 @@ $: console.log('>> data', data)
 					<Button
 						href="/schedule"
 						variant="outline"
-						class="flex h-8 items-center gap-1.5 px-2.5 py-1 text-sm font-medium text-red-600"
+						class="text-a-accent flex h-8 items-center gap-1.5 px-2.5 py-1 text-sm font-medium"
 					>
 						View All
-						<ChevronRight class="h-4 w-4 text-red-600" />
+						<ChevronRight class="text-a-accent h-4 w-4" />
 					</Button>
 				</div>
 				<div class="mb-6 w-[calc(100dvw-0.9rem)] overflow-x-auto lg:w-[calc(100%)] lg:pb-8">

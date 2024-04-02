@@ -58,11 +58,11 @@ $: sponsors =
 	>
 		<Button
 			variant="outline"
-			class="text-main mt-0 grid w-full grid-cols-[1fr_0.7rem] items-center justify-center bg-white"
+			class="text-a-accent mt-0 grid w-full grid-cols-[1fr_0.7rem] items-center justify-center bg-white"
 			href="/sponsors/map"
 		>
 			<div>View Sponsor Map</div>
-			<ChevronRight class="text-main relative -top-[1px] h-5 w-5" />
+			<ChevronRight class="text-a-accent relative -top-[1px] h-5 w-5" />
 		</Button>
 	</div>
 	<div class="container relative mx-auto -mt-2 max-w-7xl bg-slate-100">
@@ -103,7 +103,7 @@ $: sponsors =
 						{/if}
 					</div>
 					<div
-						class="text-main mt-2 flex h-12 w-full items-center justify-around border-t border-slate-100 font-semibold"
+						class="text-a-accent mt-2 flex h-12 w-full items-center justify-around border-t border-slate-100 font-semibold"
 					>
 						{#if url}
 							<a

@@ -17,11 +17,11 @@ const me = getMeContext()
 	>
 		<Button
 			variant="outline"
-			class="text-main mt-0 grid w-full grid-cols-[1fr_0.7rem] items-center justify-center bg-white"
+			class="text-a-accent mt-0 grid w-full grid-cols-[1fr_0.7rem] items-center justify-center bg-white"
 			href="/venues/map"
 		>
 			<div>View Venue Map</div>
-			<ChevronRight class="text-main relative -top-[1px] h-5 w-5" />
+			<ChevronRight class="text-a-accent relative -top-[1px] h-5 w-5" />
 		</Button>
 	</div>
 	<div class="container relative mx-auto -mt-2 max-w-7xl bg-slate-100">
