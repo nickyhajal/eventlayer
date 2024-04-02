@@ -17,8 +17,8 @@ export const loadAttendeeStore = async (store: Writable<AttendeeStore>) => {
 		},
 	})
 	await Promise.all(
-		attendees.map(({ id, firstName, lastName, email }) =>
-			insert(db, { id, firstName, lastName, email }),
+		attendees.map(({ id, firstName, lastName, email, photo }) =>
+			insert(db, { id, firstName, lastName, email, photo }),
 		),
 	)
 	return async (term: string) => {
