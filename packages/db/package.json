@@ -22,10 +22,10 @@
   "prettier": "@matterloop/prettier-config",
   "dependencies": {
     "@libsql/client": "^0.3.5",
-    "dotenv": "^16.0.3",
+    "dotenv": "^16.4.5",
     "drizzle-orm": "^0.28.5",
     "drizzle-zod": "^0.5.1",
-    "pg": "^8.11.3",
+    "pg": "^8.11.4",
     "svelte-persisted-store": "^0.9.1",
     "zod": "^3.22.4"
   },
@@ -33,9 +33,9 @@
     "@matterloop/eslint-config": "^0.2.0",
     "@matterloop/prettier-config": "^0.1.0",
     "@matterloop/tsconfig": "^0.1.0",
-    "dotenv-cli": "^7.3.0",
+    "dotenv-cli": "^7.4.1",
     "drizzle-kit": "^0.19.13",
-    "prettier": "^3.0.3",
-    "typescript": "^5.2.2"
+    "prettier": "^3.2.5",
+    "typescript": "^5.4.3"
   }
 }
