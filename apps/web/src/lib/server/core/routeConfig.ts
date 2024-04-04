@@ -43,11 +43,11 @@ export const routeConfig: RouteConfigTree = {
 	},
 	uris: [
 		{
-			uri: 'add-task',
+			uri: 'manage',
 			conf: {
 				mainClass: 'bg-slate',
 				navClass: 'bg-slate',
-				auth: 'logged-in',
+				auth: 'super-admin',
 			},
 		},
 		{

@@ -5,7 +5,7 @@ import { NODE_ENV } from '$env/static/private'
 import { PUBLIC_BASE_URL } from '$env/static/public'
 import type { RouteConfig } from '$lib/server/core/routeConfig'
 import { getConfigForRoute } from '$lib/server/core/routeHelper'
-import { loadUsers } from '$lib/server/loadUsers'
+import { loadUsers } from '$lib/server/loadUserData'
 import { createTRPCHandle } from 'trpc-sveltekit'
 
 import { lucia } from '@matterloop/api'
@@ -28,7 +28,7 @@ import { userTable } from '@matterloop/db/types'
 // });
 // export const handleError = Sentry.handleErrorWithSentry();
 
-loadUsers()
+// loadUsers()
 
 const handleRouteRedirect = (defaultRedirect = '/', route: RouteConfig) => {
 	const { failedAuthRedirect } = route
@@ -98,13 +98,16 @@ export const handleUserContext: Handle = async ({ event, resolve }) => {
 			event.locals.me = fullUser[0]
 			event.locals.meId = fullUser[0].id
 			if (event.locals.event?.id) {
-				const eventUser = await db.query.eventUserTable.findFirst({
+				const eventUserRow = await db.query.eventUserTable.findFirst({
 					where: and(
 						eq(eventUserTable.userId, user?.id),
 						eq(eventUserTable.eventId, event.locals.event.id),
 					),
 				})
-				event.locals.me = { ...fullUser[0], ...eventUser }
+				if (eventUserRow) {
+					const { id, ...eventUser } = eventUserRow
+					event.locals.me = { ...fullUser[0], ...eventUser, eventUserId: id }
+				}
 			}
 		}
 	}
@@ -135,7 +138,7 @@ const handleLogout: Handle = async ({ event, resolve }) => {
 	if (event.url.pathname === '/logout') {
 		const { session } = await event.locals.auth.validate()
 		if (!session) throw fail(401)
-		await auth.invalidateSession(session.sessionId) // invalidate session
+		await lucia.invalidateSession(session.sessionId) // invalidate session
 		event.locals.auth.setSession(null) // remove cookie
 		redirect(303, '/')
 	}
@@ -150,9 +153,10 @@ const handleRouteConfig: Handle = async ({ event, resolve }) => {
 	} else if (auth === 'logged-in' && !me) {
 		handleRouteRedirect('/login', routeConfig)
 	} else if (auth === 'super-admin' && !me?.isSuperAdmin) {
-		error(404, {
-			message: 'Page not found',
-		})
+		handleRouteRedirect('/login', routeConfig)
+		// error(404, {
+		// 	message: 'Page not found',
+		// })
 	}
 	try {
 		const rsp = await resolve(event)
