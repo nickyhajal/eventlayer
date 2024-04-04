@@ -13,7 +13,7 @@ const smsMessage = 'Hi SOS, this is '
 </script>
 
 <Screen title="FAQs" bigTitle="FAQs">
-	<div class="container mx-auto max-w-7xl px-6 py-8">
+	<div class="mx-auto max-w-7xl px-6 py-8">
 		<div class="text-2xl font-semibold">Questions? Answers.</div>
 		<Accordion.Root>
 			{#each data.content as { id, title, body }}

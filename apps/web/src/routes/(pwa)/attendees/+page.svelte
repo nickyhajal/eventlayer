@@ -75,7 +75,7 @@ $: {
 			bind:value={query}
 		/>
 	</div>
-	<div class="container relative mx-auto -mt-2 max-w-7xl bg-slate-100">
+	<div class="relative mx-auto -mt-2 max-w-7xl bg-slate-100">
 		<div class="mt-4 grid grid-cols-1 gap-4 py-2 lg:grid-cols-2">
 			{#each users as user}
 				{@const {id, firstName, lastName, url, bookingUrl, photo, description} = user}

@@ -10,7 +10,7 @@ const event = getEventContext()
 </script>
 
 <Screen title="Program" bigTitle="Program">
-	<div class="container mx-auto px-6 pt-2 md:max-w-7xl">
+	<div class="mx-auto px-6 pt-2 md:max-w-7xl">
 		<img
 			src={getMediaUrl($event.largeLogo)}
 			alt="An alt text"

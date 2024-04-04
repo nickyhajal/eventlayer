@@ -28,7 +28,7 @@ function getLastType(user: EventUser) {
 	back="/schedule"
 	photo={event.photo}
 >
-	<div class="container mx-auto max-w-7xl py-6">
+	<div class="mx-auto max-w-7xl py-6">
 		<div class="text-base font-semibold text-red-600">
 			{dayjs(data.event.startsAt).format('dddd MMMM Do [at] h:mma')}
 		</div>

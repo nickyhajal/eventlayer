@@ -42,7 +42,7 @@ const topics = {
 </script>
 
 <Screen title={name} back="/speakers">
-	<div class="container mx-auto max-w-7xl py-6">
+	<div class="mx-auto max-w-7xl py-6">
 		<div class="text-base font-semibold text-red-600">
 			<!-- {dayjs(data.v.startsAt).format('dddd MMMM Do [at] h:mma')} -->
 		</div>

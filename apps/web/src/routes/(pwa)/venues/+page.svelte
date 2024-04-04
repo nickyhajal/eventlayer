@@ -24,7 +24,7 @@ const me = getMeContext()
 			<ChevronRight class="text-a-accent relative -top-[1px] h-5 w-5" />
 		</Button>
 	</div>
-	<div class="container relative mx-auto -mt-2 max-w-7xl bg-slate-100">
+	<div class="relative mx-auto -mt-2 max-w-7xl bg-slate-100">
 		<div class="mt-2 grid grid-cols-1 gap-3 py-2 md:grid-cols-2">
 			{#each venues as venue}
 				{#if venue.name}

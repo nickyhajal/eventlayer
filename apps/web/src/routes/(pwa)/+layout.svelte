@@ -129,7 +129,7 @@ function setMe() {
 
 <svelte:head>
 	<title>Eventlayer</title>
-	<link rel="icon" href={data.event.favicon ? getMediaUrl(data.event.favicon) : '/favicon.png'} />
+	<link rel="icon" href={data.event?.favicon ? getMediaUrl(data.event?.favicon) : '/favicon.png'} />
 </svelte:head>
 <!-- {#if $page.url.pathname.includes('/') && notificationRequestOpen && $me?.community?.isOnboarded}
       <RequestNotificationPermission notificationWorker={NotificationWorker} />

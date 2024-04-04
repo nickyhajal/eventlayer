@@ -21,7 +21,7 @@ $: fullAddress = `${venue.street}, ${venue.city}, ${venue.region} ${venue.postal
 	back="/venues"
 	photo={venue.photo}
 >
-	<div class="container mx-auto max-w-7xl px-4 py-6">
+	<div class="mx-auto max-w-7xl px-4 py-6">
 		<div class="text-base font-semibold text-red-600">
 			<!-- {dayjs(data.v.startsAt).format('dddd MMMM Do [at] h:mma')} -->
 		</div>

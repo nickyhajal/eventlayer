@@ -44,7 +44,7 @@ function getContent(key: string) {
 </script>
 
 <Screen title="Save Our Sites">
-	<div class="container mx-auto pt-1 md:max-w-7xl">
+	<div class="mx-auto pt-1 md:max-w-7xl">
 		<img
 			src={getMediaUrl($event.largeLogo)}
 			alt="An alt text"

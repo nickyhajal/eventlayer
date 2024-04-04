@@ -60,7 +60,7 @@ function checkIfUpcoming(event: Event, i: number) {
 </script>
 
 <Screen title="Schedule" bigTitle="Schedule">
-	<div class="container mx-auto max-w-7xl px-2">
+	<div class="mx-auto max-w-7xl px-2">
 		<div class="">
 			<div
 				class="topNav sticky z-40 -mx-3 flex w-[calc(100dvw+0.25rem)] items-center justify-center border-b border-slate-300/50 bg-slate-50 py-2 text-center text-sm text-slate-600 lg:w-full"

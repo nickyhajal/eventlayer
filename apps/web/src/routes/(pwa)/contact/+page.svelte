@@ -11,7 +11,7 @@ const smsMessage = 'Hi SOS, this is '
 </script>
 
 <Screen title="Contact" bigTitle="Contact Us">
-	<div class="container mx-auto max-w-7xl px-6 py-8">
+	<div class="mx-auto max-w-7xl px-6 py-8">
 		<div class="text-2xl font-semibold">Need some assistance?</div>
 		<div class="text-a-accent mt-3 pb-2 text-lg font-semibold">Our Contact Info</div>
 		<div class="flex flex-col gap-2">

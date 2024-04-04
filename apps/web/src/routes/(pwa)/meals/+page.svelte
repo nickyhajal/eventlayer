@@ -7,7 +7,7 @@ const me = getMeContext()
 </script>
 
 <Screen title="Meals" bigTitle="Meals">
-	<div class="container mx-auto px-6 pt-2 md:max-w-7xl">
+	<div class="mx-auto px-6 pt-2 md:max-w-7xl">
 		<div class="pb-12 text-slate-600">
 			<div class="mb-3 mt-5 pr-6 text-2xl font-semibold text-slate-600/70">
 				Here's what to expect if you're hungry
