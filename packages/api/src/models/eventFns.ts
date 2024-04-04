@@ -1,19 +1,20 @@
 import {
+	alias,
 	and,
 	asc,
-	alias,
 	contentTable,
-	ne,
 	db,
 	eq,
-	or,
-	inArray,
 	eventTable,
+	eventUserInfoTable,
 	eventUserTable,
 	formTable,
 	gt,
+	inArray,
 	isNotNull,
 	mediaTable,
+	ne,
+	or,
 	sponsorTable,
 	userTable,
 	venueTable,
@@ -33,9 +34,16 @@ export const EventFns = (args: string | Args) => {
 		get: async () => {
 			const event = await db.query.eventTable.findFirst({
 				where: and(eq(eventTable.id, eventId)),
-				with: { 
-					users: { 
-						with: { user: true } }, photo: true, venue: true, favicon: true, largeLogo: true, content: {where: and(eq(contentTable.eventId, eventId), ne(contentTable.type, 'faq'))} },
+				with: {
+					users: {
+						with: { user: true },
+					},
+					photo: true,
+					venue: true,
+					favicon: true,
+					largeLogo: true,
+					content: { where: and(eq(contentTable.eventId, eventId), ne(contentTable.type, 'faq')) },
+				},
 			})
 			if (event?.content) {
 				return {
@@ -73,7 +81,6 @@ export const EventFns = (args: string | Args) => {
 			const userRows = await usersQuery
 			if (userRows.length) {
 				return userRows.map((user) => {
-					console.log(user)
 					return {
 						photo: user.media,
 						...user.auth_user,
@@ -93,10 +100,17 @@ export const EventFns = (args: string | Args) => {
 				.leftJoin(mediaTable, eq(mediaTable.id, userTable.mediaId))
 			if (userRows.length) {
 				const user = userRows[0]
+				const infoRows = await db.query.eventUserInfoTable.findMany({
+					where: and(
+						eq(eventUserInfoTable.eventId, eventId),
+						eq(eventUserInfoTable.userId, user?.auth_user.id),
+					),
+				})
 				return {
 					...user.auth_user,
 					...user.event_user,
 					photo: user.media,
+					info: keyBy(infoRows, 'key'),
 				}
 			}
 		},
@@ -163,10 +177,15 @@ export const EventFns = (args: string | Args) => {
 			})
 			return rows
 		},
+		getOnboardForm: async () => {
+			const rows = await db.query.formTable.findMany({
+				where: and(eq(formTable.eventId, eventId), eq(formTable.type, 'onboarding')),
+			})
+			return rows
+		},
 		getSubEventSpecialUsers: async () => {
 			const mainEventUser = alias(eventUserTable, 'mainEventUser')
 			const userAlias = alias(userTable, 'user')
-			console.log(eventId)
 			const users = await db
 				.selectDistinctOn([eventUserTable.userId])
 				.from(eventUserTable)
@@ -179,9 +198,9 @@ export const EventFns = (args: string | Args) => {
 				)
 				.where(
 					or(
-					// the related event has a parentId of the main event
-					and(eq(eventTable.eventId, eventId), ne(eventUserTable.type, 'attendee')),
-					and(inArray(mainEventUser.type, ['speaker', 'host']))
+						// the related event has a parentId of the main event
+						and(eq(eventTable.eventId, eventId), ne(eventUserTable.type, 'attendee')),
+						and(inArray(mainEventUser.type, ['speaker', 'host'])),
 					),
 				)
 			return orderBy(users, ['user.lastName', 'user.firstName'], ['asc', 'asc'])

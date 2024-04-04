@@ -1,21 +1,22 @@
+import { relations, sql, type InferModel } from 'drizzle-orm'
 import {
-	pgTable,
-	uuid,
-	text,
-	timestamp,
-	integer,
-	index,
+	boolean,
 	date,
-	pgEnum,
 	doublePrecision,
+	index,
+	integer,
 	json,
 	jsonb,
-	boolean,
+	pgEnum,
+	pgTable,
+	text,
+	timestamp,
+	uuid,
 } from 'drizzle-orm/pg-core'
-import { sql, type InferModel, relations } from 'drizzle-orm'
 import { createInsertSchema } from 'drizzle-zod'
-import { userTable } from './user'
+
 import { eventTable } from './event'
+import { userTable } from './user'
 
 const formElementStatus = pgEnum('form_element_status', ['active', 'inactive'])
 
@@ -69,8 +70,11 @@ export const formElementTable = pgTable(
 		group: integer('group').default(0).notNull(),
 		label: text('label'),
 		placeholder: text('placeholder'),
+		hint: text('hint'),
+		info: text('info'),
 		options: text('options'),
 		props: jsonb('props'),
+		userProps: jsonb('user_props'),
 		key: text('key'),
 		userInfoKey: text('user_info_key'),
 		userInfoPublic: boolean('user_info_public'),
@@ -221,6 +225,5 @@ export const formSchema = createInsertSchema(formTable, {
 	descr: (schema) => schema.descr.default(''),
 })
 export const formGroupSchema = createInsertSchema(formGroupTable, {})
-export const formElementSchema = createInsertSchema(formElementTable, {
-})
+export const formElementSchema = createInsertSchema(formElementTable, {})
 export type FormSchemaType = typeof formSchema

@@ -1,6 +1,5 @@
 <script lang="ts">
 import { page } from '$app/stores'
-import Input from '$lib/components/ui/input/input.svelte'
 import Label from '$lib/components/ui/label/label.svelte'
 import * as Select from '$lib/components/ui/select'
 import { trpc } from '$lib/trpc/client'
@@ -15,20 +14,18 @@ import { IconPopupMenu } from '@matterloop/ui'
 import { debounce, dispatch, getId } from '@matterloop/util'
 
 import Switch from '../ui/switch/switch.svelte'
+import Input from './Input.svelte'
 
 export let element: FormElement
 export let index = 0
 let saving = false
-let lastForm: string
-let elementOptions: Option[] = [{ label: '', value: '' }]
+let lastSavedForm: string
+let elementOptions: Option[] =
+	element?.id && element?.options ? JSON.parse(element.options) : [{ label: '', value: '' }]
 export let even: boolean = false
-onMount(() => {
-	if (element?.id && element?.options) {
-		elementOptions = JSON.parse(element.options)
-	}
-})
 let formElm: HTMLFormElement
 const form = writable<FormElement>({ ...element, props: element?.props || {} })
+let lastForm = JSON.stringify($form)
 const { call, status, enhance } = trpcCaller(trpc($page).formElement.upsert.mutate)
 let typeOptions = [
 	{ label: 'Title', value: 'title' },
@@ -50,15 +47,13 @@ let type = typeOptions.find((t) => t.value === (element.type || 'text'))
 $: $form.type = type?.value || 'text'
 
 async function submitRaw() {
-	console.log(lastForm, JSON.stringify($form), lastForm !== JSON.stringify($form))
-	if (formElm && lastForm !== JSON.stringify($form)) {
+	if (formElm && lastSavedForm !== JSON.stringify($form)) {
 		let shouldSubmit = false
-		if (lastForm) shouldSubmit = true
-		lastForm = JSON.stringify($form)
+		if (lastSavedForm) shouldSubmit = true
+		lastSavedForm = JSON.stringify($form)
 		if (!shouldSubmit || saving) return
 
 		saving = true
-		console.log('>>> SAVE')
 		const res = await call({
 			...$form,
 		})
@@ -75,8 +70,11 @@ async function submitRaw() {
 function removeElement() {
 	$dispatch('removeElement', { id: $form.id })
 }
-const save = debounce(submitRaw, 500)
-$: element = $form
+const save = debounce(submitRaw, 900)
+$: if (lastForm !== JSON.stringify($form)) {
+	element = $form
+	lastForm = JSON.stringify($form)
+}
 $: save(), $form
 $: {
 	if (elementOptions.length) {
@@ -123,17 +121,24 @@ $: {
 					</div>
 				{/if}
 			</div>
-			{#if ['select'].includes($form.type)}
-				<div class="mt-3 rounded-xl bg-slate-50 p-8 font-medium text-slate-500">
-					Coming Soon - Talk to Nicky if this would be useful
-				</div>
-			{:else if $form.type === 'markdown'}
+			{#if $form.type === 'markdown'}
 				<Input type="textarea" placeholder="Content" bind:value={$form.content} />
-			{:else if $form.type === 'multi'}
+			{:else if $form.type === 'multi' || $form.type === 'select'}
 				<div class="flex flex-col">
-					<div class="w-1/2">
+					<div class="w-full">
+						<label for="label">Label</label>
 						<Input name="label" placeholder="Form Label" bind:value={$form.label} />
 					</div>
+					{#if $form.type === 'select'}
+						<div class="w-full">
+							<label for="placeholder">Select Placeholder</label>
+							<Input
+								name="placeholder"
+								placeholder="Form Placeholder"
+								bind:value={$form.placeholder}
+							/>
+						</div>
+					{/if}
 					<div class="mb-1 mt-3 flex flex-col gap-1 text-sm font-semibold text-slate-600">
 						Options
 					</div>
@@ -146,11 +151,22 @@ $: {
 						{/each}
 					</div>
 					<button
-						class="mb-6 mt-1 block w-full rounded-lg bg-slate-100 py-2 text-center text-sm text-slate-500"
+						class="mb-6 mt-1 block w-full rounded-md bg-slate-700 py-1 text-center text-sm text-slate-100"
 						on:click|stopPropagation|preventDefault={() =>
 							(elementOptions = [...elementOptions, { label: '', value: '' }])}
 						>Add Option</button
 					>
+					{#if $form.type === 'multi'}
+						<div class="w-full">
+							<label for="maxSelected">Max Selections</label>
+							<Input
+								name="maxSelected"
+								type="select"
+								options={[{label: 'No max', value: -1}, ...Array(elementOptions.length).fill(0).map((_, i) => ({label: `${i + 1}`, value: i + 1}))]}
+								bind:value={$form.props.maxSelected}
+							/>
+						</div>
+					{/if}
 				</div>
 			{:else if $form.type === 'editor'}
 				<Input name="label" placeholder="Label" bind:value={$form.label} />
@@ -171,6 +187,10 @@ $: {
 					/>
 				{/if}
 			{/if}
+			<label for="info">Info</label>
+			<Input name="info" placeholder="Info" bind:value={$form.info} />
+			<label for="hint">Hint</label>
+			<Input name="hint" placeholder="Input Hint" bind:value={$form.hint} />
 			<label for="className">Input HTML Classes</label>
 			<Input name="className" placeholder="HTML Classes" bind:value={$form.className} />
 			<label for="wrapperClassName">Wrapper HTML Classes</label>
@@ -190,10 +210,13 @@ $: {
 				<label for="userInfoPublic">Show on Profile</label>
 				<Switch name="userInfoPublic" bind:checked={$form.userInfoPublic} class="mt-2" />
 			</div>
-			<!-- <div class="flex gap-1">
-				<Input name="page" type="number" placeholder="Page" bind:value={$form.page} />
-				<Input name="group" placeholder="Element Group" type="number" bind:value={$form.group} />
-			</div> -->
+			<div class="mt-6 flex gap-1 border-t border-slate-200 pt-3">
+				<div>
+					<label for="page">Page</label>
+					<Input name="page" type="number" placeholder="Page" bind:value={$form.page} />
+				</div>
+				<!-- <Input name="group" placeholder="Element Group" type="number" bind:value={$form.group} /> -->
+			</div>
 		</div>
 	</form>
 </div>

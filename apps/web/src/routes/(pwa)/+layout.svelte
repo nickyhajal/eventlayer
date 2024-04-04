@@ -12,7 +12,6 @@ import { writable, type Writable } from 'svelte/store'
 
 import 'nprogress/nprogress.css'
 
-import { create, insert, remove, search } from '@orama/orama'
 import { browser } from '$app/environment'
 import { eventWritable } from '$lib/client/models/eventWritable'
 import type { AttendeeStore } from '$lib/types'

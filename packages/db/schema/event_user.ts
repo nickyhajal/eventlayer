@@ -1,11 +1,12 @@
 import { relations, sql } from 'drizzle-orm'
 import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { createInsertSchema } from 'drizzle-zod'
+import { z } from 'zod'
 
 import { eventTable } from './event'
+import { formTable } from './form'
 import { sponsorTable } from './sponsor'
 import { User, userSchema, userTable } from './user'
-import { formTable } from './form'
 
 export const eventUserTable = pgTable('event_user', {
 	id: uuid('id')
@@ -56,7 +57,9 @@ export const eventUserRelations = relations(eventUserTable, ({ many, one }) => (
 export const eventUserSchema = createInsertSchema(eventUserTable, {
 	type: (schema) => schema.type.min(1).default(''),
 })
-export const upsertEventUserSchema = userSchema.merge(eventUserSchema)
+export const upsertEventUserSchema = userSchema.merge(eventUserSchema).extend({
+	info: z.record(z.string(), z.object({ value: z.string() })).optional(),
+})
 export type EventUser = typeof eventUserTable.$inferSelect
 export type FullEventUser = EventUser & User
 // export type eventUserSchemaType = typeof eventUserSchema

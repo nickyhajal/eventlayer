@@ -6,11 +6,13 @@ import { getRawRgb } from '$lib/util/getRawRgb'
 import TabBar from './TabBar.svelte'
 
 const event = getEventContext()
-$: cssVars = Object.entries($event?.colors)
-	.map(([key, value]) => {
-		return `--a-${key}: ${getRawRgb(value)};`
-	})
-	.join(' ')
+$: cssVars = $event?.colors
+	? Object.entries($event?.colors)
+			.map(([key, value]) => {
+				return `--a-${key}: ${getRawRgb(value)};`
+			})
+			.join(' ')
+	: ''
 </script>
 
 <div class="bg-slate-800 lg:grid lg:h-full lg:grid-cols-[15rem_1fr] lg:bg-white" style={cssVars}>

@@ -24,6 +24,7 @@ interface FormElement {
 export let elements: FormElement[]
 export let rowClass = ''
 export let values = {}
+export let shouldAutoFocus = true
 export let includedComponents: { [key: string]: SvelteComponent } = {}
 export let handleRowClick: false | ((e: FormElement) => void) = false
 export let selectedId: string
@@ -33,12 +34,12 @@ function getVisibleElements(elements) {
 }
 </script>
 
-{#each elements as el}
+{#each elements as el, i}
 	<div
 		class="{selectedId === el.id ? 'bg-yellow-50' : ''} {rowClass}"
 		on:click={() => handleRowClick && handleRowClick(el)}
-		role="button"
-		tabindex="-1"
+		role={handleRowClick ? 'button' : ''}
+		tabindex={handleRowClick ? '-1' : ''}
 	>
 		{#if el.length}
 			<div class={el[0].rowClass}>
@@ -56,7 +57,11 @@ function getVisibleElements(elements) {
 				</FormRow>
 			</div>
 		{:else}
-			<Element props={el} bind:values={values} includedComponents={includedComponents} />
+			<Element
+				props={{...el, autofocus: shouldAutoFocus && i === 0}}
+				bind:values={values}
+				includedComponents={includedComponents}
+			/>
 		{/if}
 	</div>
 {/each}

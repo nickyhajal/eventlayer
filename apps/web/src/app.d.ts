@@ -14,6 +14,7 @@ declare global {
 			routeConfig: RouteConfig
 			auth: import().AuthRequest
 			user: (import().User & Partial<EventUser>) | null
+			me: (import().User & Partial<EventUser>) | null
 			event: Event
 			session: import().Session | null
 		}

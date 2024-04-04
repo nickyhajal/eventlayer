@@ -1,18 +1,26 @@
 import { initTRPC } from '@trpc/server'
-import { procedureWithContext, type TrpcContext, verifyMe } from '../procedureWithContext'
 import { z } from 'zod'
-import { and, eq, gte, inArray } from '@matterloop/db'
+
 import {
+	and,
 	db,
-	formSessionTable,
-	type FormSession,
-	formResponseTable,
+	eq,
+	eventUserInfoTable,
+	FormElement,
 	formElementTable,
-	type FormResponse,
 	formResponseStatTable,
+	formResponseTable,
+	formSessionTable,
+	gte,
+	inArray,
+	type FormResponse,
+	type FormSession,
 } from '@matterloop/db'
 import { byKey, dayjs, makeCleanNumber } from '@matterloop/util'
+
 import { NotAuthdError } from '../core/Errors'
+import { procedureWithContext, verifyMe, type TrpcContext } from '../procedureWithContext'
+
 // import { NotAuthdError } from '$lib/server/core/Errors'
 
 const t = initTRPC.context<TrpcContext>().create()
@@ -69,8 +77,8 @@ export const formSessionProcedures = t.router({
 				return row
 			}
 		}),
-	submitReport: procedureWithContext.input(submitSchema).mutation(async ({ ctx, input }) => {
-		const { formId, companyId, sessionId, responses, submissionDate, companyUserFormId } = input
+	submit: procedureWithContext.input(submitSchema).mutation(async ({ ctx, input }) => {
+		const { formId, sessionId, responses, submissionDate } = input
 		if (!ctx?.me?.id && !sessionId) {
 			throw NotAuthdError()
 		}
@@ -117,29 +125,37 @@ export const formSessionProcedures = t.router({
 					.where(eq(formSessionTable.id, session.id))
 			}
 		}
+
+		// If we have a session, proceed
 		if (session !== false) {
 			const { formId, id: sessionId } = session
+
+			// Get the elements related to each sent response
 			const elements = responses?.length
 				? await db.query.formElementTable.findMany({
 						where: inArray(
 							formElementTable.id,
 							responses.map(({ id }) => id),
 						),
-				  })
+					})
 				: []
 			const elementsById = byKey('id', elements)
-			const values = responses.map(({ id: elementId, value }) => ({
-				userId,
-				companyId,
-				formId,
-				elementId,
-				value: [ 'metric',  'number'].includes(
-					elementsById?.[elementId]?.type || '',
-				)
-					? makeCleanNumber(value)
-					: value,
-				sessionId,
-			}))
+			const needsUserSync: FormElement[] = []
+			const values = responses.map(({ id: elementId, value }) => {
+				const element = elementsById?.[elementId]
+				if (element?.userInfoKey) {
+					needsUserSync.push(element)
+				}
+				return {
+					userId,
+					formId,
+					elementId,
+					value: ['metric', 'number'].includes(element?.type || '')
+						? makeCleanNumber(value)
+						: value,
+					sessionId,
+				}
+			})
 			let rows: FormResponse[] = []
 			if (editing) {
 				await Promise.all(
@@ -167,6 +183,42 @@ export const formSessionProcedures = t.router({
 				)
 			} else {
 				rows = await db.insert(formResponseTable).values(values).returning()
+			}
+
+			// Sync to user values
+			console.log(needsUserSync)
+			if (needsUserSync.length) {
+				await Promise.all(
+					needsUserSync.map(async (element) => {
+						const { userInfoKey, userInfoPublic } = element
+						if (!userInfoKey) return
+						const response = values.find(({ elementId }) => elementId === element.id)
+						console.log(response)
+						if (!response) return
+						const existing = await db.query.eventUserInfoTable.findFirst({
+							where: and(
+								eq(eventUserInfoTable.eventId, eventId),
+								eq(eventUserInfoTable.userId, userId),
+								eq(eventUserInfoTable.key, userInfoKey),
+							),
+						})
+						if (existing) {
+							await db
+								.update(eventUserInfoTable)
+								.set({ value: response.value || '' })
+								.where(eq(eventUserInfoTable.id, existing.id))
+						} else {
+							await db.insert(eventUserInfoTable).values({
+								type: 'info',
+								key: userInfoKey,
+								value: response.value,
+								public: userInfoPublic,
+								userId,
+								eventId,
+							})
+						}
+					}),
+				)
 			}
 			return rows
 		}

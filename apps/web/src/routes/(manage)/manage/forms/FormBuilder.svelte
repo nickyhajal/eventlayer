@@ -21,7 +21,6 @@ let selectedElement = $form?.elements?.[0] || null
 let lastElement = ''
 $: selectedIndex = $form.elements?.findIndex((el) => el.id === selectedElement?.id)
 $: selectedId = selectedElement?.id
-$: console.log(selectedElement)
 $: {
 	if (lastElement !== JSON.stringify(selectedElement)) {
 		const index = $form.elements.findIndex((el) => el.id === selectedElement?.id)
@@ -108,7 +107,7 @@ function handleDndFinalize(e) {
 							on:click={() => selectedElement = element}
 							class="mb-1 flex w-full flex-col rounded-lg px-2 pb-2 pr-8 pt-1 text-left text-[0.85rem] font-medium text-stone-600 {selectedElement.id === element.id ? 'bg-stone-200/50' : 'bg-transparent'}"
 						>
-							<div class="mt-[1px] line-clamp-2">{element.label}</div>
+							<div class="mt-[1px] line-clamp-2">{element.content || element.label}</div>
 							<div
 								class=" h-fit rounded-md bg-stone-200/70 px-1 py-[1px] text-[0.8rem] text-stone-700/70"
 							>
@@ -151,29 +150,27 @@ function handleDndFinalize(e) {
 			{/if}
 		</div>
 		{#if $form.elements.length}
-			{#if selectedElement.id}
-				{#key selectedElement.id}
-					<div class="flex h-full flex-col gap-1 bg-stone-50/80 px-2 pb-2 pt-2">
-						<div class="relative flex-grow">
-							<div class="w-full">
-								<ElementFormRow
-									bind:element={selectedElement}
-									index={selectedIndex}
-									on:delete={() => removeElement(selectedIndex)}
-									on:elementChange={() => handleChangedElements()}
-								/>
-							</div>
-						</div>
-						<div class="flex items-end justify-start">
-							<button
-								on:click={() => addElement(i + 1)}
-								class="block w-fit rounded-md bg-slate-50 text-[0.85rem] font-medium text-slate-400/80 opacity-100 transition-all hover:bg-slate-200/80 hover:text-emerald-600/70 group-hover:opacity-100"
-								><HeroIcon src={Plus} class="w-5 text-slate-400" /></button
-							>
+			{#key selectedElement.id}
+				<div class="flex h-full flex-col gap-1 bg-stone-50/80 px-2 pb-2 pt-2">
+					<div class="relative flex-grow">
+						<div class="sticky top-4 w-full">
+							<ElementFormRow
+								bind:element={selectedElement}
+								index={selectedIndex}
+								on:delete={() => removeElement(selectedIndex)}
+								on:elementChange={() => handleChangedElements()}
+							/>
 						</div>
 					</div>
-				{/key}
-			{/if}
+					<div class="flex items-end justify-start">
+						<button
+							on:click={() => addElement(i + 1)}
+							class="block w-fit rounded-md bg-slate-50 text-[0.85rem] font-medium text-slate-400/80 opacity-100 transition-all hover:bg-slate-200/80 hover:text-emerald-600/70 group-hover:opacity-100"
+							><HeroIcon src={Plus} class="w-5 text-slate-400" /></button
+						>
+					</div>
+				</div>
+			{/key}
 		{/if}
 	</div>
 </div>

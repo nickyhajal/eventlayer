@@ -17,12 +17,14 @@ interface ReceiveProps {
 	className?: string
 	placeholder?: string
 	hide?: boolean
+	autofocus?: boolean
 	name?: string
 	style?: string
 	options?: any
 	multi?: boolean
 	type?: string
 	bind?: string
+	info?: string
 	containerStyles?: string
 	classes?: string
 	extra?: string
@@ -40,8 +42,10 @@ $: props = receiveProps.props
 $: handleClick = receiveProps.handleClick
 $: addedClass = receiveProps['class']
 $: min = receiveProps.min
+$: info = receiveProps.info
 $: max = receiveProps.max
 $: component = receiveProps.component
+$: autofocus = receiveProps.autofocus
 $: shellClass = receiveProps.shellClass
 $: className = receiveProps.className
 $: placeholder = receiveProps.placeholder
@@ -71,9 +75,13 @@ component = component || includedComponents[options?.component || '']
 			bind:value={values[name || bind || 'bindcatch']}
 		/>
 	{:else if type === 'title'}
-		<div class="mb-2 mt-4 text-lg font-semibold text-slate-500">{label}</div>
+		<div
+			class={tw`mb-2 mt-4 text-lg font-semibold text-slate-500 ${classes} ${addedClass} ${className}`}
+		>
+			{content}
+		</div>
 	{:else if type === 'markdown'}
-		<Markdown data={content} />
+		<Markdown data={content} class={tw(`font-medium text-slate-500 ${className}`)} />
 	{:else if type === 'button'}
 		<Button class={tw(`${className} ${addedClass}`)} on:click={() => handleClick && handleClick()}>
 			{label}</Button
@@ -94,6 +102,8 @@ component = component || includedComponents[options?.component || '']
 			max={max}
 			name={name}
 			hint={hint}
+			info={info}
+			autofocus={autofocus}
 			multi={multi}
 			style={style}
 			{...props}

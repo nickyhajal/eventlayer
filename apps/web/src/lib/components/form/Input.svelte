@@ -1,7 +1,9 @@
 <script lang="ts">
+import { parse } from 'filepond'
 import { createEventDispatcher, onMount, type ComponentProps } from 'svelte'
 import type { Action } from 'svelte/action'
 
+import MultiSelectBox from '@matterloop/ui/src/components/form/MultiSelectBox.svelte'
 import { tw } from '@matterloop/util'
 
 import Input from '../ui/input/input.svelte'
@@ -15,6 +17,7 @@ export { className as class }
 export let value: string | number | null | undefined | string[] = ''
 export let type = 'text'
 export let hint = ''
+export let info = ''
 export let label = ''
 export let name = ''
 export let filterText = ''
@@ -70,9 +73,12 @@ onMount(() => {
 </script>
 
 {#if label}
-	<label class="block w-9/12 pb-1 text-[0.875rem] font-medium text-slate-700" for={name}
+	<label class="block w-9/12 pb-1.5 text-[0.875rem] font-medium text-slate-700" for={name}
 		>{label}</label
 	>
+{/if}
+{#if info}
+	<div class="-mt-0.5 pb-1.5 text-[0.85rem] text-slate-500">{info}</div>
 {/if}
 <span class={`${className} input-${type}`} style={wrapStyle}>
 	{#if type && type === 'textarea'}
@@ -83,8 +89,10 @@ onMount(() => {
 			style={style}
 			maxlength={maxlength}
 			value={value}
-			autofocus={autofocus}
-			required={required}
+			{...required ? { required: true } : {}}
+			{...readonly ? { readonly: true } : {}}
+			{...disabled ? { disabled: true } : {}}
+			{...autofocus ? { autofocus: true } : {}}
 			on:keydown
 			on:mouseover
 			on:mouseout
@@ -102,7 +110,7 @@ onMount(() => {
 		<Select
 			placeholder={placeholder}
 			required={required}
-			items={options}
+			options={typeof options === 'string' ? JSON.parse(options) : options}
 			bind:value={value}
 			on:select
 			on:mouseover
@@ -111,6 +119,21 @@ onMount(() => {
 			on:blur
 			class={className}
 		></Select>
+	{:else if type && type === 'multi'}
+		<input type="hidden" name={name} value={value} />
+		<MultiSelectBox
+			placeholder={placeholder}
+			required={required}
+			options={typeof options === 'string' ? JSON.parse(options) : options}
+			bind:value={value}
+			{...$$restProps}
+			on:select
+			on:mouseover
+			on:mouseout
+			on:focus
+			on:blur
+			class={className}
+		/>
 		<!-- {:else if type && type === 'sortableInputList'}
     <SortableInputList
       {placeholder}
@@ -157,6 +180,7 @@ onMount(() => {
 			{...required ? { required: true } : {}}
 			{...readonly ? { readonly: true } : {}}
 			{...disabled ? { disabled: true } : {}}
+			{...autofocus ? { autofocus: true } : {}}
 			class={tw(className)}
 			on:input={handleInput}
 			on:keydown
@@ -165,7 +189,6 @@ onMount(() => {
 			on:paste
 			bind:value={value}
 			maxlength={maxlength}
-			autofocus={autofocus}
 			on:focus={(e) => (handleFocus(), (focused = true))}
 			on:blur={(e) => (handleBlur(), (focused = false))}
 		/>
@@ -178,6 +201,7 @@ onMount(() => {
 			{...required ? { required: true } : {}}
 			{...readonly ? { readonly: true } : {}}
 			{...disabled ? { disabled: true } : {}}
+			{...autofocus ? { autofocus: true } : {}}
 			class={tw(className)}
 			on:input={handleInput}
 			on:keydown
@@ -186,7 +210,6 @@ onMount(() => {
 			on:paste
 			bind:value={value}
 			maxlength={maxlength}
-			autofocus={autofocus}
 			on:focus={(e) => (handleFocus(), (focused = true))}
 			on:blur={(e) => (handleBlur(), (focused = false))}
 		/>
