@@ -209,14 +209,14 @@ export const userProcedures = t.router({
 		}),
 	sendWelcomeEmail: procedureWithContext
 		.use(verifyAdmin())
-		.input(z.object({ email: z.string(), to: z.string().optional() }))
+		.input(z.object({ userId: z.string() }))
 		.mutation(async ({ ctx, input }) => {
-			const user = await db.query.userTable.findFirst({ where: eq(userTable.email, input.email) })
+			const user = await db.query.userTable.findFirst({ where: eq(userTable.id, input.userId) })
 			if (!user) {
 				return error(401, 'No user found')
 			}
 			const eventUser = await db.query.eventUserTable.findFirst({
-				where: eq(eventUserTable.id, user.id),
+				where: eq(eventUserTable.userId, user.id),
 			})
 			if (!eventUser) {
 				return error(401, 'No user found')
