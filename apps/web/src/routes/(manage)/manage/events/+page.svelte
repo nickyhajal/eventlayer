@@ -39,17 +39,15 @@ async function createEvent() {
 }
 </script>
 
-<AdminScreen>
-	<div class="">
-		<div class="flex items-center gap-3">
-			<div class="text-2xl font-semibold">Events</div>
-			<Button variant="outline" class="h-7 py-[0.3rem] pl-1.5 pr-3" on:click={() => addOpen = true}>
-				<Plus class="mr-1 w-[1rem] text-slate-700" />
-				Add Event</Button
-			>
-		</div>
-		<EventTable events={data.events} />
+<AdminScreen title={true}>
+	<div class="flex items-center gap-5" slot="title">
+		<div class="text-2xl font-semibold">Events</div>
+		<Button variant="outline" class="h-7 py-[0.3rem] pl-1.5 pr-3" on:click={() => addOpen = true}>
+			<Plus class="mr-1 w-[1rem] text-slate-700" />
+			Add Event</Button
+		>
 	</div>
+	<EventTable events={data.events} />
 </AdminScreen>
 
 <Dialog.Root bind:open={addOpen}>

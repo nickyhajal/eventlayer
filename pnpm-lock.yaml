@@ -93,6 +93,9 @@ importers:
       bits-ui:
         specifier: ^0.14.0
         version: 0.14.0(svelte@4.2.12)
+      carta-md:
+        specifier: ^3.6.1
+        version: 3.6.1(svelte@4.2.12)
       clsx:
         specifier: ^2.1.0
         version: 2.1.0
@@ -5197,6 +5200,10 @@ packages:
       tslib: 2.6.2
     dev: false
 
+  /@speed-highlight/core@1.2.2:
+    resolution: {integrity: sha512-Yb3ewAUq7QwLbU+vF28dxkOmBJG5bHUVWZWQBnUt2GIhVWdiShKcE6kBMsCRXvD8AuK7gy0rR4qNckqZnCzEFw==}
+    dev: false
+
   /@steeze-ui/heroicons@2.2.3:
     resolution: {integrity: sha512-bv4YK375U9TDS50SmJ5VdFy2UmMhgKbJCCbo6IUU3qs2luEj2VX6sQoDy96j8AIKttxMd62ih1j0lZj7CTjIfA==}
     dev: true
@@ -6575,6 +6582,16 @@ packages:
 
   /caniuse-lite@1.0.30001605:
     resolution: {integrity: sha512-nXwGlFWo34uliI9z3n6Qc0wZaf7zaZWA1CPZ169La5mV3I/gem7bst0vr5XQH5TJXZIMfDeZyOrZnSlVzKxxHQ==}
+
+  /carta-md@3.6.1(svelte@4.2.12):
+    resolution: {integrity: sha512-wnER8I9wVcrSCfpWN2eQvHIIrUW8orY8k5iOQPruOA88XH12tWUyj2oV5WRvHQCvwRgL9m8tZQtLfnKtqj/fEA==}
+    peerDependencies:
+      svelte: ^3.54.0 || ^4.0.0
+    dependencies:
+      '@speed-highlight/core': 1.2.2
+      marked: 9.1.6
+      svelte: 4.2.12
+    dev: false
 
   /caseless@0.12.0:
     resolution: {integrity: sha512-4tYFyifaFfGacoiObjJegolkwSU4xQNGbVgUiNYVUxbQ2x2lUsFvY4hVgVzGiIe6WLOPqycWXA40l+PWsxthUw==}
@@ -9870,6 +9887,12 @@ packages:
     dependencies:
       p-defer: 1.0.0
     dev: true
+
+  /marked@9.1.6:
+    resolution: {integrity: sha512-jcByLnIFkd5gSXZmjNvS1TlmRhCXZjIzHYlaGkPlLIekG55JDR2Z4va9tZwCiP+/RDERiNhMOFu01xd6O5ct1Q==}
+    engines: {node: '>= 16'}
+    hasBin: true
+    dev: false
 
   /matcher@3.0.0:
     resolution: {integrity: sha512-OkeDaAZ/bQCxeFAozM55PKcKU0yJMPGifLwV4Qgjitu+5MoAfSQN4lsLJeXZ1b8w0x+/Emda6MZgXS1jvsapng==}

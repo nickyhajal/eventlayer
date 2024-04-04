@@ -22,7 +22,7 @@ export const eventUserTable = pgTable('event_user', {
 	sponsorId: uuid('sponsor_id').references(() => sponsorTable.id, { onDelete: 'cascade' }),
 	title: text('title'),
 	onboardFormId: uuid('onboard_form_id'),
-	onboardStatus: text('onboard_status').default('pending'),
+	onboardStatus: text('onboard_status').default('not-sent'),
 	userId: uuid('user_id').references(() => userTable.id, { onDelete: 'cascade' }),
 	eventId: uuid('event_id').references(() => eventTable.id, { onDelete: 'cascade' }),
 

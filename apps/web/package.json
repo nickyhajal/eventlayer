@@ -78,6 +78,7 @@
 		"@types/pg": "^8.11.4",
 		"bigger-picture": "^1.1.16",
 		"bits-ui": "^0.14.0",
+		"carta-md": "^3.6.1",
 		"clsx": "^2.1.0",
 		"cmdk-sv": "^0.0.13",
 		"csv-parse": "^5.5.5",

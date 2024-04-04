@@ -15,6 +15,7 @@ import {
 	mediaTable,
 	ne,
 	or,
+	pageTable,
 	sponsorTable,
 	userTable,
 	venueTable,
@@ -170,6 +171,24 @@ export const EventFns = (args: string | Args) => {
 				where: and(eq(contentTable.eventId, eventId), eq(contentTable.type, 'faq')),
 			})
 			return content
+		},
+		getPages: async () => {
+			const rows = await db.query.pageTable.findMany({
+				where: and(eq(contentTable.eventId, eventId)),
+			})
+			return rows
+		},
+		getPageByPath: async (path: string) => {
+			const row = await db.query.pageTable.findFirst({
+				where: and(eq(pageTable.eventId, eventId), eq(pageTable.path, path)),
+			})
+			return row
+		},
+		getPageById: async (id: string) => {
+			const row = await db.query.pageTable.findFirst({
+				where: and(eq(pageTable.eventId, eventId), eq(pageTable.id, id)),
+			})
+			return row
 		},
 		getForms: async () => {
 			const rows = await db.query.formTable.findMany({

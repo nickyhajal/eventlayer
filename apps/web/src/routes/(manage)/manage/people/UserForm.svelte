@@ -14,7 +14,7 @@ import Check from 'lucide-svelte/icons/check'
 import { toast } from 'svelte-sonner'
 
 import type { FullEventUser, User } from '@matterloop/db'
-import { tw } from '@matterloop/util'
+import { merge, tw } from '@matterloop/util'
 
 export let user: Partial<FullEventUser> = {
 	firstName: '',
@@ -29,6 +29,11 @@ export let showTitle = true
 let error = ''
 let userInEvent = false
 let emailConfirmed: string = user?.id ? 'existing-user' : ''
+user.info = merge(user?.info || {}, {
+	company: { value: '' },
+	title: { value: '' },
+	linkedin_url: { value: '' },
+})
 $: buttonMsg = emailConfirmed ? (user?.id ? 'Save User' : 'Add User') : 'Check Email'
 $: editing = user?.id ? true : false
 $: title = editing ? `${user?.firstName} ${user?.lastName}` : 'Add a User'
@@ -45,7 +50,6 @@ let type = user?.type
 	? userTypes.find(({ value }) => value === user.type)
 	: { value: 'attendee', label: 'Attendee' }
 $: user.type = type.value
-$: user.info = user?.info || {}
 let userExistsNotInEvent: User | false = false
 let image = ''
 async function saveUser() {

@@ -21,6 +21,7 @@ import { capitalize, debounce, getMediaUrl } from '@matterloop/util'
 export let simplified = false
 export let inDialog = false
 export let titleClass = ''
+export let showTitle = true
 export let users: FullEventUser[] = []
 export let event: Partial<Event> = {
 	name: '',
@@ -78,12 +79,14 @@ async function addUser(user: FullEventUser) {
 <form on:submit={createEvent}>
 	<div class="grid {inDialog ? 'grid-cols-1 px-0' : 'grid-cols-[24rem_24rem]'} gap-8">
 		<div>
-			{#if inDialog}
-				<Dialog.Header>
-					<Dialog.Title>{title}</Dialog.Title>
-				</Dialog.Header>
-			{:else}
-				<div class={tw(`mb-2 mt-0 text-2xl font-semibold ${titleClass}`)}>{title} Settings</div>
+			{#if showTitle}
+				{#if inDialog}
+					<Dialog.Header>
+						<Dialog.Title>{title}</Dialog.Title>
+					</Dialog.Header>
+				{:else}
+					<div class={tw(`mb-2 mt-0 text-2xl font-semibold ${titleClass}`)}>{title} Settings</div>
+				{/if}
 			{/if}
 			<div class="grid gap-4 py-4">
 				<div class="flex flex-col items-start justify-center gap-1">

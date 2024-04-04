@@ -10,7 +10,7 @@ import HelpCircle from 'lucide-svelte/icons/help-circle'
 import Home from 'lucide-svelte/icons/home'
 import Mail from 'lucide-svelte/icons/mail'
 import Pin from 'lucide-svelte/icons/map-pinned'
-import Menu from 'lucide-svelte/icons/menu'
+import SquareMenu from 'lucide-svelte/icons/menu-square'
 import NotePadText from 'lucide-svelte/icons/notepad-text'
 import Paintbrush from 'lucide-svelte/icons/paintbrush'
 import Settings from 'lucide-svelte/icons/settings'
@@ -81,6 +81,11 @@ let links = [
 		icon: FileQuestion,
 	},
 	{
+		path: '/menus',
+		label: 'Menus',
+		icon: SquareMenu,
+	},
+	{
 		section: true,
 		label: 'Settings',
 	},
@@ -115,7 +120,7 @@ setContext('venues', writable(data.venues))
 			<input
 				type="text"
 				placeholder="Search anything..."
-				class="font-xl w-8/12 rounded-xl border border-stone-100 bg-white px-5 py-3 font-medium"
+				class="font-xl w-8/12 rounded-md bg-white px-4 py-3 font-medium !outline-0 !ring-0 transition-all focus-within:outline-none focus-within:ring-0 hover:bg-stone-50 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 active:outline-none active:ring-0"
 			/>
 		</div>
 	</div>

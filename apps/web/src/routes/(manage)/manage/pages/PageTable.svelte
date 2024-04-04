@@ -4,11 +4,13 @@ import { type FilterFn } from '@tanstack/svelte-table'
 import { goto } from '$app/navigation'
 import Table from '$lib/components/ui/Table.svelte'
 
-import type { User } from '@matterloop/db'
+import type { Form } from '@matterloop/db'
 // import { rankItem } from '@tanstack/match-sorter-utils';
 import { capitalize, dayjs } from '@matterloop/util'
 
-export let rows: User[]
+import Page from '../+page.svelte'
+
+export let rows: Page[]
 
 const globalFilterFn: FilterFn<any> = (row, columnId, value, addMeta) => {
 	if (Array.isArray(value)) {
@@ -17,33 +19,34 @@ const globalFilterFn: FilterFn<any> = (row, columnId, value, addMeta) => {
 	}
 }
 const onRowClick = (row: Row<Event>) => {
-	goto(`/manage/people/${row.original.id}`)
+	goto(`/manage/pages/${row.original.id}`)
 }
 
-const columns: ColumnDef<User>[] = [
+const columns: ColumnDef<Form>[] = [
 	{
-		accessorKey: 'type',
-		header: 'Type',
+		accessorKey: 'status',
+		header: 'Status',
 		cell: (info) => capitalize(info.getValue()),
 		filterFn: globalFilterFn,
 	},
 	{
-		accessorKey: 'firstName',
-		header: 'First Name',
+		accessorKey: 'title',
+		header: 'Title',
+		filterFn: globalFilterFn,
 
 		cell: (info) => info.getValue().toString(),
 	},
 	{
-		accessorKey: 'lastName',
-		header: 'Last Name',
-
-		cell: (info) => info.getValue().toString(),
+		accessorKey: 'path',
+		header: 'Path',
+		cell: (info) => `/${info.getValue()}`,
+		filterFn: globalFilterFn,
 	},
 	{
-		accessorKey: 'onboardStatus',
-		header: 'Onboarding',
-
-		cell: (info) => info.getValue().toString(),
+		accessorKey: 'startsAt',
+		id: 'Starts At',
+		cell: (info) => dayjs(info.getValue()).format('MMM. Do [at] h:mma'),
+		header: () => 'Starts',
 	},
 ]
 </script>
@@ -53,5 +56,5 @@ const columns: ColumnDef<User>[] = [
 	rows={rows}
 	globalFilterFn={globalFilterFn}
 	onRowClick={onRowClick}
-	emptyMsg="No people yet"
+	emptyMsg="No pages yet"
 />

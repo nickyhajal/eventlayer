@@ -13,17 +13,15 @@ let addOpen = false
 let loading = false
 </script>
 
-<AdminScreen>
-	<div class="">
-		<div class="flex items-center gap-3">
-			<div class="text-2xl font-semibold">Venues</div>
-			<Button variant="outline" class="h-7 py-[0.3rem] pl-1.5 pr-3" on:click={() => addOpen = true}>
-				<Plus class="mr-1 w-[1rem] text-slate-700" />
-				Add Venue</Button
-			>
-		</div>
-		<VenueTable rows={data.venues} />
+<AdminScreen title={true}>
+	<div class="flex items-center gap-5" slot="title">
+		<div class="text-2xl font-semibold">Venues</div>
+		<Button variant="outline" class="h-7 py-[0.3rem] pl-1.5 pr-3" on:click={() => addOpen = true}>
+			<Plus class="mr-1 w-[1rem] text-slate-700" />
+			Add Venue</Button
+		>
 	</div>
+	<VenueTable rows={data.venues} />
 </AdminScreen>
 
 <Dialog.Root bind:open={addOpen}>

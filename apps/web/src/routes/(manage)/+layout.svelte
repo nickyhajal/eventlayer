@@ -2,6 +2,7 @@
 import '../../app.postcss'
 
 import { page } from '$app/stores'
+import { eventWritable } from '$lib/client/models/eventWritable'
 // import RequestNotificationPermission from '$lib/components/RequestNotificationPermission.svelte'
 import Confirmations from '$lib/components/Confirmations.svelte'
 import { Toaster } from '$lib/components/ui/sonner'
@@ -32,6 +33,7 @@ let me: Writable<MeType> | undefined
 // }
 $: setMe(), $page.data.me
 
+setContext('event', eventWritable(data.event))
 onMount(async () => {
 	mounted = true
 	const setVh = () => {
