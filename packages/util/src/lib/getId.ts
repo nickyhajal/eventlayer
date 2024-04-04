@@ -1,8 +1,8 @@
 import v4 from 'uuid/v4'
 
-export function getId(type = '') {
+export function getId(type = '', len = 4) {
 	if (type === 'short') {
-		return makeShortId(4)
+		return makeShortId(len)
 	}
 	return v4()
 }

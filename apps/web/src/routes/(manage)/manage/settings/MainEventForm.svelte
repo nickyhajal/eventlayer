@@ -76,7 +76,7 @@ async function addUser(user: FullEventUser) {
 </script>
 
 <form on:submit={createEvent}>
-	<div class="grid {inDialog ? 'grid-cols-1 px-0' : 'grid-cols-[24rem_24rem] px-4'} gap-8">
+	<div class="grid {inDialog ? 'grid-cols-1 px-0' : 'grid-cols-[24rem_24rem]'} gap-8">
 		<div>
 			{#if inDialog}
 				<Dialog.Header>
@@ -122,6 +122,18 @@ async function addUser(user: FullEventUser) {
 						<SelectVenue bind:value={event.venueId} />
 					</div>
 				{/if}
+				<div class="flex flex-col items-start justify-center gap-1">
+					<Label for="event_replyEmail" class="text-right">Reply Email Address</Label>
+					<Input id="event_replyEmail" bind:value={event.replyEmail} class="col-span-3" />
+				</div>
+				<div class="flex flex-col items-start justify-center gap-1">
+					<Label for="event_fromName" class="text-right">Email From Name</Label>
+					<Input id="event_fromName" bind:value={event.emailFromName} class="col-span-3" />
+				</div>
+				<div class="flex flex-col items-start justify-center gap-1">
+					<Label for="event_accent" class="text-right">Accent Color</Label>
+					<Input id="event_accent" bind:value={event.colors.accent} class="col-span-3" />
+				</div>
 			</div>
 			<Button type="submit">{buttonMsg}</Button>
 		</div>
@@ -183,10 +195,6 @@ async function addUser(user: FullEventUser) {
 							/>
 						</div>
 					</div>
-				</div>
-				<div class="flex flex-col items-start justify-center gap-1">
-					<Label for="event_accent" class="text-right">Accent Color</Label>
-					<Input id="event_accent" bind:value={event.colors.accent} class="col-span-3" />
 				</div>
 			</div>
 		{/if}

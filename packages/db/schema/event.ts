@@ -3,10 +3,10 @@ import { integer, jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-c
 import { createInsertSchema } from 'drizzle-zod'
 import { z } from 'zod'
 
+import { contentTable } from './content'
 import { eventUserTable } from './event_user'
 import { mediaTable } from './media'
 import { venueTable } from './venue'
-import { contentTable } from './content'
 
 export const eventTable = pgTable('event', {
 	id: uuid('id')
@@ -28,6 +28,8 @@ export const eventTable = pgTable('event', {
 	endsAt: timestamp('end_at', { withTimezone: false, mode: 'string' }),
 	maxAttendees: integer('max_attendees').default(0),
 	numAttendees: integer('num_attendees').default(0),
+	replyEmail: text('reply_email'),
+	emailFromName: text('email_from_name'),
 	colors: jsonb('colors'),
 	createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
 	updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
@@ -52,7 +54,7 @@ export const eventRelations = relations(eventTable, ({ many, one }) => ({
 		fields: [eventTable.largeLogoId],
 		references: [mediaTable.id],
 	}),
-	content: many(contentTable)
+	content: many(contentTable),
 }))
 
 export const eventSchema = createInsertSchema(eventTable, {

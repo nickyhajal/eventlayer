@@ -1,6 +1,7 @@
 <script lang="ts">
 import { goto, invalidateAll } from '$app/navigation'
 import Button from '$lib/components/ui/button/button.svelte'
+import ChicletButton from '$lib/components/ui/ChicletButton.svelte'
 import * as Dialog from '$lib/components/ui/dialog'
 import Input from '$lib/components/ui/input/input.svelte'
 import Label from '$lib/components/ui/label/label.svelte'
@@ -24,6 +25,7 @@ export let user: Partial<FullEventUser> = {
 export let simplified = false
 export let inDialog = false
 export let titleClass = ''
+export let showTitle = true
 let error = ''
 let userInEvent = false
 let emailConfirmed: string = user?.id ? 'existing-user' : ''
@@ -43,6 +45,7 @@ let type = user?.type
 	? userTypes.find(({ value }) => value === user.type)
 	: { value: 'attendee', label: 'Attendee' }
 $: user.type = type.value
+$: user.info = user?.info || {}
 let userExistsNotInEvent: User | false = false
 let image = ''
 async function saveUser() {
@@ -86,12 +89,16 @@ async function checkEmail() {
 </script>
 
 <form on:submit={saveUser}>
-	{#if inDialog}
-		<Dialog.Header>
-			<Dialog.Title>{title}</Dialog.Title>
-		</Dialog.Header>
-	{:else}
-		<div class={tw(`mb-2 mt-0 text-lg font-semibold ${titleClass}`)}>{title}</div>
+	{#if showTitle}
+		{#if inDialog}
+			<Dialog.Header>
+				<Dialog.Title>{title}</Dialog.Title>
+			</Dialog.Header>
+		{:else}
+			<div class="flex gap-4">
+				<div class={tw(`mb-2 mt-0 text-lg font-semibold ${titleClass}`)}>{title}</div>
+			</div>
+		{/if}
 	{/if}
 	<div class="grid gap-4 py-4">
 		{#if error}
@@ -190,16 +197,21 @@ async function checkEmail() {
 				<div class="flex gap-2">
 					<div class="flex flex-col items-start justify-center gap-1">
 						<Label for="company" class="text-right">Company</Label>
-						<Input id="company" bind:value={user.company} class="col-span-3" />
+						<Input id="company" bind:value={user.info.company.value} class="col-span-3" />
 					</div>
 					<div class="flex flex-col items-start justify-center gap-1">
 						<Label for="title" class="text-right">Title</Label>
-						<Input id="title" bind:value={user.title} class="col-span-3" />
+						<Input id="title" bind:value={user.info.title.value} class="col-span-3" />
 					</div>
 				</div>
 				<div class="flex flex-col items-start justify-center gap-1">
 					<Label for="url" class="text-right">User Url (LinkedIn, Website, etc)</Label>
-					<Input id="url" type="url" bind:value={user.url} class="col-span-3" />
+					<Input
+						id="url"
+						type="text"
+						bind:value={user.info.linkedin_url.value}
+						class="col-span-3"
+					/>
 				</div>
 				<div class="flex flex-col items-start justify-center gap-1">
 					<Label for="proBio" class="text-right">Professional Bio</Label>

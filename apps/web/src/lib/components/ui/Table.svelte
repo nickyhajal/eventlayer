@@ -132,11 +132,11 @@ let headerGroups = $table.getHeaderGroups()
 </script>
 
 {#if !rows?.length}
-	<div class="mt-6 w-7/12 rounded-xl bg-stone-50 p-6 text-center text-sm text-slate-600">
+	<div class="mt-6 w-7/12 rounded-xl bg-stone-50 p-6 text-center text-sm text-stone-600">
 		{emptyMsg || 'No rows yet'}
 	</div>
 {:else}
-	<div class="">
+	<div class="mt-4 overflow-hidden rounded-2xl border border-b-2 border-stone-100">
 		<div class="columns">
 			<!-- <div class="column is-one-fifth">
         <h2 class="is-size-3 mb-3">Filters</h2>
@@ -168,11 +168,11 @@ let headerGroups = $table.getHeaderGroups()
         {/each}
       </div> -->
 			<div class="column">
-				<div class="flex justify-end">
+				<div class="mb-4 flex justify-end border-b border-stone-200/30 bg-stone-100/40 p-1">
 					<input
 						{...noTypeCheck(null)}
 						type="search"
-						class="input mb-3 w-96 border border-slate-100 px-3 py-2"
+						class="input w-96 border border-stone-100 px-3 py-2"
 						on:keyup={handleSearch}
 						on:search={handleSearch}
 						placeholder="Search..."
@@ -186,7 +186,7 @@ let headerGroups = $table.getHeaderGroups()
 									{#each headerGroup.headers as header, i}
 										<th
 											colSpan={header.colSpan}
-											class="px-2 py-1 text-sm font-semibold text-slate-500 {i === 0 ? 'text-left' : 'text-left'}"
+											class="px-2 py-1 text-sm font-semibold text-gray-900/50 {i === 0 ? 'text-left' : 'text-left'}"
 										>
 											{#if !header.isPlaceholder}
 												<button
@@ -211,7 +211,7 @@ let headerGroups = $table.getHeaderGroups()
 						<tbody>
 							{#each $table.getRowModel().rows as row}
 								<tr
-									class="bg-stone-100/20 font-normal text-stone-700 odd:bg-stone-100"
+									class="bg-stone-100/20 font-medium text-gray-800/80 odd:bg-stone-100"
 									on:click={() => onRowClick(row)}
 								>
 									{#each row.getVisibleCells() as cell}

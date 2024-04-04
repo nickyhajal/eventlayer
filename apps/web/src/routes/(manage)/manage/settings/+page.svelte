@@ -1,9 +1,12 @@
 <script lang="ts">
+import AdminScreen from '../AdminScreen.svelte'
 import EventForm from './MainEventForm.svelte'
 
 export let data
 </script>
 
-<div class="">
-	<EventForm event={data.event} />
-</div>
+<AdminScreen>
+	<div class="">
+		<EventForm event={data.event} />
+	</div>
+</AdminScreen>

@@ -152,6 +152,8 @@ export const eventProcedures = t.router({
 							'colors',
 							'mediaId',
 							'faviconId',
+							'replyEmail',
+							'emailFromName',
 							'largeLogoId',
 							'venueId',
 						]),
@@ -161,11 +163,12 @@ export const eventProcedures = t.router({
 				const updated = await db.select().from(eventTable).where(eq(eventTable.id, input.id))
 				return updated[0]
 			} else {
+				const createInput = eventSchema.parse(input)
 				input.eventId = ctx.event.id
 				const newForm = await db
 					.insert(eventTable)
 					.values(
-						pick(input, [
+						pick(createInput, [
 							'name',
 							'subtitle',
 							'description',

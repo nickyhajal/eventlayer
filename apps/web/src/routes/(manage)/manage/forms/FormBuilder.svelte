@@ -78,7 +78,7 @@ function handleDndFinalize(e) {
 }
 </script>
 
-<div class="-ml-10 -mr-10 -mt-9 grid h-full grid-rows-[5rem_1fr]">
+<div class="grid h-full w-full grid-rows-[5rem_1fr]">
 	<div class="flex items-center border-b border-stone-100">
 		<Input
 			name="name"

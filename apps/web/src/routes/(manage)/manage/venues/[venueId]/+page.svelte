@@ -1,4 +1,5 @@
 <script lang="ts">
+import AdminScreen from '../../AdminScreen.svelte'
 import VenueForm from '../VenueForm.svelte'
 
 export let data
@@ -6,8 +7,10 @@ export let data
 let loading = false
 </script>
 
-<div class="grid grid-cols-[50rem_1fr] px-4">
-	<div>
-		<VenueForm venue={data.venue} titleClass="text-2xl font-semibold" />
+<AdminScreen>
+	<div class="grid grid-cols-[50rem_1fr] px-4">
+		<div>
+			<VenueForm venue={data.venue} titleClass="text-2xl font-semibold" />
+		</div>
 	</div>
-</div>
+</AdminScreen>
