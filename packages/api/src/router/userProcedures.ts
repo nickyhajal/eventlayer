@@ -11,11 +11,16 @@ import {
 	eventSchema,
 	eventTable,
 	EventUser,
+	eventUserInfoTable,
 	eventUserTable,
+	formElementTable,
+	formResponseTable,
+	inArray,
 	like,
 	loginLinkTable,
 	lt,
 	makeFullEventUser,
+	ne,
 	or,
 	upsertEventUserSchema,
 	userSchema,
@@ -26,8 +31,11 @@ import { userTable, type User } from '@matterloop/db/types'
 import { dayjs, getId, omit, pick } from '@matterloop/util'
 
 import { mailer } from '../../../../apps/web/src/lib/server/core/mailer'
+import { NotAuthdError } from '../core/Errors'
+import { ActiveLoginLink } from '../models/ActiveLoginLink'
 import {
 	procedureWithContext,
+	verifyAdmin,
 	verifyEvent,
 	verifyMe,
 	type TrpcContext,
@@ -143,6 +151,7 @@ export const userProcedures = t.router({
 			if (loginLink[0]) {
 				const res = await mailer.send({
 					to: user?.email || '',
+					event: ctx.event,
 					subject: 'Welcome to Dayglow!',
 					more_params: {
 						body: `Hey ${user?.firstName},
@@ -168,36 +177,77 @@ export const userProcedures = t.router({
 			if (!user) {
 				return error(401, 'No user found')
 			}
-			await db
-				.update(loginLinkTable)
-				.set({ publicId: '' })
-				.where(lt(loginLinkTable.expires, dayjs().toISOString()))
-			const loginLink = await db
-				.insert(loginLinkTable)
-				.values({
-					userId: user.id,
-					publicId: getId('short'),
-					expires: dayjs().add(1, 'day').toISOString(),
-				})
-				.returning()
-			if (loginLink[0]) {
+
+			const { code, url } = await ActiveLoginLink.generate({
+				userId: user.id,
+				event: ctx.event,
+				to: input.to,
+				codeLength: 10,
+			})
+
+			const sig = ctx.event?.name ? `The ${ctx.event?.name} Team` : 'The Eventlayer Team'
+			if (url) {
 				const res = await mailer.send({
 					to: user?.email || '',
 					subject: 'Your Magic Login Link',
+					event: ctx.event,
 					more_params: {
 						body: `Hey ${user?.firstName},
-						<br><br>Here's your login code:<div style="font-size: 30pt; margin-top: -24px; margin-bottom: 16px;">${
-							loginLink[0].publicId
-						}</div>
-						Or, click this link from your computer: https://eventlayer.co/login/${loginLink[0].publicId}${
-							input.to ? `?to=${input.to}` : ''
-						}
-						<br>It expires in 24 hours.<br><br>If you didn't request this, you can ignore this email.
-						<br><br>Thanks,<br>Nicky from Dayglow`,
+						<br><br>Here's your login code:<div style="font-size: 26pt; font-weight: 800; margin-top: -24px; margin-bottom: 16px;">${{
+							code,
+						}}</div>
+						Or, click this link: ${url} 
+						<br><br>It expires in 24 hours.<br><br>If you didn't request this, you can ignore this email.
+						<br><br>All the best,<br>${sig}`,
 					},
 				})
 				console.log('send res', res)
 			}
+			return {
+				success: true,
+			}
+		}),
+	sendWelcomeEmail: procedureWithContext
+		.use(verifyAdmin())
+		.input(z.object({ email: z.string(), to: z.string().optional() }))
+		.mutation(async ({ ctx, input }) => {
+			const user = await db.query.userTable.findFirst({ where: eq(userTable.email, input.email) })
+			if (!user) {
+				return error(401, 'No user found')
+			}
+			const eventUser = await db.query.eventUserTable.findFirst({
+				where: eq(eventUserTable.id, user.id),
+			})
+			if (!eventUser) {
+				return error(401, 'No user found')
+			}
+
+			const { code, url } = await ActiveLoginLink.generate({
+				userId: user.id,
+				event: ctx.event,
+				codeLength: 10,
+			})
+
+			const sig = ctx.event?.name ? `The ${ctx.event?.name} Team` : 'The Eventlayer Team'
+			if (url) {
+				const res = await mailer.send({
+					to: user?.email || '',
+					subject: 'Action Required: Setup Your Wings Conference Profile',
+					event: ctx.event,
+					more_params: {
+						body: `Hey ${user?.firstName},
+						<br><br>We're excited to have you coming to town shortly for the Wings Conference!
+						<br><br>We'll be using a simple app to allow attendees to connect and stay on top of their schedule.
+						<br><br>To gain access, click the link below and complete your account.
+						<br><br>Here's the link: ${url} 
+						<br><br>All the best,<br>${sig}`,
+					},
+				})
+			}
+			await db
+				.update(eventUserTable)
+				.set({ onboardStatus: 'pending' })
+				.where(eq(eventUserTable.id, eventUser.id))
 			return {
 				success: true,
 			}
@@ -209,6 +259,9 @@ export const userProcedures = t.router({
 		.mutation(async ({ ctx, input }) => {
 			const eventId = ctx.event?.id
 			const { id, ...data } = input
+			if (!(ctx.me?.isSuperAdmin || data.userId === ctx.me?.id)) {
+				return NotAuthdError()
+			}
 			const {
 				email,
 				firstName,
@@ -220,6 +273,7 @@ export const userProcedures = t.router({
 				createdAt,
 				updatedAt,
 				photo,
+				info,
 				...eventUserData
 			} = data
 			const userData = {
@@ -228,14 +282,13 @@ export const userProcedures = t.router({
 				lastName,
 				mediaId,
 			}
-
 			let user: User | undefined | null
 			let eventUser: EventUser | undefined | null
 			if (!userId) {
 				const users = await db.insert(userTable).values(userData).returning()
 				user = users[0]
 			} else {
-				if (Object.values(userData).length) {
+				if (Object.values(userData).filter((v) => v).length) {
 					await db.update(userTable).set(userData).where(eq(userTable.id, userId))
 				}
 				user = await db.query.userTable.findFirst({
@@ -255,7 +308,7 @@ export const userProcedures = t.router({
 						where: and(eq(eventUserTable.userId, user.id), eq(eventUserTable.eventId, eventId)),
 					})
 				} else if (userId) {
-					if (Object.values(eventUserData).length) {
+					if (Object.values(eventUserData).filter((v) => v).length) {
 						await db
 							.update(eventUserTable)
 							.set(eventUserData)
@@ -266,6 +319,56 @@ export const userProcedures = t.router({
 						where: and(eq(eventUserTable.userId, userId), eq(eventUserTable.eventId, eventId)),
 					})
 				}
+			}
+			if (info && userId) {
+				await Promise.all(
+					Object.entries(info).map(async ([key, { value }]) => {
+						const existing = await db.query.eventUserInfoTable.findFirst({
+							where: and(
+								eq(eventUserInfoTable.userId, userId),
+								eq(eventUserInfoTable.eventId, eventId),
+								eq(eventUserInfoTable.key, key),
+							),
+						})
+						if (!existing) {
+							await db
+								.insert(eventUserInfoTable)
+								.values({ userId, key, value, eventId, public: true })
+						} else {
+							await db
+								.update(eventUserInfoTable)
+								.set({ value })
+								.where(
+									and(
+										eq(eventUserInfoTable.userId, userId),
+										eq(eventUserInfoTable.eventId, eventId),
+										eq(eventUserInfoTable.key, key),
+									),
+								)
+						}
+						const relatedElements = await db
+							.select()
+							.from(formResponseTable)
+							.leftJoin(formElementTable, eq(formResponseTable.elementId, formElementTable.id))
+							.where(
+								and(
+									eq(formElementTable.userInfoKey, key),
+									eq(formResponseTable.userId, userId),
+									eq(formResponseTable.eventId, eventId),
+									ne(formResponseTable.value, value),
+								),
+							)
+						if (relatedElements.length && value) {
+							const ids = relatedElements.flatMap(({ form_response }) => form_response?.id ?? [])
+							await db
+								.update(formResponseTable)
+								.set({ value })
+								.where(
+									and(inArray(formResponseTable.id, ids), eq(formResponseTable.userId, userId)),
+								)
+						}
+					}),
+				)
 			}
 			return {
 				user,

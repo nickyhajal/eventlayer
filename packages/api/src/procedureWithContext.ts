@@ -2,6 +2,7 @@ import { Event, User } from '@matterloop/db'
 import { error, type RequestEvent } from '@sveltejs/kit'
 import { initTRPC, type inferAsyncReturnType } from '@trpc/server'
 import superjson from 'superjson'
+import { NotAuthdError } from './core/Errors'
 
 // import { NotAuthdError } from '$lib/server/core/Errors'
 // import {
@@ -59,6 +60,13 @@ export const verifyMe = () =>
 				meId: ctx.req.locals.meId,
 			},
 		})
+	})
+export const verifyAdmin = () =>
+	middleware(async ({ ctx, input, next }) => {
+		if (!ctx.req.locals?.me?.isSuperAdmin) {
+			throw NotAuthdError()
+		}
+		return next()
 	})
 export const verifyEvent = () =>
 	middleware(async ({ ctx, input, next }) => {
