@@ -1,6 +1,4 @@
-import { eq, InferSelectModel } from 'drizzle-orm'
-
-import { db } from '@matterloop/db'
+import { db, eq, InferSelectModel } from '@matterloop/db'
 
 export abstract class BaseModel<T extends InferSelectModel<any>> {
 	protected table: T
