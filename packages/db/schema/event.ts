@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { contentTable } from './content'
 import { eventUserTable } from './event_user'
 import { mediaTable } from './media'
+import { menuTable } from './menu'
 import { venueTable } from './venue'
 
 export const eventTable = pgTable('event', {
@@ -54,6 +55,7 @@ export const eventRelations = relations(eventTable, ({ many, one }) => ({
 		fields: [eventTable.largeLogoId],
 		references: [mediaTable.id],
 	}),
+	menus: many(menuTable),
 	content: many(contentTable),
 }))
 

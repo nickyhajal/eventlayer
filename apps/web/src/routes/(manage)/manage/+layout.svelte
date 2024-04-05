@@ -1,7 +1,5 @@
 <script lang="ts">
 import { page } from '$app/stores'
-import Button from '$lib/components/ui/button/button.svelte'
-import BadgeCheck from 'lucide-svelte/icons/badge-check'
 import Calendar from 'lucide-svelte/icons/calendar'
 import FileQuestion from 'lucide-svelte/icons/file-question'
 import FileText from 'lucide-svelte/icons/file-text'
@@ -112,9 +110,13 @@ setContext('venues', writable(data.venues))
 		<div
 			class="flex h-full w-full flex-1 items-center border-r-2 border-stone-100 bg-stone-50 px-4 text-center"
 		>
-			<div class="w-full rounded-xl bg-stone-200/40 py-3 font-semibold text-stone-600">
+			<a
+				href="/"
+				target="_blank"
+				class="w-full rounded-xl bg-stone-200/40 py-3 font-semibold text-stone-600 transition-all hover:bg-stone-200/60"
+			>
 				{data.event.name}
-			</div>
+			</a>
 		</div>
 		<div class="border-b border-stone-100 px-1.5 py-1.5">
 			<input

@@ -13,28 +13,33 @@ import { dayjs, getMediaUrl } from '@matterloop/util'
 export let data
 $: upcoming = data.upcoming
 let event = getEventContext()
-const tabs = [
-	{
-		label: 'Schedule',
-		icon: Calendar,
-		href: '/schedule',
-	},
-	{
-		label: 'Venues',
-		icon: Pin,
-		href: '/venues',
-	},
-	{
-		label: 'Venue Map',
-		icon: Map,
-		href: '/map',
-	},
-	{
-		label: 'Sponsors',
-		icon: BadgeCheck,
-		href: '/sponsors',
-	},
-]
+const tabs = $event.menus
+	.filter((m) => m.location === 'quick')
+	.map((m) => {
+		return { ...m, props: m.props ?? {} }
+	})
+// const tabs = [
+// 	{
+// 		label: 'Schedule',
+// 		icon: Calendar,
+// 		href: '/schedule',
+// 	},
+// 	{
+// 		label: 'Venues',
+// 		icon: Pin,
+// 		href: '/venues',
+// 	},
+// 	{
+// 		label: 'Venue Map',
+// 		icon: Map,
+// 		href: '/map',
+// 	},
+// 	{
+// 		label: 'Sponsors',
+// 		icon: BadgeCheck,
+// 		href: '/sponsors',
+// 	},
+// ]
 function getContent(key: string) {
 	if (data?.event?.contentByKey?.[key]) {
 		return data.event.contentByKey[key]?.body || ''
@@ -80,20 +85,26 @@ function getContent(key: string) {
 		<div class="mt-8">
 			<div class="mb-1.5 text-2xl font-semibold text-slate-700">Quick Links</div>
 			<div class="grid grid-cols-2 gap-2">
-				{#each tabs as { label, icon, href }}
+				{#each tabs as { label, icon, link }}
 					<Button
-						href={href}
+						href={link}
 						variant="secondary"
 						class="bg-a-accent border-a-accent hover:bg-a-accent border-b-main/10 text-a-accent flex w-full flex-none flex-col items-start justify-center gap-0.5 border border-b border-opacity-[0.07] bg-opacity-[0.02] py-9 text-left text-sm font-semibold hover:bg-opacity-[0.07] "
 					>
 						{#if icon}
+							<div class="border-main/20 mb-0.5 rounded-full border bg-white/40 p-1.5 opacity-80">
+								<div class="icon">{@html icon}</div>
+								<!-- <svelte:component this={icon} class="text-main/70  h-[1rem] w-[1rem] flex-none" /> -->
+							</div>
+						{/if}
+						<!-- {#if icon}
 							<div class="border-main/20 mb-0.5 rounded-full border bg-white/40 p-1.5 opacity-80">
 								<svelte:component
 									this={icon}
 									class="text-a-accent/70 h-[1rem]  w-[1rem] flex-none brightness-90"
 								/>
 							</div>
-						{/if}
+						{/if} -->
 						<div class="brightness-90">{label}</div>
 					</Button>
 					<!-- <Button
@@ -152,3 +163,9 @@ function getContent(key: string) {
 		{/if}
 	</div>
 </Screen>
+
+<style lang="postcss">
+.icon :global(svg) {
+	@apply text-a-accent/70 h-[1rem]  w-[1rem] flex-none brightness-90;
+}
+</style>

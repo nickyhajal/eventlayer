@@ -6,6 +6,8 @@ import { formProcedures } from './router/formProcedures'
 import { formSessionProcedures } from './router/formSessionProcedures'
 import { meRouter } from './router/me'
 import { mediaProcedures } from './router/mediaProcedures'
+import { menuProcedures } from './router/menuProcedures'
+import { pageProcedures } from './router/pageProcedures'
 import { sponsorProcedures } from './router/sponsorProcedures'
 import { userProcedures } from './router/userProcedures'
 import { venueProcedures } from './router/venueProcedures'
@@ -20,7 +22,9 @@ export const router = trpcApp.router({
 	user: userProcedures,
 	media: mediaProcedures,
 	content: contentProcedures,
+	page: pageProcedures,
 	sponsor: sponsorProcedures,
+	menu: menuProcedures,
 })
 
 export type Router = typeof router

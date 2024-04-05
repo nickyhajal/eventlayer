@@ -2,7 +2,7 @@
 import { page } from '$app/stores'
 import Screen from '$lib/components/Screen.svelte'
 import Button from '$lib/components/ui/button/button.svelte'
-import { getMeContext } from '$lib/state/getContexts'
+import { getEventContext, getMeContext } from '$lib/state/getContexts'
 import BadgeCheck from 'lucide-svelte/icons/badge-check'
 import HelpCircle from 'lucide-svelte/icons/help-circle'
 import Mail from 'lucide-svelte/icons/mail'
@@ -10,42 +10,48 @@ import Map from 'lucide-svelte/icons/map'
 import Users from 'lucide-svelte/icons/users'
 import Utensils from 'lucide-svelte/icons/utensils'
 
-const tabs = [
-	{
-		label: 'Panelists & Moderators',
-		icon: Users,
-		classes: 'col-span-2',
-		href: '/speakers',
-	},
-	{
-		label: 'Sponsors',
-		icon: BadgeCheck,
-		classes: 'col-span-2',
-		href: '/sponsors',
-	},
-	{
-		label: 'Venue Map',
-		icon: Map,
-		classes: '',
-		href: '/map',
-	},
-	{
-		label: 'Meal Options',
-		icon: Utensils,
-		classes: '',
-		href: '/meals',
-	},
-	{
-		label: 'FAQs',
-		icon: HelpCircle,
-		href: '/faq',
-	},
-	{
-		label: 'Contact',
-		icon: Mail,
-		href: '/contact',
-	},
-]
+const event = getEventContext()
+const tabs = $event.menus
+	.filter((m) => m.location === 'menu')
+	.map((m) => {
+		return { ...m, props: m.props ?? {} }
+	})
+// const tabs = [
+// 	{
+// 		label: 'Panelists & Moderators',
+// 		icon: Users,
+// 		classes: 'col-span-2',
+// 		href: '/speakers',
+// 	},
+// 	{
+// 		label: 'Sponsors',
+// 		icon: BadgeCheck,
+// 		classes: 'col-span-2',
+// 		href: '/sponsors',
+// 	},
+// 	{
+// 		label: 'Venue Map',
+// 		icon: Map,
+// 		classes: '',
+// 		href: '/map',
+// 	},
+// 	{
+// 		label: 'Meal Options',
+// 		icon: Utensils,
+// 		classes: '',
+// 		href: '/meals',
+// 	},
+// 	{
+// 		label: 'FAQs',
+// 		icon: HelpCircle,
+// 		href: '/faq',
+// 	},
+// 	{
+// 		label: 'Contact',
+// 		icon: Mail,
+// 		href: '/contact',
+// 	},
+// ]
 
 $: bits = $page.url.pathname.split('/')
 </script>
@@ -55,19 +61,20 @@ $: bits = $page.url.pathname.split('/')
 	<div class="mx-auto max-w-7xl">
 		<div class="flex flex-col justify-end gap-2">
 			<div class="menu fixed grid w-[calc(100dvw-1.5rem)] grid-cols-2 gap-2 lg:relative lg:w-full">
-				{#each tabs as { label, icon, href, classes }, i}
-					{@const currBits = href.split('/')}
+				{#each tabs as { label, icon, link, props: { classes } }, i}
+					{@const currBits = link.split('/')}
 					<Button
-						href={href}
+						href={link}
 						variant="secondary"
-						class="bg-main border-main hover:bg-main border-b-main/10 text-main flex w-full flex-none flex-col items-start justify-center gap-0.5 border border-b border-opacity-[0.07] bg-opacity-[0.02] py-9 text-left text-sm font-semibold hover:bg-opacity-[0.07] {bits[1] === currBits[1]?'' : ''} {classes ||''} "
+						class="bg-a-accent border-a-accent hover:bg-a-accent border-b-main/10 text-a-accent flex w-full flex-none flex-col items-start justify-center gap-0.5 border border-b border-opacity-[0.07] bg-opacity-[0.02] py-9 text-left text-sm font-semibold hover:bg-opacity-[0.07] {classes} "
 					>
 						{#if icon}
 							<div class="border-main/20 mb-0.5 rounded-full border bg-white/40 p-1.5 opacity-80">
-								<svelte:component this={icon} class="text-main/70  h-[1rem] w-[1rem] flex-none" />
+								<div class="icon {bits[1] === currBits[1]? 'selected' : ''}">{@html icon}</div>
+								<!-- <svelte:component this={icon} class="text-main/70  h-[1rem] w-[1rem] flex-none" /> -->
 							</div>
 						{/if}
-						<div>{label}</div>
+						<div class="brightness-90">{label}</div>
 					</Button>
 				{/each}
 			</div>
@@ -75,11 +82,14 @@ $: bits = $page.url.pathname.split('/')
 	</div>
 </Screen>
 
-<style>
+<style lang="postcss">
 .menu {
 	bottom: calc(4rem + env(safe-area-inset-bottom));
 }
 .container > .flex {
 	height: calc(100vh - 8rem - env(safe-area-inset-bottom));
+}
+.icon :global(svg) {
+	@apply text-a-accent/70 h-[1rem]  w-[1rem] flex-none brightness-90;
 }
 </style>

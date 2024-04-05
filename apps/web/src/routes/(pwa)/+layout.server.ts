@@ -1,4 +1,5 @@
 import { redirect } from '@sveltejs/kit'
+import * as icons from 'lucide-static'
 
 import { EventFns } from '@matterloop/api'
 
@@ -12,6 +13,7 @@ export const load = async (req) => {
 				redirect(303, '/welcome')
 			}
 		}
+		event.menus = event.menus.map((r) => ({ ...r, icon: icons[r.icon] }))
 		return {
 			me: req.locals.me ? req.locals.me : null,
 			event: event,

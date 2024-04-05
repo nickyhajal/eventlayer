@@ -13,6 +13,7 @@ import {
 	inArray,
 	isNotNull,
 	mediaTable,
+	menuTable,
 	ne,
 	or,
 	pageTable,
@@ -43,6 +44,7 @@ export const EventFns = (args: string | Args) => {
 					venue: true,
 					favicon: true,
 					largeLogo: true,
+					menus: { orderBy: asc(menuTable.ord) },
 					content: { where: and(eq(contentTable.eventId, eventId), ne(contentTable.type, 'faq')) },
 				},
 			})
