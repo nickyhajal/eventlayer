@@ -48,8 +48,8 @@ function getContent(key: string) {
 }
 </script>
 
-<Screen title="Save Our Sites">
-	<div class="mx-auto pt-1 md:max-w-7xl">
+<Screen title={$event.name}>
+	<div class="shell mx-auto pt-12 md:max-w-7xl">
 		<img
 			src={getMediaUrl($event.largeLogo)}
 			alt="An alt text"
@@ -165,6 +165,10 @@ function getContent(key: string) {
 </Screen>
 
 <style lang="postcss">
+.shell {
+	position: relative;
+	top: calc(env(safe-area-inset-top) - 0.5rem);
+}
 .icon :global(svg) {
 	@apply text-a-accent/70 h-[1rem]  w-[1rem] flex-none brightness-90;
 }

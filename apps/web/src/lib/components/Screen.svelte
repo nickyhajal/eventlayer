@@ -11,6 +11,7 @@ import Button from './ui/button/button.svelte'
 export let title = ''
 export let bigTitle = ''
 export let back = ''
+export let noBgScreen = false
 export let photo: Media
 export let bodyClass = ''
 export let preferHistoryBack = true
@@ -46,7 +47,9 @@ function handleBack(e: MouseEvent) {
 <!-- main shell -->
 <div class="relative mx-auto min-h-[40dvh] {bigTitle ? 'bg-white' : 'bg-white'} pt-12 lg:pt-0">
 	<!-- bottom extra blue -->
-	<div class="fixed top-0 z-10 block h-64 w-full bg-slate-800 lg:hidden"></div>
+	{#if !noBgScreen}
+		<div class="fixed top-0 z-10 block h-64 w-full bg-slate-800 lg:hidden"></div>
+	{/if}
 
 	<!-- title bar -->
 	<div

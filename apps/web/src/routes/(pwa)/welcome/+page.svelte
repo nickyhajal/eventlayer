@@ -54,7 +54,7 @@ async function next(e) {
 </script>
 
 <Screen title="Welcome!">
-	<form on:submit={(e) => submit(e)} class="-mt-32">
+	<form on:submit={(e) => submit(e)} class="lg:-mt-32">
 		<div class="mx-auto h-[80vh] max-w-lg overflow-hidden px-2" bind:this={scrollElm}>
 			{#each Object.values(elementsByPage) as page, i}
 				<div id="page-{i}" class=""></div>

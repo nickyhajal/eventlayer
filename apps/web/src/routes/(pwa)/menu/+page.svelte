@@ -54,12 +54,24 @@ const tabs = $event.menus
 // ]
 
 $: bits = $page.url.pathname.split('/')
+const me = getMeContext()
 </script>
 
 <!-- class="flex w-full flex-none flex-col items-start justify-center gap-0.5 border border-b-2 border-slate-200/50 border-b-slate-300/50 bg-slate-100/70 py-9 text-left text-sm font-semibold text-slate-600 {bits[1] === currBits[1]?'' : ''} {classes ||''}" -->
 <Screen title="Menu">
 	<div class="mx-auto min-h-screen max-w-7xl">
 		<div class="flex flex-col justify-end gap-2">
+			{#if !$me?.id}
+				<div class="login">
+					<Button
+						href="/login"
+						variant="ghost"
+						class="login w-full bg-slate-100 font-semibold text-slate-600"
+						>Login to your account</Button
+					>
+				</div>
+			{/if}
+
 			<div class="menu fixed grid w-[calc(100dvw-1.5rem)] grid-cols-2 gap-2 lg:relative lg:w-full">
 				{#each tabs as { label, icon, link, props: { classes } }, i}
 					{@const currBits = link.split('/')}
@@ -83,6 +95,10 @@ $: bits = $page.url.pathname.split('/')
 </Screen>
 
 <style lang="postcss">
+.login {
+	position: relative;
+	top: calc(0.5rem + env(safe-area-inset-top));
+}
 .menu {
 	bottom: calc(4rem + env(safe-area-inset-bottom));
 }

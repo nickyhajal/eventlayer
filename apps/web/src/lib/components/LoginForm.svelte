@@ -90,7 +90,7 @@ $: if (codeEmailSent && code.length === 4) {
 					placeholder="Email"
 					bind:value={email}
 				/>
-				<Button class="py-2" loading={loading}>Send Magic Link</Button>
+				<Button class="py-2" loading={loading} type="submit">Send Magic Link</Button>
 			{:else}
 				<div>
 					<div class="text-center text-sm font-medium text-slate-500">Enter your code here</div>
