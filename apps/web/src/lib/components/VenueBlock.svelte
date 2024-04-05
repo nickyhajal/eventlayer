@@ -13,7 +13,7 @@ export let venue: Venue
 	variant="ghost"
 	class="block h-fit w-full items-start justify-start rounded-lg border px-2 py-1.5 text-left"
 >
-	<div class="mb-1 text-sm font-medium text-red-500">Venue</div>
+	<div class="text-a-accent mb-1 text-sm font-medium">Venue</div>
 	<Button
 		variant="ghost"
 		href="/venues/{venue.id}"

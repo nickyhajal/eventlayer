@@ -29,7 +29,7 @@ function getLastType(user: EventUser) {
 	photo={event.photo}
 >
 	<div class="mx-auto max-w-7xl py-6">
-		<div class="text-base font-semibold text-red-600">
+		<div class="text-a-accent text-base font-semibold">
 			{dayjs(data.event.startsAt).format('dddd MMMM Do [at] h:mma')}
 		</div>
 		<div class="pb-3 text-3xl font-bold">{event.name}</div>

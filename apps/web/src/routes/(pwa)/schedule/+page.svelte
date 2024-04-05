@@ -1,13 +1,14 @@
 <script lang="ts">
 import EventRow from '$lib/components/EventRow.svelte'
 import Screen from '$lib/components/Screen.svelte'
-import { getMeContext } from '$lib/state/getContexts'
+import { getEventContext, getMeContext } from '$lib/state/getContexts'
 import { onMount } from 'svelte'
 
 import type { Event } from '@matterloop/db'
 import { dayjs } from '@matterloop/util'
 
 export let data
+const event = getEventContext()
 onMount(() => {
 	if (typeof window !== 'undefined') {
 		// var observer = new IntersectionObserver(function (entries) {
@@ -65,7 +66,7 @@ function checkIfUpcoming(event: Event, i: number) {
 			<div
 				class="topNav sticky z-40 -mx-3 flex w-[calc(100dvw+0.25rem)] items-center justify-center border-b border-slate-300/50 bg-slate-50 py-2 text-center text-sm text-slate-600 lg:w-full"
 			>
-				<div>All times listed in Mountain Time (MT)</div>
+				<div>{$event.getContent('main-location-line-4')}</div>
 				<!-- {#each Object.keys(days) as day}
 					{@const datetime = `${day} 00:00:00`}
 					{#if isNewMonth(datetime)}
