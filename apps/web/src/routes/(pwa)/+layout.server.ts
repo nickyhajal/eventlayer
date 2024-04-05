@@ -7,7 +7,8 @@ export const load = async (req) => {
 	if (req?.locals?.event?.id) {
 		const eventFns = EventFns({ eventId: req.locals.event.id })
 		const event = await eventFns.get()
-		if (event?.id && req?.locals?.me?.onboardStatus !== 'done' && req.url.pathname !== '/welcome') {
+		const me = req?.locals?.me
+		if (event?.id && me && me.onboardStatus !== 'done' && req.url.pathname !== '/welcome') {
 			const form = await eventFns.getOnboardForm()
 			if (form) {
 				redirect(303, '/welcome')
