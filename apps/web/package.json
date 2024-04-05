@@ -91,6 +91,7 @@
 		"ioredis": "^5.3.2",
 		"juice": "^9.1.0",
 		"liquidjs": "^10.10.2",
+		"lucide-static": "^0.364.0",
 		"lucide-svelte": "^0.350.0",
 		"lunr": "^2.3.9",
 		"mode-watcher": "^0.1.2",
