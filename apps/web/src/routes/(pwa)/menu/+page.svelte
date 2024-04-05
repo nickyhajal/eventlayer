@@ -58,7 +58,7 @@ $: bits = $page.url.pathname.split('/')
 
 <!-- class="flex w-full flex-none flex-col items-start justify-center gap-0.5 border border-b-2 border-slate-200/50 border-b-slate-300/50 bg-slate-100/70 py-9 text-left text-sm font-semibold text-slate-600 {bits[1] === currBits[1]?'' : ''} {classes ||''}" -->
 <Screen title="Menu">
-	<div class="mx-auto max-w-7xl">
+	<div class="mx-auto min-h-screen max-w-7xl">
 		<div class="flex flex-col justify-end gap-2">
 			<div class="menu fixed grid w-[calc(100dvw-1.5rem)] grid-cols-2 gap-2 lg:relative lg:w-full">
 				{#each tabs as { label, icon, link, props: { classes } }, i}
