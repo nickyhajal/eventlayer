@@ -13,13 +13,17 @@ $: cssVars = $event?.colors
 			})
 			.join(' ')
 	: ''
+$: showSidebar = !$page.url.pathname.includes('/login') && $page.url.pathname !== '/welcome'
 </script>
 
-<div class="bg-slate-800 lg:grid lg:h-full lg:grid-cols-[15rem_1fr] lg:bg-white" style={cssVars}>
+<div
+	class="bg-slate-800 lg:grid lg:h-full {showSidebar ? 'lg:grid-cols-[15rem_1fr]' : 'lg:grid-cols-[1fr]'} lg:bg-white"
+	style={cssVars}
+>
 	<div class="lg:order-1">
 		<slot />
 	</div>
-	{#if !['/login', '/welcome'].includes($page.url.pathname)}
+	{#if showSidebar}
 		<div
 			class="tabbar lg:order-0 fixed bottom-0 z-50 w-full bg-slate-800 lg:relative lg:px-2 lg:py-3"
 		>

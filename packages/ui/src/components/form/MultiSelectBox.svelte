@@ -34,7 +34,7 @@ import Check from 'lucide-svelte/icons/check'
 		{@const isSelected = selected.includes(o.value)}
 		<button
 			class={`
-        multibutton px-1.5 min-w-24 max-w-full truncate flex-none items-center flex border-b-2 gap-2 rounded-md mt-0 cursor-pointer  pt-1 border pb-1 text-[0.8rem] font-medium transition-all duration-200
+        multibutton px-1.5 min-w-24 max-w-full justify-start test-left flex-none items-center flex border-b-2 gap-2 rounded-md mt-0 cursor-pointer  pt-1 border pb-1 text-[0.8rem] font-medium transition-all duration-200
         ${isSelected
 						? 'bg-emerald-100 bg-opacity-50 border-opacity-40 text-black text-opacity-60  border-emerald-600/20 hover:bg-opacity-80'
 						: 'bg-white text-black text-opacity-60  hover:bg-slate-100  border-slate-300/50'
@@ -43,7 +43,7 @@ import Check from 'lucide-svelte/icons/check'
 			on:click|stopPropagation|preventDefault={() => select(o)}
 			class:selected={isSelected}
 		>
-		<div class="w-4.5 h-4.5 overflow-hidden flex flex-none items-center justify-center border
+		<div class="w-4.5 h-4.5 overflow-hidden flex flex-none items-center justify-start text-left border
 			{maxSelected === 1 ? 'rounded-full' : 'rounded'}
 			{isSelected
 						? 'bg-emerald-500 border text-black text-opacity-60  border-emerald-500'
@@ -63,7 +63,7 @@ import Check from 'lucide-svelte/icons/check'
 					<div class="h-4 w-4 bg-transparent" />
 					{/if}
 				</div>
-			<div class="mt-[1px] font-normal text-slate-700 truncate">{o.label}</div>
+			<div class="mt-[1px] font-normal text-slate-700 leading-snug  text-left">{o.label}</div>
 		</button>
 	{/each}
 </div>

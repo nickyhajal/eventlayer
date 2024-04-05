@@ -61,16 +61,22 @@ const me = getMeContext()
 <Screen title="Menu">
 	<div class="mx-auto min-h-screen max-w-7xl">
 		<div class="flex flex-col justify-end gap-2">
-			{#if !$me?.id}
-				<div class="login">
+			<div class="login">
+				{#if !$me?.id}
 					<Button
 						href="/login"
 						variant="ghost"
 						class="login w-full bg-slate-100 font-semibold text-slate-600"
 						>Login to your account</Button
 					>
-				</div>
-			{/if}
+				{:else}
+					<Button
+						href="/welcome"
+						variant="ghost"
+						class="login w-full bg-slate-100 font-semibold text-slate-600">Your Settings</Button
+					>
+				{/if}
+			</div>
 
 			<div class="menu fixed grid w-[calc(100dvw-1.5rem)] grid-cols-2 gap-2 lg:relative lg:w-full">
 				{#each tabs as { label, icon, link, props: { classes } }, i}

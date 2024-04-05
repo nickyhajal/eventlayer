@@ -54,12 +54,12 @@ async function next(e) {
 </script>
 
 <Screen title="Welcome!">
-	<form on:submit={(e) => submit(e)} class="lg:-mt-32">
-		<div class="mx-auto h-[80vh] max-w-lg overflow-hidden px-2" bind:this={scrollElm}>
+	<form on:submit={(e) => submit(e)} class="">
+		<div class="mx-auto h-[95vh] max-w-lg overflow-hidden px-2 lg:h-[80vh]" bind:this={scrollElm}>
 			{#each Object.values(elementsByPage) as page, i}
 				<div id="page-{i}" class=""></div>
 				<div
-					class="flex h-[73.3vh] flex-col justify-center gap-3 transition-all duration-300 {onPage === i ? 'opacity-100' : 'opacity-0'}"
+					class="relative top-[5%] flex h-[73.3vh] flex-col justify-start gap-3 transition-all duration-300 lg:top-[15%] {onPage === i ? 'opacity-100' : 'opacity-0'}"
 				>
 					<FormElements elements={page} bind:values={values} shouldAutoFocus={i === 0} />
 					<Button
