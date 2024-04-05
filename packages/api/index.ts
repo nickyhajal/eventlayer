@@ -19,4 +19,4 @@ export { router, Router } from './src/root'
  **/
 // export type RouterOutputs = inferRouterOutputs<Router>
 export * from './src/core/auth'
-export * from './src/util/linkedinClient'
+// export * from './src/util/linkedinClient'
