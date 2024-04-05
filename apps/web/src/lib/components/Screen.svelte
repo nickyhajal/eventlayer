@@ -105,14 +105,16 @@ function handleBack(e: MouseEvent) {
 					</div>
 				</div>
 			{/if}
-			{#if bigTitle && !photo}
-				<div class="mb-6 hidden pt-10 text-3xl font-semibold lg:block">{title}</div>
-			{:else}
-				<div class="hidden h-32 w-full lg:block"></div>
-			{/if}
-			<!-- the content -->
-			<div class="contentSlot">
-				<slot />
+			<div class="container">
+				{#if bigTitle && !photo}
+					<div class="mb-6 hidden pt-10 text-3xl font-semibold lg:block">{title}</div>
+				{:else}
+					<div class="hidden h-32 w-full lg:block"></div>
+				{/if}
+				<!-- the content -->
+				<div class="contentSlot">
+					<slot />
+				</div>
 			</div>
 		</div>
 	</div>
