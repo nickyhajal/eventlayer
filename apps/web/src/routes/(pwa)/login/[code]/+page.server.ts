@@ -4,7 +4,6 @@ import { lucia } from '@matterloop/api'
 import { db, eq, loginLinkTable } from '@matterloop/db'
 
 export const load = async ({ locals, params, cookies }) => {
-	console.log(params.code)
 	// if (!params.code) {
 	// 	console.log('return')
 	// 	return {}
@@ -13,7 +12,6 @@ export const load = async ({ locals, params, cookies }) => {
 		const link = await db.query.loginLinkTable.findFirst({
 			where: eq(loginLinkTable.publicId, params.code),
 		})
-		console.log(link)
 		if (!link) {
 			return {}
 		}
@@ -24,10 +22,9 @@ export const load = async ({ locals, params, cookies }) => {
 			path: '/',
 			sameSite: process.env.NODE_ENV === 'development' ? 'lax' : 'none',
 		})
-		return redirect(302, '/')
 	} catch (e) {
 		console.log(e)
 		return {}
 	}
-	// return {}
+	redirect(302, '/')
 }
