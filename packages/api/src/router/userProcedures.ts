@@ -173,7 +173,6 @@ export const userProcedures = t.router({
 		.input(z.object({ email: z.string(), to: z.string().optional() }))
 		.mutation(async ({ ctx, input }) => {
 			const user = await db.query.userTable.findFirst({ where: eq(userTable.email, input.email) })
-			console.log(user)
 			if (!user) {
 				return error(401, 'No user found')
 			}
@@ -182,7 +181,7 @@ export const userProcedures = t.router({
 				userId: user.id,
 				event: ctx.event,
 				to: input.to,
-				codeLength: 10,
+				codeLength: 4,
 			})
 
 			const sig = ctx.event?.name ? `The ${ctx.event?.name} Team` : 'The Eventlayer Team'
@@ -193,9 +192,7 @@ export const userProcedures = t.router({
 					event: ctx.event,
 					more_params: {
 						body: `Hey ${user?.firstName},
-						<br><br>Here's your login code:<div style="font-size: 26pt; font-weight: 800; margin-top: -24px; margin-bottom: 16px;">${{
-							code,
-						}}</div>
+						<br><br>Here's your login code:<div style="font-size: 26pt; font-weight: 800; margin-top: -24px; margin-bottom: 16px;">${code}</div>
 						Or, click this link: ${url} 
 						<br><br>It expires in 24 hours.<br><br>If you didn't request this, you can ignore this email.
 						<br><br>All the best,<br>${sig}`,

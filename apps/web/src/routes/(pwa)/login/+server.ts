@@ -33,7 +33,7 @@ export const POST = async ({ request, cookies, locals }) => {
 		console.log(5, sessionCookie)
 		cookies.set(sessionCookie.name, sessionCookie.value, {
 			...sessionCookie.attributes,
-			path: '.',
+			path: '/',
 			sameSite: process.env.NODE_ENV === 'development' ? 'lax' : 'none',
 		})
 		return json({ status: 'success' })
