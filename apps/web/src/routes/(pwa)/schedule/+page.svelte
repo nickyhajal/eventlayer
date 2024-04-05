@@ -66,7 +66,7 @@ function checkIfUpcoming(event: Event, i: number) {
 			<div
 				class="topNav sticky z-40 -mx-3 flex w-[calc(100dvw+0.25rem)] items-center justify-center border-b border-slate-300/50 bg-slate-50 py-2 text-center text-sm text-slate-600 lg:w-full"
 			>
-				<div>{$event.getContent('main-location-line-4')}</div>
+				<div>{$event.getContent('timezone-info')}</div>
 				<!-- {#each Object.keys(days) as day}
 					{@const datetime = `${day} 00:00:00`}
 					{#if isNewMonth(datetime)}
