@@ -26,6 +26,7 @@
     "body-scroll-lock": "4.0.0-beta.0",
     "browser-image-compression": "^2.0.2",
     "date-picker-svelte": "^2.6.0",
+    "lucide-svelte": "^0.350.0",
     "pretty-bytes": "^6.1.0",
     "showdown": "^2.1.0",
     "svelte": "^4.0.5",
