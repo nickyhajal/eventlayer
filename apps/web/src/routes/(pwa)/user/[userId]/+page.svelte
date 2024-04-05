@@ -79,7 +79,9 @@ const topics = {
 		{#if user?.info?.['traveling-from']?.value}
 			<div class="mt-1 pt-8">
 				<div class="mb-2 font-semibold">Traveling From:</div>
-				<div class="">
+				<div
+					class="w-fit rounded-md border border-slate-200/50 px-2 py-1 text-sm font-medium text-slate-600"
+				>
 					{user?.info?.['traveling-from']?.value}
 				</div>
 			</div>
@@ -87,26 +89,34 @@ const topics = {
 		{#if user?.info?.['why-attending']?.value}
 			<div class="mt-1 pt-8">
 				<div class="mb-2 font-semibold">Coming to wings in order to:</div>
-				{#each JSON.parse(user?.info?.['why-attending']?.value) as key}
-					{#if why[key]}
-						<div class="">
-							{why[key]}
-						</div>
-					{/if}
-				{/each}
+				<div class="flex flex-col gap-1">
+					{#each JSON.parse(user?.info?.['why-attending']?.value) as key}
+						{#if why[key]}
+							<div
+								class="w-fit rounded-md border border-slate-200/50 px-2 py-1 text-sm font-medium text-slate-600"
+							>
+								{why[key]}
+							</div>
+						{/if}
+					{/each}
+				</div>
 			</div>
 		{/if}
 		{#if user?.info?.['interests']?.value}
 			<div class="mt-1 pt-8">
 				<div class="mb-2 font-semibold">Interested in:</div>
 				<div class="flex">
-					{#each JSON.parse(user?.info?.['interests']?.value) as key}
-						{#if topics[key]}
-							<div class="border border-slate-100 p-1">
-								{topics[key]}
-							</div>
-						{/if}
-					{/each}
+					<div class="flex flex-wrap gap-1">
+						{#each JSON.parse(user?.info?.['interests']?.value) as key}
+							{#if topics[key]}
+								<div
+									class="w-fit rounded-md border border-slate-200/50 px-2 py-1 text-sm font-medium text-slate-600"
+								>
+									{topics[key]}
+								</div>
+							{/if}
+						{/each}
+					</div>
 				</div>
 			</div>
 		{/if}
