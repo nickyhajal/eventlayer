@@ -140,7 +140,7 @@ const handleLogout: Handle = async ({ event, resolve }) => {
 		if (!session) throw fail(401)
 		await lucia.invalidateSession(session.sessionId) // invalidate session
 		event.locals.auth.setSession(null) // remove cookie
-		redirect(303, '/')
+		redirect(302, '/')
 	}
 	return resolve(event)
 }
