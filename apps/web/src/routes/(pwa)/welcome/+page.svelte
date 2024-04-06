@@ -3,6 +3,7 @@ import { goto } from '$app/navigation'
 import FormElements from '$lib/components/form/FormElements.svelte'
 import Screen from '$lib/components/Screen.svelte'
 import Button from '$lib/components/ui/button/button.svelte'
+import { NextButton } from '$lib/components/ui/calendar/index.js'
 import { trpc } from '$lib/trpc/client.js'
 import { onMount } from 'svelte'
 
@@ -19,9 +20,12 @@ let values: Record<string, string> = data.form?.elements.reduce(
 	},
 	{} as Record<string, string>,
 )
-let onPage = 0
+let onPage = -1
 const elementsByPage = groupBy(data.form?.elements, 'page')
 const elementsListedByPage = Object.values(elementsByPage)
+onMount(() => {
+	next()
+})
 async function submit(e) {
 	if (e.stopPropagation) {
 		e.stopPropagation()
@@ -45,21 +49,28 @@ async function next(e) {
 		return
 	}
 	onPage += 1
+	const page = document.getElementById(`page-${onPage}`)
 	scrollElm.scrollTo({
-		top: document.getElementById(`page-${onPage}`)?.offsetTop,
+		top: page?.offsetTop,
 		behavior: 'smooth',
 	})
-	await submit(e)
+	if (onPage > 0) {
+		await submit(e)
+	}
 }
 </script>
 
 <Screen title="Welcome!">
 	<form on:submit={(e) => submit(e)} class="">
-		<div class="mx-auto h-[95vh] max-w-lg overflow-hidden px-2 lg:h-[80vh]" bind:this={scrollElm}>
+		<div
+			class="relative mx-auto h-[95vh] max-w-lg overflow-hidden px-2 lg:h-[80vh]"
+			bind:this={scrollElm}
+		>
 			{#each Object.values(elementsByPage) as page, i}
-				<div id="page-{i}" class=""></div>
+				<!-- <div id="page-{i}" class="h-16 w-full"></div> -->
 				<div
-					class="relative top-[5%] flex h-[73.3vh] flex-col justify-start gap-3 transition-all duration-300 lg:top-[15%] {onPage === i ? 'opacity-100' : 'opacity-0'}"
+					id="page-{i}"
+					class="relative top-[5%] flex h-[80vh] flex-col justify-start gap-3 transition-all duration-300 lg:top-[15%] {onPage === i ? 'opacity-100' : 'opacity-0'}"
 				>
 					<FormElements elements={page} bind:values={values} shouldAutoFocus={i === 0} />
 					<Button
