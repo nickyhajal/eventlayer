@@ -32,4 +32,8 @@ export const GET = async (req) => {
 			description: `Conference app for ${event.name}`,
 		})
 	}
+	return json({
+		short_name: 'Eventlayer',
+		name: 'eventlayer-app',
+	})
 }
