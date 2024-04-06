@@ -164,7 +164,7 @@ export const eventProcedures = t.router({
 				return updated[0]
 			} else {
 				const createInput = eventSchema.parse(input)
-				input.eventId = ctx.event.id
+				createInput.eventId = ctx.event.id
 				const newForm = await db
 					.insert(eventTable)
 					.values(
