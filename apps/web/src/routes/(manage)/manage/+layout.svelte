@@ -79,11 +79,6 @@ let links = [
 		icon: FileQuestion,
 	},
 	{
-		path: '/menus',
-		label: 'Menus',
-		icon: SquareMenu,
-	},
-	{
 		section: true,
 		label: 'Settings',
 	},
@@ -93,7 +88,12 @@ let links = [
 		icon: Settings,
 	},
 	{
-		path: '/appearance',
+		path: '/menus',
+		label: 'Menus',
+		icon: SquareMenu,
+	},
+	{
+		path: '/settings',
 		label: 'Appearance',
 		icon: Paintbrush,
 	},

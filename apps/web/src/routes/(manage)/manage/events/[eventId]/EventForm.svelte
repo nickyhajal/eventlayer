@@ -55,6 +55,7 @@ let type = eventTypes.find((t) => t.value === (event.type || 'program'))
 $: event.type = type.value
 async function createEvent() {
 	const res = await trpc().event.upsert.mutate(event)
+	goto(`/manage/events/${res.id}`)
 	toast.success('Saved')
 }
 async function updateAvatar(mediaId: string) {
