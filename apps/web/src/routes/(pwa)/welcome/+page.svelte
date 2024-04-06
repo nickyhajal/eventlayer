@@ -61,7 +61,7 @@ async function next(e) {
 </script>
 
 <Screen title="Welcome!">
-	<form on:submit={(e) => submit(e)} class="">
+	<form on:submit={(e) => submit(e)} class="pt-safe-offset-8 lg:pt-0">
 		<div
 			class="relative mx-auto h-[95vh] max-w-lg overflow-hidden px-2 lg:h-[80vh]"
 			bind:this={scrollElm}
@@ -70,7 +70,7 @@ async function next(e) {
 				<!-- <div id="page-{i}" class="h-16 w-full"></div> -->
 				<div
 					id="page-{i}"
-					class="relative top-[5%] flex h-[80vh] flex-col justify-start gap-3 transition-all duration-300 lg:top-[15%] {onPage === i ? 'opacity-100' : 'opacity-0'}"
+					class="relative top-[25%] mt-24 flex h-[80vh] flex-col justify-start gap-3 transition-all duration-300 lg:top-[15%] {onPage === i ? 'opacity-100' : 'opacity-0'}"
 				>
 					<FormElements elements={page} bind:values={values} shouldAutoFocus={i === 0} />
 					<Button
