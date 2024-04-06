@@ -277,6 +277,9 @@ importers:
       tailwindcss:
         specifier: ^3.4.3
         version: 3.4.3
+      tailwindcss-safe-area:
+        specifier: ^0.5.1
+        version: 0.5.1(tailwindcss@3.4.3)
       tslib:
         specifier: ^2.6.2
         version: 2.6.2
@@ -12558,6 +12561,15 @@ packages:
       tailwind-merge: 1.14.0
       tailwindcss: 3.4.3
     dev: false
+
+  /tailwindcss-safe-area@0.5.1(tailwindcss@3.4.3):
+    resolution: {integrity: sha512-aMHJYBi1NIrJ5ldZ9bk+uGLXw8UFCrFR8fheMyJEabV/kaI+qNozRm7UfEKZRgEmS3RMdrt2RQf2w/7S0ceLrQ==}
+    engines: {node: '>=16'}
+    peerDependencies:
+      tailwindcss: ^2.0.0 || >=3.0.0
+    dependencies:
+      tailwindcss: 3.4.3
+    dev: true
 
   /tailwindcss@3.3.2:
     resolution: {integrity: sha512-9jPkMiIBXvPc2KywkraqsUfbfj+dHDb+JPWtSJa9MLFdrPyazI7q6WX2sUrm7R9eVR7qqv3Pas7EvQFzxKnI6w==}
