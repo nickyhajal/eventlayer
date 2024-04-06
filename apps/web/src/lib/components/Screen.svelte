@@ -45,7 +45,9 @@ function handleBack(e: MouseEvent) {
 <svelte:window on:scroll={handleContentScroll} />
 
 <!-- main shell -->
-<div class="relative mx-auto min-h-[40dvh] {bigTitle ? 'bg-white' : 'bg-white'} pt-12 lg:pt-0">
+<div
+	class="relative mx-auto h-full min-h-[40dvh] {bigTitle ? 'bg-white' : 'bg-white'} pt-12 lg:pt-0"
+>
 	<!-- bottom extra blue -->
 	{#if !noBgScreen}
 		<div class="fixed top-0 z-10 block h-64 w-full bg-slate-800 lg:hidden"></div>
@@ -81,7 +83,7 @@ function handleBack(e: MouseEvent) {
 
 	<!-- content -->
 	<div
-		class={tw(`contentShell relative z-20 -mt-0.5 bg-white pb-6 lg:px-16   ${photo ? '-mt-16' : ''} ${bodyClass}`)}
+		class={tw(`contentShell relative z-20 -mt-0.5 h-full bg-white pb-6 lg:px-16   ${photo ? '-mt-16' : ''} ${bodyClass}`)}
 		bind:this={contentElm}
 		on:scroll={handleContentScroll}
 	>
