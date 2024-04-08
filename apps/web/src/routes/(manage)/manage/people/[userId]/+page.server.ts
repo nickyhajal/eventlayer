@@ -1,5 +1,6 @@
 // routes/login/+page.server.ts
 import { error, fail, redirect } from '@sveltejs/kit'
+import QRCode from 'qrcode'
 import { message, setError, superValidate } from 'sveltekit-superforms/server'
 import { z } from 'zod'
 
@@ -10,7 +11,7 @@ const schema = z.object({
 	password: z.string(),
 })
 
-export const load = async ({ locals, params }) => {
+export const load = async ({ locals, params, url }) => {
 	if (!params.userId) {
 		return error(404, 'No user id')
 	}
@@ -19,5 +20,9 @@ export const load = async ({ locals, params }) => {
 	if (!user) {
 		return error(404, 'User not found')
 	}
-	return { user }
+
+	const qrcode = await QRCode.toDataURL(`${url.protocol}://${url.host}/user/${user.id}`, {
+		width: 320,
+	})
+	return { user, qrcode }
 }

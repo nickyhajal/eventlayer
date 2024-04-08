@@ -3,8 +3,6 @@ import { invalidateAll } from '$app/navigation'
 import ChicletButton from '$lib/components/ui/ChicletButton.svelte'
 import { trpc } from '$lib/trpc/client'
 
-import { tw } from '@matterloop/ui'
-
 import AdminScreen from '../../AdminScreen.svelte'
 import UserForm from '../UserForm.svelte'
 
@@ -44,9 +42,15 @@ async function sendWelcomeEmail() {
 		{/if}
 	</div>
 	<div>
-		<div class="grid grid-cols-[20rem_1fr]">
+		<div class="grid grid-cols-[20rem_1fr] gap-8">
 			<div>
 				<UserForm user={data.user} titleClass="text-2xl font-semibold" showTitle={false} />
+			</div>
+			<div>
+				<label class="block pb-2.5 pt-3.5 text-sm font-semibold">Profile QR Code</label>
+				<div class="h-[10rem] w-[10.1rem] overflow-hidden rounded-md border border-slate-300 p-0">
+					<img src={data.qrcode} class="w-[10rem]" />
+				</div>
 			</div>
 		</div>
 	</div></AdminScreen
