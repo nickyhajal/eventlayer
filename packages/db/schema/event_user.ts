@@ -14,7 +14,7 @@ export const eventUserTable = pgTable('event_user', {
 		.primaryKey()
 		.notNull(),
 	type: text('type'),
-	status: text('status'),
+	status: text('status').default('active'),
 	proBio: text('pro_bio'),
 	bio: text('bio'),
 	url: text('url'),

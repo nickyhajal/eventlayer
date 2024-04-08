@@ -68,7 +68,7 @@ export const EventFns = (args: string | Args) => {
 			const usersQuery = db
 				.select()
 				.from(eventUserTable)
-				.where(and(eq(eventUserTable.eventId, eventId)))
+				.where(and(eq(eventUserTable.eventId, eventId), eq(eventUserTable.status, 'active')))
 				.leftJoin(userTable, eq(userTable.id, eventUserTable.userId))
 				.leftJoin(mediaTable, eq(mediaTable.id, userTable.mediaId))
 			if (mainEventId) {
@@ -218,10 +218,14 @@ export const EventFns = (args: string | Args) => {
 					and(eq(eventUserTable.userId, mainEventUser.userId), eq(mainEventUser.eventId, eventId)),
 				)
 				.where(
-					or(
-						// the related event has a parentId of the main event
-						and(eq(eventTable.eventId, eventId), ne(eventUserTable.type, 'attendee')),
-						and(inArray(mainEventUser.type, ['speaker', 'host'])),
+					and(
+						eq(eventUserTable.status, 'active'),
+						eq(mainEventUser.status, 'active'),
+						or(
+							// the related event has a parentId of the main event
+							and(eq(eventTable.eventId, eventId), ne(eventUserTable.type, 'attendee')),
+							and(inArray(mainEventUser.type, ['speaker', 'host'])),
+						),
 					),
 				)
 			return orderBy(users, ['user.lastName', 'user.firstName'], ['asc', 'asc'])

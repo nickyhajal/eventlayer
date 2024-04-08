@@ -77,7 +77,7 @@ async function addUser(user: FullEventUser) {
 					class="flex flex-col items-center gap-2 overflow-hidden rounded-lg border border-stone-200 bg-stone-50 p-1"
 				>
 					{#if sponsor.photo}
-						<img src={getMediaUrl(sponsor.photo)} alt="at" class="w-full" />
+						<img src={getMediaUrl(sponsor.photo, 'w=690')} alt="at" class="w-full" />
 					{/if}
 					<div class="w-full bg-stone-100">
 						<Uploader parentId={sponsor.id} parentType="sponsor" onSuccess={updateAvatar} />
