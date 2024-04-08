@@ -74,7 +74,7 @@ async function next(e) {
 				>
 					<FormElements elements={page} bind:values={values} shouldAutoFocus={i === 0} />
 					<Button
-						class="mt-8 w-52 border border-b-2 border-emerald-500/20 border-b-emerald-500/20 bg-emerald-100/20 py-5 font-semibold  text-emerald-600 shadow-none hover:bg-emerald-100/60"
+						class="border-a-accent/10 border-b-a-accent/10 bg-a-accent/5 text-a-accent hover:bg-a-accent/10 mt-8 w-52 border border-b-2 py-5  font-semibold shadow-none brightness-90"
 						type="button"
 						on:click={next}>{i === elementsListedByPage.length -1  ? 'Done' : 'Continue'}</Button
 					>
