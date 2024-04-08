@@ -51,9 +51,16 @@ function addElement(index?: number) {
 	selectedElement = $form.elements[index]
 	$form.elements = $form.elements
 }
-function removeElement(index: number) {
+async function removeElement(index: number) {
+	if (!$form.elements) return
+
+	const element = $form.elements[index]
+	if (!element?.id) return
+
+	selectedElement = $form.elements[index - 1]
 	$form.elements.splice(index, 1)
 	$form.elements = $form.elements
+	await trpc().formElement.delete.mutate({ id: element.id })
 	handleChangedElements()
 }
 function handleChangedElements() {
@@ -157,7 +164,7 @@ function handleDndFinalize(e) {
 							<ElementFormRow
 								bind:element={selectedElement}
 								index={selectedIndex}
-								on:delete={() => removeElement(selectedIndex)}
+								on:removeElement={() => removeElement(selectedIndex)}
 								on:elementChange={() => handleChangedElements()}
 							/>
 						</div>
