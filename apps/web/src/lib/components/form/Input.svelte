@@ -73,7 +73,7 @@ onMount(() => {
 </script>
 
 {#if label}
-	<label class="block w-9/12 pb-1.5 text-[0.875rem] font-medium text-slate-700" for={name}
+	<label class="block w-10/12 pb-1.5 text-[0.875rem] font-medium text-slate-700" for={name}
 		>{label}</label
 	>
 {/if}

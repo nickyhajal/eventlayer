@@ -68,6 +68,14 @@ async function updateAvatar(mediaId: string) {
 	trpc().user.upsert.mutate({ userId: user.userId, mediaId })
 	invalidateAll()
 }
+async function deactivateUser() {
+	await trpc().user.upsert.mutate({ userId: user.userId, status: 'inactive' })
+	invalidateAll()
+}
+async function activateUser() {
+	await trpc().user.upsert.mutate({ userId: user.userId, status: 'active' })
+	invalidateAll()
+}
 async function checkEmail() {
 	if (user.email) {
 		const res = await trpc().user.checkEmail.query({ email: user.email })
@@ -92,6 +100,11 @@ async function checkEmail() {
 }
 </script>
 
+{#if user?.status !== 'active'}
+	<div class="mb-4 rounded-md bg-red-50 p-3 text-center text-sm font-semibold text-red-700/80">
+		User not attending event
+	</div>
+{/if}
 <form on:submit={saveUser}>
 	{#if showTitle}
 		{#if inDialog}
@@ -228,5 +241,20 @@ async function checkEmail() {
 			{/if}
 		{/if}
 	</div>
-	<div class="flex justify-end"><Button type="submit">{buttonMsg}</Button></div>
+	<div class="flex w-full justify-between">
+		{#if user?.status === 'active'}
+			<Button
+				variant="ghost"
+				class="px-2.5 font-semibold text-red-700/70 hover:text-red-700"
+				on:click={() => deactivateUser()}>Remove from Event</Button
+			>
+		{:else}
+			<Button
+				variant="ghost"
+				class="bg-emerald-50 px-2.5 font-semibold text-emerald-600/70 hover:bg-emerald-50 hover:text-emerald-600"
+				on:click={() => activateUser()}>Add to Event</Button
+			>
+		{/if}
+		<div class="flex justify-end"><Button type="submit">{buttonMsg}</Button></div>
+	</div>
 </form>
