@@ -1,12 +1,7 @@
 <script lang="ts">
-import { goto, invalidate, invalidateAll } from '$app/navigation'
+import { goto } from '$app/navigation'
 import { Button } from '$lib/components/ui/button'
-import Datepicker from '$lib/components/ui/Datepicker.svelte'
-import DatetimePicker from '$lib/components/ui/DatetimePicker.svelte'
 import * as Dialog from '$lib/components/ui/dialog'
-import { Input } from '$lib/components/ui/input'
-import Label from '$lib/components/ui/label/label.svelte'
-import * as Select from '$lib/components/ui/select'
 import { trpc } from '$lib/trpc/client.js'
 import Plus from 'lucide-svelte/icons/plus'
 

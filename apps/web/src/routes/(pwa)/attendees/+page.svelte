@@ -1,9 +1,7 @@
 <script lang="ts">
 import Screen from '$lib/components/Screen.svelte'
-import Button from '$lib/components/ui/button/button.svelte'
 import UserAvatar from '$lib/components/UserAvatar.svelte'
 import { getAttendeeSearcherContext, getMeContext } from '$lib/state/getContexts'
-import ChevronRight from 'lucide-svelte/icons/chevron-right'
 import { getContext } from 'svelte'
 
 import { getMediaUrl, orderBy } from '@matterloop/util'

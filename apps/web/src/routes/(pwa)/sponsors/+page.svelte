@@ -1,10 +1,10 @@
 <script lang="ts">
+import { create, insert, remove, search, searchVector } from '@orama/orama'
 import Screen from '$lib/components/Screen.svelte'
-import Button from '$lib/components/ui/button/button.svelte'
 import { getMeContext } from '$lib/state/getContexts'
-import ChevronRight from 'lucide-svelte/icons/chevron-right'
-import { getContext } from 'svelte'
+import { getContext, onMount } from 'svelte'
 
+import type { Sponsor } from '@matterloop/db'
 import { getMediaUrl, orderBy } from '@matterloop/util'
 
 import type { Snapshot } from '../$types.js'
@@ -20,6 +20,24 @@ export const snapshot: Snapshot = {
 		window.scrollTo(0, scrollY)
 	},
 }
+let query = ''
+let searcher: (q: string) => Promise<typeof data.sponsors>
+onMount(async () => {
+	const db = await create({
+		schema: {
+			title: 'string',
+		},
+	})
+	await Promise.all(
+		data.sponsors.map(({ id, title, photo, users, description }) =>
+			insert(db, { id, title, photo, users, description }),
+		),
+	)
+	searcher = async (term: string) => {
+		const sres = await search(db, { term })
+		return sres.hits.map(({ document }) => document)
+	}
+})
 const me = getMeContext()
 const seed = getContext<number>('seed')
 function shuffle(array: Array<any>, seed: number) {
@@ -50,36 +68,46 @@ $: sponsors =
 				['nameLower'],
 			)
 		: []
+let results: Sponsor[] = []
+$: {
+	results = []
+	if (query && searcher) {
+		searcher(query).then((res) => {
+			results = res
+		})
+	} else {
+		results = sponsors
+	}
+}
+$: console.log(results)
 </script>
 
 <Screen title="Sponsors" bigTitle="Sponsors" bodyClass="bg-slate-100">
 	<div
-		class="topNav sticky z-40 flex items-center justify-center border-b border-slate-300/50 bg-slate-50 px-4 py-2 text-center text-sm text-slate-600 lg:mt-1 lg:rounded-2xl lg:border"
+		class="topNav sticky z-40 -mx-4 flex items-center justify-center border-b border-slate-300/50 bg-slate-50 px-5 text-center text-sm text-slate-600 lg:mx-0 lg:mt-1 lg:rounded-2xl lg:border"
 	>
-		<Button
-			variant="outline"
-			class="text-a-accent mt-0 grid w-full grid-cols-[1fr_0.7rem] items-center justify-center bg-white"
-			href="/sponsors/map"
-		>
-			<div>View Sponsor Map</div>
-			<ChevronRight class="text-a-accent relative -top-[1px] h-5 w-5" />
-		</Button>
+		<input
+			type="text"
+			class="w-full bg-transparent py-2.5 text-base !outline-none"
+			placeholder="Search sponsors..."
+			bind:value={query}
+		/>
 	</div>
 	<div class="relative mx-auto -mt-2 max-w-7xl bg-slate-100">
 		<div class="mt-2 grid grid-cols-1 gap-4 py-2 lg:grid-cols-2">
-			{#each sponsors as sponsor}
+			{#each results as sponsor}
 				{@const {id, title, url, bookingUrl, photo, description} = sponsor}
 				<div class="relative z-0 flex flex-col rounded-2xl bg-white p-1">
 					<a href={url} target="_blank">
 						<div
-							class="mb-2 h-48 w-full rounded-xl border border-slate-100 bg-slate-50/80 bg-cover bg-center"
+							class="mb-2 h-36 w-full rounded-xl border border-slate-100 bg-slate-50/60 bg-contain bg-center bg-no-repeat"
 							style="background-image: url({getMediaUrl(photo)})"
 						></div>
 					</a>
 					<div class="px-2 pb-2">
 						<div class="mb-0.5 truncate text-lg font-semibold">{title}</div>
 						<div class="line-clamp mb-0.5 truncate text-sm font-medium text-slate-600">
-							{description}
+							{description || '-'}
 						</div>
 						{#if sponsor.users.length}
 							<div class="mt-4 gap-1 rounded-lg bg-blue-50/50 p-2">
@@ -105,21 +133,21 @@ $: sponsors =
 					<div
 						class="text-a-accent mt-2 flex h-12 w-full items-center justify-around border-t border-slate-100 font-semibold"
 					>
-						{#if url}
+						{#if id}
 							<a
-								href={url}
+								href={`/sponsors/${id}`}
 								target="_blank"
-								class="flex h-full w-1/2 items-center justify-center border-r border-slate-100 text-center"
+								class="flex h-full w-full items-center justify-center border-slate-100 text-center"
 								>View Profile</a
 							>
 						{/if}
-						{#if bookingUrl}
+						<!-- {#if bookingUrl}
 							<a
 								href={bookingUrl}
 								target="_blank"
 								class="flex h-full w-1/2 items-center justify-center text-center">Contact Sponsor</a
 							>
-						{/if}
+						{/if} -->
 					</div>
 				</div>
 			{/each}
