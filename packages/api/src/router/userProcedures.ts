@@ -233,11 +233,18 @@ export const userProcedures = t.router({
 					event: ctx.event,
 					more_params: {
 						body: `Hey ${user?.firstName},
-						<br><br>We're excited to have you coming to town shortly for the Wings Conference!
-						<br><br>We'll be using a simple app to allow attendees to connect and stay on top of their schedule.
-						<br><br>To gain access, click the link below and complete your account.
-						<br><br>Here's the link: ${url} 
-						<br><br>All the best,<br>${sig}`,
+								<br><br>We're excited to have you join us for the Wings Conference, our charge to lead climate solutions for Oregon and beyond!
+								<br><br>In lieu of a one-time-used printed program, we've developed a helpful event app to guide you through all things related to the conference.
+								<br><br>With the Wings Conference app you'll be able to:
+								<ul>
+								<li>View a full detailed schedule</li>
+								<li>Access to an attendee list including information about our speakers</li>
+								<li>Connect with our amazing Sponsors and Impact Partners.</li>
+								<li>And more...</li>
+								</ul>
+								<br><br>To gain access, click the link below and set up your account.
+								<br><br>Here's the link: ${url} 
+								<br><br>See you soon!<br>${sig}`,
 					},
 				})
 			}
@@ -317,32 +324,48 @@ export const userProcedures = t.router({
 					})
 				}
 			}
+
+			// There are a few user table keys that we may also want to sync to
+			// an onboarding form
+			const userTableKeys = ['firstName', 'lastName']
 			if (info && userId) {
+				userTableKeys.forEach((key) => {
+					if (input?.[key]) {
+						info[key] = { value: input?.[key] }
+					}
+				})
+
 				await Promise.all(
 					Object.entries(info).map(async ([key, { value }]) => {
-						const existing = await db.query.eventUserInfoTable.findFirst({
-							where: and(
-								eq(eventUserInfoTable.userId, userId),
-								eq(eventUserInfoTable.eventId, eventId),
-								eq(eventUserInfoTable.key, key),
-							),
-						})
-						if (!existing) {
-							await db
-								.insert(eventUserInfoTable)
-								.values({ userId, key, value, eventId, public: true })
-						} else {
-							await db
-								.update(eventUserInfoTable)
-								.set({ value })
-								.where(
-									and(
-										eq(eventUserInfoTable.userId, userId),
-										eq(eventUserInfoTable.eventId, eventId),
-										eq(eventUserInfoTable.key, key),
-									),
-								)
+						// We don't want to save userTableKey to the eventUserInfoTable
+						if (!userTableKeys.includes(key)) {
+							const existing = await db.query.eventUserInfoTable.findFirst({
+								where: and(
+									eq(eventUserInfoTable.userId, userId),
+									eq(eventUserInfoTable.eventId, eventId),
+									eq(eventUserInfoTable.key, key),
+								),
+							})
+							if (!existing) {
+								await db
+									.insert(eventUserInfoTable)
+									.values({ userId, key, value, eventId, public: true })
+							} else {
+								await db
+									.update(eventUserInfoTable)
+									.set({ value })
+									.where(
+										and(
+											eq(eventUserInfoTable.userId, userId),
+											eq(eventUserInfoTable.eventId, eventId),
+											eq(eventUserInfoTable.key, key),
+										),
+									)
+							}
 						}
+
+						// We want to find all the form elements with this userInfoKey
+						// that don't have updated responses by this user
 						const relatedElements = await db
 							.select()
 							.from(formResponseTable)

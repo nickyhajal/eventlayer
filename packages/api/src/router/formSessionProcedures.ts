@@ -13,6 +13,7 @@ import {
 	formSessionTable,
 	gte,
 	inArray,
+	userTable,
 	type FormResponse,
 	type FormSession,
 } from '@matterloop/db'
@@ -186,36 +187,41 @@ export const formSessionProcedures = t.router({
 			}
 
 			// Sync to user values
-			console.log(needsUserSync)
 			if (needsUserSync.length) {
 				await Promise.all(
 					needsUserSync.map(async (element) => {
 						const { userInfoKey, userInfoPublic } = element
 						if (!userInfoKey) return
 						const response = values.find(({ elementId }) => elementId === element.id)
-						console.log(response)
 						if (!response) return
-						const existing = await db.query.eventUserInfoTable.findFirst({
-							where: and(
-								eq(eventUserInfoTable.eventId, eventId),
-								eq(eventUserInfoTable.userId, userId),
-								eq(eventUserInfoTable.key, userInfoKey),
-							),
-						})
-						if (existing) {
+						if (['firstName', 'lastName'].includes(userInfoKey)) {
 							await db
-								.update(eventUserInfoTable)
-								.set({ value: response.value || '' })
-								.where(eq(eventUserInfoTable.id, existing.id))
+								.update(userTable)
+								.set({ [userInfoKey]: response.value })
+								.where(eq(userTable.id, userId))
 						} else {
-							await db.insert(eventUserInfoTable).values({
-								type: 'info',
-								key: userInfoKey,
-								value: response.value,
-								public: userInfoPublic,
-								userId,
-								eventId,
+							const existing = await db.query.eventUserInfoTable.findFirst({
+								where: and(
+									eq(eventUserInfoTable.eventId, eventId),
+									eq(eventUserInfoTable.userId, userId),
+									eq(eventUserInfoTable.key, userInfoKey),
+								),
 							})
+							if (existing) {
+								await db
+									.update(eventUserInfoTable)
+									.set({ value: response.value || '' })
+									.where(eq(eventUserInfoTable.id, existing.id))
+							} else {
+								await db.insert(eventUserInfoTable).values({
+									type: 'info',
+									key: userInfoKey,
+									value: response.value,
+									public: userInfoPublic,
+									userId,
+									eventId,
+								})
+							}
 						}
 					}),
 				)
