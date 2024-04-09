@@ -117,6 +117,13 @@ export const EventFns = (args: string | Args) => {
 				}
 			}
 		},
+		getSponsor: async (sponsorId: string) => {
+			const sponsor = await db.query.sponsorTable.findFirst({
+				where: and(eq(sponsorTable.eventId, eventId), eq(sponsorTable.id, sponsorId)),
+				with: { photo: true, users: { with: { user: { with: { photo: true } } } } },
+			})
+			return sponsor
+		},
 		getEvents: async () => {
 			const events = await db.query.eventTable.findMany({
 				where: and(eq(eventTable.eventId, eventId)),

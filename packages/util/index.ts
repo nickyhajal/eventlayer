@@ -4,6 +4,7 @@ import { byKey } from './src/lib/byKey'
 import { generateSha256, generateSha1 } from './src/lib/generateSha256'
 export * from './src/lib/getMediaUrl'
 export * from './src/lib/getContentFromContentArray'
+export * from './src/lib/joinWithCommasUntilAnd'
 export * from './src/lib/getEmbeddedYoutubeLinks'
 export * from './src/lib/zodUtils'
 export * from './src/lib/isIos'
@@ -31,6 +32,7 @@ import reverse from 'lodash/reverse'
 import omitBy from 'lodash/omitBy'
 import shuffle from 'lodash/shuffle'
 import kebabCase from 'lodash/kebabCase'
+import startCase from 'lodash/startCase'
 import isArray from 'lodash/isArray'
 import isString from 'lodash/isString'
 import isNumber from 'lodash/isNumber'
@@ -67,6 +69,7 @@ export {
   reverse,
   shuffle,
   kebabCase,
+  startCase,
   groupBy,
   isArray,
   isString,

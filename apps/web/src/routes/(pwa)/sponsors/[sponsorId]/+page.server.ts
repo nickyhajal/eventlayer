@@ -6,6 +6,6 @@ export const load = async (req) => {
 	const { locals, url, params } = req
 	const eventFns = EventFns({ eventId: locals.event.id })
 	return {
-		user: await eventFns.getUser(params.userId),
+		sponsor: await eventFns.getSponsor(params.sponsorId),
 	}
 }

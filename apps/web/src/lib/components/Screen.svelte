@@ -1,5 +1,7 @@
 <script lang="ts">
+import * as Popover from '$lib/components/ui/popover'
 import { getMediaUrl } from '$lib/util/getMediaUrl'
+import ChevronDown from 'lucide-svelte/icons/chevron-down'
 import ChevronLeft from 'lucide-svelte/icons/chevron-left'
 import { fade } from 'svelte/transition'
 
@@ -14,7 +16,10 @@ export let back = ''
 export let noBgScreen = false
 export let photo: Media
 export let bodyClass = ''
+export let titleSelectOptions: false | Array<{ label: string; value: string }> = false
+export let titleSelectValue: string = ''
 export let preferHistoryBack = true
+let titleSelectOpen = false
 let contentElm: HTMLDivElement
 let bigTitleOpacity = 1
 let mainTitleOpacity = bigTitle ? 0 : 1
@@ -23,6 +28,7 @@ function handleContentScroll(e) {
 	const scrollY = e.currentTarget === contentElm ? contentElm.scrollTop : window.scrollY
 	if (bigTitle) {
 		if (scrollY > 0) {
+			titleSelectOpen = false
 			bigTitleOpacity = (100 - scrollY * 4) / 100
 			mainTitleOpacity = (scrollY * 4) / 100
 		} else {
@@ -77,7 +83,7 @@ function handleBack(e: MouseEvent) {
 			class="absolute left-0 right-0 mx-auto w-fit max-w-56 truncate text-center text-sm font-semibold text-white"
 			style="opacity: {mainTitleOpacity}"
 		>
-			{title}
+			{titleSelectOptions ?  titleSelectOptions.find(({value}) => value === titleSelectValue)?.label || title : title}
 		</div>
 	</div>
 
@@ -101,12 +107,42 @@ function handleBack(e: MouseEvent) {
 						></div>
 					{/if}
 					<div class="relative w-full self-end" style="opacity: {bigTitleOpacity}">
-						<div
-							class="w-full px-6 pb-4 text-left text-3xl font-semibold tracking-wide text-white"
-							style="text-shadow: 1px 1px 0 rgba(0,0,0,0.8)"
-						>
-							{bigTitle}
-						</div>
+						{#if titleSelectOptions}
+							<Popover.Root bind:open={titleSelectOpen}>
+								<Popover.Trigger
+									class="mx-2 flex items-center gap-3 rounded-lg border border-slate-200/5  p-2 px-4 font-medium text-slate-500/70 transition-all hover:bg-slate-200/5"
+								>
+									<div
+										class="w-full px-0 text-left text-2xl font-semibold tracking-wide text-white"
+										style="text-shadow: 1px 1px 0 rgba(0,0,0,0.8)"
+									>
+										{titleSelectOptions?.find(({value}) => value === titleSelectValue)?.label || ''}
+									</div>
+									<ChevronDown class="h-8 w-8 px-0 text-white hover:bg-transparent"></ChevronDown>
+								</Popover.Trigger>
+								<Popover.Content class="p-0">
+									<div
+										class="max-h-120 flex w-full flex-col gap-0.5 divide-y divide-slate-100 overflow-auto px-0 py-1 text-slate-600"
+									>
+										{#each titleSelectOptions as { value, label }}
+											<button
+												on:click={() => { titleSelectOpen = false;titleSelectValue = value;}}
+												class="flex w-full items-center justify-start bg-white px-4 py-2.5 !outline-none transition-all {value === titleSelectValue? 'bg-slate-300/50' : 'bg-white hover:bg-slate-100'}"
+											>
+												{label}
+											</button>
+										{/each}
+									</div>
+								</Popover.Content>
+							</Popover.Root>
+						{:else}
+							<div
+								class="w-full px-6 pb-4 text-left text-3xl font-semibold tracking-wide text-white"
+								style="text-shadow: 1px 1px 0 rgba(0,0,0,0.8)"
+							>
+								{bigTitle}
+							</div>
+						{/if}
 					</div>
 				</div>
 			{/if}

@@ -5,7 +5,7 @@ import { getMeContext } from '$lib/state/getContexts'
 import { getContext, onMount } from 'svelte'
 
 import type { Sponsor } from '@matterloop/db'
-import { getMediaUrl, orderBy } from '@matterloop/util'
+import { getMediaUrl, orderBy, startCase } from '@matterloop/util'
 
 import type { Snapshot } from '../$types.js'
 
@@ -79,30 +79,60 @@ $: {
 		results = sponsors
 	}
 }
-$: console.log(results)
+const sponsorsByType = data.sponsors.reduce((out, sponsor) => {
+	if (!out[sponsor.type]) out[sponsor.type] = []
+	out[sponsor.type].push(sponsor)
+	return out
+}, {})
+const vals = {
+	sponsor: 0,
+	'impact-partner': 1,
+	'organizing-partner': 2,
+}
+const types = Object.keys(sponsorsByType)
+const typeOptions = [
+	{ label: 'All Sponsors', value: 'all' },
+	...types
+		.map((type) => ({
+			label: type === 'staff' ? 'Staff' : `${startCase(type)}s`,
+			value: type,
+		}))
+		.sort((a, b) => vals[a.value] - vals[b.value]),
+]
+let showType = 'all'
 </script>
 
-<Screen title="Sponsors" bigTitle="Sponsors" bodyClass="bg-slate-100">
+<Screen
+	titleSelectOptions={typeOptions}
+	bind:titleSelectValue={showType}
+	title="Sponsors"
+	bigTitle="Sponsors"
+	bodyClass="bg-slate-100"
+>
 	<div
-		class="topNav sticky z-40 -mx-4 flex items-center justify-center border-b border-slate-300/50 bg-slate-50 px-5 text-center text-sm text-slate-600 lg:mx-0 lg:mt-1 lg:rounded-2xl lg:border"
+		class="topNav sticky z-40 -ml-4 flex w-[calc(100vw+0.25rem)] items-center justify-center border-b border-slate-300/50 bg-slate-50 px-5 text-center text-sm text-slate-600 lg:mx-0 lg:mt-1 lg:rounded-2xl lg:border"
 	>
 		<input
 			type="text"
 			class="w-full bg-transparent py-2.5 text-base !outline-none"
-			placeholder="Search sponsors..."
+			placeholder="Search {typeOptions.find(({value}) => value === showType)?.label.toLowerCase()}..."
 			bind:value={query}
 		/>
 	</div>
 	<div class="relative mx-auto -mt-2 max-w-7xl bg-slate-100">
 		<div class="mt-2 grid grid-cols-1 gap-4 py-2 lg:grid-cols-2">
-			{#each results as sponsor}
+			{#each results.filter(({type}) => showType === 'all' || type === showType) as sponsor}
 				{@const {id, title, url, bookingUrl, photo, description} = sponsor}
 				<div class="relative z-0 flex flex-col rounded-2xl bg-white p-1">
-					<a href={url} target="_blank">
+					<a href={`/sponsors/${id}`}>
 						<div
-							class="mb-2 h-36 w-full rounded-xl border border-slate-100 bg-slate-50/60 bg-contain bg-center bg-no-repeat"
-							style="background-image: url({getMediaUrl(photo)})"
-						></div>
+							class="mb-2 h-36 w-full rounded-xl border border-slate-100 bg-slate-50/60 px-12 py-6"
+						>
+							<div
+								class="h-full w-full bg-contain bg-center bg-no-repeat"
+								style="background-image: url({getMediaUrl(photo, 'trim=1&w=780')})"
+							></div>
+						</div>
 					</a>
 					<div class="px-2 pb-2">
 						<div class="mb-0.5 truncate text-lg font-semibold">{title}</div>
@@ -136,7 +166,6 @@ $: console.log(results)
 						{#if id}
 							<a
 								href={`/sponsors/${id}`}
-								target="_blank"
 								class="flex h-full w-full items-center justify-center border-slate-100 text-center"
 								>View Profile</a
 							>

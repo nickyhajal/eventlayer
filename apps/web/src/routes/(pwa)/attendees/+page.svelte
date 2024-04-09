@@ -4,7 +4,7 @@ import UserAvatar from '$lib/components/UserAvatar.svelte'
 import { getAttendeeSearcherContext, getMeContext } from '$lib/state/getContexts'
 import { getContext } from 'svelte'
 
-import { getMediaUrl, orderBy } from '@matterloop/util'
+import { getMediaUrl, orderBy, startCase } from '@matterloop/util'
 
 import type { Snapshot } from '../$types.js'
 
@@ -62,22 +62,44 @@ $: {
 				: []
 	}
 }
+const usersByType = data.users.reduce((out, user) => {
+	if (!out[user.type]) out[user.type] = []
+	out[user.type].push(user)
+	return out
+}, {})
+const types = Object.keys(usersByType)
+const typeOptions = [
+	{ label: 'All Attendees', value: 'all' },
+	...types
+		.map((type) => ({
+			label: type === 'staff' ? 'Staff' : `${startCase(type)}s`,
+			value: type,
+		}))
+		.sort((a, b) => a.label.localeCompare(b.label)),
+]
+let showType = 'all'
 </script>
 
-<Screen title="Attendees" bigTitle="Attendees" bodyClass="bg-slate-100">
+<Screen
+	titleSelectOptions={typeOptions}
+	bind:titleSelectValue={showType}
+	title="Attendees"
+	bigTitle="Attendees"
+	bodyClass="bg-slate-100"
+>
 	<div
-		class="topNav sticky z-40 -mx-4 flex items-center justify-center border-b border-slate-300/50 bg-slate-50 px-5 text-center text-sm text-slate-600 lg:mx-0 lg:mt-1 lg:rounded-2xl lg:border"
+		class="topNav sticky z-40 -ml-4 flex w-[calc(100vw+0.25rem)] items-center justify-center border-b border-slate-300/50 bg-slate-50 px-5 text-center text-sm text-slate-600 lg:mx-0 lg:mt-1 lg:rounded-2xl lg:border"
 	>
 		<input
 			type="text"
 			class="w-full bg-transparent py-2.5 text-base !outline-none"
-			placeholder="Search attendees..."
+			placeholder="Search {typeOptions.find(({value}) => value === showType)?.label.toLowerCase()}..."
 			bind:value={query}
 		/>
 	</div>
-	<div class="relative mx-auto -mt-2 max-w-7xl bg-slate-100">
+	<div class=" relative mx-auto -mt-2 max-w-7xl bg-slate-100">
 		<div class="mt-4 grid grid-cols-1 gap-1.5 py-2 lg:grid-cols-2 lg:gap-4">
-			{#each users as user}
+			{#each users.filter(({type}) => showType === 'all' || type === showType) as user}
 				{@const {id, firstName, lastName, url, bookingUrl, photo, description} = user}
 				<div
 					class="relative z-0 flex flex-col items-start justify-center rounded-2xl bg-white px-1 py-0 lg:items-center lg:py-4"
