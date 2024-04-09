@@ -76,7 +76,15 @@ const topics = {
 			</Button>
 		{/if}
 		<Markdown data={user.proBio} class="mt-6 pr-4 text-slate-600" />
-		{#if user?.info?.['traveling-from']?.value}
+		{#if user?.info?.['speechTitle']?.value}
+			<div class="mt-1 pt-8">
+				<div class="mb-2 font-semibold">Talk Title</div>
+				<div class="w-fit text-sm font-medium text-slate-600">
+					{user?.info?.['speechTitle']?.value}
+				</div>
+			</div>
+		{/if}
+		{#if user?.info?.['traveling-from']?.value?.length}
 			<div class="mt-1 pt-8">
 				<div class="mb-2 font-semibold">Traveling From:</div>
 				<div
@@ -86,9 +94,9 @@ const topics = {
 				</div>
 			</div>
 		{/if}
-		{#if user?.info?.['why-attending']?.value}
+		{#if user?.info?.['why-attending']?.value?.length > 2}
 			<div class="mt-1 pt-8">
-				<div class="mb-2 font-semibold">Coming to wings in order to:</div>
+				<div class="mb-2 font-semibold">Coming to Wings in order to:</div>
 				<div class="flex flex-col gap-1">
 					{#each JSON.parse(user?.info?.['why-attending']?.value) as key}
 						{#if why[key]}
@@ -102,7 +110,7 @@ const topics = {
 				</div>
 			</div>
 		{/if}
-		{#if user?.info?.['interests']?.value}
+		{#if user?.info?.['interests']?.value?.length > 2}
 			<div class="mt-1 pt-8">
 				<div class="mb-2 font-semibold">Interested in:</div>
 				<div class="flex">

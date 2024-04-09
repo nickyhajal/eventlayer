@@ -33,6 +33,7 @@ user.info = merge(user?.info || {}, {
 	company: { value: '' },
 	title: { value: '' },
 	linkedin_url: { value: '' },
+	speechTitle: { value: '' },
 })
 $: buttonMsg = emailConfirmed ? (user?.id ? 'Save User' : 'Add User') : 'Check Email'
 $: editing = user?.id ? true : false
@@ -238,6 +239,17 @@ async function checkEmail() {
 					<Label for="bio" class="text-right">User Bio</Label>
 					<Textarea id="bio" bind:value={user.bio} class="col-span-3" />
 				</div>
+				{#if user.type.includes('speaker')}
+					<div class="flex flex-col items-start justify-center gap-1">
+						<Label for="speechTitle" class="text-right">Talk Title</Label>
+						<Input
+							id="speechTitle"
+							type="text"
+							bind:value={user.info.speechTitle.value}
+							class="col-span-3"
+						/>
+					</div>
+				{/if}
 			{/if}
 		{/if}
 	</div>
