@@ -12,7 +12,13 @@ import {
 	type FilterFn,
 	type SortDirection,
 } from '@tanstack/svelte-table'
-import type { ColumnDef, Row, TableOptions } from '@tanstack/svelte-table'
+import type {
+	ColumnDef,
+	ColumnSort,
+	Row,
+	SortingColumn,
+	TableOptions,
+} from '@tanstack/svelte-table'
 import ChevronFirst from 'lucide-svelte/icons/chevron-first'
 import ChevronLast from 'lucide-svelte/icons/chevron-last'
 import ChevronLeft from 'lucide-svelte/icons/chevron-left'
@@ -21,6 +27,7 @@ import ChevronRight from 'lucide-svelte/icons/chevron-right'
 import { writable } from 'svelte/store'
 
 export let emptyMsg: string
+export let sorting: ColumnSort[] = []
 export let rows: Array<T>
 export let columns: ColumnDef<T>[]
 export let globalFilterFn: FilterFn<any>
@@ -62,6 +69,9 @@ const options = writable<TableOptions<T>>({
 			pageSize: 50,
 			pageIndex: 0,
 		},
+	},
+	initialState: {
+		sorting: sorting || [],
 	},
 	enableGlobalFilter: true,
 })

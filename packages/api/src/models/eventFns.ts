@@ -121,6 +121,7 @@ export const EventFns = (args: string | Args) => {
 			const sponsor = await db.query.sponsorTable.findFirst({
 				where: and(eq(sponsorTable.eventId, eventId), eq(sponsorTable.id, sponsorId)),
 				with: { photo: true, users: { with: { user: { with: { photo: true } } } } },
+				orderBy: asc(sponsorTable.ord),
 			})
 			return sponsor
 		},

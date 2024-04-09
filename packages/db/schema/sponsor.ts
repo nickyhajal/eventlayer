@@ -17,6 +17,7 @@ export const sponsorTable = pgTable('sponsor', {
 	title: text('title'),
 	expoLocation: text('expo_location'),
 	url: text('url'),
+	ord: integer('ord'),
 	bookingUrl: text('booking_url'),
 	description: text('description'),
 	createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),

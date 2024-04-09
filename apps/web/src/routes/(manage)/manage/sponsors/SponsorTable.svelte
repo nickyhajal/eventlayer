@@ -6,7 +6,7 @@ import Table from '$lib/components/ui/Table.svelte'
 
 import type { Sponsor } from '@matterloop/db'
 // import { rankItem } from '@tanstack/match-sorter-utils';
-import { capitalize, dayjs } from '@matterloop/util'
+import { capitalize, dayjs, startCase } from '@matterloop/util'
 
 export let rows: Sponsor[]
 
@@ -24,7 +24,7 @@ const columns: ColumnDef<Sponsor>[] = [
 	{
 		accessorKey: 'type',
 		header: 'Type',
-		cell: (info) => capitalize(info.getValue()),
+		cell: (info) => startCase(info.getValue()),
 		filterFn: globalFilterFn,
 	},
 	{
@@ -33,10 +33,17 @@ const columns: ColumnDef<Sponsor>[] = [
 
 		cell: (info) => (info.getValue() as number).toString(),
 	},
+	{
+		accessorKey: 'ord',
+		header: 'Order',
+
+		cell: (info) => (info.getValue() as number).toString(),
+	},
 ]
 </script>
 
 <Table
+	sorting={[{id: 'ord', desc: false}]}
 	columns={columns}
 	rows={rows}
 	globalFilterFn={globalFilterFn}

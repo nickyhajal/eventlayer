@@ -1,13 +1,23 @@
 // lib/trpc/router.ts
-import { db, eq, eventSchema, eventUserTable, sponsorSchema, sponsorTable } from '@matterloop/db'
-import { userTable, type User } from '@matterloop/db/types'
-import { pick } from '@matterloop/util'
 import { error } from '@sveltejs/kit'
-import { initTRPC } from '@trpc/server'
+import { initTRPC, TRPCError } from '@trpc/server'
 import { z } from 'zod'
 
 import {
+	and,
+	db,
+	eq,
+	eventSchema,
+	eventUserTable,
+	sponsorSchema,
+	sponsorTable,
+} from '@matterloop/db'
+import { userTable, type User } from '@matterloop/db/types'
+import { pick } from '@matterloop/util'
+
+import {
 	procedureWithContext,
+	verifyAdmin,
 	verifyEvent,
 	verifyMe,
 	type TrpcContext,
@@ -109,6 +119,41 @@ export const sponsorProcedures = t.router({
 					)
 					.returning()
 				return newForm[0]
+			}
+		}),
+	order: procedureWithContext
+		.use(verifyMe())
+		.use(verifyEvent())
+		.use(verifyAdmin())
+		.input(
+			z.object({
+				changes: z.array(
+					z.object({
+						id: z.string(),
+						ord: z.number(),
+					}),
+				),
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			try {
+				await Promise.all(
+					input.changes.map(async (change) => {
+						const existing = await db.query.sponsorTable.findFirst({
+							where: and(eq(sponsorTable.id, change.id), eq(sponsorTable.eventId, ctx.event.id)),
+						})
+
+						if (!existing)
+							throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Sponsor not found' })
+						return db
+							.update(sponsorTable)
+							.set({ ord: change.ord })
+							.where(eq(sponsorTable.id, change.id))
+					}),
+				)
+				return true
+			} catch (e) {
+				return false
 			}
 		}),
 })
