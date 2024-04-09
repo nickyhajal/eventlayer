@@ -37,7 +37,7 @@ const columns: ColumnDef<Sponsor>[] = [
 		accessorKey: 'ord',
 		header: 'Order',
 
-		cell: (info) => (info.getValue() as number).toString(),
+		cell: (info) => ((info.getValue() as number) || 0).toString(),
 	},
 ]
 </script>
