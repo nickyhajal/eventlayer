@@ -3,13 +3,15 @@ import { page } from '$app/stores'
 import Screen from '$lib/components/Screen.svelte'
 import * as Accordion from '$lib/components/ui/accordion'
 import Button from '$lib/components/ui/button/button.svelte'
-import { getMeContext } from '$lib/state/getContexts'
+import { getEventContext, getMeContext } from '$lib/state/getContexts'
 import Mail from 'lucide-svelte/icons/mail'
 import MessageCircleMore from 'lucide-svelte/icons/message-circle-more'
 import { ChatBubble } from 'radix-icons-svelte'
 
 export let data
-const smsMessage = 'Hi SOS, this is '
+const event = getEventContext()
+
+const smsMessage = `Hi, this is `
 </script>
 
 <Screen title="FAQs" bigTitle="FAQs">
@@ -40,13 +42,15 @@ const smsMessage = 'Hi SOS, this is '
 				</div>
 			</Button> -->
 			<Button
-				href="mailto:hello@saveoursites.com"
+				href="mailto:{$event.getContent('support-email')}"
 				variant="outline"
 				class="flex w-full justify-between px-4 py-8"
 			>
 				<div class="flex flex-col">
 					<div class="text-sm text-slate-600">Send us an email</div>
-					<div class="text-sm font-semibold text-slate-800">hello@saveoursites.com</div>
+					<div class="text-sm font-semibold text-slate-800">
+						{$event.getContent('support-email')}
+					</div>
 				</div>
 				<div class="bg-a-accent/10 flex h-10 w-10 items-center justify-center rounded-full">
 					<Mail class="text-a-accent -mt-0.5 h-5 w-5" />

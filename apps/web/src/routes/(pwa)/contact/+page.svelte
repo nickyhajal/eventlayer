@@ -7,7 +7,7 @@ import Mail from 'lucide-svelte/icons/mail'
 import MessageCircleMore from 'lucide-svelte/icons/message-circle-more'
 import { ChatBubble } from 'radix-icons-svelte'
 
-const smsMessage = 'Hi SOS, this is '
+const smsMessage = 'Hi, this is '
 
 const event = getEventContext()
 </script>
@@ -31,7 +31,7 @@ const event = getEventContext()
 				</div>
 			</Button> -->
 			<Button
-				href="mailto:hello@saveoursites.com"
+				href="mailto:{$event.getContent('support-email')}"
 				variant="outline"
 				class="flex w-full justify-between px-4 py-8"
 			>

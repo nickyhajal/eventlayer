@@ -66,7 +66,7 @@ $: {
 
 <Screen title="Attendees" bigTitle="Attendees" bodyClass="bg-slate-100">
 	<div
-		class="topNav sticky z-40 -mx-4 flex items-center justify-center border-b border-slate-300/50 bg-slate-50 px-5 text-center text-sm text-slate-600 lg:mt-1 lg:rounded-2xl lg:border"
+		class="topNav sticky z-40 -mx-4 flex items-center justify-center border-b border-slate-300/50 bg-slate-50 px-5 text-center text-sm text-slate-600 lg:mx-0 lg:mt-1 lg:rounded-2xl lg:border"
 	>
 		<input
 			type="text"
