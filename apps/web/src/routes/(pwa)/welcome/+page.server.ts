@@ -8,7 +8,7 @@ export const load = async (req) => {
 	console.log('in welcome', locals.me)
 	if (!locals.me?.onboardFormId) {
 		console.log('redir 1')
-		redirect(302, '/')
+		redirect(301, '/')
 	}
 	const formId = locals?.me?.onboardFormId
 	console.log('in welcome form', formId)
@@ -21,6 +21,6 @@ export const load = async (req) => {
 		return { form, session }
 	} else {
 		console.log('redir 2')
-		redirect(302, '/')
+		redirect(301, '/')
 	}
 }
