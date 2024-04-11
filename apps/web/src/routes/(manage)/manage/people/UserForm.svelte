@@ -43,6 +43,8 @@ let userTypes = [
 	{ value: 'speaker', label: 'Speaker' },
 	{ value: 'main-stage-speaker', label: 'Main Stage Speaker' },
 	{ value: 'showcase-speaker', label: 'Showcase Speaker' },
+	{ value: 'impact-partner', label: 'Impact Partner' },
+	{ value: 'organizing-partner', label: 'Organizing Partner' },
 	{ value: 'divesession-facilitator', label: 'Dive-Session Facilitator' },
 	{ value: 'sponsor', label: 'Sponsor Rep' },
 	{ value: 'staff', label: 'Staff' },
