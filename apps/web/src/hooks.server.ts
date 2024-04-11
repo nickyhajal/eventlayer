@@ -28,7 +28,7 @@ import { userTable } from '@matterloop/db/types'
 // });
 // export const handleError = Sentry.handleErrorWithSentry();
 
-loadUsers()
+// loadUsers()
 
 const handleRouteRedirect = (defaultRedirect = '/', route: RouteConfig) => {
 	const { failedAuthRedirect } = route

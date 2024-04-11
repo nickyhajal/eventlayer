@@ -80,6 +80,10 @@ export async function loadUser(line: Row) {
 	line.title = replaceBlanks(line.title)
 	line.linkedin_url = getLIUrl(line.linkedin_url)
 	const { type, name, email } = line
+	let user = await db.query.userTable.findFirst({
+		where: eq(userTable.email, email),
+	})
+	if (user?.id) return
 	// console.log(line, name)
 	const firstName = name.substring(0, name.indexOf(' ')).replace('&comma;', ',')
 	const lastName = name.substring(name.indexOf(' ') + 1).replace('&comma;', ',')
@@ -151,9 +155,6 @@ export async function loadUser(line: Row) {
 			return out
 		}, []),
 	)
-	let user = await db.query.userTable.findFirst({
-		where: eq(userTable.email, email),
-	})
 	if (!user) {
 		const inserted = await db
 			.insert(userTable)
