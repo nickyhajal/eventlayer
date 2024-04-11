@@ -47,8 +47,8 @@ let lastPage = elements[elements.length - 1].page
 let visibleElements = elements.filter(({ page }) => page > 0 && page !== lastPage)
 </script>
 
-<Screen title="Welcome!">
-	<form on:submit={(e) => submit(e)} class="pt-safe-offset-8 lg:pt-0">
+<Screen title="Settings" bigTitle="Settings">
+	<form on:submit={(e) => submit(e)} class="pt-safe-offset-8 relative top-6 lg:pt-0">
 		<div class="relative mx-auto flex max-w-lg flex-col gap-5 px-2" bind:this={scrollElm}>
 			<FormElements elements={visibleElements} bind:values={values} shouldAutoFocus={true} />
 			<Button
