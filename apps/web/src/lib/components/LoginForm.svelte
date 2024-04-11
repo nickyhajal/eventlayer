@@ -39,6 +39,11 @@ async function submit(e?: Event | undefined) {
 					if (me) {
 						handleSuccess(me.id)
 					}
+					if (navigator.serviceWorker.controller) {
+						navigator.serviceWorker.controller.postMessage({
+							type: 'RESET',
+						})
+					}
 				}
 				const data = await rsp.json()
 				if (data) {
@@ -108,6 +113,7 @@ $: if (codeEmailSent && code.length === 4) {
 		</div>
 		<Button
 			on:click={() => handleCreateAccount()}
+			type="submit"
 			class="mx-auto mt-4 h-8 w-40 bg-white px-2 py-2 text-xs text-slate-700 opacity-50 transition-all hover:opacity-100"
 			variant="ghost"
 			>Or create an account

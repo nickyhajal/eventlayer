@@ -109,3 +109,14 @@ worker.addEventListener('fetch', (event) => {
 		)
 	}
 })
+
+self.addEventListener('message', (event) => {
+	if (event.data && event.data.type === 'RESET') {
+		// Reset the service worker's state or clear caches
+		caches.keys().then((cacheNames) => {
+			cacheNames.forEach((cacheName) => {
+				caches.delete(cacheName)
+			})
+		})
+	}
+})
