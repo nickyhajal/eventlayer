@@ -15,7 +15,9 @@ export const load = async (req) => {
 	if (formId) {
 		const formFns = FormFns({ formId })
 		const form = await formFns.get()
+		console.log('3', form)
 		const session = await formFns.getSessionForUser(locals.me.id)
+		console.log('4', session)
 		return { form, session }
 	} else {
 		console.log('redir 2')
