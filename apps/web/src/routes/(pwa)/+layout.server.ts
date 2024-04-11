@@ -17,7 +17,7 @@ export const load = async (req) => {
 		) {
 			const form = await eventFns.getOnboardForm()
 			if (form) {
-				return redirect(302, '/welcome')
+				throw redirect(302, '/welcome')
 			}
 		}
 		event.menus = event.menus.map((r) => ({ ...r, icon: icons[r.icon] }))
