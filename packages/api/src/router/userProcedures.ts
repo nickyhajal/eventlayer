@@ -181,7 +181,7 @@ export const userProcedures = t.router({
 			if (user?.email) {
 				const data = await getAvatarApiData(user?.email, 'LinkedIn')
 				const row = data
-				const li = JSON.parse(row.RawData)
+				const li = JSON.parse(row.RawData).persons[0]
 				const mimetype = 'image/jpeg'
 
 				let fimg = await fetch(row.Image)
@@ -194,6 +194,32 @@ export const userProcedures = t.router({
 					parentType: 'user',
 					parentId: user.id,
 				})
+				if (li?.headline) {
+					await db
+						.insert(eventUserInfoTable)
+						.values({ key: 'headline', value: li.headline, userId: user.id, eventId: ctx.me.id })
+						.onConflictDoUpdate({
+							target: [
+								eventUserInfoTable.key,
+								eventUserInfoTable.userId,
+								eventUserInfoTable.eventId,
+							],
+							set: { value: li.headline },
+						})
+				}
+				if (li?.summary) {
+					await db
+						.insert(eventUserInfoTable)
+						.values({ key: 'bio', value: li.summary, userId: user.id, eventId: ctx.me.id })
+						.onConflictDoUpdate({
+							target: [
+								eventUserInfoTable.key,
+								eventUserInfoTable.userId,
+								eventUserInfoTable.eventId,
+							],
+							set: { value: li.summary },
+						})
+				}
 				if (media?.id) {
 					const source = `${media.dir}/${media.path}/${media.id}-${media.version}.${media.ext}`
 					const url = await getSignedUploadUrl(source, mimetype)

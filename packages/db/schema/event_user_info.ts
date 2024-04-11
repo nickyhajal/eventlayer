@@ -1,5 +1,5 @@
 import { relations, sql } from 'drizzle-orm'
-import { boolean, index, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { boolean, index, pgTable, text, timestamp, unique, uuid } from 'drizzle-orm/pg-core'
 import { createInsertSchema } from 'drizzle-zod'
 
 import { eventTable } from './event'
@@ -23,6 +23,11 @@ export const eventUserInfoTable = pgTable(
 	},
 	(table) => ({
 		userIdeventId: index('event_user_info_user_id_event_id').on(table.userId, table.eventId),
+		userIdeventIdkey: unique('event_user_info_user_id_event_id_key').on(
+			table.userId,
+			table.eventId,
+			table.key,
+		),
 		eventId: index('event_user_info_event_id').on(table.eventId),
 	}),
 )
