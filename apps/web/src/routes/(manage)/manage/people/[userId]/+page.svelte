@@ -22,12 +22,17 @@ async function sendWelcomeEmail() {
 		invalidateAll()
 	}
 }
+async function getLinkedInData() {
+	const res = await trpc().user.syncLinkedInData.mutate({ userId: data.user.userId })
+	console.log('res', res)
+	invalidateAll()
+}
 </script>
 
 <AdminScreen title={fullName}>
 	<div slot="title">
 		{#if onboardStatus !== 'done'}
-			<div class="flex flex-col items-end gap-1">
+			<div class="f flexitems-end gap-1">
 				<ChicletButton on:click={() => sendWelcomeEmail()}>
 					<span class="pl-1 pr-2 text-xs">👋</span>
 					{#if confirmingSend}
@@ -37,6 +42,10 @@ async function sendWelcomeEmail() {
 					{:else if onboardStatus === 'pending'}
 						<span>Send Welcome Email Again</span>
 					{/if}
+				</ChicletButton>
+				<ChicletButton on:click={() => getLinkedInData()}>
+					<span class="pl-1 pr-2 text-xs">🔽</span>
+					<span> Sync LinkedIn Data</span>
 				</ChicletButton>
 			</div>
 		{/if}

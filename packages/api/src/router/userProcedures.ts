@@ -32,6 +32,8 @@ import { dayjs, getId, omit, pick } from '@matterloop/util'
 
 import { mailer } from '../../../../apps/web/src/lib/server/core/mailer'
 import { NotAuthdError } from '../core/Errors'
+import { getMediaRow } from '../media/getMediaRow'
+import { getSignedUploadUrl } from '../media/getSignedUploadUrl'
 import { ActiveLoginLink } from '../models/ActiveLoginLink'
 import {
 	procedureWithContext,
@@ -40,6 +42,7 @@ import {
 	verifyMe,
 	type TrpcContext,
 } from '../procedureWithContext'
+import { getAvatarApiData } from '../util/getAvatarApiData'
 
 function scoreMatch(query: string, value: string): number {
 	if (value.toLowerCase().startsWith(query.toLowerCase())) {
@@ -169,6 +172,57 @@ export const userProcedures = t.router({
 			}
 		}
 	}),
+	syncLinkedInData: procedureWithContext
+		.input(z.object({ userId: z.string() }))
+		.mutation(async ({ ctx, input }) => {
+			const user = await db.query.userTable.findFirst({
+				where: eq(userTable.id, input.userId),
+			})
+			if (user?.email) {
+				const data = await getAvatarApiData(user?.email, 'LinkedIn')
+				const row = data
+				const li = JSON.parse(row.RawData)
+				const mimetype = 'image/jpeg'
+
+				let fimg = await fetch(row.Image)
+				let imageBuffer = Buffer.from(await fimg.arrayBuffer())
+				const media = await getMediaRow({
+					userId: user.id,
+					eventId: ctx.event.id,
+					mimetype,
+					path: '',
+					parentType: 'user',
+					parentId: user.id,
+				})
+				if (media?.id) {
+					const source = `${media.dir}/${media.path}/${media.id}-${media.version}.${media.ext}`
+					const url = await getSignedUploadUrl(source, mimetype)
+					const formData = new FormData()
+					const imageFile = new File([imageBuffer], 'avatar.jpg', { type: mimetype })
+					formData.append('image', imageFile)
+					if (url) {
+						try {
+							const uploadReq = await fetch(url, {
+								method: 'PUT',
+								headers: {
+									'Content-Type': mimetype, // Make sure the Content-Type header is set correctly
+								},
+								body: imageBuffer,
+							})
+							const uploadRes = await uploadReq.text()
+							await db.update(userTable).set({ mediaId: media.id }).where(eq(userTable.id, user.id))
+							return {
+								url: url || '',
+								media: row,
+							}
+						} catch (e) {
+							console.log(e)
+						}
+					}
+				}
+				return data
+			}
+		}),
 	sendMagicLinkEmail: procedureWithContext
 		.input(z.object({ email: z.string(), to: z.string().optional() }))
 		.mutation(async ({ ctx, input }) => {
