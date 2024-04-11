@@ -71,7 +71,7 @@ const me = getMeContext()
 					>
 				{:else}
 					<Button
-						href="/welcome"
+						href="/settings"
 						variant="ghost"
 						class="login w-full bg-slate-100 font-semibold text-slate-600">Your Settings</Button
 					>
