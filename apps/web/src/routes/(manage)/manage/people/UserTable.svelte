@@ -40,6 +40,12 @@ const columns: ColumnDef<User>[] = [
 		cell: (info) => info.getValue().toString(),
 	},
 	{
+		accessorKey: 'email',
+		header: 'E-Mail Address',
+
+		cell: (info) => info.getValue().toString(),
+	},
+	{
 		accessorKey: 'onboardStatus',
 		header: 'Onboarding',
 

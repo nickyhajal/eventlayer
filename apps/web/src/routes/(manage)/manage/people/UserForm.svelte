@@ -29,12 +29,15 @@ export let showTitle = true
 let error = ''
 let userInEvent = false
 let emailConfirmed: string = user?.id ? 'existing-user' : ''
-user.info = merge(user?.info || {}, {
-	company: { value: '' },
-	title: { value: '' },
-	linkedin_url: { value: '' },
-	speechTitle: { value: '' },
-})
+user.info = merge(
+	{
+		company: { value: '' },
+		title: { value: '' },
+		linkedin_url: { value: '' },
+		speechTitle: { value: '' },
+	},
+	user?.info || {},
+)
 $: buttonMsg = emailConfirmed ? (user?.id ? 'Save User' : 'Add User') : 'Check Email'
 $: editing = user?.id ? true : false
 $: title = editing ? `${user?.firstName} ${user?.lastName}` : 'Add a User'
