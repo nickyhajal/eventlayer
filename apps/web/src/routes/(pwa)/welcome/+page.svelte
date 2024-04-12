@@ -26,8 +26,8 @@ const elementsListedByPage = Object.values(elementsByPage)
 onMount(() => {
 	next()
 })
-async function submit(e) {
-	if (e.stopPropagation) {
+async function submit(e: Event | null) {
+	if (e?.stopPropagation) {
 		e.stopPropagation()
 		e.preventDefault()
 	}
@@ -42,21 +42,30 @@ async function submit(e) {
 		}
 	}
 }
-async function next(e) {
+async function next(e = null) {
 	if (onPage === elementsListedByPage.length - 1) {
 		await trpc().user.upsert.mutate({ id: data.me.id, userId: data.me.id, onboardStatus: 'done' })
 		goto(`/`)
 		return
 	}
 	onPage += 1
+	scrollToCurrent()
+	if (onPage > 0) {
+		await submit(e)
+	}
+}
+function prev() {
+	if (onPage > 0) {
+		onPage -= 1
+		scrollToCurrent()
+	}
+}
+function scrollToCurrent() {
 	const page = document.getElementById(`page-${onPage}`)
 	scrollElm.scrollTo({
 		top: page?.offsetTop,
 		behavior: 'smooth',
 	})
-	if (onPage > 0) {
-		await submit(e)
-	}
 }
 </script>
 
@@ -73,11 +82,23 @@ async function next(e) {
 					class="relative top-[25%] mt-24 flex h-[80vh] flex-col justify-start gap-3 transition-all duration-300 lg:top-[15%] {onPage === i ? 'opacity-100' : 'opacity-0'}"
 				>
 					<FormElements elements={page} bind:values={values} shouldAutoFocus={i === 0} />
-					<Button
-						class="border-a-accent/10 border-b-a-accent/10 bg-a-accent/5 text-a-accent hover:bg-a-accent/10 mt-8 w-52 border border-b-2 py-5  font-semibold shadow-none brightness-90"
-						type="button"
-						on:click={next}>{i === elementsListedByPage.length -1  ? 'Done' : 'Continue'}</Button
-					>
+					<div class="mt-8 flex w-full items-center justify-between">
+						<div class=" w-fit">
+							{#if i > 0}
+								<Button
+									class="text-slate-600/70"
+									variant="ghost"
+									type="button"
+									on:click={() => prev()}>Back</Button
+								>
+							{/if}
+						</div>
+						<Button
+							class="border-a-accent/10 border-b-a-accent/10 bg-a-accent/5 text-a-accent hover:bg-a-accent/10 w-52 border border-b-2 py-5  font-semibold shadow-none brightness-90"
+							type="button"
+							on:click={next}>{i === elementsListedByPage.length -1  ? 'Done' : 'Continue'}</Button
+						>
+					</div>
 				</div>
 			{/each}
 		</div>

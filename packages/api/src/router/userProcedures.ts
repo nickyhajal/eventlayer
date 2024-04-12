@@ -179,8 +179,11 @@ export const userProcedures = t.router({
 				where: eq(userTable.id, input.userId),
 			})
 			if (user?.email) {
-				const data = await getAvatarApiData(user?.email, 'LinkedIn')
+				let data = await getAvatarApiData(user?.email, 'LinkedIn')
 				const row = data
+				if (!row.Success) {
+					data = await getAvatarApiData(user?.email)
+				}
 				const li = JSON.parse(row.RawData).persons[0]
 				const mimetype = 'image/jpeg'
 

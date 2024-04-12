@@ -39,16 +39,36 @@ const topics = {
 	buildings: 'Buildings',
 	vehicles: 'Vehicles',
 }
+$: openToWork = user?.info?.['seeking-job']?.value === '["yes"]'
+$: openToHire = user?.info?.['hiring']?.value === '["yes"]'
 </script>
 
 <Screen title={name} back="/speakers">
-	<div class="mx-auto max-w-7xl py-6">
+	<div class="mx-auto max-w-7xl pb-28 pt-6 lg:pt-0">
 		<div class="text-base font-semibold text-red-600">
 			<!-- {dayjs(data.v.startsAt).format('dddd MMMM Do [at] h:mma')} -->
 		</div>
-		<div class="flex items-end gap-2 pb-6">
+		<div class="flex flex-col items-center gap-2 pb-6">
+			{#if openToWork || openToHire}
+				<div class="mb-4 flex items-center gap-2.5">
+					{#if openToWork}
+						<div
+							class="rounded-md border border-emerald-100 bg-emerald-50 px-3 py-0.5 text-sm font-medium text-emerald-700"
+						>
+							Open for Work
+						</div>
+					{/if}
+					{#if openToHire}
+						<div
+							class="rounded-md border border-amber-100 bg-amber-50 px-3 py-0.5 text-sm font-medium text-amber-700"
+						>
+							Looking to Hire
+						</div>
+					{/if}
+				</div>
+			{/if}
 			<UserAvatar user={user} class="xs:w-36 h-36 w-28 rounded-full" />
-			<div class="flex flex-col">
+			<div class="flex flex-col text-center">
 				<div class="xs:text-3xl pb-0 text-2xl font-bold">{name}</div>
 				{#if user?.info.title}
 					<div class="xs:text-base pb-0 text-[0.9rem] font-semibold text-slate-700">
@@ -70,12 +90,18 @@ const topics = {
 				href={user.url}
 				target="_blank"
 				rel="noopener noreferrer"
-				class="-mt-2 mb-4 h-9 w-full rounded-lg bg-sky-700 text-sm"
+				class="relative mx-auto -mt-2 mb-10 block h-9 w-full max-w-sm rounded-lg bg-sky-700 text-center text-sm"
 			>
 				Connect on LinkedIn
 			</Button>
 		{/if}
-		<Markdown data={user.proBio} class="mt-6 pr-4 text-slate-600" />
+		{#if user.bio}
+			<div class="border-t border-slate-200 pb-8 pt-8"></div>
+		{/if}
+		<Markdown data={user.bio || user.info?.bio?.value || ''} class="" />
+		{#if user.proBio}
+			<Markdown data={user.proBio} class="border-t border-slate-200 pr-4 pt-8 text-slate-600" />
+		{/if}
 		{#if user?.info?.['speechTitle']?.value}
 			<div class="mt-1 pt-8">
 				<div class="mb-2 font-semibold">Talk Title</div>
@@ -126,16 +152,6 @@ const topics = {
 						{/each}
 					</div>
 				</div>
-			</div>
-		{/if}
-		{#if user?.info?.['seeking-job']?.value}
-			<div class="mt-8 border-t-2 border-slate-700 pt-8">
-				{user?.info?.['seeking-job']?.value}
-			</div>
-		{/if}
-		{#if user?.info?.['hiring']?.value}
-			<div class="mt-8 border-t-2 border-slate-700 pt-8">
-				{user?.info?.['hiring']?.value}
 			</div>
 		{/if}
 	</div>
