@@ -7,6 +7,7 @@ import { tw } from '@matterloop/ui'
 import { getMediaUrl } from '@matterloop/util'
 
 let className = ''
+export let fallbackClass = ''
 export { className as class }
 export let user: User & { photo: Media }
 </script>
@@ -17,7 +18,7 @@ export let user: User & { photo: Media }
 		alt="@shadcn"
 		class="object-cover"
 	/>
-	<Avatar.Fallback class="text-2xl font-light text-slate-500"
+	<Avatar.Fallback class={tw(`text-2xl font-light text-slate-500 ${fallbackClass}`)}
 		>{user.firstName[0]}{user.lastName[0]}</Avatar.Fallback
 	>
 </Avatar.Root>

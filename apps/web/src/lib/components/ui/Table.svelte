@@ -19,12 +19,15 @@ import type {
 	SortingColumn,
 	TableOptions,
 } from '@tanstack/svelte-table'
+import { User } from 'lucide-static'
 import ChevronFirst from 'lucide-svelte/icons/chevron-first'
 import ChevronLast from 'lucide-svelte/icons/chevron-last'
 import ChevronLeft from 'lucide-svelte/icons/chevron-left'
 import ChevronRight from 'lucide-svelte/icons/chevron-right'
 // import { rankItem } from '@tanstack/match-sorter-utils';
 import { writable } from 'svelte/store'
+
+import UserAvatar from '../UserAvatar.svelte'
 
 export let emptyMsg: string
 export let sorting: ColumnSort[] = []
@@ -226,9 +229,17 @@ let headerGroups = $table.getHeaderGroups()
 								>
 									{#each row.getVisibleCells() as cell}
 										<td class="px-2 py-2.5 text-sm">
-											<svelte:component
-												this={flexRender(cell.column.columnDef.cell, cell.getContext())}
-											/>
+											{#if cell.getValue().startsWith('userAvatar')}
+												<UserAvatar
+													class="h-8 w-8"
+													fallbackClass="text-md font-medium text-slate-400"
+													user={JSON.parse(cell.getValue().replace('userAvatar:', ''))}
+												/>
+											{:else}
+												<svelte:component
+													this={flexRender(cell.column.columnDef.cell, cell.getContext())}
+												/>
+											{/if}
 										</td>
 									{/each}
 								</tr>
