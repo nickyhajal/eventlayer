@@ -312,7 +312,7 @@ export const userProcedures = t.router({
 			if (url) {
 				const res = await mailer.send({
 					to: user?.email || '',
-					subject: 'Action Required: Setup Your Wings Conference Profile',
+					subject: 'Action Required: Get Access to the Wings Event App',
 					event: ctx.event,
 					more_params: {
 						body: `Hey ${user?.firstName},

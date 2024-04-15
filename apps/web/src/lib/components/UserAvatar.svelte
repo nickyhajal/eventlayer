@@ -10,15 +10,14 @@ let className = ''
 export let fallbackClass = ''
 export { className as class }
 export let user: User & { photo: Media }
+$: src = getMediaUrl(user.photo, '&w=256&h=256&func=face&face_margin=40')
 </script>
 
-<Avatar.Root class={tw(`h-20 w-20 ${className}`)}>
-	<Avatar.Image
-		src={getMediaUrl(user.photo, '&w=256&h=256&func=face&face_margin=40')}
-		alt="@shadcn"
-		class="object-cover"
-	/>
-	<Avatar.Fallback class={tw(`text-2xl font-light text-slate-500 ${fallbackClass}`)}
-		>{user.firstName[0]}{user.lastName[0]}</Avatar.Fallback
-	>
-</Avatar.Root>
+{#key user.id}
+	<Avatar.Root class={tw(`h-20 w-20 ${className}`)}>
+		<Avatar.Image src={src} alt="" class="object-cover" />
+		<Avatar.Fallback class={tw(`text-2xl font-light text-slate-500 ${fallbackClass}`)}
+			>{user.firstName[0]}{user.lastName[0]}</Avatar.Fallback
+		>
+	</Avatar.Root>
+{/key}

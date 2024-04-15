@@ -9,11 +9,15 @@ import type { User } from '@matterloop/db'
 import { capitalize, dayjs, getMediaUrl, startCase } from '@matterloop/util'
 
 export let rows: User[]
+export let table
+export let setCurrentPage
+export let setGlobalFilter
 
 const globalFilterFn: FilterFn<any> = (row, columnId, value, addMeta) => {
-	if (Array.isArray(value)) {
-		if (value.length === 0) return true
-		return value.includes(row.getValue(columnId))
+	if (value.length) {
+		const colVal = row.getValue(columnId)
+		// if (value.length === 0) return true
+		return colVal.includes(value)
 	}
 }
 const onRowClick = (row: Row<Event>) => {
@@ -53,6 +57,13 @@ const columns: ColumnDef<User>[] = [
 		cell: (info) => info.getValue().toString(),
 	},
 	{
+		accessorKey: 'linkedin',
+		header: 'LinkedIn',
+		// cell: (info) => startCase(info.getValue()),
+		accessorFn: (row) => row?.info?.['linkedin_url']?.value || '',
+		// filterFn: globalFilterFn,
+	},
+	{
 		accessorKey: 'onboardStatus',
 		header: 'Onboarding',
 
@@ -65,6 +76,10 @@ const columns: ColumnDef<User>[] = [
 	columns={columns}
 	rows={rows}
 	globalFilterFn={globalFilterFn}
+	bind:table={table}
+	bind:setCurrentPage={setCurrentPage}
+	bind:setGlobalFilter={setGlobalFilter}
 	onRowClick={onRowClick}
+	rowHref={(cell) => `/manage/people/${cell.getContext().row.original.id}`}
 	emptyMsg="No people yet"
 />

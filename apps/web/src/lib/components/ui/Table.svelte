@@ -13,6 +13,7 @@ import {
 	type SortDirection,
 } from '@tanstack/svelte-table'
 import type {
+	Cell,
 	ColumnDef,
 	ColumnSort,
 	Row,
@@ -35,8 +36,8 @@ export let rows: Array<T>
 export let columns: ColumnDef<T>[]
 export let globalFilterFn: FilterFn<any>
 export let onRowClick: (row: Row<T>) => {}
-
-const numFormat = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' })
+export let rowHref: undefined | ((cell: Cell<T, unknown>) => string)
+export const numFormat = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' })
 
 function getSortSymbol(isSorted: boolean | SortDirection) {
 	return isSorted ? (isSorted === 'asc' ? '🔼' : '🔽') : ''
@@ -79,9 +80,10 @@ const options = writable<TableOptions<T>>({
 	enableGlobalFilter: true,
 })
 
-const table = createSvelteTable(options)
+export let table = createSvelteTable(options)
 
-function setGlobalFilter(filter: string) {
+export function setGlobalFilter(filter: string) {
+	setCurrentPage(0)
 	globalFilter = filter
 	options.update((old) => {
 		return {
@@ -94,7 +96,7 @@ function setGlobalFilter(filter: string) {
 	})
 }
 
-function setCurrentPage(page: number) {
+export function setCurrentPage(page: number) {
 	options.update((old: any) => {
 		return {
 			...old,
@@ -229,17 +231,22 @@ let headerGroups = $table.getHeaderGroups()
 								>
 									{#each row.getVisibleCells() as cell}
 										<td class="px-2 py-2.5 text-sm">
-											{#if cell.getValue()?.startsWith('userAvatar')}
-												<UserAvatar
-													class="h-8 w-8"
-													fallbackClass="text-md font-medium text-slate-400"
-													user={JSON.parse(cell.getValue().replace('userAvatar:', ''))}
-												/>
-											{:else}
-												<svelte:component
-													this={flexRender(cell.column.columnDef.cell, cell.getContext())}
-												/>
-											{/if}
+											<svelte:element
+												this={rowHref ? 'a' : 'div'}
+												href={rowHref ? rowHref(cell) : ''}
+											>
+												{#if cell.getValue()?.startsWith?.('userAvatar')}
+													<UserAvatar
+														class="h-8 w-8"
+														fallbackClass="text-md font-medium text-slate-400"
+														user={JSON.parse(cell.getValue().replace('userAvatar:', ''))}
+													/>
+												{:else}
+													<svelte:component
+														this={flexRender(cell.column.columnDef.cell, cell.getContext())}
+													/>
+												{/if}
+											</svelte:element>
 										</td>
 									{/each}
 								</tr>
