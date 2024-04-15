@@ -30,8 +30,8 @@ function open() {
 			on:click={() => open()}
 			data-img="/map.jpg"
 			data-alt="image description"
-			data-height="2000"
-			data-width="1545"
+			data-height="720"
+			data-width="568"
 		>
 			<img src="/map.jpg" alt="venue map" />
 		</div>
