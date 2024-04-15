@@ -127,7 +127,7 @@ function handleBack(e: MouseEvent) {
 									>
 										{#each titleSelectOptions as { value, label }}
 											<button
-												on:click={() => { titleSelectOpen = false;titleSelectValue = value;}}
+												on:click={() => { titleSelectMobileOpen = false;titleSelectValue = value;}}
 												class="flex w-full items-center justify-start rounded-lg bg-white px-3 py-2.5 !outline-none transition-all {value === titleSelectValue? 'bg-slate-300/50' : 'bg-white hover:bg-slate-100'}"
 											>
 												{label}
