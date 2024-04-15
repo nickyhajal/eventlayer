@@ -2,17 +2,29 @@
 import Screen from '$lib/components/Screen.svelte'
 import { getMeContext } from '$lib/state/getContexts'
 
-import { getMediaUrl } from '@matterloop/util'
+import { getMediaUrl, orderBy } from '@matterloop/util'
 
 export let data
-$: users = data.users
+$: users = orderBy(data.users, ['mainEventUser.type'])
 const me = getMeContext()
+const typeOptions = [
+	{ label: 'All Speakers', value: 'all' },
+	{ label: 'Main Stage Speakers', value: 'main-stage-speaker' },
+	{ label: 'Showcase Speakers', value: 'showcase-speaker' },
+]
+let showType = 'all'
 </script>
 
-<Screen title="Panelists & Moderators" bigTitle="Panelists & Moderators" bodyClass="bg-slate-100">
+<Screen
+	title="Speakers"
+	bigTitle="Speakers"
+	titleSelectOptions={typeOptions}
+	bind:titleSelectValue={showType}
+	bodyClass="bg-slate-100"
+>
 	<div class="mx-auto -mt-2 max-w-7xl bg-slate-100">
 		<div class="mt-2 grid grid-cols-2 gap-4 py-2 md:grid-cols-3">
-			{#each users as user}
+			{#each users.filter(({mainEventUser}) => showType === 'all' || mainEventUser.type === showType) as user}
 				{@const {user: {id, firstName, lastName}, media, mainEventUser} = user}
 				<a
 					href="/user/{mainEventUser.id}"

@@ -232,7 +232,14 @@ export const EventFns = (args: string | Args) => {
 						or(
 							// the related event has a parentId of the main event
 							and(eq(eventTable.eventId, eventId), ne(eventUserTable.type, 'attendee')),
-							and(inArray(mainEventUser.type, ['speaker', 'host'])),
+							and(
+								inArray(mainEventUser.type, [
+									'speaker',
+									'host',
+									'main-stage-speaker',
+									'showcase-speaker',
+								]),
+							),
 						),
 					),
 				)
