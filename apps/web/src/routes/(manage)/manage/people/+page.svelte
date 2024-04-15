@@ -19,7 +19,7 @@ let loading = false
 export const snapshot: Snapshot = {
 	capture: () => {
 		return {
-			query: table.getState().globalFilter,
+			query: $table.getState().globalFilter,
 			scrollY: window.scrollY,
 			page: $table.getState().pagination.pageIndex,
 		}
