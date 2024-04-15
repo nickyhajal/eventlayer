@@ -6,7 +6,7 @@ import Table from '$lib/components/ui/Table.svelte'
 
 import type { User } from '@matterloop/db'
 // import { rankItem } from '@tanstack/match-sorter-utils';
-import { capitalize, dayjs, startCase } from '@matterloop/util'
+import { capitalize, dayjs, getMediaUrl, startCase } from '@matterloop/util'
 
 export let rows: User[]
 
@@ -21,6 +21,13 @@ const onRowClick = (row: Row<Event>) => {
 }
 
 const columns: ColumnDef<User>[] = [
+	{
+		accessorKey: 'photo',
+		header: 'Photo',
+		// cell: (info) => startCase(info.getValue()),
+		accessorFn: (row) => `userAvatar:${JSON.stringify(row)}`,
+		// filterFn: globalFilterFn,
+	},
 	{
 		accessorKey: 'type',
 		header: 'Type',

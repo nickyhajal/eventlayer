@@ -235,6 +235,9 @@ async function checkEmail() {
 						bind:value={user.info.linkedin_url.value}
 						class="col-span-3"
 					/>
+					<a href={user.info.linkedin_url.value} target="_blank" class="text-sm text-slate-600">
+						{user.info.linkedin_url.value}
+					</a>
 				</div>
 				<div class="flex flex-col items-start justify-center gap-1">
 					<Label for="proBio" class="text-right">Professional Bio</Label>
