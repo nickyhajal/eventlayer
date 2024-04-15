@@ -229,7 +229,7 @@ let headerGroups = $table.getHeaderGroups()
 								>
 									{#each row.getVisibleCells() as cell}
 										<td class="px-2 py-2.5 text-sm">
-											{#if cell.getValue().startsWith('userAvatar')}
+											{#if cell.getValue()?.startsWith('userAvatar')}
 												<UserAvatar
 													class="h-8 w-8"
 													fallbackClass="text-md font-medium text-slate-400"
@@ -305,7 +305,7 @@ let headerGroups = $table.getHeaderGroups()
 							{/each}
 						</select>
 						<span class="mx-2">|</span>
-						<span>{$table.getPrePaginationRowModel().rows.length} total events</span>
+						<span>{$table.getPrePaginationRowModel().rows.length} total rows</span>
 					</div>
 				</div>
 			</div>
