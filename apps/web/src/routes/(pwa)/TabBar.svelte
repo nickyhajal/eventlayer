@@ -76,7 +76,7 @@ $: bits = $page.url.pathname.split('/')
 				</Button>
 			{/each}
 		</div>
-		<div class="mx-auto flex w-full items-center justify-around gap-1 md:max-w-2xl lg:hidden">
+		<div class="mx-auto flex w-full items-center justify-around gap-0 md:max-w-2xl lg:hidden">
 			{#each mobileTabs as { label, icon, link, classes }, i}
 				{@const currBits = link.split('/')}
 				<Button
