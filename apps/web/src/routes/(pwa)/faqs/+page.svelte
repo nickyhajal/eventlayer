@@ -16,12 +16,12 @@ const smsMessage = `Hi, this is `
 
 <Screen title="FAQs" bigTitle="FAQs">
 	<div class="mx-auto max-w-7xl px-6 py-8">
-		<div class="text-2xl font-semibold">Questions? Answers.</div>
+		<div class="pb-3 text-2xl font-semibold">Questions? Answers.</div>
 		<Accordion.Root>
 			{#each data.content as { id, title, body }}
 				<Accordion.Item value={id}>
-					<Accordion.Trigger>{title}</Accordion.Trigger>
-					<Accordion.Content>{body}</Accordion.Content>
+					<Accordion.Trigger class="py-3 text-left">{title}</Accordion.Trigger>
+					<Accordion.Content class="text-left">{body}</Accordion.Content>
 				</Accordion.Item>
 			{/each}
 		</Accordion.Root>
@@ -56,6 +56,7 @@ const smsMessage = `Hi, this is `
 					<Mail class="text-a-accent -mt-0.5 h-5 w-5" />
 				</div>
 			</Button>
+			<div class="pb-safe-offset-8" />
 		</div>
 	</div></Screen
 >

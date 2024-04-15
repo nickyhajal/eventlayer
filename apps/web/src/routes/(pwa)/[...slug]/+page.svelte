@@ -13,7 +13,7 @@ const page = data.page
 </script>
 
 <Screen title={page.title} bigTitle={page.title}>
-	<div class="shell mx-auto pt-2">
+	<div class="shell pt-safe-offset-12 pb-safe-offset-12 mx-auto">
 		<Markdown data={page.body} />
 	</div></Screen
 >
