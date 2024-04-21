@@ -29,6 +29,7 @@ export const eventTable = pgTable('event', {
 	endsAt: timestamp('end_at', { withTimezone: false, mode: 'string' }),
 	maxAttendees: integer('max_attendees').default(0),
 	numAttendees: integer('num_attendees').default(0),
+	ord: integer('ord').default(0),
 	replyEmail: text('reply_email'),
 	emailFromName: text('email_from_name'),
 	colors: jsonb('colors'),
