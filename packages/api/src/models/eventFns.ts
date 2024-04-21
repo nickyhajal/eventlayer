@@ -183,7 +183,7 @@ export const EventFns = (args: string | Args) => {
 			const sponsors = await db.query.sponsorTable.findMany({
 				where: and(eq(sponsorTable.eventId, eventId)),
 				with: { photo: true, users: { with: { user: { with: { photo: true } } } } },
-				orderBy: asc(sponsorTable.title),
+				orderBy: [asc(sponsorTable.ord), asc(sponsorTable.title)],
 			})
 			return sponsors
 		},
