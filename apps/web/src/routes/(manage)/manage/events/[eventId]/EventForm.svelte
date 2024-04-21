@@ -135,6 +135,13 @@ async function addUser(user: FullEventUser) {
 						<Label for="venue" class="text-right">Event Venue</Label>
 						<SelectVenue bind:value={event.venueId} />
 					</div>
+					<div class="flex flex-col items-start justify-center gap-1">
+						<Label for="event_subtitle" class="text-right">Event Order</Label>
+						<div class="text-sm text-slate-500">
+							Order events will display in if at the same time
+						</div>
+						<Input id="event_subtitle" bind:value={event.subtitle} class="col-span-3" />
+					</div>
 				{/if}
 			</div>
 			<Button type="submit">{buttonMsg}</Button>

@@ -151,7 +151,7 @@ export const EventFns = (args: string | Args) => {
 					venue: { with: { photo: true } },
 					users: { with: { user: { with: { photo: true } } } },
 				},
-				orderBy: asc(eventTable.startsAt),
+				orderBy: [asc(eventTable.startsAt), asc(eventTable.ord)],
 			})
 			return events
 		},
