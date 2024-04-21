@@ -39,11 +39,11 @@ async function submit(e?: Event | undefined) {
 					if (me) {
 						handleSuccess(me.id)
 					}
-					if (navigator.serviceWorker.controller) {
-						navigator.serviceWorker.controller.postMessage({
-							type: 'RESET',
-						})
-					}
+					navigator.serviceWorker.getRegistrations().then((registrations) => {
+						for (const registration of registrations) {
+							registration.unregister()
+						}
+					})
 				}
 				const data = await rsp.json()
 				if (data) {
