@@ -35,6 +35,7 @@ export let sorting: ColumnSort[] = []
 export let rows: Array<T>
 export let columns: ColumnDef<T>[]
 export let globalFilterFn: FilterFn<any>
+export let pageSize = 50
 export let onRowClick: (row: Row<T>) => {}
 export let rowHref: undefined | ((cell: Cell<T, unknown>) => string)
 export const numFormat = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' })
@@ -70,7 +71,7 @@ const options = writable<TableOptions<T>>({
 	state: {
 		globalFilter,
 		pagination: {
-			pageSize: 50,
+			pageSize,
 			pageIndex: 0,
 		},
 	},

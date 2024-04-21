@@ -77,6 +77,7 @@ const columns: ColumnDef<User>[] = [
 	columns={columns}
 	rows={rows}
 	sorting={[{id: 'lastName', desc: false}]}
+	pageSize={10}
 	globalFilterFn={globalFilterFn}
 	bind:table={table}
 	bind:setCurrentPage={setCurrentPage}
