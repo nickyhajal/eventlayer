@@ -21,7 +21,7 @@ import {
 	userTable,
 	venueTable,
 } from '@matterloop/db'
-import { dayjs, keyBy, omit, orderBy } from '@matterloop/util'
+import { dayjs, groupBy, keyBy, omit, orderBy } from '@matterloop/util'
 
 interface Args {
 	eventId: string
@@ -32,7 +32,7 @@ interface Args {
 export const EventFns = (args: string | Args) => {
 	const eventId = typeof args === 'string' ? args : args.eventId
 	const mainEventId = (typeof args === 'string' ? args : args.mainEventId) || undefined
-	return {
+	const fns = {
 		get: async () => {
 			const event = await db.query.eventTable.findFirst({
 				where: and(eq(eventTable.id, eventId)),
@@ -71,6 +71,7 @@ export const EventFns = (args: string | Args) => {
 				.where(and(eq(eventUserTable.eventId, eventId), eq(eventUserTable.status, 'active')))
 				.leftJoin(userTable, eq(userTable.id, eventUserTable.userId))
 				.leftJoin(mediaTable, eq(mediaTable.id, userTable.mediaId))
+			// .leftJoin(eventUserInfoTable, eq(eventUserInfoTable.id, userTable.id))
 			if (mainEventId) {
 				const mainEventUser = alias(eventUserTable, 'mainEventUser')
 				usersQuery.leftJoin(
@@ -93,6 +94,23 @@ export const EventFns = (args: string | Args) => {
 				})
 			}
 			return []
+		},
+		getUsersWithInfo: async () => {
+			const users = await fns.getUsers()
+			const ids = users.map((user) => user.userId)
+			const info = await db.query.eventUserInfoTable.findMany({
+				where: and(
+					inArray(eventUserInfoTable.userId, ids),
+					eq(eventUserInfoTable.eventId, eventId),
+				),
+			})
+			const infoByUserId = groupBy(info, 'userId')
+			return users.map((user) => {
+				return {
+					...user,
+					info: keyBy(infoByUserId[user.userId], 'key'),
+				}
+			})
 		},
 		getUser: async (userId: string) => {
 			const userRows = await db
@@ -246,4 +264,5 @@ export const EventFns = (args: string | Args) => {
 			return orderBy(users, ['user.lastName', 'user.firstName'], ['asc', 'asc'])
 		},
 	}
+	return fns
 }

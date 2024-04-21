@@ -60,7 +60,8 @@ const columns: ColumnDef<User>[] = [
 		accessorKey: 'linkedin',
 		header: 'LinkedIn',
 		// cell: (info) => startCase(info.getValue()),
-		accessorFn: (row) => row?.info?.['linkedin_url']?.value || '',
+		accessorFn: (row) =>
+			(row?.info?.['linkedin_url']?.value || '').replace('https://www.linkedin.com/', ''),
 		// filterFn: globalFilterFn,
 	},
 	{
@@ -75,6 +76,7 @@ const columns: ColumnDef<User>[] = [
 <Table
 	columns={columns}
 	rows={rows}
+	sorting={[{id: 'lastName', desc: false}]}
 	globalFilterFn={globalFilterFn}
 	bind:table={table}
 	bind:setCurrentPage={setCurrentPage}

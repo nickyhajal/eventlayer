@@ -9,5 +9,5 @@ export const load = async ({ locals }) => {
 		error(404, 'Event not found')
 	}
 	const eventFns = EventFns({ eventId: locals.event.id })
-	return { users: await eventFns.getUsers() }
+	return { users: await eventFns.getUsersWithInfo() }
 }
