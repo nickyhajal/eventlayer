@@ -61,13 +61,7 @@ function shuffle(array: Array<any>, seed: number) {
 	}
 	return array
 }
-$: sponsors =
-	typeof window !== 'undefined'
-		? orderBy(
-				data.sponsors.map((sponsor) => ({ ...sponsor, nameLower: sponsor.title.toLowerCase() })),
-				['nameLower'],
-			)
-		: []
+$: sponsors = data.sponsors
 let results: Sponsor[] = []
 $: {
 	results = []
