@@ -2,7 +2,7 @@
 import Screen from '$lib/components/Screen.svelte'
 import { getMeContext } from '$lib/state/getContexts'
 
-import { getMediaUrl, orderBy } from '@matterloop/util'
+import { getMediaUrl, orderBy, startCase } from '@matterloop/util'
 
 export let data
 $: users = orderBy(data.users, ['mainEventUser.type'])
@@ -14,6 +14,20 @@ const typeOptions = [
 	{ label: 'Facilitator', value: 'attendee' },
 ]
 let showType = 'all'
+const vals = {
+	'main-stage-speaker': 1,
+	'showcase-speaker': 2,
+	facilitator: 3,
+}
+$: ordered = orderBy(
+	users.map((user) =>
+		!['main-stage-speaker', 'showcase-speaker'].includes(user.mainEventUser.type)
+			? { ...user, mainEventUser: { ...user.mainEventUser, type: 'facilitator' } }
+			: user,
+	),
+	[({ mainEventUser }) => vals[mainEventUser.type] || Infinity],
+	['asc'],
+)
 </script>
 
 <Screen
@@ -24,30 +38,43 @@ let showType = 'all'
 	bodyClass="bg-slate-100"
 >
 	<div class="mx-auto -mt-2 max-w-7xl bg-slate-100">
-		<div class="mt-2 grid grid-cols-2 gap-4 py-2 md:grid-cols-3">
-			{#each users.filter(({mainEventUser}) => showType === 'all' || mainEventUser.type === showType) as user}
+		<div class="mt-2 grid grid-cols-2 gap-1.5 py-2 md:grid-cols-3 md:gap-4">
+			{#each ordered.filter(({mainEventUser, media}) => media && (showType === 'all' || mainEventUser.type === showType)) as user}
 				{@const {user: {id, firstName, lastName}, media, mainEventUser} = user}
 				<a
 					href="/user/{mainEventUser.id}"
-					class="relative z-0 flex flex-col rounded-2xl bg-white p-1"
+					class="relative z-0 flex flex-col overflow-hidden rounded-xl border border-b-2 border-slate-400/20 bg-white p-0"
 				>
 					<div
-						class="mb-2 h-48 w-full rounded-lg bg-slate-100 bg-cover bg-center"
+						class="mb-2 h-48 w-full rounded-t-lg bg-slate-100 bg-cover bg-center"
 						style="background-image: url({getMediaUrl(media, `w=256&h=256&func=face&face_margin=60`)})"
 					></div>
-					<div class="px-2 pb-2">
-						<div class="mb-0.5 truncate text-sm font-semibold">{firstName} {lastName}</div>
-						<div class="line-clamp-1 text-xs font-semibold text-slate-600">
-							{#if mainEventUser.company}
-								{mainEventUser.title}, {mainEventUser.company}
-							{:else if user.company}
-								{mainEventUser.company}
-							{:else if user.title}
-								{mainEventUser.title}
-							{/if}
+					<div class="px-2.5 pb-1.5 pt-1">
+						<div class="pb-1 text-xs font-semibold text-slate-500/80">
+							{startCase(mainEventUser.type?.replace('-speaker', ''))}
 						</div>
+						<div class=" truncate font-semibold text-[1.0.5rem] text-slate-800">
+							{firstName}
+							{lastName}
+						</div>
+						{#if mainEventUser.company || mainEventUser.title || user.title}
+							<div class="truncate pb-2.5 text-xs font-semibold text-slate-500">
+								{#if mainEventUser.company}
+									{mainEventUser.title}, {mainEventUser.company}
+								{:else if user.company}
+									{mainEventUser.company}
+								{:else if user.title}
+									{mainEventUser.title}
+								{/if}
+							</div>
+						{/if}
 						{#if mainEventUser?.proBio}
-							<div class="line-clamp-2 pr-4 text-xs text-stone-600">{mainEventUser?.proBio}</div>
+							<div class="mb-1.5 line-clamp-2 text-xs font-medium text-slate-500">
+								{mainEventUser?.proBio}
+							</div>
+						{/if}
+						{#if !(mainEventUser?.proBio || mainEventUser.company || mainEventUser.title || user.title)}
+							<div class="pt-2"></div>
 						{/if}
 					</div>
 				</a>
