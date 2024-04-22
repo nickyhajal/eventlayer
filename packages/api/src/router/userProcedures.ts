@@ -275,7 +275,7 @@ export const userProcedures = t.router({
 					event: ctx.event,
 					more_params: {
 						body: `Hey ${user?.firstName},
-						<br><br>Here's your login code:<div style="font-size: 26pt; font-weight: 800; margin-top: -24px; margin-bottom: 16px;">${code}</div>
+						<br><br>Here's your login code:<div style="font-size: 26pt; font-weight: 800; margin-bottom: 16px;">${code}</div>
 						Or, click this link: ${url} 
 						<br><br>It expires in 24 hours.<br><br>If you didn't request this, you can ignore this email.
 						<br><br>All the best,<br>${sig}`,
@@ -317,7 +317,7 @@ export const userProcedures = t.router({
 					more_params: {
 						body: `Hey ${user?.firstName},
 								<br><br>We're excited to have you join us for the Wings Conference, our charge to lead climate solutions for Oregon and beyond!
-								<br><br>In lieu of a one-time-used printed program, we've developed a helpful event app to guide you through all things related to the conference.
+								<br><br>Instead of a one-time-use printed program, we've developed a helpful event app to guide you through all things related to the conference.
 								<br><br>With the Wings Conference app you'll be able to:
 								<ul>
 								<li>View a full detailed schedule</li>
