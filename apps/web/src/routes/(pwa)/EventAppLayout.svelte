@@ -17,10 +17,10 @@ $: showSidebar = !$page.url.pathname.includes('/login') && $page.url.pathname !=
 </script>
 
 <div
-	class="min-h-full bg-slate-800 lg:grid {showSidebar ? 'lg:grid-cols-[15rem_1fr]' : 'lg:grid-cols-[1fr]'} lg:bg-white"
+	class="grid min-h-full w-screen overflow-x-hidden bg-slate-800 {showSidebar ? 'lg:grid-cols-[15rem_1fr]' : 'lg:grid-cols-[1fr]'} lg:bg-white"
 	style={cssVars}
 >
-	<div class="min-h-full lg:order-1">
+	<div class="lg:order-1">
 		<slot />
 	</div>
 	{#if showSidebar}
