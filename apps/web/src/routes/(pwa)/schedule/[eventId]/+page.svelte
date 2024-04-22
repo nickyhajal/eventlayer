@@ -7,7 +7,7 @@ import { getMeContext } from '$lib/state/getContexts'
 
 import type { Event, EventUser } from '@matterloop/db'
 import Markdown from '@matterloop/ui/src/components/Markdown.svelte'
-import { capitalize, dayjs, orderBy } from '@matterloop/util'
+import { capitalize, dayjs, orderBy, startCase } from '@matterloop/util'
 
 export let data
 $: event = data.event
@@ -53,7 +53,7 @@ function getLastType(user: EventUser) {
 				{#each data.users as user}
 					{#if getLastType(user)}
 						<div class="text-a-accent mb-0 mt-2 text-lg font-semibold brightness-95">
-							{capitalize(event?.title?.includes('Dive Session') && user.type === 'attendee' ? 'facilator' : user.type)}s
+							{startCase(event?.name?.includes('Dive Session') && user.type === 'attendee' ? 'facilator' : user.type)}s
 						</div>
 					{/if}
 					<UserBlock user={{photo: user.photo, ...user}} />
