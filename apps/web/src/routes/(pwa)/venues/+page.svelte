@@ -20,7 +20,7 @@ const me = getMeContext()
 			class="text-a-accent mt-0 grid w-full grid-cols-[1fr_0.7rem] items-center justify-center bg-white"
 			href="/venues/map"
 		>
-			<div>View Venue Map</div>
+			<div>View Venue Maps</div>
 			<ChevronRight class="text-a-accent relative -top-[1px] h-5 w-5" />
 		</Button>
 	</div>
