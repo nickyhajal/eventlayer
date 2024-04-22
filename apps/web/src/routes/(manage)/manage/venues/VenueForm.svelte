@@ -5,6 +5,7 @@ import * as Dialog from '$lib/components/ui/dialog'
 import Input from '$lib/components/ui/input/input.svelte'
 import Label from '$lib/components/ui/label/label.svelte'
 import * as Select from '$lib/components/ui/select'
+import Switch from '$lib/components/ui/switch/switch.svelte'
 import Textarea from '$lib/components/ui/textarea/textarea.svelte'
 import Uploader from '$lib/components/ui/Uploader.svelte'
 import { trpc } from '$lib/trpc/client.js'
@@ -102,6 +103,12 @@ async function updateAvatar(mediaId: string) {
 				<div class="flex flex-col items-start justify-center gap-1">
 					<Label for="descriptin" class="text-right">Description</Label>
 					<Textarea id="description" bind:value={venue.description} class="col-span-3" />
+				</div>
+				<div class="mt-0 flex items-center justify-between rounded-md border bg-stone-50 p-3">
+					<label for="visibleOnMainList" class="text-sm font-medium text-stone-800"
+						>Show on Venue List</label
+					>
+					<Switch name="visibleOnMainList" bind:checked={venue.visibleOnMainList} class="" />
 				</div>
 			{/if}
 			<div class="flex justify-end"><Button type="submit">{buttonMsg}</Button></div>

@@ -34,10 +34,10 @@ const columns: ColumnDef<Venue>[] = [
 		cell: (info) => (info.getValue() as number).toString(),
 	},
 	{
-		accessorKey: 'startsAt',
-		id: 'Starts At',
-		cell: (info) => dayjs(info.getValue()).format('MMM. Do [at] h:mma'),
-		header: () => 'Starts',
+		accessorKey: 'visibleOnMainList',
+		header: 'Visible on List',
+
+		cell: (info) => ((info.getValue() as boolean) ? 'Yes' : 'No'),
 	},
 ]
 </script>

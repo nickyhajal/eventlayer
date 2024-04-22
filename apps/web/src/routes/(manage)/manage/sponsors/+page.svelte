@@ -21,12 +21,7 @@ let loading = false
 			<Plus class="mr-1 w-[1rem] text-slate-700" />
 			Add Sponsor</Button
 		>
-		<Button
-			href="/manage/sponsors/order"
-			variant="outline"
-			class="h-7 py-[0.3rem] pl-1.5 pr-3"
-			on:click={() => addOpen = true}
-		>
+		<Button href="/manage/sponsors/order" variant="outline" class="h-7 py-[0.3rem] pl-1.5 pr-3">
 			<ListOrdered class="mr-2 w-[1rem] text-slate-700" />
 			Set Order</Button
 		>

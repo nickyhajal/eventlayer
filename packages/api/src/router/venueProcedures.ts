@@ -1,12 +1,13 @@
 // lib/trpc/router.ts
-import { db, eq, eventSchema, venueTable, venueSchema, venueTable } from '@matterloop/db'
+import { db, eq, eventSchema, venueTable, venueSchema, venueTable, and } from '@matterloop/db'
 import { userTable, type User } from '@matterloop/db/types'
 import { pick } from '@matterloop/util'
-import { initTRPC } from '@trpc/server'
+import { TRPCError, initTRPC } from '@trpc/server'
 import { z } from 'zod'
 
 import {
 	procedureWithContext,
+	verifyAdmin,
 	verifyEvent,
 	verifyMe,
 	type TrpcContext,
@@ -49,7 +50,7 @@ export const venueProcedures = t.router({
 				}
 				await db
 					.update(venueTable)
-					.set({...pick(input, ['name', 'description', 'type', 'eventId', 'address', 'mediaId', 'venueId']), ...geo})
+					.set({...pick(input, ['name', 'description', 'type', 'eventId', 'address', 'mediaId', 'venueId', 'visibleOnMainList']), ...geo})
 					.where(eq(venueTable.id, input.id))
 					.returning()
 				const updated = await db.select().from(venueTable).where(eq(venueTable.id, input.id))
@@ -61,6 +62,41 @@ export const venueProcedures = t.router({
 					.values(pick(input, ['name', 'description', 'type', 'eventId', 'address', 'mediaId', 'venueId']))
 					.returning()
 				return newForm[0]
+			}
+		}),
+		order: procedureWithContext
+		.use(verifyMe())
+		.use(verifyEvent())
+		.use(verifyAdmin())
+		.input(
+			z.object({
+				changes: z.array(
+					z.object({
+						id: z.string(),
+						ord: z.number(),
+					}),
+				),
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			try {
+				await Promise.all(
+					input.changes.map(async (change) => {
+						const existing = await db.query.venueTable.findFirst({
+							where: and(eq(venueTable.id, change.id), eq(venueTable.eventId, ctx.event.id)),
+						})
+
+						if (!existing)
+							throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Venue not found' })
+						return db
+							.update(venueTable)
+							.set({ ord: change.ord })
+							.where(eq(venueTable.id, change.id))
+					}),
+				)
+				return true
+			} catch (e) {
+				return false
 			}
 		}),
 })

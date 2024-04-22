@@ -1,6 +1,7 @@
 <script lang="ts">
 import { Button } from '$lib/components/ui/button'
 import * as Dialog from '$lib/components/ui/dialog'
+import ListOrdered from 'lucide-svelte/icons/list-ordered'
 import Plus from 'lucide-svelte/icons/plus'
 
 import AdminScreen from '../AdminScreen.svelte'
@@ -19,6 +20,10 @@ let loading = false
 		<Button variant="outline" class="h-7 py-[0.3rem] pl-1.5 pr-3" on:click={() => addOpen = true}>
 			<Plus class="mr-1 w-[1rem] text-slate-700" />
 			Add Venue</Button
+		>
+		<Button href="/manage/venues/order" variant="outline" class="h-7 py-[0.3rem] pl-1.5 pr-3">
+			<ListOrdered class="mr-2 w-[1rem] text-slate-700" />
+			Set Order</Button
 		>
 	</div>
 	<VenueTable rows={data.venues} />

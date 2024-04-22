@@ -1,5 +1,5 @@
 import { relations, sql, type InferModel } from 'drizzle-orm'
-import { AnyPgColumn, integer, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { AnyPgColumn, boolean, integer, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { createInsertSchema } from 'drizzle-zod'
 
 import { eventTable } from './event'
@@ -25,7 +25,8 @@ export const venueTable = pgTable('venue', {
 	mediaId: uuid('mediaId'),
 	lat: text('lat'),
 	lon: text('lon'),
-	ord: integer('ord'),
+	visibleOnMainList: boolean('visible_on_main_list').default(true),
+	ord: integer('ord').default(0),
 	createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
 	updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
 })
