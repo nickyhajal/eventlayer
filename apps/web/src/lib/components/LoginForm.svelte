@@ -27,7 +27,6 @@ async function submit(e?: Event | undefined) {
 		if (!code) {
 			loading = true
 			const res = await trpc().user.sendMagicLinkEmail.mutate({ email })
-			trpc().user
 			codeEmailSent = true
 			loading = false
 		} else if (code.length === 4) {
