@@ -54,7 +54,7 @@ $: title = editing ? event?.name : 'Add an Event'
 let type = eventTypes.find((t) => t.value === (event.type || 'program'))
 $: event.type = type.value
 async function createEvent() {
-	const res = await trpc().event.upsert.mutate(event)
+	const res = await trpc().event.upsert.mutate({ ...event, ord: +event.ord })
 	goto(`/manage/events/${res.id}`)
 	toast.success('Saved')
 }
@@ -136,11 +136,11 @@ async function addUser(user: FullEventUser) {
 						<SelectVenue bind:value={event.venueId} />
 					</div>
 					<div class="flex flex-col items-start justify-center gap-1">
-						<Label for="event_subtitle" class="text-right">Event Order</Label>
+						<Label for="event_ord" class="text-right">Event Order</Label>
 						<div class="text-sm text-slate-500">
 							Order events will display in if at the same time
 						</div>
-						<Input id="event_subtitle" bind:value={event.ord} class="col-span-3" />
+						<Input id="event_ord" bind:value={event.ord} type="number" class="col-span-3" />
 					</div>
 				{/if}
 			</div>

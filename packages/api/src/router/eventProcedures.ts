@@ -150,6 +150,7 @@ export const eventProcedures = t.router({
 							'eventId',
 							'startsAt',
 							'colors',
+							'ord',
 							'mediaId',
 							'faviconId',
 							'replyEmail',
