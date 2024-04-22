@@ -97,6 +97,12 @@ function handleBack(e: MouseEvent) {
 		<div class=" lg:ml-16 lg:max-w-3xl">
 			<!-- bigTitle-->
 			{#if bigTitle}
+				{#if photo}
+					<div
+						class="relative -mb-28 mt-20 hidden w-full items-center justify-center overflow-hidden rounded-lg bg-cover lg:flex {photo ? 'h-96' : 'h-fit'}"
+						style="background-image: url({getMediaUrl(photo)})"
+					/>
+				{/if}
 				<div
 					class="bigTitle relative -top-0.5 flex w-full items-center justify-center bg-slate-800 bg-cover py-2 lg:hidden {photo ? 'h-64' : 'h-fit'}"
 					style="background-image: url({getMediaUrl(photo)})"
