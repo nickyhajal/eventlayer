@@ -11,6 +11,7 @@ const typeOptions = [
 	{ label: 'All Speakers', value: 'all' },
 	{ label: 'Main Stage Speakers', value: 'main-stage-speaker' },
 	{ label: 'Showcase Speakers', value: 'showcase-speaker' },
+	{ label: 'Facilitator', value: 'attendee' },
 ]
 let showType = 'all'
 </script>
@@ -45,7 +46,9 @@ let showType = 'all'
 								{mainEventUser.title}
 							{/if}
 						</div>
-						<div class="line-clamp-2 pr-4 text-xs text-stone-600">{mainEventUser?.proBio}</div>
+						{#if mainEventUser?.proBio}
+							<div class="line-clamp-2 pr-4 text-xs text-stone-600">{mainEventUser?.proBio}</div>
+						{/if}
 					</div>
 				</a>
 			{/each}

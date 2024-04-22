@@ -81,7 +81,7 @@ $: openToHire = user?.info?.['hiring']?.value === '["yes"]'
 			</div>
 		</div>
 		<div class="flex flex-wrap gap-2">
-			<div class="text-main -mt-3 mb-5 text-xs">
+			<div class="text-a-accent -mt-3 mb-5 text-xs">
 				{eventStr}
 			</div>
 		</div>

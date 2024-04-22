@@ -53,7 +53,7 @@ function getLastType(user: EventUser) {
 				{#each data.users as user}
 					{#if getLastType(user)}
 						<div class="text-a-accent mb-0 mt-2 text-lg font-semibold brightness-95">
-							{event?.title?.includes('Dive Session') ? 'Facilator' : capitalize(user.type)}s
+							{capitalize(event?.title?.includes('Dive Session') && user.type === 'attendee' ? 'facilator' : user.type)}s
 						</div>
 					{/if}
 					<UserBlock user={{photo: user.photo, ...user}} />
