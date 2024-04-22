@@ -136,10 +136,14 @@ const handleEventContext: Handle = async ({ event, resolve }) => {
 }
 const handleLogout: Handle = async ({ event, resolve }) => {
 	if (event.url.pathname === '/logout') {
-		const { session } = await event.locals.auth.validate()
-		if (!session) throw fail(401)
-		await lucia.invalidateSession(session.sessionId) // invalidate session
-		event.locals.auth.setSession(null) // remove cookie
+		const sessionId = event.cookies.get(lucia.sessionCookieName)
+		if (sessionId) {
+			const { session, user } = await lucia.validateSession(sessionId)
+			if (!session) throw fail(401)
+			await lucia.invalidateSession(sessionId) // invalidate session
+			event.locals.auth.setSession(null) // remove cookie
+			event.cookies.set(lucia.sessionCookieName, null)
+		}
 		redirect(302, '/')
 	}
 	return resolve(event)
