@@ -10,8 +10,8 @@ if (browser) {
 		}
 	})
 }
-// window.location.pathname = '/'
-// location.href = '/'
+window.location.pathname = '/'
+location.href = '/'
 </script>
 
 <div></div>
