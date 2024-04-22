@@ -140,7 +140,7 @@ async function addUser(user: FullEventUser) {
 						<div class="text-sm text-slate-500">
 							Order events will display in if at the same time
 						</div>
-						<Input id="event_subtitle" bind:value={event.subtitle} class="col-span-3" />
+						<Input id="event_subtitle" bind:value={event.ord} class="col-span-3" />
 					</div>
 				{/if}
 			</div>
