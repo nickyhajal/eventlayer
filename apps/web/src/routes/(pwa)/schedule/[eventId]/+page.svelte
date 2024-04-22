@@ -52,8 +52,8 @@ function getLastType(user: EventUser) {
 			<div class="mt-3 flex flex-col gap-2">
 				{#each data.users as user}
 					{#if getLastType(user)}
-						<div class="text-main mb-0 mt-2 text-lg font-semibold">
-							{capitalize(user.type)}s
+						<div class="text-a-accent mb-0 mt-2 text-lg font-semibold brightness-95">
+							{event?.title?.includes('Dive Session') ? 'Facilator' : capitalize(user.type)}s
 						</div>
 					{/if}
 					<UserBlock user={{photo: user.photo, ...user}} />
