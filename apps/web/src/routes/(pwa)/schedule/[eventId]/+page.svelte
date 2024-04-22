@@ -11,7 +11,6 @@ import { capitalize, dayjs, orderBy, startCase } from '@matterloop/util'
 
 export let data
 $: event = data.event
-$: console.log(data.user)
 $: users = orderBy(data.users, ['type'])
 let lastType = ''
 function getLastType(user: EventUser) {
@@ -28,7 +27,7 @@ function getLastType(user: EventUser) {
 	back="/schedule"
 	photo={event.photo}
 >
-	<div class="mx-auto max-w-7xl py-6">
+	<div class="shell mx-auto max-w-7xl py-6">
 		<div class="text-a-accent text-base font-semibold">
 			{dayjs(data.event.startsAt).format('dddd MMMM Do [at] h:mma')}
 		</div>
@@ -53,7 +52,7 @@ function getLastType(user: EventUser) {
 				{#each data.users as user}
 					{#if getLastType(user)}
 						<div class="text-a-accent mb-0 mt-2 text-lg font-semibold brightness-95">
-							{startCase(event?.name?.includes('Dive Session') && user.type === 'attendee' ? 'facilator' : user.type)}s
+							{startCase(event?.name?.includes('Dive Session') && user.type === 'attendee' ? 'facilitator' : user.type)}s
 						</div>
 					{/if}
 					<UserBlock user={{photo: user.photo, ...user}} />
@@ -62,3 +61,31 @@ function getLastType(user: EventUser) {
 		{/if}
 	</div>
 </Screen>
+
+<style lang="postcss">
+.shell {
+	@apply text-slate-600;
+
+	:global(h1) {
+		@apply mb-6 mt-5 pr-2 text-3xl font-semibold text-slate-600/70;
+	}
+	:global(h2) {
+		@apply mb-6 mt-7 text-2xl font-bold;
+	}
+	:global(h3) {
+		@apply mb-6 mt-7 text-xl font-bold;
+	}
+	:global(ul) {
+		@apply ml-4 pl-0.5;
+	}
+	:global(li) {
+		@apply mb-1.5 list-disc;
+	}
+	:global(p) {
+		@apply mb-6 text-base leading-relaxed;
+	}
+	:global(button) {
+		@apply bg-a-accent text-white brightness-95;
+	}
+}
+</style>
