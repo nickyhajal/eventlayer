@@ -54,7 +54,8 @@ $: title = editing ? event?.name : 'Add an Event'
 let type = eventTypes.find((t) => t.value === (event.type || 'program'))
 $: event.type = type.value
 async function createEvent() {
-	const res = await trpc().event.upsert.mutate({ ...event, ord: +event.ord })
+	const ord = event?.ord || 0
+	const res = await trpc().event.upsert.mutate({ ...event, ord: +ord })
 	goto(`/manage/events/${res.id}`)
 	toast.success('Saved')
 }
