@@ -10,7 +10,6 @@ import FilePondPluginImageExifOrientation from 'filepond-plugin-image-exif-orien
 import FilePond, { registerPlugin, supported } from 'svelte-filepond'
 
 import type { Media } from '@matterloop/db'
-import Image from '@matterloop/ui/src/components/Image.svelte'
 
 export let parentId = ''
 export let path = ''
@@ -80,6 +79,14 @@ const server: { process: ProcessServerConfigFunction; load: LoadServerConfigFunc
 			path,
 			mimetype: file.type,
 		})
+		let width = 0
+		let height = 0
+		const img = new Image()
+		img.src = URL.createObjectURL(file)
+		img.onload = () => {
+			width = img.width
+			height = img.height
+		}
 
 		if (!res?.media?.id) return abort()
 		const request = new XMLHttpRequest()
@@ -100,6 +107,8 @@ const server: { process: ProcessServerConfigFunction; load: LoadServerConfigFunc
 				// the load method accepts either a string (id) or an object
 				trpc().media.update.mutate({
 					id: res.media.id,
+					width,
+					height,
 					status: 'uploaded',
 				})
 				onSuccess(res.media.id)

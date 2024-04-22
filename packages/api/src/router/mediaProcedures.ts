@@ -1,5 +1,5 @@
 // lib/trpc/router.ts
-import { initTRPC } from '@trpc/server'
+import { initTRPC, TRPCError } from '@trpc/server'
 import { CLOUDIMAGE_KEY, NODE_ENV, STORAGE_DIR } from '$env/static/private'
 import mime from 'mime-types'
 import { z } from 'zod'
@@ -11,6 +11,8 @@ import { getSignedUploadUrl } from '../media/getSignedUploadUrl'
 import {
 	procedureWithContext,
 	TrpcContext,
+	verifyAdmin,
+	verifyEvent,
 	verifyHasPermission,
 	verifyMe,
 } from '../procedureWithContext'
@@ -105,5 +107,40 @@ export const mediaProcedures = t.router({
 			// delete from b2
 			await db.delete(mediaTable).where(eq(mediaTable.id, input.id))
 			return true
+		}),
+	order: procedureWithContext
+		.use(verifyMe())
+		.use(verifyEvent())
+		.use(verifyAdmin())
+		.input(
+			z.object({
+				changes: z.array(
+					z.object({
+						id: z.string(),
+						ord: z.number(),
+					}),
+				),
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			try {
+				await Promise.all(
+					input.changes.map(async (change) => {
+						const existing = await db.query.mediaTable.findFirst({
+							where: and(eq(mediaTable.id, change.id), eq(mediaTable.eventId, ctx.event.id)),
+						})
+
+						if (!existing)
+							throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Media not found' })
+						return db
+							.update(mediaTable)
+							.set({ ord: change.ord })
+							.where(eq(mediaTable.id, change.id))
+					}),
+				)
+				return true
+			} catch (e) {
+				return false
+			}
 		}),
 })

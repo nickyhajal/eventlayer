@@ -23,6 +23,7 @@ export const mediaTable = pgTable('media', {
 	width: integer('width'),
 	height: integer('height'),
 	path: text('path'),
+	ord: integer('ord').default(0),
 	dir: text('dir'),
 	version: integer('version').default(1),
 	createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
