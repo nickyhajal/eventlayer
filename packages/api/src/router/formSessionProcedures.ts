@@ -87,9 +87,12 @@ export const formSessionProcedures = t.router({
 		let editing = false
 		let session: FormSession | false = false
 		let eventId = ctx.event.id
+		let key = `${formId}-${userId}`
 
+		console.time(key)
 		// If we don't have a session, create it and submit
 		if (!sessionId) {
+			console.timeLog(key, 'check sess')
 			// userId = ctx.me.id
 			const inserted = await db
 				.insert(formSessionTable)
@@ -101,12 +104,14 @@ export const formSessionProcedures = t.router({
 					submissionDate: submissionDate || dayjs().format('YYYY-MM-DD'),
 				})
 				.returning()
+			console.timeLog(key, 'make sess')
 			if (inserted?.[0]) {
 				session = inserted[0]
 			}
 
 			// If we do have a session go from there
 		} else {
+			console.timeLog(key, 'get sess')
 			const existing = await db.query.formSessionTable.findFirst({
 				where: eq(formSessionTable.id, sessionId),
 			})
@@ -116,6 +121,7 @@ export const formSessionProcedures = t.router({
 				if (existing.status === 'submitted') {
 					editing = true
 				}
+				console.timeLog(key, 'upd sess')
 				await db
 					.update(formSessionTable)
 					.set({
@@ -125,6 +131,7 @@ export const formSessionProcedures = t.router({
 					})
 					.where(eq(formSessionTable.id, session.id))
 			}
+			console.timeLog(key, 'done up sess')
 		}
 
 		// If we have a session, proceed
@@ -132,6 +139,7 @@ export const formSessionProcedures = t.router({
 			const { formId, id: sessionId } = session
 
 			// Get the elements related to each sent response
+			console.timeLog(key, 'responses, get elms')
 			const elements = responses?.length
 				? await db.query.formElementTable.findMany({
 						where: inArray(
@@ -142,6 +150,7 @@ export const formSessionProcedures = t.router({
 				: []
 			const elementsById = byKey('id', elements)
 			const needsUserSync: FormElement[] = []
+			console.timeLog(key, 'check sync')
 			const values = responses.map(({ id: elementId, value }) => {
 				const element = elementsById?.[elementId]
 				if (element?.userInfoKey) {
@@ -158,6 +167,7 @@ export const formSessionProcedures = t.router({
 				}
 			})
 			let rows: FormResponse[] = []
+			console.timeLog(key, 'do rsp update')
 			if (editing) {
 				await Promise.all(
 					values.map(async (update) => {
@@ -185,8 +195,10 @@ export const formSessionProcedures = t.router({
 			} else {
 				rows = await db.insert(formResponseTable).values(values).returning()
 			}
+			console.timeLog(key, 'rsp update done')
 
 			// Sync to user values
+			console.timeLog(key, 'user sync done', needsUserSync.length)
 			if (needsUserSync.length) {
 				await Promise.all(
 					needsUserSync.map(async (element) => {
@@ -226,6 +238,8 @@ export const formSessionProcedures = t.router({
 					}),
 				)
 			}
+			console.timeLog(key, 'user sync done')
+			console.timeEnd(key)
 			return rows
 		}
 	}),
