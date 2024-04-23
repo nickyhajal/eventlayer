@@ -9,9 +9,10 @@ import { loadUsers } from '$lib/server/loadUserData'
 import { createTRPCHandle } from 'trpc-sveltekit'
 
 import { lucia } from '@matterloop/api'
+import { redis } from '@matterloop/api/src/core/redis'
 import { createContext } from '@matterloop/api/src/procedureWithContext'
 import { router } from '@matterloop/api/src/root'
-import { and, db, eq, eventTable, eventUserTable } from '@matterloop/db'
+import { and, db, eq, Event, eventTable, eventUserTable } from '@matterloop/db'
 import { userTable } from '@matterloop/db/types'
 
 // import { getConfigForRoute } from '$lib/server/core/routeHelper';
@@ -121,10 +122,18 @@ const handleEventContext: Handle = async ({ event, resolve }) => {
 	if (hostname.includes(PUBLIC_BASE_URL || '')) {
 		const bits = hostname.split('.')
 		if (bits.length >= 3) {
-			const mainEvent = await db.query.eventTable.findFirst({
-				where: eq(eventTable.domainId, bits[0]),
-			})
-			if (event) event.locals.event = mainEvent
+			const key = `event_subdomain:${bits[0]}`
+			let cached = await redis.get(key)
+			let mainEvent: Event | undefined
+			if (cached) {
+				mainEvent = JSON.parse(cached)
+			} else {
+				mainEvent = await db.query.eventTable.findFirst({
+					where: eq(eventTable.domainId, bits[0]),
+				})
+				redis.set(key, JSON.stringify(mainEvent))
+			}
+			if (event && mainEvent) event.locals.event = mainEvent
 		}
 	} else {
 		const mainEvent = await db.query.eventTable.findFirst({
