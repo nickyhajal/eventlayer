@@ -309,7 +309,9 @@ export const userProcedures = t.router({
 				codeLength: 10,
 			})
 
-			const sig = ctx.event?.name ? `The ${ctx.event?.name} Team` : 'The Eventlayer Team'
+			const sig = ctx.event?.name
+				? `The ${ctx.event?.name} Team`.replace('The The', 'The')
+				: 'The Eventlayer Team'
 			if (url) {
 				const res = await mailer.send({
 					to: user?.email || '',
