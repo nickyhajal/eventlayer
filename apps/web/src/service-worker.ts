@@ -84,10 +84,12 @@ async function fetchAndCache(request: Request) {
 
 worker.addEventListener('fetch', (event) => {
 	const url = new URL(event.request.url)
+	console.log('>>>>', url)
 	if (
 		event.request.method !== 'GET' ||
 		event.request.headers.has('range') ||
-		url.pathname === '/welcome'
+		url.pathname === '/welcome' ||
+		url.pathname === '/'
 	) {
 		return
 	}
