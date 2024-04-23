@@ -57,6 +57,7 @@ let visibleElements = elements.filter(({ page }) => page > 0 && page !== lastPag
 				>{status === 'ready' ? 'Save' : status === 'success' ? 'Saved!' : 'Saving...'}</Button
 			>
 		</div>
+		<div class="h-32 pt-2"></div>
 	</form>
 </Screen>
 
