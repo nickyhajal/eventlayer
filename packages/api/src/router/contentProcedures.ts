@@ -1,4 +1,7 @@
 // lib/trpc/router.ts
+import { initTRPC } from '@trpc/server'
+import { z } from 'zod'
+
 import {
 	and,
 	contentSchema,
@@ -16,9 +19,8 @@ import {
 } from '@matterloop/db'
 import { userTable, type User } from '@matterloop/db/types'
 import { omit, pick } from '@matterloop/util'
-import { initTRPC } from '@trpc/server'
-import { z } from 'zod'
 
+import { redis } from '../core/redis'
 import {
 	procedureWithContext,
 	verifyEvent,
@@ -39,12 +41,14 @@ export const contentProcedures = t.router({
 				const content = await db.query.contentTable.findFirst({
 					where: and(eq(contentTable.id, id)),
 				})
+				redis.expire(`event_heavy:${ctx.event.id}`, 0)
 				return content
 			} else {
 				const contentRows = await db
 					.insert(contentTable)
 					.values({ ...data, eventId: ctx.event.id, status: 'published' })
 					.returning()
+				redis.expire(`event_heavy:${ctx.event.id}`, 0)
 				return contentRows[0]
 			}
 		}),

@@ -23,6 +23,8 @@ import {
 } from '@matterloop/db'
 import { dayjs, groupBy, keyBy, omit, orderBy } from '@matterloop/util'
 
+import { redis } from '../core/redis'
+
 interface Args {
 	eventId: string
 	mainEventId?: string
@@ -34,20 +36,33 @@ export const EventFns = (args: string | Args) => {
 	const mainEventId = (typeof args === 'string' ? args : args.mainEventId) || undefined
 	const fns = {
 		get: async () => {
-			const event = await db.query.eventTable.findFirst({
-				where: and(eq(eventTable.id, eventId)),
-				with: {
-					users: {
-						with: { user: true },
+			const key = `event_heavy:${eventId}`
+			const cached = await redis.get(key)
+			console.log('get event heavy')
+			let event: Event | undefined
+			if (cached) {
+				console.log('use event heavy cache')
+				event = JSON.parse(cached)
+			} else {
+				// IF DEPENDENCIES CHANGE WE MUST UPDATE CACHE EXPIRIES
+				event = await db.query.eventTable.findFirst({
+					where: and(eq(eventTable.id, eventId)),
+					with: {
+						users: {
+							with: { user: true },
+						},
+						photo: true,
+						venue: true,
+						favicon: true,
+						largeLogo: true,
+						menus: { orderBy: asc(menuTable.ord) },
+						content: {
+							where: and(eq(contentTable.eventId, eventId), ne(contentTable.type, 'faq')),
+						},
 					},
-					photo: true,
-					venue: true,
-					favicon: true,
-					largeLogo: true,
-					menus: { orderBy: asc(menuTable.ord) },
-					content: { where: and(eq(contentTable.eventId, eventId), ne(contentTable.type, 'faq')) },
-				},
-			})
+				})
+				redis.set(key, JSON.stringify(event))
+			}
 			if (event?.content) {
 				return {
 					...event,
@@ -65,52 +80,69 @@ export const EventFns = (args: string | Args) => {
 			})
 		},
 		getUsers: async () => {
-			const usersQuery = db
-				.select()
-				.from(eventUserTable)
-				.where(and(eq(eventUserTable.eventId, eventId), eq(eventUserTable.status, 'active')))
-				.leftJoin(userTable, eq(userTable.id, eventUserTable.userId))
-				.leftJoin(mediaTable, eq(mediaTable.id, userTable.mediaId))
-			// .leftJoin(eventUserInfoTable, eq(eventUserInfoTable.id, userTable.id))
-			if (mainEventId) {
-				const mainEventUser = alias(eventUserTable, 'mainEventUser')
-				usersQuery.leftJoin(
-					mainEventUser,
-					and(
-						eq(eventUserTable.userId, mainEventUser.userId),
-						eq(mainEventUser.eventId, mainEventId),
-					),
-				)
+			const key = `event_users:${eventId}`
+			const cached = await redis.get(key)
+			if (cached) {
+				console.log('use event users cache')
+				return JSON.parse(cached)
+			} else {
+				const usersQuery = db
+					.select()
+					.from(eventUserTable)
+					.where(and(eq(eventUserTable.eventId, eventId), eq(eventUserTable.status, 'active')))
+					.leftJoin(userTable, eq(userTable.id, eventUserTable.userId))
+					.leftJoin(mediaTable, eq(mediaTable.id, userTable.mediaId))
+				// .leftJoin(eventUserInfoTable, eq(eventUserInfoTable.id, userTable.id))
+				if (mainEventId) {
+					const mainEventUser = alias(eventUserTable, 'mainEventUser')
+					usersQuery.leftJoin(
+						mainEventUser,
+						and(
+							eq(eventUserTable.userId, mainEventUser.userId),
+							eq(mainEventUser.eventId, mainEventId),
+						),
+					)
+				}
+				const userRows = await usersQuery
+				if (userRows.length) {
+					const finalUsers = userRows.map((user) => {
+						return {
+							photo: user.media,
+							...user.auth_user,
+							...user.event_user,
+							...user.mainEventUser,
+						}
+					})
+					redis.set(key, JSON.stringify(finalUsers))
+					return finalUsers
+				}
+				return []
 			}
-			const userRows = await usersQuery
-			if (userRows.length) {
-				return userRows.map((user) => {
-					return {
-						photo: user.media,
-						...user.auth_user,
-						...user.event_user,
-						...user.mainEventUser,
-					}
-				})
-			}
-			return []
 		},
 		getUsersWithInfo: async () => {
-			const users = await fns.getUsers()
-			const ids = users.map((user) => user.userId)
-			const info = await db.query.eventUserInfoTable.findMany({
-				where: and(
-					inArray(eventUserInfoTable.userId, ids),
-					eq(eventUserInfoTable.eventId, eventId),
-				),
-			})
-			const infoByUserId = groupBy(info, 'userId')
-			return users.map((user) => {
-				return {
-					...user,
-					info: keyBy(infoByUserId[user.userId], 'key'),
-				}
-			})
+			const key = `event_usersWithInfo:${eventId}`
+			const cached = await redis.get(key)
+			if (cached) {
+				return JSON.parse(cached)
+			} else {
+				const users = await fns.getUsers()
+				const ids = users.map((user) => user.userId)
+				const info = await db.query.eventUserInfoTable.findMany({
+					where: and(
+						inArray(eventUserInfoTable.userId, ids),
+						eq(eventUserInfoTable.eventId, eventId),
+					),
+				})
+				const infoByUserId = groupBy(info, 'userId')
+				const finalUsers = users.map((user) => {
+					return {
+						...user,
+						info: keyBy(infoByUserId[user.userId], 'key'),
+					}
+				})
+				redis.set(key, JSON.stringify(finalUsers))
+				return finalUsers
+			}
 		},
 		getUser: async (userId: string) => {
 			const userRows = await db

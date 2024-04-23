@@ -112,6 +112,9 @@ export const eventProcedures = t.router({
 					.values({ ...input })
 					.returning()
 			}
+			redis.expire(`event_heavy:${input.eventId}`, 0)
+			redis.expire(`event_users:${input.eventId}`, 0)
+			redis.expire(`event_usersWithInfo:${input.eventId}`, 0)
 			return true
 		}),
 	removeUser: procedureWithContext
@@ -162,6 +165,7 @@ export const eventProcedures = t.router({
 					.where(eq(eventTable.id, input.id))
 					.returning()
 				const updated = await db.select().from(eventTable).where(eq(eventTable.id, input.id))
+				redis.expire(`event_heavy:${input.eventId}`, 0)
 				return updated[0]
 			} else {
 				const createInput = eventSchema.parse(input)
@@ -180,6 +184,8 @@ export const eventProcedures = t.router({
 						]),
 					)
 					.returning()
+				redis.expire(`event_heavy:${input.eventId}`, 0)
+
 				return newForm[0]
 			}
 		}),

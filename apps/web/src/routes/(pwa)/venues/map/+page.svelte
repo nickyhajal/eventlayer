@@ -29,6 +29,7 @@ $: title = `Venue ${maps.length > 1 ? 'Maps' : 'Map'}`
 </script>
 
 <Screen title={title} back="/menu" bigTitle={title}>
+	<div class="pt-safe-offset-4"></div>
 	{#if maps.length > 1}
 		<div class="flex flex-col gap-2">
 			{#each maps as map}

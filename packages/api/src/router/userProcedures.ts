@@ -32,6 +32,7 @@ import { dayjs, getId, omit, pick } from '@matterloop/util'
 
 import { mailer } from '../../../../apps/web/src/lib/server/core/mailer'
 import { NotAuthdError } from '../core/Errors'
+import { redis } from '../core/redis'
 import { getMediaRow } from '../media/getMediaRow'
 import { getSignedUploadUrl } from '../media/getSignedUploadUrl'
 import { ActiveLoginLink } from '../models/ActiveLoginLink'
@@ -335,6 +336,8 @@ export const userProcedures = t.router({
 				.update(eventUserTable)
 				.set({ onboardStatus: 'pending' })
 				.where(eq(eventUserTable.id, eventUser.id))
+			redis.expire(`event_users:${ctx.event.id}`, 0)
+			redis.expire(`event_usersWithInfo:${ctx.event.id}`, 0)
 			return {
 				success: true,
 			}
@@ -473,6 +476,9 @@ export const userProcedures = t.router({
 					}),
 				)
 			}
+			redis.expire(`event_heavy:${eventId}`, 0)
+			redis.expire(`event_users:${eventId}`, 0)
+			redis.expire(`event_usersWithInfo:${eventId}`, 0)
 			return {
 				user,
 				eventUser,

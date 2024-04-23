@@ -13,6 +13,7 @@ import {
 	type TrpcContext,
 } from '../procedureWithContext'
 import { getGeoCodedAddress } from '../util/getGeocodedAddress'
+import { redis } from '../core/redis'
 
 const t = initTRPC.context<TrpcContext>().create()
 export const venueProcedures = t.router({
@@ -54,6 +55,7 @@ export const venueProcedures = t.router({
 					.where(eq(venueTable.id, input.id))
 					.returning()
 				const updated = await db.select().from(venueTable).where(eq(venueTable.id, input.id))
+				redis.expire(`event_heavy:${ctx.event.id}`, 0)
 				return updated[0]
 			} else {
 				input.eventId = ctx.event.id
@@ -61,6 +63,7 @@ export const venueProcedures = t.router({
 					.insert(venueTable)
 					.values(pick(input, ['name', 'description', 'type', 'eventId', 'address', 'mediaId', 'venueId']))
 					.returning()
+				redis.expire(`event_heavy:${ctx.event.id}`, 0)
 				return newForm[0]
 			}
 		}),
@@ -88,6 +91,7 @@ export const venueProcedures = t.router({
 
 						if (!existing)
 							throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Venue not found' })
+				redis.expire(`event_heavy:${ctx.event.id}`, 0)
 						return db
 							.update(venueTable)
 							.set({ ord: change.ord })
