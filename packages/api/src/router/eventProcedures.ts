@@ -29,7 +29,6 @@ import {
 async function getAttendeeStore(event: Event) {
 	if (!event?.id) return false
 	let store = await redis.get(`${event.id}_attendeeStore`)
-	if (store) return JSON.parse(store) as AttendeeStore
 	const attendees = await EventFns({ eventId: event.id }).getUsers()
 	const simpleAttendees = attendees.map(({ id, firstName, lastName, email, photo }) => ({
 		id,
@@ -45,7 +44,7 @@ async function getAttendeeStore(event: Event) {
 		hash,
 		lastUpdate: dayjs().toISOString(),
 	}
-	redis.set(`${event.id}_attendeeStore`, JSON.stringify(newStore))
+	redis.set(`${event.id}_attendeeStore`, newStore)
 	redis.expire(`${event.id}_attendeeStore`, 5000)
 	return newStore
 }

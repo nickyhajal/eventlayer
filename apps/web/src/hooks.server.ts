@@ -123,15 +123,13 @@ const handleEventContext: Handle = async ({ event, resolve }) => {
 		const bits = hostname.split('.')
 		if (bits.length >= 3) {
 			const key = `event_subdomain:${bits[0]}`
-			let cached = false //await redis.get(key)
-			let mainEvent: Event | undefined
-			if (cached) {
-				mainEvent = JSON.parse(cached)
-			} else {
-				mainEvent = await db.query.eventTable.findFirst({
-					where: eq(eventTable.domainId, bits[0]),
-				})
-				// redis.set(key, JSON.stringify(mainEvent))
+			let mainEvent = await redis.get<Event>(key)
+			if (!mainEvent) {
+				mainEvent =
+					(await db.query.eventTable.findFirst({
+						where: eq(eventTable.domainId, bits[0]),
+					})) || null
+				redis.set(key, mainEvent)
 			}
 			if (event && mainEvent) event.locals.event = mainEvent
 		}

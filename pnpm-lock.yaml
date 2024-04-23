@@ -316,6 +316,9 @@ importers:
       '@trpc/server':
         specifier: ^10.45.2
         version: 10.45.2
+      '@upstash/redis':
+        specifier: ^1.30.0
+        version: 1.30.0
       ioredis:
         specifier: ^5.3.2
         version: 5.3.2
@@ -6043,6 +6046,12 @@ packages:
   /@ungap/structured-clone@1.2.0:
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
 
+  /@upstash/redis@1.30.0:
+    resolution: {integrity: sha512-bkxl2n7qls27hONXNyItM6ccRT0NBJ8c6zl83wx+TlODpYXehgeiUJTkcTaXLp7hk+zy6Mqpzpeo3GX+wZSvBw==}
+    dependencies:
+      crypto-js: 4.2.0
+    dev: false
+
   /@vite-pwa/sveltekit@0.3.0(@sveltejs/kit@2.5.5)(vite-plugin-pwa@0.19.8):
     resolution: {integrity: sha512-cqVqHBm7kn3CQvNuBj21CSjf8Ub8rWhYJrYqr3qzQeWAm70ODASyaPc4vY8rwoxYGTnwWpgZ/ivJXmYV2G3j6Q==}
     engines: {node: '>=16.14 || >=18.13'}
@@ -7056,6 +7065,10 @@ packages:
       shebang-command: 2.0.0
       which: 2.0.2
 
+  /crypto-js@4.2.0:
+    resolution: {integrity: sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==}
+    dev: false
+
   /crypto-random-string@2.0.0:
     resolution: {integrity: sha512-v1plID3y9r/lPhviJ1wrXpLeyUIGAZ2SHNYTEapm7/8A9nLPoyvVp3RK/EPFqn5kEznyWgYZNsRtYYIWbuG8KA==}
     engines: {node: '>=8'}
@@ -7582,7 +7595,7 @@ packages:
       drizzle-orm: '>=0.23.13'
       zod: '*'
     dependencies:
-      drizzle-orm: 0.28.6(@libsql/client@0.3.6)(pg@8.11.5)
+      drizzle-orm: 0.28.6(@types/pg@8.11.4)(pg@8.11.4)(postgres@3.4.4)
       zod: 3.22.4
     dev: false
 

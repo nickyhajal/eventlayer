@@ -1,3 +1,5 @@
+import { User } from 'lucia'
+
 import {
 	alias,
 	and,
@@ -37,13 +39,8 @@ export const EventFns = (args: string | Args) => {
 	const fns = {
 		get: async () => {
 			const key = `event_heavy:${eventId}`
-			const cached = false // await redis.get(key)
-			console.log('get event heavy')
-			let event: Event | undefined
-			if (cached) {
-				console.log('use event heavy cache')
-				event = JSON.parse(cached)
-			} else {
+			let event = await redis.get<Event>(key)
+			if (!event) {
 				// IF DEPENDENCIES CHANGE WE MUST UPDATE CACHE EXPIRIES
 				event = await db.query.eventTable.findFirst({
 					where: and(eq(eventTable.id, eventId)),
@@ -61,7 +58,7 @@ export const EventFns = (args: string | Args) => {
 						},
 					},
 				})
-				// redis.set(key, JSON.stringify(event))
+				redis.set(key, event)
 			}
 			if (event?.content) {
 				return {
@@ -81,10 +78,9 @@ export const EventFns = (args: string | Args) => {
 		},
 		getUsers: async () => {
 			const key = `event_users:${eventId}`
-			const cached = false // await redis.get(key)
-			if (cached) {
-				console.log('use event users cache')
-				return JSON.parse(cached)
+			const users = await redis.get<User[]>(key)
+			if (users) {
+				return users
 			} else {
 				const usersQuery = db
 					.select()
@@ -113,7 +109,7 @@ export const EventFns = (args: string | Args) => {
 							...user.mainEventUser,
 						}
 					})
-					//redis.set(key, JSON.stringify(finalUsers))
+					redis.set(key, finalUsers)
 					return finalUsers
 				}
 				return []
@@ -121,9 +117,9 @@ export const EventFns = (args: string | Args) => {
 		},
 		getUsersWithInfo: async () => {
 			const key = `event_usersWithInfo:${eventId}`
-			const cached = false // await redis.get(key)
-			if (cached) {
-				return JSON.parse(cached)
+			const users = await redis.get(key)
+			if (users) {
+				return users
 			} else {
 				const users = await fns.getUsers()
 				const ids = users.map((user) => user.userId)
@@ -140,7 +136,7 @@ export const EventFns = (args: string | Args) => {
 						info: keyBy(infoByUserId[user.userId], 'key'),
 					}
 				})
-				//redis.set(key, JSON.stringify(finalUsers))
+				redis.set(key, finalUsers)
 				return finalUsers
 			}
 		},
