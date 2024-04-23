@@ -13,7 +13,7 @@ export let event: Event
 >
 	{#if event.photo || event?.venue?.photo}
 		<img
-			src={getMediaUrl(event.photo || event?.venue?.photo)}
+			src={getMediaUrl(event.photo || event?.venue?.photo, 'w=180')}
 			class="h-12 w-20 flex-none rounded-md bg-cover object-cover"
 		/>
 	{:else}
