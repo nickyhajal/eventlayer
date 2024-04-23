@@ -111,22 +111,30 @@ export const formSessionTable = pgTable('form_session', {
 	createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
 	updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
 })
-export const formResponseTable = pgTable('form_response', {
-	id: uuid('id')
-		.default(sql`extensions.uuid_generate_v4()`)
-		.primaryKey()
-		.notNull(),
-	userId: uuid('user_id').references(() => userTable.id, { onDelete: 'cascade' }),
-	eventId: uuid('event_id').references(() => eventTable.id, { onDelete: 'cascade' }),
-	formId: uuid('form_id').references(() => formTable.id, { onDelete: 'cascade' }),
-	elementId: uuid('element_id').references(() => formElementTable.id, { onDelete: 'cascade' }),
-	sessionId: uuid('session_id').references(() => formSessionTable.id, { onDelete: 'cascade' }),
-	type: text('type'),
-	value: text('value'),
-	html: text('html'),
-	createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
-	updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
-})
+export const formResponseTable = pgTable(
+	'form_response',
+	{
+		id: uuid('id')
+			.default(sql`extensions.uuid_generate_v4()`)
+			.primaryKey()
+			.notNull(),
+		userId: uuid('user_id').references(() => userTable.id, { onDelete: 'cascade' }),
+		eventId: uuid('event_id').references(() => eventTable.id, { onDelete: 'cascade' }),
+		formId: uuid('form_id').references(() => formTable.id, { onDelete: 'cascade' }),
+		elementId: uuid('element_id').references(() => formElementTable.id, { onDelete: 'cascade' }),
+		sessionId: uuid('session_id').references(() => formSessionTable.id, { onDelete: 'cascade' }),
+		type: text('type'),
+		value: text('value'),
+		html: text('html'),
+		createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
+		updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
+	},
+	(table) => {
+		return {
+			element_sessionKey: index('element_session_key').on(table.sessionId, table.elementId),
+		}
+	},
+)
 
 export const formResponseStatTable = pgTable('form_response_stat', {
 	id: uuid('id')

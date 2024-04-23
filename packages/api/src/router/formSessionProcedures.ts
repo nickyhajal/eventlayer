@@ -87,9 +87,11 @@ export const formSessionProcedures = t.router({
 		let editing = false
 		let session: FormSession | false = false
 		let eventId = ctx.event.id
+		console.log(1)
 
 		// If we don't have a session, create it and submit
 		if (!sessionId) {
+			console.log(2)
 			// userId = ctx.me.id
 			const inserted = await db
 				.insert(formSessionTable)
@@ -104,9 +106,11 @@ export const formSessionProcedures = t.router({
 			if (inserted?.[0]) {
 				session = inserted[0]
 			}
+			console.log(3)
 
 			// If we do have a session go from there
 		} else {
+			console.log(4)
 			const existing = await db.query.formSessionTable.findFirst({
 				where: eq(formSessionTable.id, sessionId),
 			})
@@ -128,6 +132,7 @@ export const formSessionProcedures = t.router({
 		}
 
 		// If we have a session, proceed
+		console.log(5)
 		if (session !== false) {
 			const { formId, id: sessionId } = session
 
@@ -140,6 +145,7 @@ export const formSessionProcedures = t.router({
 						),
 					})
 				: []
+			console.log(6)
 			const elementsById = byKey('id', elements)
 			const needsUserSync: FormElement[] = []
 			const values = responses.map(({ id: elementId, value }) => {
@@ -147,6 +153,7 @@ export const formSessionProcedures = t.router({
 				if (element?.userInfoKey) {
 					needsUserSync.push(element)
 				}
+				console.log(7)
 				return {
 					userId,
 					formId,
@@ -157,19 +164,25 @@ export const formSessionProcedures = t.router({
 					sessionId,
 				}
 			})
+			console.log(8)
 			let rows: FormResponse[] = []
 			if (editing) {
+				console.log(9, values.length)
 				await Promise.all(
 					values.map(async (update) => {
+						console.log('9-1')
 						const existing = await db.query.formResponseTable.findFirst({
 							where: and(
 								eq(formResponseTable.sessionId, sessionId),
 								eq(formResponseTable.elementId, update.elementId),
 							),
 						})
+						console.log('9-2')
 						if (!existing) {
+							console.log('9-3')
 							return db.insert(formResponseTable).values(update)
-						} else {
+						} else if (update.value !== existing.value) {
+							console.log('9-4')
 							return db
 								.update(formResponseTable)
 								.set({ value: update.value })
@@ -183,11 +196,14 @@ export const formSessionProcedures = t.router({
 					}),
 				)
 			} else {
+				console.log(10)
 				rows = await db.insert(formResponseTable).values(values).returning()
 			}
 
 			// Sync to user values
+			console.log(11)
 			if (needsUserSync.length) {
+				console.log(12, needsUserSync.length)
 				await Promise.all(
 					needsUserSync.map(async (element) => {
 						const { userInfoKey, userInfoPublic } = element
