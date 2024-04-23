@@ -131,7 +131,7 @@ const handleEventContext: Handle = async ({ event, resolve }) => {
 				mainEvent = await db.query.eventTable.findFirst({
 					where: eq(eventTable.domainId, bits[0]),
 				})
-				redis.set(key, JSON.stringify(mainEvent))
+				// redis.set(key, JSON.stringify(mainEvent))
 			}
 			if (event && mainEvent) event.locals.event = mainEvent
 		}
