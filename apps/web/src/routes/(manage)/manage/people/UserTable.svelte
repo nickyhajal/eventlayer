@@ -75,9 +75,9 @@ const columns: ColumnDef<User>[] = [
 
 <Table
 	columns={columns}
-	rows={rows}
+	rows={rows.filter((r) => r.firstName ? r.firstName : console.log('null user', r))}
 	sorting={[{id: 'lastName', desc: false}]}
-	pageSize={10}
+	pageSize={25}
 	globalFilterFn={globalFilterFn}
 	bind:table={table}
 	bind:setCurrentPage={setCurrentPage}
