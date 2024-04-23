@@ -13,7 +13,7 @@ export const load = async ({ locals, params, cookies }) => {
 			where: eq(loginLinkTable.publicId, params.code),
 		})
 		if (!link) {
-			return {}
+			return { error: 'no link' }
 		}
 		const session = await lucia.createSession(link.userId, {})
 		const sessionCookie = lucia.createSessionCookie(session.id)
@@ -22,9 +22,9 @@ export const load = async ({ locals, params, cookies }) => {
 			path: '/',
 			sameSite: process.env.NODE_ENV === 'development' ? 'lax' : 'none',
 		})
+		return { success: true }
 	} catch (e) {
 		console.log(e)
 		return {}
 	}
-	redirect(302, '/')
 }
