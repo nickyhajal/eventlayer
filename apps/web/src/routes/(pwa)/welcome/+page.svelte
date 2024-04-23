@@ -23,6 +23,7 @@ let values: Record<string, string> = data.form?.elements.reduce(
 let onPage = -1
 const elementsByPage = groupBy(data.form?.elements, 'page')
 const elementsListedByPage = Object.values(elementsByPage)
+let lastValues = { ...values }
 onMount(() => {
 	next()
 })
@@ -32,14 +33,20 @@ async function submit(e: Event | null) {
 		e.preventDefault()
 	}
 	if (data.me.id) {
-		const res = await trpc().formSession.submit.mutate({
-			formId: data.form?.id,
-			sessionId,
-			responses: Object.entries(values).flatMap(([id, value]) => (value ? [{ id, value }] : [])),
-		})
-		if (res?.[0]?.sessionId) {
-			sessionId = res[0].sessionId
+		let responses = Object.entries(values).flatMap(([id, value]) =>
+			value && value !== lastValues[id] ? [{ id, value }] : [],
+		)
+		if (responses.length) {
+			const res = await trpc().formSession.submit.mutate({
+				formId: data.form?.id,
+				sessionId,
+				responses,
+			})
+			if (res?.[0]?.sessionId) {
+				sessionId = res[0].sessionId
+			}
 		}
+		lastValues = { ...values }
 	}
 }
 async function next(e = null) {

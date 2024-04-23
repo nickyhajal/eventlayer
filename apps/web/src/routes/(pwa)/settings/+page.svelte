@@ -21,6 +21,7 @@ let values: Record<string, string> = data.form?.elements.reduce(
 	},
 	{} as Record<string, string>,
 )
+let lastValues = { ...values }
 async function submit(e) {
 	if (e.stopPropagation) {
 		e.stopPropagation()
@@ -28,14 +29,20 @@ async function submit(e) {
 	}
 	if (data.me.id) {
 		status = 'saving'
-		const res = await trpc().formSession.submit.mutate({
-			formId: data.form?.id,
-			sessionId,
-			responses: Object.entries(values).flatMap(([id, value]) => (value ? [{ id, value }] : [])),
-		})
-		if (res?.[0]?.sessionId) {
-			sessionId = res[0].sessionId
+		let responses = Object.entries(values).flatMap(([id, value]) =>
+			value && value !== lastValues[id] ? [{ id, value }] : [],
+		)
+		if (responses.length) {
+			const res = await trpc().formSession.submit.mutate({
+				formId: data.form?.id,
+				sessionId,
+				responses,
+			})
+			if (res?.[0]?.sessionId) {
+				sessionId = res[0].sessionId
+			}
 		}
+		lastValues = { ...values }
 		status = 'success'
 		setTimeout(() => {
 			status = 'ready'
