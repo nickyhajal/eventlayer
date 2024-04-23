@@ -78,8 +78,8 @@ export const EventFns = (args: string | Args) => {
 		},
 		getUsers: async () => {
 			const key = `event_users:${eventId}`
-			// const users = await redis.get<User[]>(key)
-			const users = false // await redis.get(key)
+			const users = await redis.get<User[]>(key)
+			// const users =  await redis.get(key)
 			if (users) {
 				return users
 			} else {
@@ -137,7 +137,8 @@ export const EventFns = (args: string | Args) => {
 						info: keyBy(infoByUserId[user.userId], 'key'),
 					}
 				})
-				redis.set(key, finalUsers)
+				console.log('finalUsers', JSON.stringify(finalUsers).length)
+				// redis.set(key, finalUsers)
 				return finalUsers
 			}
 		},
