@@ -61,7 +61,7 @@ export const EventFns = (args: string | Args) => {
 						},
 					},
 				})
-				redis.set(key, JSON.stringify(event))
+				// redis.set(key, JSON.stringify(event))
 			}
 			if (event?.content) {
 				return {
@@ -113,7 +113,7 @@ export const EventFns = (args: string | Args) => {
 							...user.mainEventUser,
 						}
 					})
-					redis.set(key, JSON.stringify(finalUsers))
+					//redis.set(key, JSON.stringify(finalUsers))
 					return finalUsers
 				}
 				return []
@@ -140,7 +140,7 @@ export const EventFns = (args: string | Args) => {
 						info: keyBy(infoByUserId[user.userId], 'key'),
 					}
 				})
-				redis.set(key, JSON.stringify(finalUsers))
+				//redis.set(key, JSON.stringify(finalUsers))
 				return finalUsers
 			}
 		},
