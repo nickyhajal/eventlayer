@@ -83,11 +83,14 @@ async function fetchAndCache(request: Request) {
 }
 
 worker.addEventListener('fetch', (event) => {
-	if (event.request.method !== 'GET' || event.request.headers.has('range')) {
+	const url = new URL(event.request.url)
+	if (
+		event.request.method !== 'GET' ||
+		event.request.headers.has('range') ||
+		url.pathname === '/welcome'
+	) {
 		return
 	}
-
-	const url = new URL(event.request.url)
 
 	// don't try to handle e.g. data: URIs
 	const isHttp = url.protocol.startsWith('http')

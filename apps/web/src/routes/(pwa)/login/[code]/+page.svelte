@@ -13,15 +13,12 @@ if (browser && data.success) {
 			registration.unregister()
 		}
 	})
-	// setTimeout(() => {
-	// 	location.href = '/'
-	// }, 10)
+	setTimeout(() => {
+		location.href = '/'
+	}, 10)
 }
 </script>
 
-<Screen title="" back="/">
-	Logging in...
-	{#if data.error}
-		<div class="wrap mx-auto mt-40 max-w-md p-4">That code isn't valid</div>
-	{/if}
-</Screen>
+{#if data.error}
+	<div class="wrap mx-auto mt-40 max-w-md p-4">That code isn't valid</div>
+{/if}
