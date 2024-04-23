@@ -37,7 +37,7 @@ export const EventFns = (args: string | Args) => {
 	const fns = {
 		get: async () => {
 			const key = `event_heavy:${eventId}`
-			const cached = await redis.get(key)
+			const cached = false // await redis.get(key)
 			console.log('get event heavy')
 			let event: Event | undefined
 			if (cached) {
@@ -81,7 +81,7 @@ export const EventFns = (args: string | Args) => {
 		},
 		getUsers: async () => {
 			const key = `event_users:${eventId}`
-			const cached = await redis.get(key)
+			const cached = false // await redis.get(key)
 			if (cached) {
 				console.log('use event users cache')
 				return JSON.parse(cached)
@@ -121,7 +121,7 @@ export const EventFns = (args: string | Args) => {
 		},
 		getUsersWithInfo: async () => {
 			const key = `event_usersWithInfo:${eventId}`
-			const cached = await redis.get(key)
+			const cached = false // await redis.get(key)
 			if (cached) {
 				return JSON.parse(cached)
 			} else {

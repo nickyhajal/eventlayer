@@ -123,7 +123,7 @@ const handleEventContext: Handle = async ({ event, resolve }) => {
 		const bits = hostname.split('.')
 		if (bits.length >= 3) {
 			const key = `event_subdomain:${bits[0]}`
-			let cached = await redis.get(key)
+			let cached = false //await redis.get(key)
 			let mainEvent: Event | undefined
 			if (cached) {
 				mainEvent = JSON.parse(cached)
