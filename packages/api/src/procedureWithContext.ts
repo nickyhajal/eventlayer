@@ -1,7 +1,9 @@
-import { Event, User } from '@matterloop/db'
 import { error, type RequestEvent } from '@sveltejs/kit'
 import { initTRPC, type inferAsyncReturnType } from '@trpc/server'
 import superjson from 'superjson'
+
+import { Event, User } from '@matterloop/db'
+
 import { NotAuthdError } from './core/Errors'
 
 // import { NotAuthdError } from '$lib/server/core/Errors'
@@ -48,11 +50,15 @@ interface VerifyArgs<T> {
 	key?: keyof T
 	entity?: T | undefined | null
 }
-export const verifyMe = () =>
+export const verifyMe = (require: string = '') =>
 	middleware(async ({ ctx, input, next }) => {
+		const me = ctx?.req?.locals?.me
 		if (!ctx.req.locals.me || !ctx.req.locals.meId) {
 			throw error(401, 'Not Authenticated')
 			// throw new NotAuthenticatedError()
+		}
+		if (require === 'staff' && !(me?.isSuperAdmin || ['staff', 'volunteer'].includes(me?.type))) {
+			throw error(401, 'Not Authenticated')
 		}
 		return next({
 			ctx: {

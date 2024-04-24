@@ -6,6 +6,7 @@ import * as contentSchema from './schema/content'
 import * as eventSchema from './schema/event'
 import * as organizationSchema from './schema/event'
 import * as eventUserSchema from './schema/event_user'
+import * as eventUserCheckinSchema from './schema/event_user_checkin'
 import * as eventUserInfoSchema from './schema/event_user_info'
 import * as formSchema from './schema/form'
 import * as loginLinkSchema from './schema/login_link'
@@ -29,6 +30,7 @@ export * from './schema/media'
 export * from './schema/sponsor'
 export * from './schema/login_link'
 export * from './schema/form'
+export * from './schema/event_user_checkin'
 export * from './types'
 
 export const connection = new postgres.Pool({
@@ -40,6 +42,7 @@ export const db = drizzle(connection, {
 		...userSchema,
 		...eventSchema,
 		...eventUserInfoSchema,
+		...eventUserCheckinSchema,
 		...organizationSchema,
 		...eventUserSchema,
 		...mediaSchema,

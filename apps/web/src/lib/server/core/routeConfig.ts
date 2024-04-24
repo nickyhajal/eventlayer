@@ -12,7 +12,7 @@ export interface RouteConfig {
 		| 'public'
 		| 'logged-out'
 		| 'logged-in'
-		| 'community-member'
+		| 'event-staff'
 		| 'community-admin'
 		| 'not-community-member'
 		| 'super-admin'
@@ -48,6 +48,14 @@ export const routeConfig: RouteConfigTree = {
 				mainClass: 'bg-slate',
 				navClass: 'bg-slate',
 				auth: 'super-admin',
+			},
+		},
+		{
+			uri: 'checkin',
+			conf: {
+				mainClass: 'bg-slate',
+				navClass: 'bg-slate',
+				auth: 'staff',
 			},
 		},
 		{

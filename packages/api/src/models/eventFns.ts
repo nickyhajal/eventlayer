@@ -8,18 +8,21 @@ import {
 	db,
 	eq,
 	eventTable,
+	eventUserCheckinTable,
 	eventUserInfoTable,
 	eventUserTable,
 	formTable,
 	gt,
 	inArray,
 	isNotNull,
+	key,
 	mediaTable,
 	menuTable,
 	ne,
 	or,
 	pageTable,
 	sponsorTable,
+	sql,
 	userTable,
 	venueTable,
 } from '@matterloop/db'
@@ -137,7 +140,6 @@ export const EventFns = (args: string | Args) => {
 						info: keyBy(infoByUserId[user.userId], 'key'),
 					}
 				})
-				console.log('finalUsers', JSON.stringify(finalUsers).length)
 				// redis.set(key, finalUsers)
 				return finalUsers
 			}
@@ -292,6 +294,64 @@ export const EventFns = (args: string | Args) => {
 					),
 				)
 			return orderBy(users, ['user.lastName', 'user.firstName'], ['asc', 'asc'])
+		},
+		toggleUserCheckin: async ({ staffId, userId }: { staffId: string; userId: string }) => {
+			const existing = await db.query.eventUserCheckinTable.findFirst({
+				where: and(
+					eq(eventUserCheckinTable.eventId, eventId),
+					eq(eventUserCheckinTable.userId, userId),
+				),
+			})
+			redis.del(`checkin_stats:${eventId}`)
+			if (existing) {
+				await db
+					.delete(eventUserCheckinTable)
+					.where(
+						and(
+							eq(eventUserCheckinTable.eventId, eventId),
+							eq(eventUserCheckinTable.userId, userId),
+						),
+					)
+				existing.status = 'removed'
+				return existing
+			} else {
+				const row = db
+					.insert(eventUserCheckinTable)
+					.values({
+						status: 'checked-in',
+						userId,
+						eventId,
+						staffId,
+						...(mainEventId ? { mainEventId } : {}),
+					})
+					.returning()
+				return row
+			}
+		},
+		getCheckinStats: async () => {
+			const key = `checkin_stats:${eventId}`
+			let stats = await redis.get(key)
+			if (stats) {
+				return stats
+			}
+			const checkins = await db.query.eventUserCheckinTable.findMany({
+				where: and(
+					eq(eventUserCheckinTable.eventId, eventId),
+					eq(eventUserCheckinTable.status, 'checked-in'),
+				),
+			})
+			const eventUserCount = await db
+				.select({ count: sql`count(*)`.mapWith(Number) })
+				.from(eventUserTable)
+				.where(and(eq(eventUserTable.eventId, eventId), eq(eventUserTable.status, 'active')))
+
+			stats = {
+				checkedInIds: checkins.map(({ userId }) => userId),
+				checkinCount: checkins.length,
+				userCount: eventUserCount?.[0]?.count || 0,
+			}
+			redis.set(key, stats)
+			return stats
 		},
 	}
 	return fns

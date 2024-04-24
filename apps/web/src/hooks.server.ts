@@ -162,6 +162,11 @@ const handleRouteConfig: Handle = async ({ event, resolve }) => {
 		handleRouteRedirect('/', routeConfig)
 	} else if (auth === 'logged-in' && !me) {
 		handleRouteRedirect('/login', routeConfig)
+	} else if (
+		auth === 'event-staff' &&
+		!(me?.isSuperAdmin || ['staff', 'volunteer'].includes(me?.type))
+	) {
+		handleRouteRedirect('/login', routeConfig)
 	} else if (auth === 'super-admin' && !me?.isSuperAdmin) {
 		handleRouteRedirect('/login', routeConfig)
 		// error(404, {

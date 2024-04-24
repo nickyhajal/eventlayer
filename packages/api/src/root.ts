@@ -1,4 +1,5 @@
 import { trpcApp } from './procedureWithContext'
+import { checkinProcedures } from './router/checkinProcedures'
 import { contentProcedures } from './router/contentProcedures'
 import { eventProcedures } from './router/eventProcedures'
 import { formElementProcedures } from './router/formElementProcedures'
@@ -17,6 +18,7 @@ export const router = trpcApp.router({
 	event: eventProcedures,
 	venue: venueProcedures,
 	form: formProcedures,
+	checkin: checkinProcedures,
 	formElement: formElementProcedures,
 	formSession: formSessionProcedures,
 	user: userProcedures,
