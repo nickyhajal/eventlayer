@@ -80,7 +80,7 @@ async function toggleCheckin(userId: string) {
 >
 	{data.event.name} Check In
 </div>
-<div class="mx-auto max-w-md px-1">
+<div class="mx-auto max-w-md px-1.5">
 	<input
 		type="text"
 		bind:value={query}
@@ -88,7 +88,7 @@ async function toggleCheckin(userId: string) {
 		class="my-3 w-full rounded-xl bg-stone-200/30 py-3 text-center"
 	/>
 	{#if !query}
-		<div class="mx-auto grid w-9/12 grid-cols-2 gap-4 gap-x-8 pt-10 text-sm">
+		<div class="mx-auto grid w-9/12 grid-cols-[1fr_5.2rem] gap-4 gap-x-8 pt-10 text-sm">
 			<div class="text-right font-semibold">Checkin Count</div>
 			<div>{$stats.checkedInIds.length}</div>
 			<div class="text-right font-semibold">Total Attendees</div>
