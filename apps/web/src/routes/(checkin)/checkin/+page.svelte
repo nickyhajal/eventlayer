@@ -6,10 +6,7 @@ import { trpc } from '$lib/trpc/client'
 import Check from 'lucide-svelte/icons/check-circle'
 import { writable } from 'svelte/store'
 
-import { Button, Input } from '@matterloop/ui'
 import { orderBy } from '@matterloop/util'
-
-import AdminScreen from './AdminScreen.svelte'
 
 const searcher = getAttendeeSearcherContext()
 export let data
