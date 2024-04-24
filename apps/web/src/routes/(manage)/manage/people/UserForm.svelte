@@ -106,7 +106,7 @@ async function checkEmail() {
 }
 </script>
 
-{#if user?.status !== 'active'}
+{#if user?.status !== 'active' && !simplified}
 	<div class="mb-4 rounded-md bg-red-50 p-3 text-center text-sm font-semibold text-red-700/80">
 		User not attending event
 	</div>
@@ -268,7 +268,7 @@ async function checkEmail() {
 				class="px-2.5 font-semibold text-red-700/70 hover:text-red-700"
 				on:click={() => deactivateUser()}>Remove from Event</Button
 			>
-		{:else}
+		{:else if !simplified}
 			<Button
 				variant="ghost"
 				class="bg-emerald-50 px-2.5 font-semibold text-emerald-600/70 hover:bg-emerald-50 hover:text-emerald-600"
