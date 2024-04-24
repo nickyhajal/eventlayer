@@ -55,7 +55,7 @@ export const routeConfig: RouteConfigTree = {
 			conf: {
 				mainClass: 'bg-slate',
 				navClass: 'bg-slate',
-				auth: 'staff',
+				auth: 'event-staff',
 			},
 		},
 		{

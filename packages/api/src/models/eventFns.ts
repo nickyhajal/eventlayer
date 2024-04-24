@@ -340,15 +340,8 @@ export const EventFns = (args: string | Args) => {
 					eq(eventUserCheckinTable.status, 'checked-in'),
 				),
 			})
-			const eventUserCount = await db
-				.select({ count: sql`count(*)`.mapWith(Number) })
-				.from(eventUserTable)
-				.where(and(eq(eventUserTable.eventId, eventId), eq(eventUserTable.status, 'active')))
-
 			stats = {
 				checkedInIds: checkins.map(({ userId }) => userId),
-				checkinCount: checkins.length,
-				userCount: eventUserCount?.[0]?.count || 0,
 			}
 			redis.set(key, stats)
 			return stats
