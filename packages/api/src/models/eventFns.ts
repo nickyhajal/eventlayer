@@ -61,7 +61,10 @@ export const EventFns = (args: string | Args) => {
 						},
 					},
 				})
+				console.log(`set ${key}`)
 				redis.set(key, event)
+			} else {
+				console.log(`use ${key}`)
 			}
 			if (event?.content) {
 				return {

@@ -164,7 +164,8 @@ export const eventProcedures = t.router({
 					.where(eq(eventTable.id, input.id))
 					.returning()
 				const updated = await db.select().from(eventTable).where(eq(eventTable.id, input.id))
-				redis.del(`event_heavy:${ctx.event.id}`)
+				console.log(`update event_heavy:${updated.eventId}`)
+				redis.del(`event_heavy:${updated.eventId}`)
 				return updated[0]
 			} else {
 				const createInput = eventSchema.parse(input)
@@ -183,7 +184,8 @@ export const eventProcedures = t.router({
 						]),
 					)
 					.returning()
-				redis.del(`event_heavy:${ctx.event.id}`)
+				console.log(`create event_heavy:${createInput.eventId}`)
+				redis.del(`event_heavy:${createInput.eventId}`)
 
 				return newForm[0]
 			}
