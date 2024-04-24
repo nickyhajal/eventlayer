@@ -30,7 +30,7 @@ export class ActiveLoginLink extends BaseModel<LoginLink> {
 				.values({
 					userId: userId,
 					publicId: getId('short', codeLength),
-					expires: dayjs().add(1, 'day').toISOString(),
+					expires: dayjs().add(7, 'day').toISOString(),
 				})
 				.returning()
 			if (!loginLink[0]) {
