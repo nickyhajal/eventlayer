@@ -31,24 +31,18 @@ async function getLinkedInData() {
 
 <AdminScreen title={fullName}>
 	<div slot="title">
-		{#if onboardStatus !== 'done'}
-			<div class="f flexitems-end gap-1">
-				<ChicletButton on:click={() => sendWelcomeEmail()}>
-					<span class="pl-1 pr-2 text-xs">👋</span>
-					{#if confirmingSend}
-						<span>Click Again to Send</span>
-					{:else if onboardStatus === 'not-sent'}
-						<span>Send Welcome Email</span>
-					{:else if onboardStatus === 'pending'}
-						<span>Send Welcome Email Again</span>
-					{/if}
-				</ChicletButton>
-				<ChicletButton on:click={() => getLinkedInData()}>
-					<span class="pl-1 pr-2 text-xs">🔽</span>
-					<span> Sync LinkedIn Data</span>
-				</ChicletButton>
-			</div>
-		{/if}
+		<div class="f flexitems-end gap-1">
+			<ChicletButton on:click={() => sendWelcomeEmail()}>
+				<span class="pl-1 pr-2 text-xs">👋</span>
+				{#if confirmingSend}
+					<span>Click Again to Send</span>
+				{:else if onboardStatus === 'not-sent'}
+					<span>Send Welcome Email</span>
+				{:else if onboardStatus === 'pending'}
+					<span>Send Welcome Email Again</span>
+				{/if}
+			</ChicletButton>
+		</div>
 	</div>
 	<div>
 		<div class="grid grid-cols-[20rem_1fr] gap-8">
