@@ -90,9 +90,9 @@ $: openToHire = user?.info?.['hiring']?.value === '["yes"]'
 				{eventStr}
 			</div>
 		</div>
-		{#if user?.url}
+		{#if user?.url || user?.info?.linkedin_url?.value}
 			<Button
-				href={user.url}
+				href={user?.url || user?.info?.linkedin_url?.value}
 				target="_blank"
 				rel="noopener noreferrer"
 				class="relative mx-auto -mt-2 mb-10 block h-9 w-full max-w-sm rounded-lg bg-sky-700 text-center text-sm"
