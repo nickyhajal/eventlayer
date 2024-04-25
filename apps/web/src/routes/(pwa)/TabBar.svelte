@@ -1,9 +1,11 @@
 <script lang="ts">
 import { page } from '$app/stores'
 import Button from '$lib/components/ui/button/button.svelte'
-import { getEventContext } from '$lib/state/getContexts'
+import { getEventContext, getMeContext } from '$lib/state/getContexts'
 import BadgeCheck from 'lucide-svelte/icons/badge-check'
 import Calendar from 'lucide-svelte/icons/calendar'
+import Cog from 'lucide-svelte/icons/cog'
+import Door from 'lucide-svelte/icons/door-open'
 import HelpCircle from 'lucide-svelte/icons/help-circle'
 import Home from 'lucide-svelte/icons/home'
 import Mail from 'lucide-svelte/icons/mail'
@@ -18,6 +20,7 @@ import Utensils from 'lucide-svelte/icons/utensils'
 import { tw } from '@matterloop/ui'
 
 const event = getEventContext()
+const me = getMeContext()
 
 const topTabs = $event.menus.filter((m) => m.location === 'top-sidebar')
 const bottomTabs = $event.menus.filter((m) => m.location === 'bot-sidebar')
@@ -107,6 +110,43 @@ $: bits = $page.url.pathname.split('/')
 					<div>{label}</div>
 				</Button>
 			{/each}
+			<div
+				class="relative -left-1 -mb-4 flex w-[calc(100%+1.3rem)] gap-1 bg-slate-900 py-2 pl-3 pr-2"
+			>
+				{#if $me?.id}
+					<Button
+						href="/settings"
+						variant="ghost"
+						class={tw(`hidden h-full w-1/2 flex-none flex-col items-center gap-0.5 py-1 text-[0.7rem] transition-none hover:bg-transparent focus:bg-transparent lg:flex lg:w-1/2 lg:flex-row lg:items-center lg:justify-start lg:gap-3 lg:rounded-lg lg:bg-slate-900 lg:px-2.5 lg:py-2 lg:text-sm lg:text-white/80  lg:hover:text-white ${bits[1] === 'settings'? 'text-a-accent hover:text-a-accent lg:bg-slate-900 lg:hover:bg-slate-900' : 'text-slate-600 hover:lg:bg-slate-800'} `)}
+					>
+						<div class="icon {bits[1] === '/settings' ? 'selected' : ''}">
+							<Cog class="h-5 w-5" />
+						</div>
+						<div>Settings</div>
+					</Button>
+					<Button
+						href="/logout"
+						variant="ghost"
+						class={tw(`hidden h-full w-1/2 flex-none flex-col items-center gap-0.5 py-1 text-[0.7rem] transition-none hover:bg-transparent focus:bg-transparent lg:flex lg:flex-row lg:items-center lg:justify-start lg:gap-3 lg:rounded-lg lg:bg-slate-900 lg:px-2.5 lg:py-2 lg:text-sm lg:text-white/80  lg:hover:text-white ${bits[1] === 'settings'? 'text-a-accent hover:text-a-accent lg:bg-slate-900 lg:hover:bg-slate-900' : 'text-slate-600 hover:lg:bg-slate-800'} `)}
+					>
+						<div class="icon {bits[1] === '/settings' ? 'selected' : ''}">
+							<Door class="h-5 w-5" />
+						</div>
+						<div>Logout</div>
+					</Button>
+				{:else}
+					<Button
+						href="/login"
+						variant="ghost"
+						class={tw(`hidden h-full w-full flex-none flex-col items-center justify-center  py-1 text-[0.7rem] transition-none hover:bg-transparent focus:bg-transparent lg:flex lg:flex-row lg:items-center lg:justify-start lg:gap-3 lg:rounded-lg lg:bg-slate-900 lg:px-3.5 lg:py-2 lg:text-sm lg:text-white/80  lg:hover:text-white ${bits[1] === 'settings'? 'text-a-accent hover:text-a-accent lg:bg-slate-900 lg:hover:bg-slate-900' : 'text-slate-600 hover:lg:bg-slate-800'} `)}
+					>
+						<div class="icon {bits[1] === '/settings' ? 'selected' : ''}">
+							<Door class="h-5 w-5" />
+						</div>
+						<div>Login</div>
+					</Button>
+				{/if}
+			</div>
 		</div>
 	</div>
 {/if}
