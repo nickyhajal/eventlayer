@@ -25,7 +25,7 @@ import {
 const t = initTRPC.context<TrpcContext>().create()
 export const checkinProcedures = t.router({
 	toggle: procedureWithContext
-		.use(verifyAdmin())
+		// .use(verifyAdmin())
 		.use(verifyEvent())
 		.input(z.object({ userId: z.string(), eventId: z.string().optional() }))
 		.mutation(async ({ ctx, input }) => {
