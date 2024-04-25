@@ -82,7 +82,7 @@ const size = browser ? window.location.search.replace('?', '') || 0 : 0
 			</div>
 
 			<div class="absolute right-48 mx-auto mr-20 w-72 text-right text-xl text-white">
-				Use this QR code to contact our team for more information.
+				Use this QR code to contact our team for more information
 			</div>
 			<div class="mr-4 w-fit rounded-xl bg-white p-3">
 				<svg
