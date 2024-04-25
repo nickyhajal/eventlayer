@@ -329,7 +329,7 @@ export const EventFns = (args: string | Args) => {
 						status: 'checked-in',
 						userId,
 						eventId,
-						staffId,
+						...(staffId ? { staffId } : {}),
 						...(mainEventId ? { mainEventId } : {}),
 					})
 					.returning()
