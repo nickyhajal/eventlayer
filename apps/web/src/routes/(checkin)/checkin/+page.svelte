@@ -26,7 +26,7 @@ let nextUpdateStr = ''
 $: stats.set(data.stats)
 $: {
 	if (query) {
-		$searcher(query)?.then((res) => {
+		$searcher.query(query)?.then((res) => {
 			users = res
 		})
 	} else {

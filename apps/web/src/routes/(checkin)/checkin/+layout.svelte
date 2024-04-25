@@ -43,17 +43,19 @@ function setMe() {
 		me.set(meFromServer)
 	}
 }
-let attendeeSearcher: Writable<Awaited<ReturnType<typeof loadAttendeeStore>> | (() => void)> =
-	writable(() => {})
 const attendeeStore = persisted<AttendeeStore>('attendees', {
 	attendees: [],
 	num: 0,
 	hash: 'a',
-	lastUpdate: dayjs(0).toISOString(),
+	lastUpdate: dayjs().subtract(10, 'm').toISOString(),
 })
+let attendeeSearcher: Writable<{
+	store: Writable<AttendeeStore>
+	query: Awaited<ReturnType<typeof loadAttendeeStore>> | (() => void)
+}> = writable({ store: attendeeStore, query: () => {} })
 if (browser) {
 	loadAttendeeStore(attendeeStore).then((searcher) => {
-		attendeeSearcher.set(searcher)
+		attendeeSearcher.set({ store: attendeeStore, query: searcher })
 	})
 }
 setContext('attendeeSearcher', attendeeSearcher)

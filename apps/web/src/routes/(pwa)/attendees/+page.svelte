@@ -26,14 +26,20 @@ let query = ''
 const searcher = getAttendeeSearcherContext()
 let allUsers: User[] = []
 let users: User[] = []
+let userStore = $searcher.store
+allUsers = $userStore.attendees
 $: if ($searcher && !allUsers.length) {
-	$searcher('')?.then((res) => {
-		allUsers = res
-	})
+	userStore = $searcher.store
+	allUsers = $userStore.attendees
+	// console.log('search', $searcher)
+	// allUsers = $userStore
+	// $searcher('')?.then((res) => {
+	// 	allUsers = res
+	// })
 }
 $: {
 	if (query) {
-		$searcher(query).then((res) => {
+		$searcher.query(query).then((res) => {
 			users = res
 		})
 	} else {
