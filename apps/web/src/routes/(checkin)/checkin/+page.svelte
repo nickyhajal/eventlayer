@@ -106,9 +106,9 @@ async function toggleCheckin(userId: string) {
 				<div class="flex items-center gap-2">
 					<UserAvatar user={user} class="h-8 w-8 " />
 					<div class="flex flex-col">
-						<div class="text-sm font-medium text-slate-600">{firstName} {lastName}</div>
+						<div class="text-sm font-semibold text-slate-600">{firstName} {lastName}</div>
 						{#if type}
-							<div class="text-sm text-slate-500">{type ? startCase(type) : ''}</div>
+							<div class="text-xs text-slate-500">{type ? startCase(type) : ''}</div>
 						{/if}
 					</div>
 				</div>
