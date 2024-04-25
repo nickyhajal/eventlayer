@@ -8,7 +8,7 @@ import { onMount } from 'svelte'
 import { writable } from 'svelte/store'
 import { set } from 'zod'
 
-import { dayjs, orderBy } from '@matterloop/util'
+import { dayjs, orderBy, startCase } from '@matterloop/util'
 
 const searcher = getAttendeeSearcherContext()
 export let data
@@ -98,14 +98,19 @@ async function toggleCheckin(userId: string) {
 		</div>
 	{:else}
 		{#each users as user}
-			{@const {id, firstName, lastName, url, bookingUrl, photo, description} = user}
+			{@const {id, firstName, lastName, type, url, bookingUrl, photo, description} = user}
 			{@const isCheckedIn = $checkins.has(id)}
 			<div
 				class="relative z-0 flex items-center justify-between rounded-2xl bg-white px-4 py-3 even:bg-stone-50"
 			>
 				<div class="flex items-center gap-2">
 					<UserAvatar user={user} class="h-8 w-8 " />
-					<div class="text-sm font-medium text-slate-600">{firstName} {lastName}</div>
+					<div class="flex flex-col">
+						<div class="text-sm font-medium text-slate-600">{firstName} {lastName}</div>
+						{#if type}
+							<div class="text-sm text-slate-500">{type ? startCase(type) : ''}</div>
+						{/if}
+					</div>
 				</div>
 				{#if isCheckedIn}
 					<button

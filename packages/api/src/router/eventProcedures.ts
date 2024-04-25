@@ -30,10 +30,11 @@ async function getAttendeeStore(event: Event) {
 	if (!event?.id) return false
 	let store = await redis.get(`${event.id}_attendeeStore`)
 	const attendees = await EventFns({ eventId: event.id }).getUsers()
-	const simpleAttendees = attendees.map(({ id, firstName, lastName, email, photo }) => ({
+	const simpleAttendees = attendees.map(({ id, firstName, type, lastName, email, photo }) => ({
 		id,
 		photo,
 		firstName,
+		type,
 		email,
 		lastName,
 	}))

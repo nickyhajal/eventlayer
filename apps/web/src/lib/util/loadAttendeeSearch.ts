@@ -12,13 +12,14 @@ export const loadAttendeeStore = async (store: Writable<AttendeeStore>) => {
 	const db = await create({
 		schema: {
 			firstName: 'string',
+			type: 'string',
 			lastName: 'string',
 			email: 'string',
 		},
 	})
 	await Promise.all(
-		attendees.map(({ id, firstName, lastName, email, photo }) =>
-			insert(db, { id, firstName, lastName, email, photo }),
+		attendees.map(({ id, firstName, type, lastName, email, photo }) =>
+			insert(db, { id, firstName, type, lastName, email, photo }),
 		),
 	)
 	return async (term: string) => {
