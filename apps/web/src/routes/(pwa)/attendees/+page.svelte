@@ -2,8 +2,9 @@
 import Screen from '$lib/components/Screen.svelte'
 import UserAvatar from '$lib/components/UserAvatar.svelte'
 import { getAttendeeSearcherContext, getMeContext } from '$lib/state/getContexts'
-import { getContext } from 'svelte'
+import { getContext, onMount } from 'svelte'
 
+import type { User } from '@matterloop/db'
 import { getMediaUrl, orderBy, startCase } from '@matterloop/util'
 
 import type { Snapshot } from '../$types.js'
@@ -22,31 +23,14 @@ export const snapshot: Snapshot = {
 	},
 }
 let query = ''
-const me = getMeContext()
-const seed = getContext<number>('seed')
 const searcher = getAttendeeSearcherContext()
-function shuffle(array: Array<any>, seed: number) {
-	let currentIndex = array.length,
-		temporaryValue,
-		randomIndex
-	seed = seed || 1
-	let random = function () {
-		var x = Math.sin(seed++) * 10000
-		return x - Math.floor(x)
-	}
-	// While there remain elements to shuffle...
-	while (0 !== currentIndex) {
-		// Pick a remaining element...
-		randomIndex = Math.floor(random() * currentIndex)
-		currentIndex -= 1
-		// And swap it with the current element.
-		temporaryValue = array[currentIndex]
-		array[currentIndex] = array[randomIndex]
-		array[randomIndex] = temporaryValue
-	}
-	return array
+let allUsers: User[] = []
+let users: User[] = []
+$: if ($searcher && !allUsers.length) {
+	$searcher('')?.then((res) => {
+		allUsers = res
+	})
 }
-let users: typeof data.users = []
 $: {
 	if (query) {
 		$searcher(query).then((res) => {
@@ -56,13 +40,13 @@ $: {
 		users =
 			typeof window !== 'undefined'
 				? orderBy(
-						data.users.map((user) => ({ ...user, nameLower: user.lastName.toLowerCase() })),
+						allUsers.map((user) => ({ ...user, nameLower: user.lastName.toLowerCase() })),
 						['nameLower'],
 					)
 				: []
 	}
 }
-const usersByType = data.users.reduce((out, user) => {
+const usersByType = allUsers.reduce((out, user) => {
 	if (!out[user.type]) out[user.type] = []
 	out[user.type].push(user)
 	return out
