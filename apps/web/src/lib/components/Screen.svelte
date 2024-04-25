@@ -153,7 +153,7 @@ function handleBack(e: MouseEvent) {
 					</div>
 				</div>
 			{/if}
-			<div class="container">
+			<div class="container px-1.5">
 				{#if bigTitle && !photo}
 					<div class="mb-6 hidden pt-10 text-3xl font-semibold lg:block">
 						{#if titleSelectOptions}
