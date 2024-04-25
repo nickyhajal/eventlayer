@@ -13,6 +13,7 @@ import {
 	eventUserTable,
 	formTable,
 	gt,
+	gte,
 	inArray,
 	isNotNull,
 	key,
@@ -74,9 +75,12 @@ export const EventFns = (args: string | Args) => {
 			}
 			return event
 		},
-		getNextEvents: async () => {
+		getNextEvents: async (timezoneShift = 7) => {
 			return db.query.eventTable.findMany({
-				where: and(eq(eventTable.eventId, eventId), gt(eventTable.startsAt, dayjs().toISOString())),
+				where: and(
+					eq(eventTable.eventId, eventId),
+					gte(eventTable.startsAt, dayjs().subtract(timezoneShift, 'h').toISOString()),
+				),
 				orderBy: asc(eventTable.startsAt),
 				with: { photo: true, venue: true },
 				limit: 3,
@@ -87,6 +91,7 @@ export const EventFns = (args: string | Args) => {
 			const users = await redis.get<User[]>(key)
 			// const users =  await redis.get(key)
 			if (users) {
+				console.log('use user cache')
 				return users
 			} else {
 				const usersQuery = db
