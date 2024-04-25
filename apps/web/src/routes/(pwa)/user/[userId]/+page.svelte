@@ -8,7 +8,7 @@ import { getMeContext } from '$lib/state/getContexts'
 
 import type { Event } from '@matterloop/db'
 import { Markdown } from '@matterloop/ui'
-import { capitalize, dayjs, getMediaUrl } from '@matterloop/util'
+import { capitalize, dayjs, getMediaUrl, startCase } from '@matterloop/util'
 
 export let data
 $: user = data.user
@@ -68,6 +68,11 @@ $: openToHire = user?.info?.['hiring']?.value === '["yes"]'
 				</div>
 			{/if}
 			<UserAvatar user={user} class="xs:w-36 h-36 w-28 rounded-full" />
+			{#if user.type !== 'attendee'}
+				<div class="mt-3 rounded-md bg-slate-50 px-3 py-0.5 text-sm font-medium text-slate-700">
+					{startCase(user.type)}
+				</div>
+			{/if}
 			<div class="flex flex-col text-center">
 				<div class="xs:text-3xl pb-0 text-2xl font-bold">{name}</div>
 				{#if user?.info.title}
@@ -98,7 +103,10 @@ $: openToHire = user?.info?.['hiring']?.value === '["yes"]'
 		{#if user.bio}
 			<div class="border-t border-slate-200 pb-8 pt-8"></div>
 		{/if}
-		<Markdown data={user.bio || user.info?.bio?.value || ''} class="" />
+		<Markdown
+			data={user.bio || user.info?.bio?.value || ''}
+			class="text-lg font-medium text-slate-600"
+		/>
 		{#if user.proBio}
 			<Markdown data={user.proBio} class="border-t border-slate-200 pr-4 pt-8 text-slate-600" />
 		{/if}
