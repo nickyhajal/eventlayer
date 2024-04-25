@@ -26,7 +26,6 @@ const t = initTRPC.context<TrpcContext>().create()
 export const checkinProcedures = t.router({
 	toggle: procedureWithContext
 		.use(verifyAdmin())
-		.use(verifyMe())
 		.use(verifyEvent())
 		.input(z.object({ userId: z.string(), eventId: z.string().optional() }))
 		.mutation(async ({ ctx, input }) => {
@@ -48,7 +47,7 @@ export const checkinProcedures = t.router({
 				}
 				const eventFns = EventFns({ eventId, mainEventId })
 				const change = await eventFns.toggleUserCheckin({
-					staffId: ctx.me.id,
+					staffId: ctx?.me?.id || '',
 					userId: input.userId,
 				})
 				const stats = await eventFns.getCheckinStats()

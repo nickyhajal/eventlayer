@@ -24,7 +24,6 @@ let updateSeconds = 30
 let nextUpdate = dayjs()
 let nextUpdateStr = ''
 $: stats.set(data.stats)
-$: console.log($stats)
 $: {
 	if (query) {
 		$searcher(query)?.then((res) => {
