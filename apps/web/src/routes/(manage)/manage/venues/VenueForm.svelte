@@ -101,7 +101,7 @@ async function updateAvatar(mediaId: string) {
 			</div>
 			{#if !simplified}
 				<div class="flex flex-col items-start justify-center gap-1">
-					<Label for="descriptin" class="text-right">Description</Label>
+					<Label for="description" class="text-right">Description</Label>
 					<Textarea id="description" bind:value={venue.description} class="col-span-3" />
 				</div>
 				<div class="mt-0 flex items-center justify-between rounded-md border bg-stone-50 p-3">

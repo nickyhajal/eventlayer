@@ -46,7 +46,10 @@ export const venueProcedures = t.router({
 				const { id, ...data} = input
 			if (input.id) {
 				let geo = {}
-				if (input.address) {
+				const existing = await db.query.venueTable.findFirst({
+					where: and(eq(venueTable.id, input.id), eq(venueTable.eventId, ctx.event.id)),
+				})
+				if (input.address && input?.address !== existing?.address) {
 					geo = await getGeoCodedAddress(input.address)
 				}
 				await db
