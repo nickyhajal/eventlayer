@@ -40,5 +40,8 @@ const page = data.page
 	:global(p) {
 		@apply mb-6 text-base leading-relaxed;
 	}
+	:global(button) {
+		@apply bg-a-accent text-white brightness-95;
+	}
 }
 </style>
