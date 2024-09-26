@@ -29,7 +29,7 @@ export let event: Partial<Event> = {
 
 let loading = false
 let userSearchQuery = ''
-let eventUserType = { value: 'host', label: 'Host' }
+let eventUserType = { value: 'attendee', label: 'Attendee' }
 let eventUserTypes = [
 	{ value: 'attendee', label: 'Attendee' },
 	{ value: 'host', label: 'Host' },
