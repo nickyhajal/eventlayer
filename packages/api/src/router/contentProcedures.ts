@@ -30,25 +30,42 @@ import {
 
 const t = initTRPC.context<TrpcContext>().create()
 export const contentProcedures = t.router({
+	delete: procedureWithContext
+		.use(verifyEvent())
+		.input(z.object({ id: z.string() }))
+		.mutation(async ({ ctx, input }) => {
+			const { id } = input
+			if (id) {
+				await db.delete(contentTable).where(eq(contentTable.id, id))
+				redis.del(`event_heavy:${ctx.event.id}`)
+				return true
+			}
+		}),
 	upsert: procedureWithContext
 		// .use(verifyMe())
 		.use(verifyEvent())
 		.input(contentSchema)
 		.mutation(async ({ ctx, input }) => {
 			const { id, ...data } = input
+			let existing = false
 			if (id) {
+				existing = await db.query.contentTable.findFirst({
+					where: and(eq(contentTable.id, id), eq(contentTable.eventId, ctx.event.id)),
+				})
+			}
+			if (existing) {
 				await db.update(contentTable).set(data).where(eq(contentTable.id, id))
 				const content = await db.query.contentTable.findFirst({
 					where: and(eq(contentTable.id, id)),
 				})
-				redis.expire(`event_heavy:${ctx.event.id}`, 0)
+				redis.del(`event_heavy:${ctx.event.id}`)
 				return content
 			} else {
 				const contentRows = await db
 					.insert(contentTable)
-					.values({ ...data, eventId: ctx.event.id, status: 'published' })
+					.values({ ...data, id, eventId: ctx.event.id, status: 'published' })
 					.returning()
-				redis.expire(`event_heavy:${ctx.event.id}`, 0)
+				redis.del(`event_heavy:${ctx.event.id}`)
 				return contentRows[0]
 			}
 		}),

@@ -29,14 +29,14 @@ export const menuProcedures = t.router({
 					const menu = await db.query.menuTable.findFirst({
 						where: and(eq(menuTable.id, id)),
 					})
-					redis.expire(`event_heavy:${ctx.event.id}`, 0)
+					redis.del(`event_heavy:${ctx.event.id}`)
 					return menu
 				} else {
 					const menuRows = await db
 						.insert(menuTable)
 						.values({ ...data, eventId: ctx.event.id, status: 'active' })
 						.returning()
-					redis.expire(`event_heavy:${ctx.event.id}`, 0)
+					redis.del(`event_heavy:${ctx.event.id}`)
 					return menuRows[0]
 				}
 			} catch (e) {
@@ -75,7 +75,7 @@ export const menuProcedures = t.router({
 						return db.update(menuTable).set({ ord: change.ord }).where(eq(menuTable.id, change.id))
 					}),
 				)
-				redis.expire(`event_heavy:${ctx.event.id}`, 0)
+				redis.del(`event_heavy:${ctx.event.id}`)
 				return true
 			} catch (e) {
 				return false

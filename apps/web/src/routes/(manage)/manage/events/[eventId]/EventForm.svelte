@@ -34,25 +34,35 @@ let eventUserTypes = [
 	{ value: 'attendee', label: 'Attendee' },
 	{ value: 'host', label: 'Host' },
 	{ value: 'moderator', label: 'Moderator' },
+	{ value: 'attendee', label: 'Attendee' },
 	{ value: 'mc', label: 'MC' },
 	{ value: 'speaker', label: 'Speaker' },
 	{ value: 'panelist', label: 'Panelist' },
 	{ value: 'facilitator', label: 'Facilitator' },
 	{ value: 'staff', label: 'Staff' },
 	{ value: 'volunteer', label: 'Volunteer' },
-].filter((t) => t.value !== 'attendee')
+]
 let eventTypes = [
 	{ value: 'program', label: 'Program Event' },
 	{ value: 'panel', label: 'Panel' },
 	{ value: 'meetup', label: 'Meetup' },
 	{ value: 'meal', label: 'Group Meal' },
 	{ value: 'excursion', label: 'Excursion' },
+	{ value: 'dive-session', label: 'Dive Session' },
+]
+let eventForOptions = [
+	{ value: 'all', label: 'All Attendees' },
+	{ value: 'selected', label: 'Selected Attendees' },
+	{ value: 'full', label: 'Full Attendees' },
+	{ value: 'main-stage', label: 'Main Stage' },
 ]
 $: buttonMsg = event?.id ? 'Save Event' : 'Add Event'
 $: editing = event?.id ? true : false
 $: title = editing ? event?.name : 'Add an Event'
 let type = eventTypes.find((t) => t.value === (event.type || 'program'))
+let eventFor = eventForOptions.find((t) => t.value === (event.eventFor || ''))
 $: event.type = type.value
+$: event.eventFor = eventFor?.value
 async function createEvent() {
 	const ord = event?.ord || 0
 	const res = await trpc().event.upsert.mutate({ ...event, ord: +ord })
@@ -119,6 +129,23 @@ async function addUser(user: FullEventUser) {
 							<Select.Group>
 								<Select.Label>Event Type</Select.Label>
 								{#each eventTypes as { label, value }}
+									<Select.Item value={value} label={label}>{label}</Select.Item>
+								{/each}
+							</Select.Group>
+						</Select.Content>
+						<Select.Input name="eventType" />
+					</Select.Root>
+				</div>
+				<div class="flex flex-col items-start justify-center gap-1">
+					<Label for="event_name" class="text-right">Event For</Label>
+					<Select.Root bind:selected={eventFor}>
+						<Select.Trigger class="w-[180px]">
+							<Select.Value placeholder="Select Type" />
+						</Select.Trigger>
+						<Select.Content>
+							<Select.Group>
+								<Select.Label></Select.Label>
+								{#each eventForOptions as { label, value }}
 									<Select.Item value={value} label={label}>{label}</Select.Item>
 								{/each}
 							</Select.Group>

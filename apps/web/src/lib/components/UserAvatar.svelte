@@ -17,7 +17,7 @@ $: src = getMediaUrl(user.photo, '&w=256&h=256&func=face&face_margin=40')
 	<Avatar.Root class={tw(`h-20 w-20 ${className}`)}>
 		<Avatar.Image src={src} alt="" class="object-cover" />
 		<Avatar.Fallback class={tw(`text-2xl font-light text-slate-500 ${fallbackClass}`)}
-			>{user.firstName[0]}{user.lastName[0]}</Avatar.Fallback
+			>{user.firstName?.[0]||''}{user.lastName?.[0]||''}</Avatar.Fallback
 		>
 	</Avatar.Root>
 {/key}

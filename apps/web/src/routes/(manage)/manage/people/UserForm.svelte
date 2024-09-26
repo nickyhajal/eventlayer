@@ -43,6 +43,7 @@ $: editing = user?.id ? true : false
 $: title = editing ? `${user?.firstName} ${user?.lastName}` : 'Add a User'
 let userTypes = [
 	{ value: 'attendee', label: 'Attendee' },
+	{ value: 'main-stage', label: 'Main Stage Only Attendee' },
 	{ value: 'speaker', label: 'Speaker' },
 	{ value: 'main-stage-speaker', label: 'Main Stage Speaker' },
 	{ value: 'on-stage-host', label: 'On Stage Host' },

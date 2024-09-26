@@ -17,6 +17,8 @@ export const eventTable = pgTable('event', {
 	name: text('name').notNull(),
 	subtitle: text('subtitle'),
 	type: text('type').default('main'),
+	eventFor: text('event_for').default('all'),
+	eventForMeta: text('event_for_meta'),
 	venueId: uuid('venue_id').references(() => venueTable.id, { onDelete: 'cascade' }),
 	eventId: uuid('event_id'),
 	mediaId: uuid('mediaId'),

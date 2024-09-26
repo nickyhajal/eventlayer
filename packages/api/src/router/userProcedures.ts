@@ -338,8 +338,8 @@ export const userProcedures = t.router({
 				.update(eventUserTable)
 				.set({ onboardStatus: 'pending' })
 				.where(eq(eventUserTable.id, eventUser.id))
-			redis.expire(`event_users:${ctx.event.id}`, 0)
-			redis.expire(`event_usersWithInfo:${ctx.event.id}`, 0)
+			redis.del(`event_users:${ctx.event.id}`)
+			redis.del(`event_usersWithInfo:${ctx.event.id}`)
 			return {
 				success: true,
 			}
@@ -478,9 +478,9 @@ export const userProcedures = t.router({
 					}),
 				)
 			}
-			redis.expire(`event_heavy:${eventId}`, 0)
-			redis.expire(`event_users:${eventId}`, 0)
-			redis.expire(`event_usersWithInfo:${eventId}`, 0)
+			redis.del(`event_heavy:${eventId}`)
+			redis.del(`event_users:${eventId}`)
+			redis.del(`event_usersWithInfo:${eventId}`)
 			return {
 				user,
 				eventUser,

@@ -123,7 +123,6 @@ export const eventProcedures = t.router({
 			const event = await db.query.eventTable.findFirst({
 				where: and(eq(eventTable.id, input.eventId), eq(eventTable.eventId, ctx.event?.id)),
 			})
-			console.log(1)
 			if (!event) return error(404, 'Event not found')
 			const existing = await db.query.eventUserTable.findFirst({
 				where: and(
@@ -152,6 +151,7 @@ export const eventProcedures = t.router({
 							'type',
 							'eventId',
 							'startsAt',
+							'eventFor',
 							'colors',
 							'ord',
 							'mediaId',
