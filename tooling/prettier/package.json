@@ -14,7 +14,7 @@
     "prettier-plugin-tailwindcss": "^0.5.4"
   },
   "devDependencies": {
-    "@matterloop/tsconfig": "^0.1.0",
+    "@matterloop/tsconfig": "workspace:*",
     "typescript": "^5.2.2"
   },
   "prettier": "@matterloop/prettier-config"

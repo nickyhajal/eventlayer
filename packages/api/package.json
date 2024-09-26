@@ -34,11 +34,10 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@matterloop/db": "*",
-    "@matterloop/eslint-config": "^0.2.0",
-    "@matterloop/prettier-config": "^0.1.0",
-    "@matterloop/tsconfig": "^0.1.0",
-    "@matterloop/util": "*",
+    "@matterloop/db": "workspace:*",
+    "@matterloop/eslint-config": "workspace:*",
+    "@matterloop/prettier-config": "workspace:*",
+    "@matterloop/util": "workspace:*",
     "@sveltejs/kit": "^1.30.4",
     "eslint": "^8.57.0",
     "prettier": "^3.2.5",

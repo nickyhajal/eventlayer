@@ -10,18 +10,18 @@ const me = getMeContext()
 const typeOptions = [
 	{ label: 'All Speakers', value: 'all' },
 	{ label: 'Main Stage Speakers', value: 'main-stage-speaker' },
-	{ label: 'Showcase Speakers', value: 'showcase-speaker' },
-	{ label: 'Facilitator', value: 'attendee' },
+	{ label: 'On Stage Hosts', value: 'on-stage-host' },
+	// { label: 'Facilitator', value: 'attendee' },
 ]
 let showType = 'all'
 const vals = {
 	'main-stage-speaker': 1,
-	'showcase-speaker': 2,
-	facilitator: 3,
+	'on-stage-host': 2,
+	// facilitator: 3,
 }
 $: ordered = orderBy(
 	users.map((user) =>
-		!['main-stage-speaker', 'showcase-speaker'].includes(user.mainEventUser.type)
+		!['main-stage-speaker', 'on-stage-host'].includes(user.mainEventUser.type)
 			? { ...user, mainEventUser: { ...user.mainEventUser, type: 'facilitator' } }
 			: user,
 	),

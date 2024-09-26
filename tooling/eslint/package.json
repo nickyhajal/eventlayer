@@ -27,8 +27,8 @@
     "eslint-plugin-react-hooks": "^4.6.0"
   },
   "devDependencies": {
-    "@matterloop/prettier-config": "^0.1.0",
-    "@matterloop/tsconfig": "^0.1.0",
+    "@matterloop/prettier-config": "workspace:*",
+    "@matterloop/tsconfig": "workspace:*",
     "eslint": "^8.50.0",
     "typescript": "^5.2.2"
   },

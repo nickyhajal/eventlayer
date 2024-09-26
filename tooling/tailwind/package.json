@@ -20,9 +20,9 @@
     "tailwindcss": "3.3.2"
   },
   "devDependencies": {
-    "@matterloop/eslint-config": "^0.2.0",
-    "@matterloop/prettier-config": "^0.1.0",
-    "@matterloop/tsconfig": "^0.1.0",
+    "@matterloop/eslint-config": "workspace:*",
+    "@matterloop/prettier-config": "workspace:*",
+    "@matterloop/tsconfig": "workspace:*",
     "eslint": "^8.50.0",
     "prettier": "^3.0.3",
     "typescript": "^5.2.2"

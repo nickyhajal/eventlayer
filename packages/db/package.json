@@ -30,9 +30,8 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@matterloop/eslint-config": "^0.2.0",
-    "@matterloop/prettier-config": "^0.1.0",
-    "@matterloop/tsconfig": "^0.1.0",
+    "@matterloop/eslint-config": "workspace:*",
+    "@matterloop/prettier-config": "workspace:*",
     "dotenv-cli": "^7.4.1",
     "drizzle-kit": "^0.19.13",
     "prettier": "^3.2.5",

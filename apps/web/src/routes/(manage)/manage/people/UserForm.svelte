@@ -45,6 +45,7 @@ let userTypes = [
 	{ value: 'attendee', label: 'Attendee' },
 	{ value: 'speaker', label: 'Speaker' },
 	{ value: 'main-stage-speaker', label: 'Main Stage Speaker' },
+	{ value: 'on-stage-host', label: 'On Stage Host' },
 	{ value: 'showcase-speaker', label: 'Showcase Speaker' },
 	{ value: 'impact-partner', label: 'Impact Partner' },
 	{ value: 'organizing-partner', label: 'Organizing Partner' },

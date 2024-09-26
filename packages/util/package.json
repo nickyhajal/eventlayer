@@ -18,9 +18,9 @@
   },
   "prettier": "@matterloop/prettier-config",
   "dependencies": {
-    "@matterloop/eslint-config": "^0.2.0",
-    "@matterloop/prettier-config": "^0.1.0",
-    "@matterloop/tsconfig": "^0.1.0",
+    "@matterloop/eslint-config": "workspace:*",
+    "@matterloop/prettier-config": "workspace:*",
+    "@matterloop/tsconfig": "workspace:*",
     "@types/lodash": "^4.14.192",
     "@types/uuid": "^3.4.10",
     "dayjs": "^1.11.7",
