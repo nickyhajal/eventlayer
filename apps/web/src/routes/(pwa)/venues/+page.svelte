@@ -15,14 +15,14 @@ const me = getMeContext()
 	<div
 		class="topNav sticky z-40 flex items-center justify-center border-b border-slate-300/50 bg-slate-50 px-4 py-2 text-center text-sm text-slate-600 lg:mt-1 lg:rounded-2xl lg:border"
 	>
-		<Button
+		<!-- <Button
 			variant="outline"
 			class="text-a-accent mt-0 grid w-full grid-cols-[1fr_0.7rem] items-center justify-center bg-white"
 			href="/venues/map"
 		>
 			<div>View Venue Maps</div>
 			<ChevronRight class="text-a-accent relative -top-[1px] h-5 w-5" />
-		</Button>
+		</Button> -->
 	</div>
 	<div class="relative mx-auto -mt-2 max-w-7xl bg-slate-100">
 		<div class="mt-2 grid grid-cols-1 gap-3 py-2 md:grid-cols-2">
