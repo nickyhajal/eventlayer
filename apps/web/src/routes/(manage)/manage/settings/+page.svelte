@@ -6,7 +6,6 @@ import EventForm from './MainEventForm.svelte'
 
 export let data
 const event = getEventContext()
-$: console.log('event', event)
 </script>
 
 {#if $event?.id}
