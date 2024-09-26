@@ -112,9 +112,9 @@ export const eventProcedures = t.router({
 					.values({ ...input })
 					.returning()
 			}
-			//redis.expire(`event_heavy:${input.eventId}`, 0)
-			//redis.expire(`event_users:${input.eventId}`, 0)
-			//redis.expire(`event_usersWithInfo:${input.eventId}`, 0)
+			redis.del(`event_heavy:${input.eventId}`)
+			redis.del(`event_users:${input.eventId}`)
+			redis.del(`event_usersWithInfo:${input.eventId}`)
 			return true
 		}),
 	removeUser: procedureWithContext
@@ -133,6 +133,9 @@ export const eventProcedures = t.router({
 			if (existing) {
 				await db.delete(eventUserTable).where(eq(eventUserTable.id, existing.id))
 			}
+			redis.del(`event_heavy:${input.eventId}`)
+			redis.del(`event_users:${input.eventId}`)
+			redis.del(`event_usersWithInfo:${input.eventId}`)
 			return true
 		}),
 	upsert: procedureWithContext
