@@ -12,6 +12,7 @@ import { dayjs } from '@matterloop/util'
 
 export let data
 $: venue = data.venue
+$: console.log(venue)
 $: fullAddress = `${venue.street}, ${venue.city}, ${venue.region} ${venue.postalCode}`
 </script>
 
@@ -48,6 +49,16 @@ $: fullAddress = `${venue.street}, ${venue.city}, ${venue.region} ${venue.postal
 			<div class="p-2 text-slate-600">
 				<Markdown data={venue.description} />
 			</div>
+		{/if}
+		{#if venue.children?.length}
+		<div class="text-xl font-semibold mb-1 mt-8 text-a-accent">At this Venue</div>
+		{#each venue.children as child}
+			<div class="flex flex-col gap-4">
+				<div class="mb-2">
+					<VenueBlock showTitle={false} venue={child} />
+				</div>
+			</div>
+		{/each}
 		{/if}
 		<!-- {#if event?.venue}
 			<div class="mt-8">
