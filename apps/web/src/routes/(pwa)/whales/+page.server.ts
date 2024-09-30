@@ -7,6 +7,6 @@ export const load = async (req) => {
 	const eventFns = EventFns({ eventId: locals.event.id })
 	const sponsors = await eventFns.getSponsors()
 	return {
-		sponsors: sponsors.filter(({ type }) => type !== 'whale'),
+		sponsors: sponsors.filter(({ type }) => type === 'whale'),
 	}
 }

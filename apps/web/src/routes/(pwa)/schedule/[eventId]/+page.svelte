@@ -1,29 +1,58 @@
 <script lang="ts">
-import EventRow from '$lib/components/EventRow.svelte'
-import Screen from '$lib/components/Screen.svelte'
-import UserBlock from '$lib/components/UserBlock.svelte'
-import VenueBlock from '$lib/components/VenueBlock.svelte'
-import { getMeContext } from '$lib/state/getContexts'
+	import { invalidate, invalidateAll } from '$app/navigation'
+	import EventRow from '$lib/components/EventRow.svelte'
+	import Screen from '$lib/components/Screen.svelte'
+	import Button from '$lib/components/ui/button/button.svelte'
+	import UserBlock from '$lib/components/UserBlock.svelte'
+	import VenueBlock from '$lib/components/VenueBlock.svelte'
+	import { getMeContext } from '$lib/state/getContexts'
+	import { trpc } from '$lib/trpc/client'
 
-import type { Event, EventUser } from '@matterloop/db'
-import Markdown from '@matterloop/ui/src/components/Markdown.svelte'
-import { capitalize, dayjs, orderBy, startCase } from '@matterloop/util'
+	import type { Event, EventUser } from '@matterloop/db'
+	import Markdown from '@matterloop/ui/src/components/Markdown.svelte'
+	import { capitalize, dayjs, orderBy, startCase } from '@matterloop/util'
 
-export let data
-$: event = data.event
-$: users = orderBy(data.users, ['type'])
-let lastType = ''
-function getLastType(user: EventUser) {
-	if (user.type !== lastType && user.type) {
-		lastType = user.type
-		return true
+	export let data
+	const me = getMeContext()
+	$: shouldGroup = data.event.type === 'program'
+	$: console.log('should', shouldGroup)
+	$: event = data.event
+	$: users = orderBy(
+		shouldGroup ? data.users : data.users.map((row) => ({ ...row, type: 'attendee' })),
+		['type'],
+	)
+	// $: users = shouldGroup ? orderBy(data.users, ['type']) : data.users
+	$: console.log('uu', users)
+	$: console.log($me)
+	$: attendingEvent = users.find(
+		(user) => (console.log('check', user, $me?.id), user?.userId === $me?.id),
+	)
+	$: console.log(attendingEvent, 'aa', $me?.id)
+	$: canRsvp = users.length < (event?.maxAttendees || 0)
+	let lastType = ''
+	function getLastType(user: EventUser) {
+		if (user.type !== lastType && user.type) {
+			lastType = user.type
+			return true
+		}
 	}
-}
+	$: console.log(users)
+	$: console.log(event)
+
+	async function toggleRsvp() {
+		console.log('toggleRsvp', $me)
+		if (!event?.id || !$me?.id) return
+		if (!attendingEvent && !canRsvp) return
+
+		attendingEvent = !attendingEvent
+		await trpc().event.toggleRsvp.mutate({ eventId: event.id })
+		await invalidateAll()
+	}
 </script>
 
 <Screen
 	title={data.event.name}
-	bigTitle={event.photo ? " " : ""}
+	bigTitle={event.photo ? ' ' : ''}
 	back="/schedule"
 	photo={event.photo}
 >
@@ -37,6 +66,31 @@ function getLastType(user: EventUser) {
 				{event.subtitle}
 			</div>
 		{/if}
+		<div>
+			{#if event.eventFor === 'rsvp'}
+				<Button
+					on:click={toggleRsvp}
+					class="mb-8 font-semibold {attendingEvent
+						? '!bg-emerald-500'
+						: canRsvp && $me?.id
+							? 'bg-a-accent'
+							: '!bg-slate-100/60 !text-slate-400 border border-slate-400/10 border-b-slate-700/10 cursor-not-allowed'}"
+				>
+					{#if attendingEvent}
+						You're Attending - Click to Cancel
+					{:else if !canRsvp}
+						Event Full
+					{:else if !$me?.id}
+						Login to RSVP
+					{:else}
+						RSVP to this Event
+					{/if}
+				</Button>
+			{/if}
+			<!-- {#if event.showAttendeeList}
+			<button>Show Attendees</button>
+		{/if} -->
+		</div>
 		{#if event.description}
 			<div class="text-slate-600">
 				<Markdown data={event.description} />
@@ -47,15 +101,26 @@ function getLastType(user: EventUser) {
 				<VenueBlock venue={event.venue} />
 			</div>
 		{/if}
-		{#if data.users}
+		{#if users}
 			<div class="mt-3 flex flex-col gap-2">
-				{#each data.users as user}
-					{#if getLastType(user)}
-						<div class="text-a-accent mb-0 mt-2 text-lg font-semibold brightness-95">
-							{startCase(event?.name?.includes('Dive Session') && user.type === 'attendee' ? 'facilitator' : user.type)}s
-						</div>
+				{#if !shouldGroup}
+					<div class="text-a-accent mb-0 mt-2 text-lg font-semibold brightness-95">
+						Attending this Event
+					</div>
+				{/if}
+				{#each users as user}
+					{#if shouldGroup}
+						{#if getLastType(user)}
+							<div class="text-a-accent mb-0 mt-2 text-lg font-semibold brightness-95">
+								{startCase(
+									event?.name?.includes('Dive Session') && user.type === 'attendee'
+										? 'facilitator'
+										: user.type,
+								)}s
+							</div>
+						{/if}
 					{/if}
-					<UserBlock user={{photo: user.photo, ...user}} />
+					<UserBlock user={{ photo: user.photo, ...user }} />
 				{/each}
 			</div>
 		{/if}
@@ -63,29 +128,29 @@ function getLastType(user: EventUser) {
 </Screen>
 
 <style lang="postcss">
-.shell {
-	@apply text-slate-600;
+	.shell {
+		@apply text-slate-600;
 
-	:global(h1) {
-		@apply mb-6 mt-5 pr-2 text-3xl font-semibold text-slate-600/70;
+		:global(h1) {
+			@apply mb-6 mt-5 pr-2 text-3xl font-semibold text-slate-600/70;
+		}
+		:global(h2) {
+			@apply mb-6 mt-7 text-2xl font-bold;
+		}
+		:global(h3) {
+			@apply mb-6 mt-7 text-xl font-bold;
+		}
+		:global(ul) {
+			@apply ml-4 pl-0.5;
+		}
+		:global(li) {
+			@apply mb-1.5 list-disc;
+		}
+		:global(p) {
+			@apply mb-6 text-base leading-relaxed;
+		}
+		:global(button) {
+			@apply bg-a-accent text-white brightness-95;
+		}
 	}
-	:global(h2) {
-		@apply mb-6 mt-7 text-2xl font-bold;
-	}
-	:global(h3) {
-		@apply mb-6 mt-7 text-xl font-bold;
-	}
-	:global(ul) {
-		@apply ml-4 pl-0.5;
-	}
-	:global(li) {
-		@apply mb-1.5 list-disc;
-	}
-	:global(p) {
-		@apply mb-6 text-base leading-relaxed;
-	}
-	:global(button) {
-		@apply bg-a-accent text-white brightness-95;
-	}
-}
 </style>

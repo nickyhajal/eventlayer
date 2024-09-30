@@ -13,7 +13,7 @@
 	$: sponsor = data.sponsor
 </script>
 
-<Screen title={sponsor.title} back="/sponsors">
+<Screen title={sponsor.title} back="/partners">
 	<div class="mx-auto max-w-7xl py-6">
 		<div class="flex flex-col items-center justify-start gap-2 pb-6">
 			<div

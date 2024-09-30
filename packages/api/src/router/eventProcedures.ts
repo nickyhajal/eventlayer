@@ -13,6 +13,7 @@ import {
 	eventSchema,
 	eventTable,
 	eventUserTable,
+	type EventUser,
 } from '@matterloop/db'
 import { userTable, type User } from '@matterloop/db/types'
 import { dayjs, pick } from '@matterloop/util'
@@ -88,6 +89,45 @@ export const eventProcedures = t.router({
 			}
 			return false
 		}),
+	toggleRsvp: procedureWithContext
+		.use(verifyMe())
+		.input(z.object({ eventId: z.string() }))
+		.mutation(async ({ ctx, input }) => {
+			let row: Partial<EventUser> | undefined
+			const eventId = input.eventId
+			const userId = ctx.me.id
+			const event = await db.query.eventTable.findFirst({
+				where: and(eq(eventTable.id, eventId), eq(eventTable.eventId, ctx.event?.id)),
+			})
+			let action = ''
+			if (!event) {
+				throw new Error('Event not found')
+			}
+			const eventUser = await db.query.eventUserTable.findFirst({
+				where: and(eq(eventUserTable.eventId, eventId), eq(eventUserTable.userId, userId)),
+			})
+			if (eventUser) {
+				row = {...eventUser}
+				action = 'remove'
+				await db.delete(eventUserTable).where(eq(eventUserTable.id, eventUser.id))
+			} else {
+				const res = await db
+					.insert(eventUserTable)
+					.values({ eventId, userId })
+					.returning()
+					if (res) {
+						row = res[0]
+						action = 'add'
+					}
+			}
+			redis.del(`event_heavy:${eventId}`)
+			redis.del(`event_users:${eventId}`)
+			redis.del(`event_usersWithInfo:${eventId}`)
+			return {
+				row,
+				action
+			}
+	}),
 	addUser: procedureWithContext
 		.input(z.object({ userId: z.string(), eventId: z.string(), type: z.string() }))
 		.mutation(async ({ ctx, input }) => {
@@ -160,6 +200,8 @@ export const eventProcedures = t.router({
 							'mediaId',
 							'faviconId',
 							'replyEmail',
+							'maxAttendees',
+							'showAttendeeList',
 							'emailFromName',
 							'largeLogoId',
 							'venueId',

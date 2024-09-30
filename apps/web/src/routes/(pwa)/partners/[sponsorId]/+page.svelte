@@ -1,15 +1,16 @@
 <script lang="ts">
-import EventRow from '$lib/components/EventRow.svelte'
-import Screen from '$lib/components/Screen.svelte'
-import Button from '$lib/components/ui/button/button.svelte'
-import VenueBlock from '$lib/components/VenueBlock.svelte'
-import { getMeContext } from '$lib/state/getContexts'
+	import EventRow from '$lib/components/EventRow.svelte'
+	import Screen from '$lib/components/Screen.svelte'
+	import Button from '$lib/components/ui/button/button.svelte'
+	import VenueBlock from '$lib/components/VenueBlock.svelte'
+	import { getMeContext } from '$lib/state/getContexts'
 
-import type { Event } from '@matterloop/db'
-import { dayjs, getMediaUrl } from '@matterloop/util'
+	import type { Event } from '@matterloop/db'
+	import { Markdown } from '@matterloop/ui'
+	import { dayjs, getMediaUrl } from '@matterloop/util'
 
-export let data
-$: sponsor = data.sponsor
+	export let data
+	$: sponsor = data.sponsor
 </script>
 
 <Screen title={sponsor.title} back="/partners">
@@ -46,7 +47,7 @@ $: sponsor = data.sponsor
 				<div class="mt-1 flex flex-wrap gap-1">
 					{#each sponsor.users as { id, user }}
 						<a
-							href={`/sponsors/${id}`}
+							href={`/user/${id}`}
 							class="flex w-fit items-center rounded-lg border border-b-2 border-slate-100 bg-white px-2 py-1 text-sm font-medium text-slate-700"
 						>
 							<img
@@ -61,7 +62,7 @@ $: sponsor = data.sponsor
 			</div>
 		{/if}
 		{#if sponsor?.description}
-			<div class="pr-4 pt-4 text-slate-600">{sponsor?.description}</div>
+			<Markdown class="pr-4 pt-4 text-slate-600" data={sponsor?.description} />
 		{/if}
 	</div>
 </Screen>

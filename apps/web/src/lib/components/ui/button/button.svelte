@@ -1,21 +1,25 @@
 <script lang="ts">
-	import { Button as ButtonPrimitive } from "bits-ui";
-	import { cn } from "$lib/utils";
-	import { buttonVariants, type Props, type Events } from ".";
+	import { cn } from '$lib/utils'
+	import { Button as ButtonPrimitive } from 'bits-ui'
 
-	type $$Props = Props;
-	type $$Events = Events;
+	import { tw } from '@matterloop/ui'
 
-	let className: $$Props["class"] = undefined;
-	export let variant: $$Props["variant"] = "default";
-	export let size: $$Props["size"] = "default";
-	export let builders: $$Props["builders"] = [];
-	export { className as class };
+	import { buttonVariants, type Events, type Props } from '.'
+
+	type $$Props = Props
+	type $$Events = Events
+
+	let className: $$Props['class'] = undefined
+	export let variant: $$Props['variant'] = 'default'
+	export let size: $$Props['size'] = 'default'
+	export let builders: $$Props['builders'] = []
+	export { className as class }
+	$: console.log(className)
 </script>
 
 <ButtonPrimitive.Root
 	{builders}
-	class={cn(buttonVariants({ variant, size, className }))}
+	class={tw(buttonVariants({ variant, size, className }), className)}
 	type="button"
 	{...$$restProps}
 	on:click

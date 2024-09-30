@@ -1,5 +1,5 @@
 import { relations, sql, type InferModel } from 'drizzle-orm'
-import { integer, jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { integer, jsonb, pgTable, text, timestamp, uuid, boolean } from 'drizzle-orm/pg-core'
 import { createInsertSchema } from 'drizzle-zod'
 import { z } from 'zod'
 
@@ -19,6 +19,7 @@ export const eventTable = pgTable('event', {
 	type: text('type').default('main'),
 	eventFor: text('event_for').default('all'),
 	eventForMeta: text('event_for_meta'),
+	showAttendeeList: boolean('show_attendee_list').default(false),
 	venueId: uuid('venue_id').references(() => venueTable.id, { onDelete: 'cascade' }),
 	eventId: uuid('event_id'),
 	mediaId: uuid('mediaId'),

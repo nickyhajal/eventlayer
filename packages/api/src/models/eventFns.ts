@@ -1,6 +1,7 @@
 import { User } from 'lucia'
 
 import {
+	EventUser,
 	alias,
 	and,
 	asc,
@@ -11,6 +12,7 @@ import {
 	eventUserCheckinTable,
 	eventUserInfoTable,
 	eventUserTable,
+	exists,
 	formTable,
 	gt,
 	gte,
@@ -28,6 +30,8 @@ import {
 	venueTable,
 } from '@matterloop/db'
 import { dayjs, groupBy, keyBy, omit, orderBy } from '@matterloop/util'
+import { type Event } from '@matterloop/db'
+
 
 import { redis } from '../core/redis'
 
@@ -37,6 +41,10 @@ interface Args {
 	load?: boolean
 }
 
+interface GetEventsArgs {
+	eventFor?: string
+}
+
 export const EventFns = (args: string | Args) => {
 	const eventId = typeof args === 'string' ? args : args.eventId
 	const mainEventId = (typeof args === 'string' ? args : args.mainEventId) || undefined
@@ -44,7 +52,7 @@ export const EventFns = (args: string | Args) => {
 		get: async () => {
 			const key = `event_heavy:${eventId}`
 			let event = await redis.get<Event>(key)
-			if (!event) {
+			if (!event || event) {
 				// IF DEPENDENCIES CHANGE WE MUST UPDATE CACHE EXPIRIES
 				event = await db.query.eventTable.findFirst({
 					where: and(eq(eventTable.id, eventId)),
@@ -124,7 +132,7 @@ export const EventFns = (args: string | Args) => {
 					redis.set(key, finalUsers)
 					return finalUsers
 				}
-				return []
+				return [] as EventUser[]
 			}
 		},
 		getUsersWithInfo: async () => {
@@ -183,9 +191,9 @@ export const EventFns = (args: string | Args) => {
 			})
 			return sponsor
 		},
-		getEvents: async () => {
+		getEvents: async ({eventFor}: GetEventsArgs = {}) => {
 			const events = await db.query.eventTable.findMany({
-				where: and(eq(eventTable.eventId, eventId)),
+				where: and(eq(eventTable.eventId, eventId), eventFor ? eq(eventTable.eventFor, eventFor) : undefined),
 				with: {
 					photo: true,
 					venue: { with: { photo: true } },
@@ -195,20 +203,33 @@ export const EventFns = (args: string | Args) => {
 			})
 			return events
 		},
-		getUserEvents: async (userId: string) => {
-			const user = await db.query.eventUserTable.findFirst({
-				where: and(eq(eventUserTable.id, userId), eq(eventUserTable.eventId, eventId)),
-			})
-			if (user?.userId) {
-				return db.query.eventUserTable.findMany({
-					where: and(
-						eq(eventUserTable.userId, user.userId),
-						eq(eventUserTable.mainId, eventId),
-						isNotNull(eventUserTable.mainId),
+		getUserEvents: async (user: User) => {
+			const allowedTypes = ['']
+			db.query.eventTable.findMany({
+				where: and(
+					eq(eventTable.eventId, eventId),
+					or(
+						inArray(eventTable.eventFor, allowedTypes),
+						exists(
+							db
+								.select()
+								.from(eventUserTable)
+								.where(
+									and(
+										eq(eventUserTable.eventId, eventTable.id),
+										eq(eventUserTable.userId, user.id),
+									),
+								),
+						),
 					),
-					with: { event: true },
-				})
-			}
+				),
+				with: {
+					photo: true,
+					venue: { with: { photo: true } },
+					users: { with: { user: { with: { photo: true } } } },
+				},
+				orderBy: [asc(eventTable.startsAt), asc(eventTable.ord)],
+			})
 			return []
 		},
 		getVenues: async () => {
@@ -354,6 +375,37 @@ export const EventFns = (args: string | Args) => {
 			redis.set(key, stats)
 			return stats
 		},
+	toggleRsvp: async ({ eventId, userId, type }: { eventId: string; userId: string; type: string }) => {
+		const event = await db.query.eventTable.findFirst({
+			where: and(eq(eventTable.id, eventId)),
+		})
+		let row: Partial<EventUser> | undefined
+		let action = ''
+		if (!event) {
+			throw new Error('Event not found')
+		}
+		const eventUser = await db.query.eventUserTable.findFirst({
+			where: and(eq(eventUserTable.eventId, eventId), eq(eventUserTable.userId, userId)),
+		})
+		if (eventUser) {
+			row = {...eventUser}
+			action = 'remove'
+			await db.delete(eventUserTable).where(eq(eventUserTable.id, eventUser.id))
+		} else {
+			const res = await db
+				.insert(eventUserTable)
+				.values({ eventId, userId })
+				.returning()
+				if (res) {
+					row = res[0]
+					action = 'add'
+				}
+		}
+		return {
+			row,
+			action
+		}
+	}
 	}
 	return fns
 }

@@ -5,6 +5,7 @@ import SelectVenue from '$lib/components/SelectVenue.svelte'
 import { Button } from '$lib/components/ui/button'
 import DatetimePicker from '$lib/components/ui/DatetimePicker.svelte'
 import * as Dialog from '$lib/components/ui/dialog'
+import Switch from '$lib/components/ui/switch/switch.svelte'
 import { Input } from '$lib/components/ui/input'
 import Label from '$lib/components/ui/label/label.svelte'
 import * as Select from '$lib/components/ui/select'
@@ -14,7 +15,7 @@ import { trpc } from '$lib/trpc/client.js'
 import X from 'lucide-svelte/icons/x'
 import { toast } from 'svelte-sonner'
 
-import type { Event, FullEventUser, User } from '@matterloop/db'
+import type { Event, FullEventUser, } from '@matterloop/db'
 import { tw } from '@matterloop/ui'
 import { capitalize, debounce, getMediaUrl } from '@matterloop/util'
 
@@ -52,9 +53,10 @@ let eventTypes = [
 ]
 let eventForOptions = [
 	{ value: 'all', label: 'All Attendees' },
-	{ value: 'selected', label: 'Selected Attendees' },
 	{ value: 'full', label: 'Full Attendees' },
 	{ value: 'main-stage', label: 'Main Stage' },
+	{ value: 'selected', label: 'Selected Attendees' },
+	{ value: 'rsvp', label: 'Allow RSVPs' },
 ]
 $: buttonMsg = event?.id ? 'Save Event' : 'Add Event'
 $: editing = event?.id ? true : false
@@ -65,7 +67,7 @@ $: event.type = type.value
 $: event.eventFor = eventFor?.value
 async function createEvent() {
 	const ord = event?.ord || 0
-	const res = await trpc().event.upsert.mutate({ ...event, ord: +ord })
+	const res = await trpc().event.upsert.mutate({ ...event, ord: +ord, maxAttendees: +(event?.maxAttendees || 0) })
 	goto(`/manage/events/${res.id}`)
 	toast.success('Saved')
 }
@@ -119,39 +121,41 @@ async function addUser(user: FullEventUser) {
 					<Label for="event_subtitle" class="text-right">Sub Title</Label>
 					<Input id="event_subtitle" bind:value={event.subtitle} class="col-span-3" />
 				</div>
-				<div class="flex flex-col items-start justify-center gap-1">
-					<Label for="event_name" class="text-right">Event Type</Label>
-					<Select.Root bind:selected={type}>
-						<Select.Trigger class="w-[180px]">
-							<Select.Value placeholder="Select Type" />
-						</Select.Trigger>
-						<Select.Content>
-							<Select.Group>
-								<Select.Label>Event Type</Select.Label>
-								{#each eventTypes as { label, value }}
-									<Select.Item value={value} label={label}>{label}</Select.Item>
-								{/each}
-							</Select.Group>
-						</Select.Content>
-						<Select.Input name="eventType" />
-					</Select.Root>
-				</div>
-				<div class="flex flex-col items-start justify-center gap-1">
-					<Label for="event_name" class="text-right">Event For</Label>
-					<Select.Root bind:selected={eventFor}>
-						<Select.Trigger class="w-[180px]">
-							<Select.Value placeholder="Select Type" />
-						</Select.Trigger>
-						<Select.Content>
-							<Select.Group>
-								<Select.Label></Select.Label>
-								{#each eventForOptions as { label, value }}
-									<Select.Item value={value} label={label}>{label}</Select.Item>
-								{/each}
-							</Select.Group>
-						</Select.Content>
-						<Select.Input name="eventType" />
-					</Select.Root>
+				<div class="grid grid-cols-2 gap-2">
+					<div class="flex flex-col items-start justify-center gap-1">
+						<Label for="event_name" class="text-right">Event Type</Label>
+						<Select.Root bind:selected={type}>
+							<Select.Trigger class="w-[180px]">
+								<Select.Value placeholder="Select Type" />
+							</Select.Trigger>
+							<Select.Content>
+								<Select.Group>
+									<Select.Label>Event Type</Select.Label>
+									{#each eventTypes as { label, value }}
+										<Select.Item value={value} label={label}>{label}</Select.Item>
+									{/each}
+								</Select.Group>
+							</Select.Content>
+							<Select.Input name="eventType" />
+						</Select.Root>
+					</div>
+					<div class="flex flex-col items-start justify-center gap-1">
+						<Label for="event_name" class="text-right">Event For</Label>
+						<Select.Root bind:selected={eventFor}>
+							<Select.Trigger class="w-[180px]">
+								<Select.Value placeholder="Select Type" />
+							</Select.Trigger>
+							<Select.Content>
+								<Select.Group>
+									<Select.Label></Select.Label>
+									{#each eventForOptions as { label, value }}
+										<Select.Item value={value} label={label}>{label}</Select.Item>
+									{/each}
+								</Select.Group>
+							</Select.Content>
+							<Select.Input name="eventType" />
+						</Select.Root>
+					</div>
 				</div>
 				<DatetimePicker bind:value={event.startsAt} />
 				{#if !simplified}
@@ -163,6 +167,20 @@ async function addUser(user: FullEventUser) {
 						<Label for="venue" class="text-right">Event Venue</Label>
 						<SelectVenue bind:value={event.venueId} />
 					</div>
+					{#if event?.eventFor?.includes('rsvp')}
+					<div class="flex flex-col items-start justify-center gap-1">
+						<Label for="event_maxAttendees" class="text-right">Max Attendees</Label>
+						<Input id="event_maxAttendees" type="number" bind:value={event.maxAttendees} class="col-span-3" />
+					</div>
+					{/if}
+					{#if event?.eventFor?.includes('rsvp') || event.eventFor.includes('selected')}
+					<div class="mt-0 flex items-center justify-between rounded-md border bg-stone-50 p-3">
+						<label for="showAttendeeList" class="text-sm font-medium text-stone-800"
+							>Show Attendee List on Event Page</label
+						>
+						<Switch name="showAttendeeList" bind:checked={event.showAttendeeList} class="" />
+					</div>
+					{/if}
 					<div class="flex flex-col items-start justify-center gap-1">
 						<Label for="event_ord" class="text-right">Event Order</Label>
 						<div class="text-sm text-slate-500">
@@ -170,6 +188,7 @@ async function addUser(user: FullEventUser) {
 						</div>
 						<Input id="event_ord" bind:value={event.ord} type="number" class="col-span-3" />
 					</div>
+				
 				{/if}
 			</div>
 			<Button type="submit">{buttonMsg}</Button>
