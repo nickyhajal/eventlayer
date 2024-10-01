@@ -94,15 +94,11 @@
 			.sort((a, b) => vals[a.value] - vals[b.value]),
 	]
 	let showType = 'all'
+	// titleSelectOptions={typeOptions}
+	// bind:titleSelectValue={showType}
 </script>
 
-<Screen
-	titleSelectOptions={typeOptions}
-	bind:titleSelectValue={showType}
-	title="Partners"
-	bigTitle="Partners"
-	bodyClass="bg-slate-100"
->
+<Screen title="Partners" bigTitle="Partners" bodyClass="bg-slate-100">
 	<div
 		class="topNav sticky z-40 -ml-4 flex w-[calc(100vw+0.25rem)] items-center justify-center border-b border-slate-300/50 bg-slate-50 px-5 text-center text-sm text-slate-600 lg:mx-0 lg:mt-1 lg:w-full lg:rounded-2xl lg:border"
 	>
@@ -116,6 +112,16 @@
 		/>
 	</div>
 	<div class="relative mx-auto -mt-2 max-w-7xl bg-slate-100">
+		<div class="mb-8 max-w-2xl mt-16 px-4 sm:px-0">
+			<p class="text-lg mb-4">
+				A massive thank you to the companies and organizations that without their support this
+				Gathering would not be possible.
+			</p>
+			<p class="text-lg">
+				With their partnership we are bringing our community of innovators to shape the future of
+				the clinical trial industry, together.
+			</p>
+		</div>
 		<div class="mt-2 grid grid-cols-1 gap-4 py-2 lg:grid-cols-2">
 			{#each results.filter(({ type }) => showType === 'all' || type === showType) as sponsor}
 				{@const { id, title, url, bookingUrl, photo, description } = sponsor}
