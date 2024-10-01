@@ -23,9 +23,13 @@ export const FormFns = ({ formId }: Args) => ({
 		})
 		return event
 	},
-	getSessionForUser: async (userId: string) => {
+	getSessionForUser: async (userId: string, eventId: string) => {
 		const session = await db.query.formSessionTable.findFirst({
-			where: and(eq(formSessionTable.userId, userId), eq(formSessionTable.formId, formId)),
+			where: and(
+				eq(formSessionTable.userId, userId),
+				eq(formSessionTable.formId, formId),
+				eq(formSessionTable.eventId, eventId),
+			),
 			orderBy: asc(formSessionTable.createdAt),
 			with: { responses: true },
 		})
