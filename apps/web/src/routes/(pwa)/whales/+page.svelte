@@ -85,7 +85,7 @@
 	}
 	const types = Object.keys(sponsorsByType)
 	const typeOptions = [
-		{ label: 'All Whales', value: 'all' },
+		{ label: 'Finalists', value: 'all' },
 		...types
 			.map((type) => ({
 				label: type === 'staff' ? 'Staff' : `${startCase(type)}s`,
