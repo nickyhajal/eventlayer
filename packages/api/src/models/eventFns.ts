@@ -223,7 +223,19 @@ export const EventFns = (args: string | Args) => {
 			return events
 		},
 		getUserEvents: async (user: User) => {
+			if (!user) return []
 			const allowedTypes = ['']
+			const eventUser = await db.query.eventUserTable.findFirst({
+				where: and(eq(eventUserTable.userId, user.id), eq(eventUserTable.eventId, eventId)),
+			})
+			if (!eventUser) return []
+			console.log(eventUser.type)
+			if (eventUser?.type !== 'main-stage') {
+				allowedTypes.push('full')
+			}
+			if (eventUser?.type === 'main-stage') {
+				allowedTypes.push('main-stage')
+			}
 			const rsvps = await db.query.eventUserTable.findMany({
 				where: and(eq(eventUserTable.mainId, eventId), eq(eventUserTable.userId, user.id)),
 			})

@@ -1,51 +1,68 @@
 <script lang="ts">
-import Screen from '$lib/components/Screen.svelte'
-import Button from '$lib/components/ui/button/button.svelte'
-import { getEventContext } from '$lib/state/getContexts.js'
-import BadgeCheck from 'lucide-svelte/icons/badge-check'
-import Calendar from 'lucide-svelte/icons/calendar'
-import Map from 'lucide-svelte/icons/map'
-import Pin from 'lucide-svelte/icons/map-pinned'
-import { ChevronRight } from 'radix-icons-svelte'
+	import Screen from '$lib/components/Screen.svelte'
+	import Button from '$lib/components/ui/button/button.svelte'
+	import { getEventContext } from '$lib/state/getContexts.js'
+	import BadgeCheck from 'lucide-svelte/icons/badge-check'
+	import Calendar from 'lucide-svelte/icons/calendar'
+	import Map from 'lucide-svelte/icons/map'
+	import Pin from 'lucide-svelte/icons/map-pinned'
+	import { ChevronRight } from 'radix-icons-svelte'
 
-import { dayjs, getMediaUrl } from '@matterloop/util'
+	import { tw } from '@matterloop/ui'
+	import { dayjs, getMediaUrl } from '@matterloop/util'
 
-export let data
-$: upcoming = data.upcoming
-let event = getEventContext()
-const tabs = $event.menus
-	.filter((m) => m.location === 'quick')
-	.map((m) => {
-		return { ...m, props: m.props ?? {} }
-	})
-// const tabs = [
-// 	{
-// 		label: 'Schedule',
-// 		icon: Calendar,
-// 		href: '/schedule',
-// 	},
-// 	{
-// 		label: 'Venues',
-// 		icon: Pin,
-// 		href: '/venues',
-// 	},
-// 	{
-// 		label: 'Venue Map',
-// 		icon: Map,
-// 		href: '/map',
-// 	},
-// 	{
-// 		label: 'Sponsors',
-// 		icon: BadgeCheck,
-// 		href: '/sponsors',
-// 	},
-// ]
-function getContent(key: string) {
-	if (data?.event?.contentByKey?.[key]) {
-		return data.event.contentByKey[key]?.body || ''
+	export let data
+	$: upcoming = data.upcoming
+	$: console.log(data)
+	let event = getEventContext()
+	let tabs = $event.menus
+		.filter((m) => m.location === 'quick')
+		.map((m) => {
+			return { ...m, props: m.props ?? {} }
+		})
+	if (data?.me?.type !== 'main-stage') {
+		tabs = [
+			...tabs,
+			{
+				label: 'Day 1: Lunch RSVPs',
+				className: '',
+				icon: `<svg class="lucide lucide-utensils" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
+  <path d="M7 2v20"></path>
+  <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
+</svg>`,
+				href: '/event-type',
+			},
+		]
 	}
-	return ''
-}
+	// const tabs = [
+	// 	{
+	// 		label: 'Schedule',
+	// 		icon: Calendar,
+	// 		href: '/schedule',
+	// 	},
+	// 	{
+	// 		label: 'Venues',
+	// 		icon: Pin,
+	// 		href: '/venues',
+	// 	},
+	// 	{
+	// 		label: 'Venue Map',
+	// 		icon: Map,
+	// 		href: '/map',
+	// 	},
+	// 	{
+	// 		label: 'Sponsors',
+	// 		icon: BadgeCheck,
+	// 		href: '/sponsors',
+	// 	},
+	// ]
+	function getContent(key: string) {
+		if (data?.event?.contentByKey?.[key]) {
+			return data.event.contentByKey[key]?.body || ''
+		}
+		return ''
+	}
 </script>
 
 <Screen title={$event.name}>
@@ -82,14 +99,32 @@ function getContent(key: string) {
 				</div>
 			</div>
 		</div>
+		{#if data?.me?.type !== 'main-stage'}
+			<div
+				class="mb-8 rounded-b-xl text-a-accent/90 bg-amber-100/30 p-8 mt-8 text-center text-sm font-medium leading-snug md:text-base"
+			>
+				<div class=" px-16 font-semibold flex flex-col items-center gap-5">
+					<div class="mx-auto max-w-sm">
+						Make sure to RSVP for one of the Day 1: Lunch options to add it to your schedule.
+					</div>
+					<div>
+						<Button href="/event-type" class="bg-amber-700/90 hover:bg-amber-600 text-white"
+							>Browse Lunch Options</Button
+						>
+					</div>
+				</div>
+			</div>
+		{/if}
 		<div class="mt-8">
 			<div class="mb-1.5 text-2xl font-semibold text-slate-700">Quick Links</div>
 			<div class="grid grid-cols-2 gap-2">
-				{#each tabs as { label, icon, link }}
+				{#each tabs as { label, icon, link, className }}
 					<Button
 						href={link}
 						variant="secondary"
-						class="bg-a-accent border-a-accent hover:bg-a-accent border-b-main/10 text-a-accent flex w-full flex-none flex-col items-start justify-center gap-0.5 border border-b border-opacity-[0.07] bg-opacity-[0.02] py-9 text-left text-sm font-semibold hover:bg-opacity-[0.07] "
+						class={tw(
+							`bg-a-accent border-a-accent hover:bg-a-accent border-b-main/10 text-a-accent flex w-full flex-none flex-col items-start justify-center gap-0.5 border border-b border-opacity-[0.07] bg-opacity-[0.02] py-9 text-left text-sm font-semibold hover:bg-opacity-[0.07] ${className}`,
+						)}
 					>
 						{#if icon}
 							<div class="border-main/20 mb-0.5 rounded-full border bg-white/40 p-1.5 opacity-80">
@@ -165,11 +200,11 @@ function getContent(key: string) {
 </Screen>
 
 <style lang="postcss">
-.shell {
-	position: relative;
-	top: calc(env(safe-area-inset-top) - 0.5rem);
-}
-.icon :global(svg) {
-	@apply text-a-accent/70 h-[1rem]  w-[1rem] flex-none brightness-90;
-}
+	.shell {
+		position: relative;
+		top: calc(env(safe-area-inset-top) - 0.5rem);
+	}
+	.icon :global(svg) {
+		@apply text-a-accent/70 h-[1rem]  w-[1rem] flex-none brightness-90;
+	}
 </style>
