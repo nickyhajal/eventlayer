@@ -12,7 +12,7 @@
 <div class="block h-fit w-full items-start justify-start rounded-lg border px-2 py-1.5 text-left">
 	<Button
 		variant="ghost"
-		href="/user/{user.id}"
+		href="/user/{user.userId}"
 		class="flex h-fit w-full items-center justify-between gap-2 rounded-lg bg-slate-100 px-4 py-3 text-left hover:bg-slate-200"
 	>
 		<div class="flex items-center gap-2 whitespace-normal">

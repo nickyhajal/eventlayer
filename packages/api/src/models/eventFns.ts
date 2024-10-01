@@ -180,7 +180,12 @@ export const EventFns = (args: string | Args) => {
 			const userRows = await db
 				.select()
 				.from(eventUserTable)
-				.where(and(eq(eventUserTable.eventId, eventId), eq(eventUserTable.id, userId)))
+				.where(
+					and(
+						eq(eventUserTable.eventId, eventId),
+						or(eq(eventUserTable.id, userId), eq(eventUserTable.userId, userId)),
+					),
+				)
 				.leftJoin(userTable, eq(userTable.id, eventUserTable.userId))
 				.leftJoin(mediaTable, eq(mediaTable.id, userTable.mediaId))
 			if (userRows.length) {

@@ -1,46 +1,46 @@
 <script lang="ts">
-import EventRow from '$lib/components/EventRow.svelte'
-import Screen from '$lib/components/Screen.svelte'
-import Button from '$lib/components/ui/button/button.svelte'
-import UserAvatar from '$lib/components/UserAvatar.svelte'
-import VenueBlock from '$lib/components/VenueBlock.svelte'
-import { getMeContext } from '$lib/state/getContexts'
+	import EventRow from '$lib/components/EventRow.svelte'
+	import Screen from '$lib/components/Screen.svelte'
+	import Button from '$lib/components/ui/button/button.svelte'
+	import UserAvatar from '$lib/components/UserAvatar.svelte'
+	import VenueBlock from '$lib/components/VenueBlock.svelte'
+	import { getMeContext } from '$lib/state/getContexts'
 
-import type { Event } from '@matterloop/db'
-import { Markdown } from '@matterloop/ui'
-import { capitalize, dayjs, getMediaUrl, startCase } from '@matterloop/util'
+	import type { Event } from '@matterloop/db'
+	import { Markdown } from '@matterloop/ui'
+	import { capitalize, dayjs, getMediaUrl, startCase } from '@matterloop/util'
 
-export let data
-$: user = data.user
-$: events = data.events
-$: eventStr = events.reduce((acc, event, i) => {
-	return `${acc}${capitalize(event.type)}: ${event.event.name}${
-		events.length - 1 === i ? '' : ', '
-	}`
-}, '')
-$: name = `${user.firstName} ${user.lastName}`
+	export let data
+	$: user = data.user
+	$: events = data.events
+	$: eventStr = events.reduce((acc, event, i) => {
+		return `${acc}${capitalize(event.type)}: ${event.event.name}${
+			events.length - 1 === i ? '' : ', '
+		}`
+	}, '')
+	$: name = `${user.firstName} ${user.lastName}`
 
-const why = {
-	community: 'Join a community of like-minded people in Oregon',
-	learn: 'Learn about climate technology advancements being made in Oregon',
-	connect: 'Connect with other people from other knowledge areas than my own',
-	contribute:
-		'Contribute to climate tech policy recommendations for Oregon spanning economic development, workforce, etc.',
-	understand: 'Understand how I can help support climate efforts in Oregon',
-	justice: 'Learn about climate justice in Oregon',
-}
+	const why = {
+		community: 'Join a community of like-minded people in Oregon',
+		learn: 'Learn about climate technology advancements being made in Oregon',
+		connect: 'Connect with other people from other knowledge areas than my own',
+		contribute:
+			'Contribute to climate tech policy recommendations for Oregon spanning economic development, workforce, etc.',
+		understand: 'Understand how I can help support climate efforts in Oregon',
+		justice: 'Learn about climate justice in Oregon',
+	}
 
-const topics = {
-	behavior: 'Behavior & Adoption',
-	future: 'Future-Planning',
-	health: 'Health',
-	workforce: 'Workforce',
-	energy: 'Energy & Storage',
-	buildings: 'Buildings',
-	vehicles: 'Vehicles',
-}
-$: openToWork = user?.info?.['seeking-job']?.value === '["yes"]'
-$: openToHire = user?.info?.['hiring']?.value === '["yes"]'
+	const topics = {
+		behavior: 'Behavior & Adoption',
+		future: 'Future-Planning',
+		health: 'Health',
+		workforce: 'Workforce',
+		energy: 'Energy & Storage',
+		buildings: 'Buildings',
+		vehicles: 'Vehicles',
+	}
+	$: openToWork = user?.info?.['seeking-job']?.value === '["yes"]'
+	$: openToHire = user?.info?.['hiring']?.value === '["yes"]'
 </script>
 
 <Screen title={name} back="/speakers">
@@ -67,7 +67,7 @@ $: openToHire = user?.info?.['hiring']?.value === '["yes"]'
 					{/if}
 				</div>
 			{/if}
-			<UserAvatar user={user} class="xs:w-36 h-36 w-28 rounded-full" />
+			<UserAvatar {user} class="xs:w-36 h-36 w-28 rounded-full" />
 			{#if user.type !== 'attendee'}
 				<div class="mt-3 rounded-md bg-slate-50 px-3 py-0.5 text-sm font-medium text-slate-700">
 					{startCase(user.type)}

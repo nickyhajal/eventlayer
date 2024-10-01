@@ -5,7 +5,6 @@ import { EventFns, VenueFns } from '@matterloop/api'
 export const load = async (req) => {
 	const { locals, url, params } = req
 	const eventFns = EventFns({ eventId: locals.event.id })
-	const events = await eventFns.getUserEvents(params.userId)
 	return {
 		user: await eventFns.getUser(params.userId),
 		events: await eventFns.getUserEvents(params.userId),
