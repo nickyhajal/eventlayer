@@ -315,17 +315,18 @@ export const userProcedures = t.router({
 			if (url) {
 				const res = await mailer.send({
 					to: user?.email || '',
-					subject: 'Action Required: Get Access to the Wings Event App',
+					subject: 'Action Required: Get Access to the Gathering Event App',
 					event: ctx.event,
 					more_params: {
 						body: `Hey ${user?.firstName},
-								<br><br>We're excited to have you join us for the Wings Conference, our charge to lead climate solutions for Oregon and beyond!
-								<br><br>Instead of a one-time-use printed program, we've developed a helpful event app to guide you through all things related to the conference.
-								<br><br>With the Wings Conference app you'll be able to:
+								<br><br>We’re excited to have you join us for the Innovation Network Gathering to shape the future of human-centric clinical trials.
+								<br><br>Instead of a one-time-use printed program, we’ve developed a helpful event app to guide you through all things related to the conference.
+								<br><br>With the Gathering Conference app you’ll be able to:
 								<ul>
 								<li>View a full detailed schedule</li>
-								<li>Access to an attendee list including information about our speakers</li>
-								<li>Connect with our amazing Sponsors and Impact Partners.</li>
+								<li>RSVP for a lunch option on Day 1</li>
+								<li>Access an attendee list including information about our speakers</li>
+								<li>Connect with our amazing Partners</li>
 								<li>And more...</li>
 								</ul>
 								<br><br>To gain access, click the link below and set up your account.
