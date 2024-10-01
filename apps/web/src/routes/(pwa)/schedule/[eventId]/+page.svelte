@@ -15,19 +15,14 @@
 	export let data
 	const me = getMeContext()
 	$: shouldGroup = data.event.type === 'program'
-	$: console.log('should', shouldGroup)
 	$: event = data.event
 	$: users = orderBy(
 		shouldGroup ? data.users : data.users.map((row) => ({ ...row, type: 'attendee' })),
 		['type'],
 	)
+	$: rsvpd = data.myLunch?.eventId && data.myLunch.eventId !== data.event.id
 	// $: users = shouldGroup ? orderBy(data.users, ['type']) : data.users
-	$: console.log('uu', users)
-	$: console.log($me)
-	$: attendingEvent = users.find(
-		(user) => (console.log('check', user, $me?.id), user?.userId === $me?.id),
-	)
-	$: console.log(attendingEvent, 'aa', $me?.id)
+	$: attendingEvent = users.find((user) => user?.userId === $me?.id)
 	$: canRsvp = users.length < (event?.maxAttendees || 0)
 	let lastType = ''
 	function getLastType(user: EventUser) {
@@ -36,11 +31,8 @@
 			return true
 		}
 	}
-	$: console.log(users)
-	$: console.log(event)
 
 	async function toggleRsvp() {
-		console.log('toggleRsvp', $me)
 		if (!event?.id || !$me?.id) return
 		if (!attendingEvent && !canRsvp) return
 
@@ -56,7 +48,7 @@
 	back="/schedule"
 	photo={event.photo}
 >
-	<div class="shell mx-auto max-w-7xl py-6">
+	<div class="shell mx-auto max-w-7xl py-6 pb-20">
 		<div class="text-a-accent text-base font-semibold">
 			{dayjs(data.event.startsAt).format('dddd MMMM Do [at] h:mma')}
 		</div>
@@ -66,22 +58,26 @@
 				{event.subtitle}
 			</div>
 		{/if}
-		<div>
+		<div class="">
 			{#if event.eventFor === 'rsvp'}
 				<Button
 					on:click={toggleRsvp}
 					class="mb-8 font-semibold {attendingEvent
 						? '!bg-emerald-500'
-						: canRsvp && $me?.id
+						: canRsvp && $me?.id && !rsvpd
 							? 'bg-a-accent'
 							: '!bg-slate-100/60 !text-slate-400 border border-slate-400/10 border-b-slate-700/10 cursor-not-allowed'}"
 				>
 					{#if attendingEvent}
 						You're Attending - Click to Cancel
+					{:else if rsvpd}
+						You're Attending Another Lunch
 					{:else if !canRsvp}
 						Event Full
 					{:else if !$me?.id}
 						Login to RSVP
+					{:else if event.type === 'meal'}
+						RSVP to this Lunch
 					{:else}
 						RSVP to this Event
 					{/if}
@@ -101,7 +97,7 @@
 				<VenueBlock venue={event.venue} />
 			</div>
 		{/if}
-		{#if users}
+		{#if users?.length > 0 && event?.showAttendeeList}
 			<div class="mt-3 flex flex-col gap-2">
 				{#if !shouldGroup}
 					<div class="text-a-accent mb-0 mt-2 text-lg font-semibold brightness-95">

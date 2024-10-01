@@ -1,7 +1,6 @@
 import { User } from 'lucia'
 
 import {
-	EventUser,
 	alias,
 	and,
 	asc,
@@ -9,6 +8,7 @@ import {
 	db,
 	eq,
 	eventTable,
+	EventUser,
 	eventUserCheckinTable,
 	eventUserInfoTable,
 	eventUserTable,
@@ -28,10 +28,9 @@ import {
 	sql,
 	userTable,
 	venueTable,
+	type Event,
 } from '@matterloop/db'
 import { dayjs, groupBy, keyBy, omit, orderBy } from '@matterloop/util'
-import { type Event } from '@matterloop/db'
-
 
 import { redis } from '../core/redis'
 
@@ -52,7 +51,7 @@ export const EventFns = (args: string | Args) => {
 		get: async () => {
 			const key = `event_heavy:${eventId}`
 			let event = await redis.get<Event>(key)
-			if (!event || event) {
+			if (!event) {
 				// IF DEPENDENCIES CHANGE WE MUST UPDATE CACHE EXPIRIES
 				event = await db.query.eventTable.findFirst({
 					where: and(eq(eventTable.id, eventId)),
@@ -82,6 +81,23 @@ export const EventFns = (args: string | Args) => {
 				}
 			}
 			return event
+		},
+		getMeals: async () => {
+			const key = `event_meals:${eventId}`
+			let events = await redis.get<Event[]>(key)
+			if (!events) {
+				events = await db.query.eventTable.findMany({
+					where: and(eq(eventTable.eventId, eventId), eq(eventTable.type, 'meal')),
+					with: {
+						photo: true,
+						venue: { with: { photo: true } },
+						users: { with: { user: { with: { photo: true } } } },
+					},
+					orderBy: [asc(eventTable.startsAt), asc(eventTable.ord)],
+				})
+				redis.set(key, events)
+			}
+			return events
 		},
 		getNextEvents: async (timezoneShift = 7) => {
 			return db.query.eventTable.findMany({
@@ -191,9 +207,12 @@ export const EventFns = (args: string | Args) => {
 			})
 			return sponsor
 		},
-		getEvents: async ({eventFor}: GetEventsArgs = {}) => {
+		getEvents: async ({ eventFor }: GetEventsArgs = {}) => {
 			const events = await db.query.eventTable.findMany({
-				where: and(eq(eventTable.eventId, eventId), eventFor ? eq(eventTable.eventFor, eventFor) : undefined),
+				where: and(
+					eq(eventTable.eventId, eventId),
+					eventFor ? eq(eventTable.eventFor, eventFor) : undefined,
+				),
 				with: {
 					photo: true,
 					venue: { with: { photo: true } },
@@ -205,22 +224,16 @@ export const EventFns = (args: string | Args) => {
 		},
 		getUserEvents: async (user: User) => {
 			const allowedTypes = ['']
-			db.query.eventTable.findMany({
+			const rsvps = await db.query.eventUserTable.findMany({
+				where: and(eq(eventUserTable.mainId, eventId), eq(eventUserTable.userId, user.id)),
+			})
+			const rsvpIds = rsvps.flatMap((rsvp) => rsvp.eventId || [])
+			const mine = await db.query.eventTable.findMany({
 				where: and(
 					eq(eventTable.eventId, eventId),
 					or(
 						inArray(eventTable.eventFor, allowedTypes),
-						exists(
-							db
-								.select()
-								.from(eventUserTable)
-								.where(
-									and(
-										eq(eventUserTable.eventId, eventTable.id),
-										eq(eventUserTable.userId, user.id),
-									),
-								),
-						),
+						rsvps.length ? inArray(eventTable.id, rsvpIds) : undefined,
 					),
 				),
 				with: {
@@ -230,7 +243,7 @@ export const EventFns = (args: string | Args) => {
 				},
 				orderBy: [asc(eventTable.startsAt), asc(eventTable.ord)],
 			})
-			return []
+			return mine
 		},
 		getVenues: async () => {
 			const venues = await db.query.venueTable.findMany({
@@ -375,37 +388,42 @@ export const EventFns = (args: string | Args) => {
 			redis.set(key, stats)
 			return stats
 		},
-	toggleRsvp: async ({ eventId, userId, type }: { eventId: string; userId: string; type: string }) => {
-		const event = await db.query.eventTable.findFirst({
-			where: and(eq(eventTable.id, eventId)),
-		})
-		let row: Partial<EventUser> | undefined
-		let action = ''
-		if (!event) {
-			throw new Error('Event not found')
-		}
-		const eventUser = await db.query.eventUserTable.findFirst({
-			where: and(eq(eventUserTable.eventId, eventId), eq(eventUserTable.userId, userId)),
-		})
-		if (eventUser) {
-			row = {...eventUser}
-			action = 'remove'
-			await db.delete(eventUserTable).where(eq(eventUserTable.id, eventUser.id))
-		} else {
-			const res = await db
-				.insert(eventUserTable)
-				.values({ eventId, userId })
-				.returning()
+		toggleRsvp: async ({
+			eventId,
+			userId,
+			type,
+		}: {
+			eventId: string
+			userId: string
+			type: string
+		}) => {
+			const event = await db.query.eventTable.findFirst({
+				where: and(eq(eventTable.id, eventId)),
+			})
+			let row: Partial<EventUser> | undefined
+			let action = ''
+			if (!event) {
+				throw new Error('Event not found')
+			}
+			const eventUser = await db.query.eventUserTable.findFirst({
+				where: and(eq(eventUserTable.eventId, eventId), eq(eventUserTable.userId, userId)),
+			})
+			if (eventUser) {
+				row = { ...eventUser }
+				action = 'remove'
+				await db.delete(eventUserTable).where(eq(eventUserTable.id, eventUser.id))
+			} else {
+				const res = await db.insert(eventUserTable).values({ eventId, userId }).returning()
 				if (res) {
 					row = res[0]
 					action = 'add'
 				}
-		}
-		return {
-			row,
-			action
-		}
-	}
+			}
+			return {
+				row,
+				action,
+			}
+		},
 	}
 	return fns
 }

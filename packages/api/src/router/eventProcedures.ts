@@ -107,27 +107,28 @@ export const eventProcedures = t.router({
 				where: and(eq(eventUserTable.eventId, eventId), eq(eventUserTable.userId, userId)),
 			})
 			if (eventUser) {
-				row = {...eventUser}
+				row = { ...eventUser }
 				action = 'remove'
 				await db.delete(eventUserTable).where(eq(eventUserTable.id, eventUser.id))
 			} else {
 				const res = await db
 					.insert(eventUserTable)
-					.values({ eventId, userId })
+					.values({ eventId, userId, mainId: event.eventId })
 					.returning()
-					if (res) {
-						row = res[0]
-						action = 'add'
-					}
+				if (res) {
+					row = res[0]
+					action = 'add'
+				}
 			}
+			redis.del(`event_meals:${ctx.event.id}`)
 			redis.del(`event_heavy:${eventId}`)
 			redis.del(`event_users:${eventId}`)
 			redis.del(`event_usersWithInfo:${eventId}`)
 			return {
 				row,
-				action
+				action,
 			}
-	}),
+		}),
 	addUser: procedureWithContext
 		.input(z.object({ userId: z.string(), eventId: z.string(), type: z.string() }))
 		.mutation(async ({ ctx, input }) => {
@@ -211,6 +212,9 @@ export const eventProcedures = t.router({
 					.returning()
 				const updated = await db.select().from(eventTable).where(eq(eventTable.id, input.id))
 				console.log(`update event_heavy:${input.id}`)
+				if (input.type === 'meal' && input.eventId) {
+					redis.del(`event_meals:${input.eventId}`)
+				}
 				redis.del(`event_heavy:${input.id}`)
 				return updated[0]
 			} else {

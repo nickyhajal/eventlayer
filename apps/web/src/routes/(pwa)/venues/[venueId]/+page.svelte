@@ -1,24 +1,23 @@
 <script lang="ts">
-import EventRow from '$lib/components/EventRow.svelte'
-import Screen from '$lib/components/Screen.svelte'
-import Button from '$lib/components/ui/button/button.svelte'
-import VenueBlock from '$lib/components/VenueBlock.svelte'
-import { getMeContext } from '$lib/state/getContexts'
-import Map from 'lucide-svelte/icons/map'
+	import EventRow from '$lib/components/EventRow.svelte'
+	import Screen from '$lib/components/Screen.svelte'
+	import Button from '$lib/components/ui/button/button.svelte'
+	import VenueBlock from '$lib/components/VenueBlock.svelte'
+	import { getMeContext } from '$lib/state/getContexts'
+	import Map from 'lucide-svelte/icons/map'
 
-import type { Event } from '@matterloop/db'
-import Markdown from '@matterloop/ui/src/components/Markdown.svelte'
-import { dayjs } from '@matterloop/util'
+	import type { Event } from '@matterloop/db'
+	import Markdown from '@matterloop/ui/src/components/Markdown.svelte'
+	import { dayjs } from '@matterloop/util'
 
-export let data
-$: venue = data.venue
-$: console.log(venue)
-$: fullAddress = `${venue.street}, ${venue.city}, ${venue.region} ${venue.postalCode}`
+	export let data
+	$: venue = data.venue
+	$: fullAddress = `${venue.street}, ${venue.city}, ${venue.region} ${venue.postalCode}`
 </script>
 
 <Screen
 	title={data.venue.name}
-	bigTitle={venue.photo ? " " : ""}
+	bigTitle={venue.photo ? ' ' : ''}
 	back="/venues"
 	photo={venue.photo}
 >
@@ -30,7 +29,9 @@ $: fullAddress = `${venue.street}, ${venue.city}, ${venue.region} ${venue.postal
 		<Button
 			variant="outline"
 			class="mb-4 flex h-fit items-start justify-between text-left"
-			href="https://www.google.com/maps/dir/?api=1&origin=My+Location&destination={encodeURIComponent(fullAddress)}"
+			href="https://www.google.com/maps/dir/?api=1&origin=My+Location&destination={encodeURIComponent(
+				fullAddress,
+			)}"
 		>
 			<div class="flex flex-col">
 				{#if venue.street}
@@ -51,14 +52,14 @@ $: fullAddress = `${venue.street}, ${venue.city}, ${venue.region} ${venue.postal
 			</div>
 		{/if}
 		{#if venue.children?.length}
-		<div class="text-xl font-semibold mb-1 mt-8 text-a-accent">At this Venue</div>
-		{#each venue.children as child}
-			<div class="flex flex-col gap-4">
-				<div class="mb-2">
-					<VenueBlock showTitle={false} venue={child} />
+			<div class="text-xl font-semibold mb-1 mt-8 text-a-accent">At this Venue</div>
+			{#each venue.children as child}
+				<div class="flex flex-col gap-4">
+					<div class="mb-2">
+						<VenueBlock showTitle={false} venue={child} />
+					</div>
 				</div>
-			</div>
-		{/each}
+			{/each}
 		{/if}
 		<!-- {#if event?.venue}
 			<div class="mt-8">
