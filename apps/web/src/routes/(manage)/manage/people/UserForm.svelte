@@ -1,111 +1,113 @@
 <script lang="ts">
-import { goto, invalidateAll } from '$app/navigation'
-import Button from '$lib/components/ui/button/button.svelte'
-import ChicletButton from '$lib/components/ui/ChicletButton.svelte'
-import * as Dialog from '$lib/components/ui/dialog'
-import Input from '$lib/components/ui/input/input.svelte'
-import Label from '$lib/components/ui/label/label.svelte'
-import * as Select from '$lib/components/ui/select'
-import Textarea from '$lib/components/ui/textarea/textarea.svelte'
-import Uploader from '$lib/components/ui/Uploader.svelte'
-import { trpc } from '$lib/trpc/client.js'
-import { getMediaUrl } from '$lib/util/getMediaUrl'
-import Check from 'lucide-svelte/icons/check'
-import { toast } from 'svelte-sonner'
+	import { goto, invalidateAll } from '$app/navigation'
+	import Button from '$lib/components/ui/button/button.svelte'
+	import ChicletButton from '$lib/components/ui/ChicletButton.svelte'
+	import * as Dialog from '$lib/components/ui/dialog'
+	import Input from '$lib/components/ui/input/input.svelte'
+	import Label from '$lib/components/ui/label/label.svelte'
+	import * as Select from '$lib/components/ui/select'
+	import Textarea from '$lib/components/ui/textarea/textarea.svelte'
+	import Uploader from '$lib/components/ui/Uploader.svelte'
+	import { trpc } from '$lib/trpc/client.js'
+	import { getMediaUrl } from '$lib/util/getMediaUrl'
+	import Check from 'lucide-svelte/icons/check'
+	import { toast } from 'svelte-sonner'
 
-import type { FullEventUser, User } from '@matterloop/db'
-import { merge, tw } from '@matterloop/util'
+	import type { FullEventUser, User } from '@matterloop/db'
+	import { merge, tw } from '@matterloop/util'
 
-export let user: Partial<FullEventUser> = {
-	firstName: '',
-	lastName: '',
-	email: '',
-	type: 'attendee',
-}
-export let simplified = false
-export let inDialog = false
-export let titleClass = ''
-export let showTitle = true
-let error = ''
-let userInEvent = false
-let emailConfirmed: string = user?.id ? 'existing-user' : ''
-user.info = merge(
-	{
-		company: { value: '' },
-		title: { value: '' },
-		linkedin_url: { value: '' },
-		speechTitle: { value: '' },
-	},
-	user?.info || {},
-)
-$: buttonMsg = emailConfirmed ? (user?.id ? 'Save User' : 'Add User') : 'Check Email'
-$: editing = user?.id ? true : false
-$: title = editing ? `${user?.firstName} ${user?.lastName}` : 'Add a User'
-let userTypes = [
-	{ value: 'attendee', label: 'Attendee' },
-	{ value: 'main-stage', label: 'Main Stage Only Attendee' },
-	{ value: 'speaker', label: 'Speaker' },
-	{ value: 'main-stage-speaker', label: 'Main Stage Speaker' },
-	{ value: 'on-stage-host', label: 'On Stage Host' },
-	{ value: 'showcase-speaker', label: 'Showcase Speaker' },
-	{ value: 'impact-partner', label: 'Impact Partner' },
-	{ value: 'organizing-partner', label: 'Organizing Partner' },
-	{ value: 'divesession-facilitator', label: 'Dive-Session Facilitator' },
-	{ value: 'sponsor', label: 'Sponsor Rep' },
-	{ value: 'staff', label: 'Staff' },
-]
-let type = user?.type
-	? userTypes.find(({ value }) => value === user.type)
-	: { value: 'attendee', label: 'Attendee' }
-$: user.type = type.value
-let userExistsNotInEvent: User | false = false
-let image = ''
-async function saveUser() {
-	if (!emailConfirmed) {
-		await checkEmail()
-		return
-	} else {
-		const res = await trpc().user.upsert.mutate(user)
-		if (!user.id && res?.user?.id) {
-			goto(`/manage/people/${res.eventUser.id}`)
-		}
-		toast.success('User Saved')
+	export let user: Partial<FullEventUser> = {
+		firstName: '',
+		lastName: '',
+		email: '',
+		type: 'attendee',
 	}
-}
-async function updateAvatar(mediaId: string) {
-	trpc().user.upsert.mutate({ userId: user.userId, mediaId })
-	invalidateAll()
-}
-async function deactivateUser() {
-	await trpc().user.upsert.mutate({ userId: user.userId, status: 'inactive' })
-	invalidateAll()
-}
-async function activateUser() {
-	await trpc().user.upsert.mutate({ userId: user.userId, status: 'active' })
-	invalidateAll()
-}
-async function checkEmail() {
-	if (user.email) {
-		const res = await trpc().user.checkEmail.query({ email: user.email })
-		if (res.emailExists) {
-			if (res.eventUserExists) {
-				userInEvent = true
-				error = 'This user is already part of this event.'
-				emailConfirmed = ''
-				toast.error('This email is already registered for this event')
-				return
-			} else {
-				userExistsNotInEvent = res.emailExists.id
-				user.firstName = res.emailExists.firstName
-				user.lastName = res.emailExists.lastName
-				user.userId = res.emailExists.id
-				emailConfirmed = 'user-exists'
-				return
+	export let simplified = false
+	export let inDialog = false
+	export let titleClass = ''
+	export let showTitle = true
+	let error = ''
+	let userInEvent = false
+	let emailConfirmed: string = user?.id ? 'existing-user' : ''
+	user.info = merge(
+		{
+			company: { value: '' },
+			title: { value: '' },
+			linkedin_url: { value: '' },
+			speechTitle: { value: '' },
+			diveTeam: { value: '' },
+			dinnerTable: { value: '' },
+		},
+		user?.info || {},
+	)
+	$: buttonMsg = emailConfirmed ? (user?.id ? 'Save User' : 'Add User') : 'Check Email'
+	$: editing = user?.id ? true : false
+	$: title = editing ? `${user?.firstName} ${user?.lastName}` : 'Add a User'
+	let userTypes = [
+		{ value: 'attendee', label: 'Attendee' },
+		{ value: 'main-stage', label: 'Main Stage Only Attendee' },
+		{ value: 'speaker', label: 'Speaker' },
+		{ value: 'main-stage-speaker', label: 'Main Stage Speaker' },
+		{ value: 'on-stage-host', label: 'On Stage Host' },
+		{ value: 'showcase-speaker', label: 'Showcase Speaker' },
+		{ value: 'impact-partner', label: 'Impact Partner' },
+		{ value: 'organizing-partner', label: 'Organizing Partner' },
+		{ value: 'divesession-facilitator', label: 'Dive-Session Facilitator' },
+		{ value: 'sponsor', label: 'Sponsor Rep' },
+		{ value: 'staff', label: 'Staff' },
+	]
+	let type = user?.type
+		? userTypes.find(({ value }) => value === user.type)
+		: { value: 'attendee', label: 'Attendee' }
+	$: user.type = type.value
+	let userExistsNotInEvent: User | false = false
+	let image = ''
+	async function saveUser() {
+		if (!emailConfirmed) {
+			await checkEmail()
+			return
+		} else {
+			const res = await trpc().user.upsert.mutate(user)
+			if (!user.id && res?.user?.id) {
+				goto(`/manage/people/${res.eventUser.id}`)
 			}
+			toast.success('User Saved')
 		}
-		emailConfirmed = 'create-user'
 	}
-}
+	async function updateAvatar(mediaId: string) {
+		trpc().user.upsert.mutate({ userId: user.userId, mediaId })
+		invalidateAll()
+	}
+	async function deactivateUser() {
+		await trpc().user.upsert.mutate({ userId: user.userId, status: 'inactive' })
+		invalidateAll()
+	}
+	async function activateUser() {
+		await trpc().user.upsert.mutate({ userId: user.userId, status: 'active' })
+		invalidateAll()
+	}
+	async function checkEmail() {
+		if (user.email) {
+			const res = await trpc().user.checkEmail.query({ email: user.email })
+			if (res.emailExists) {
+				if (res.eventUserExists) {
+					userInEvent = true
+					error = 'This user is already part of this event.'
+					emailConfirmed = ''
+					toast.error('This email is already registered for this event')
+					return
+				} else {
+					userExistsNotInEvent = res.emailExists.id
+					user.firstName = res.emailExists.firstName
+					user.lastName = res.emailExists.lastName
+					user.userId = res.emailExists.id
+					emailConfirmed = 'user-exists'
+					return
+				}
+			}
+			emailConfirmed = 'create-user'
+		}
+	}
 </script>
 
 {#if user?.status !== 'active' && !simplified}
@@ -148,7 +150,9 @@ async function checkEmail() {
 		{/if}
 		{#if emailConfirmed !== 'existing-user'}
 			<div
-				class="flex flex-col items-start justify-center gap-1 {emailConfirmed === 'create-user' ? '-mx-6 mb-2 border-b border-emerald-500/20 bg-emerald-50/40 p-6' : ''}"
+				class="flex flex-col items-start justify-center gap-1 {emailConfirmed === 'create-user'
+					? '-mx-6 mb-2 border-b border-emerald-500/20 bg-emerald-50/40 p-6'
+					: ''}"
 			>
 				<div class="flex items-center gap-2">
 					<Label for="email" class="text-right">E-Mail Address</Label>
@@ -183,7 +187,7 @@ async function checkEmail() {
 						<Select.Group>
 							<Select.Label>User Type</Select.Label>
 							{#each userTypes as { label, value }}
-								<Select.Item value={value} label={label}>{label}</Select.Item>
+								<Select.Item {value} {label}>{label}</Select.Item>
 							{/each}
 						</Select.Group>
 					</Select.Content>
@@ -248,6 +252,24 @@ async function checkEmail() {
 				<div class="flex flex-col items-start justify-center gap-1">
 					<Label for="bio" class="text-right">User Bio</Label>
 					<Textarea id="bio" bind:value={user.bio} class="col-span-3" />
+				</div>
+				<div class="flex flex-col items-start justify-center gap-1">
+					<Label for="dinnerTable" class="text-right">Dinner Table</Label>
+					<Input
+						id="dinnerTable"
+						type="text"
+						bind:value={user.info.dinnerTable.value}
+						class="col-span-3"
+					/>
+				</div>
+				<div class="flex flex-col items-start justify-center gap-1">
+					<Label for="diveTeam" class="text-right">Dive Team</Label>
+					<Input
+						id="diveTeam"
+						type="text"
+						bind:value={user.info.diveTeam.value}
+						class="col-span-3"
+					/>
 				</div>
 				{#if user.type.includes('speaker')}
 					<div class="flex flex-col items-start justify-center gap-1">
