@@ -15,6 +15,7 @@ import {
 	eventUserTable,
 	formElementTable,
 	formResponseTable,
+	ilike,
 	inArray,
 	like,
 	loginLinkTable,
@@ -82,9 +83,9 @@ export const userProcedures = t.router({
 				and(
 					eq(eventUserTable.eventId, ctx.event?.id),
 					or(
-						like(userTable.firstName, `%${input.q}%`),
-						like(userTable.lastName, `%${input.q}%`),
-						like(userTable.email, `%${input.q}%`),
+						ilike(userTable.firstName, `%${input.q}%`),
+						ilike(userTable.lastName, `%${input.q}%`),
+						ilike(userTable.email, `%${input.q}%`),
 					),
 				),
 			)
