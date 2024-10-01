@@ -1,122 +1,118 @@
 <script lang="ts">
-import { create, insert, remove, search, searchVector } from '@orama/orama'
-import Screen from '$lib/components/Screen.svelte'
-import { getMeContext } from '$lib/state/getContexts'
-import { getContext, onMount } from 'svelte'
+	import { create, insert, remove, search, searchVector } from '@orama/orama'
+	import Screen from '$lib/components/Screen.svelte'
+	import { getMeContext } from '$lib/state/getContexts'
+	import { getContext, onMount } from 'svelte'
 
-import type { Sponsor } from '@matterloop/db'
-import { getMediaUrl, orderBy, startCase } from '@matterloop/util'
+	import type { Sponsor } from '@matterloop/db'
+	import { getMediaUrl, orderBy, startCase } from '@matterloop/util'
 
-import type { Snapshot } from '../$types.js'
+	import type { Snapshot } from '../$types.js'
 
-export let data
-export const snapshot: Snapshot = {
-	capture: () => {
-		return {
-			scrollY: window.scrollY,
-		}
-	},
-	restore: ({ scrollY }) => {
-		window.scrollTo(0, scrollY)
-	},
-}
-let query = ''
-let searcher: (q: string) => Promise<typeof data.sponsors>
-onMount(async () => {
-	const db = await create({
-		schema: {
-			title: 'string',
+	export let data
+	export const snapshot: Snapshot = {
+		capture: () => {
+			return {
+				scrollY: window.scrollY,
+			}
 		},
-	})
-	await Promise.all(
-		data.sponsors.map(({ id, title, photo, users, description }) =>
-			insert(db, { id, title, photo, users, description }),
-		),
-	)
-	searcher = async (term: string) => {
-		const sres = await search(db, { term })
-		return sres.hits.map(({ document }) => document)
+		restore: ({ scrollY }) => {
+			window.scrollTo(0, scrollY)
+		},
 	}
-})
-const me = getMeContext()
-const seed = getContext<number>('seed')
-function shuffle(array: Array<any>, seed: number) {
-	let currentIndex = array.length,
-		temporaryValue,
-		randomIndex
-	seed = seed || 1
-	let random = function () {
-		var x = Math.sin(seed++) * 10000
-		return x - Math.floor(x)
-	}
-	// While there remain elements to shuffle...
-	while (0 !== currentIndex) {
-		// Pick a remaining element...
-		randomIndex = Math.floor(random() * currentIndex)
-		currentIndex -= 1
-		// And swap it with the current element.
-		temporaryValue = array[currentIndex]
-		array[currentIndex] = array[randomIndex]
-		array[randomIndex] = temporaryValue
-	}
-	return array
-}
-$: sponsors = data.sponsors
-let results: Sponsor[] = []
-$: {
-	results = []
-	if (query && searcher) {
-		searcher(query).then((res) => {
-			results = res
+	let query = ''
+	let searcher: (q: string) => Promise<typeof data.sponsors>
+	onMount(async () => {
+		const db = await create({
+			schema: {
+				title: 'string',
+			},
 		})
-	} else {
-		results = sponsors
+		await Promise.all(
+			data.sponsors.map(({ id, title, photo, users, description }) =>
+				insert(db, { id, title, photo, users, description }),
+			),
+		)
+		searcher = async (term: string) => {
+			const sres = await search(db, { term })
+			return sres.hits.map(({ document }) => document)
+		}
+	})
+	const me = getMeContext()
+	const seed = getContext<number>('seed')
+	function shuffle(array: Array<any>, seed: number) {
+		let currentIndex = array.length,
+			temporaryValue,
+			randomIndex
+		seed = seed || 1
+		let random = function () {
+			var x = Math.sin(seed++) * 10000
+			return x - Math.floor(x)
+		}
+		// While there remain elements to shuffle...
+		while (0 !== currentIndex) {
+			// Pick a remaining element...
+			randomIndex = Math.floor(random() * currentIndex)
+			currentIndex -= 1
+			// And swap it with the current element.
+			temporaryValue = array[currentIndex]
+			array[currentIndex] = array[randomIndex]
+			array[randomIndex] = temporaryValue
+		}
+		return array
 	}
-}
-const sponsorsByType = data.sponsors.reduce((out, sponsor) => {
-	if (!out[sponsor.type]) out[sponsor.type] = []
-	out[sponsor.type].push(sponsor)
-	return out
-}, {})
-const vals = {
-	sponsor: 0,
-	'impact-partner': 1,
-	'organizing-partner': 2,
-}
-const types = Object.keys(sponsorsByType)
-const typeOptions = [
-	{ label: 'All Whales', value: 'all' },
-	...types
-		.map((type) => ({
-			label: type === 'staff' ? 'Staff' : `${startCase(type)}s`,
-			value: type,
-		}))
-		.sort((a, b) => vals[a.value] - vals[b.value]),
-]
-let showType = 'all'
+	$: sponsors = data.sponsors
+	let results: Sponsor[] = []
+	$: {
+		results = []
+		if (query && searcher) {
+			searcher(query).then((res) => {
+				results = res
+			})
+		} else {
+			results = sponsors
+		}
+	}
+	const sponsorsByType = data.sponsors.reduce((out, sponsor) => {
+		if (!out[sponsor.type]) out[sponsor.type] = []
+		out[sponsor.type].push(sponsor)
+		return out
+	}, {})
+	const vals = {
+		sponsor: 0,
+		'impact-partner': 1,
+		'organizing-partner': 2,
+	}
+	const types = Object.keys(sponsorsByType)
+	const typeOptions = [
+		{ label: 'All Whales', value: 'all' },
+		...types
+			.map((type) => ({
+				label: type === 'staff' ? 'Staff' : `${startCase(type)}s`,
+				value: type,
+			}))
+			.sort((a, b) => vals[a.value] - vals[b.value]),
+	]
+	let showType = 'all'
 </script>
 
-<Screen
-	titleSelectOptions={typeOptions}
-	bind:titleSelectValue={showType}
-	title="Partners"
-	bigTitle="Partners"
-	bodyClass="bg-slate-100"
->
+<Screen title="Finalists" bigTitle="Finalists" bodyClass="bg-slate-100">
 	<div
 		class="topNav sticky z-40 -ml-4 flex w-[calc(100vw+0.25rem)] items-center justify-center border-b border-slate-300/50 bg-slate-50 px-5 text-center text-sm text-slate-600 lg:mx-0 lg:mt-1 lg:w-full lg:rounded-2xl lg:border"
 	>
 		<input
 			type="text"
 			class="w-full bg-transparent py-2.5 text-base !outline-none"
-			placeholder="Search {typeOptions.find(({value}) => value === showType)?.label.toLowerCase()}..."
+			placeholder="Search {typeOptions
+				.find(({ value }) => value === showType)
+				?.label.toLowerCase()}..."
 			bind:value={query}
 		/>
 	</div>
 	<div class="relative mx-auto -mt-2 max-w-7xl bg-slate-100">
 		<div class="mt-2 grid grid-cols-1 gap-4 py-2 lg:grid-cols-2">
-			{#each results.filter(({type}) => showType === 'all' || type === showType) as sponsor}
-				{@const {id, title, url, bookingUrl, photo, description} = sponsor}
+			{#each results.filter(({ type }) => showType === 'all' || type === showType) as sponsor}
+				{@const { id, title, url, bookingUrl, photo, description } = sponsor}
 				<div class="relative z-0 flex flex-col rounded-2xl bg-white p-1">
 					<a href={`/sponsors/${id}`}>
 						<div
@@ -179,11 +175,11 @@ let showType = 'all'
 </Screen>
 
 <style lang="postcss">
-.topNav {
-	/* top: 3rem; */
-	top: calc((env(safe-area-inset-top) * 0.68) + 3rem);
-	@media screen and (min-width: 1024px) {
-		top: 0.5rem;
+	.topNav {
+		/* top: 3rem; */
+		top: calc((env(safe-area-inset-top) * 0.68) + 3rem);
+		@media screen and (min-width: 1024px) {
+			top: 0.5rem;
+		}
 	}
-}
 </style>
