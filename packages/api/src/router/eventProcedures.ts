@@ -148,6 +148,9 @@ export const eventProcedures = t.router({
 					.set({ type: input.type })
 					.where(eq(eventUserTable.id, existing.id))
 			} else {
+				if (input.eventId !== ctx.event.id) {
+					input.mainId = ctx.event.id
+				}
 				await db
 					.insert(eventUserTable)
 					.values({ ...input })
