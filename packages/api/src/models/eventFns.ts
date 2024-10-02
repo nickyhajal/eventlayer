@@ -340,7 +340,7 @@ export const EventFns = (args: string | Args) => {
 						eq(mainEventUser.status, 'active'),
 						or(
 							// the related event has a parentId of the main event
-							and(eq(eventTable.eventId, eventId), ne(eventUserTable.type, 'attendee')),
+							// and(eq(eventTable.eventId, eventId), ne(eventUserTable.type, 'attendee')),
 							and(
 								inArray(mainEventUser.type, [
 									'speaker',
