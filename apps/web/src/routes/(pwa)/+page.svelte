@@ -109,7 +109,7 @@
 					</div>
 					<div>
 						<Button href="/event-type" class="bg-amber-700/90 hover:bg-amber-600 text-white"
-							>Browse Lunch Options</Button
+							>Pick Your Lunch Restaurant for Day 1</Button
 						>
 					</div>
 				</div>
