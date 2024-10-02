@@ -69,6 +69,25 @@
 
 <Screen title={$event.name}>
 	<div class="shell mx-auto pt-12 md:max-w-7xl">
+		{#if $event.getContent('alert')}
+			{#if $event.getContent('alert-link')}
+				<a
+					href={$event.getContent('alert-link')}
+					target={$event.getContent('alert-link').includes('eventlayer') ? '' : '_blank'}
+					class="bg-amber-100/30 block hover:bg-amber-100/60 transition-all rounded-xl p-4 text-sm text-center -mt-8 md:-mt-36 mb-20 text-slate-700"
+				>
+					<div class="text-sm font-semibold">
+						{$event.getContent('alert')}
+					</div>
+				</a>
+			{:else}
+				<div class="bg-amber-100/30 rounded-xl p-4 text-sm text-center -mt-8 mb-16 text-slate-700">
+					<div class="text-sm font-semibold">
+						{$event.getContent('alert')}
+					</div>
+				</div>
+			{/if}
+		{/if}
 		<img
 			src={getMediaUrl($event.largeLogo)}
 			alt="An alt text"
