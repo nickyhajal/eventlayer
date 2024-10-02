@@ -298,7 +298,7 @@ export const userProcedures = t.router({
 				return error(401, 'No user found')
 			}
 			const eventUser = await db.query.eventUserTable.findFirst({
-				where: eq(eventUserTable.userId, user.id),
+				where: and(eq(eventUserTable.userId, user.id), eq(eventUserTable.eventId, ctx.event.id)),
 			})
 			if (!eventUser) {
 				return error(401, 'No user found')
