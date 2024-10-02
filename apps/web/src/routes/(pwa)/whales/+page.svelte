@@ -85,7 +85,7 @@
 	}
 	const types = Object.keys(sponsorsByType)
 	const typeOptions = [
-		{ label: 'Finalists', value: 'all' },
+		{ label: 'Whale Tank Finalists', value: 'all' },
 		...types
 			.map((type) => ({
 				label: type === 'staff' ? 'Staff' : `${startCase(type)}s`,
@@ -96,7 +96,7 @@
 	let showType = 'all'
 </script>
 
-<Screen title="Finalists" bigTitle="Finalists" bodyClass="bg-slate-100">
+<Screen title="Whale Tank Finalists" bigTitle="Whale Tank Finalists" bodyClass="bg-slate-100">
 	<div
 		class="topNav sticky z-40 -ml-4 flex w-[calc(100vw+0.25rem)] items-center justify-center border-b border-slate-300/50 bg-slate-50 px-5 text-center text-sm text-slate-600 lg:mx-0 lg:mt-1 lg:w-full lg:rounded-2xl lg:border"
 	>
@@ -110,6 +110,18 @@
 		/>
 	</div>
 	<div class="relative mx-auto -mt-2 max-w-7xl bg-slate-100">
+		<div class="mb-8 max-w-2xl mt-16 px-4 sm:px-0">
+			<p class="text-lg mb-4">
+				“A pitch contest <b>for</b> innovators, <b>by</b> innovators. We’re not doing “Innovation Theater”
+				here. We’re making game-changing connections between startups/tech companies, investors and startups.
+				Where innovation meets acceleration, connecting startups directly with customers and investors
+				to fast-track clinical breakthroughs.
+			</p>
+			<p class="text-lg">
+				In our “pilot” year we had 24 applications and here are the 6 finalists who will be
+				presenting at this year’s Gathering.”
+			</p>
+		</div>
 		<div class="mt-2 grid grid-cols-1 gap-4 py-2 lg:grid-cols-2">
 			{#each results.filter(({ type }) => showType === 'all' || type === showType) as sponsor}
 				{@const { id, title, url, bookingUrl, photo, description } = sponsor}
