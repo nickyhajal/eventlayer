@@ -112,7 +112,7 @@
 	<div class="relative mx-auto -mt-2 max-w-7xl bg-slate-100">
 		<div class="mb-8 max-w-2xl mt-16 px-4 sm:px-0">
 			<p class="text-lg mb-4">
-				“A pitch contest <b>for</b> innovators, <b>by</b> innovators. We’re not doing “Innovation Theater”
+				A pitch contest <b>for</b> innovators, <b>by</b> innovators. We’re not doing “Innovation Theater”
 				here. We’re making game-changing connections between startups/tech companies, investors and startups.
 				Where innovation meets acceleration, connecting startups directly with customers and investors
 				to fast-track clinical breakthroughs.
