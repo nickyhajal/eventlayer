@@ -14,7 +14,7 @@
 
 	export let data
 	const me = getMeContext()
-	$: shouldGroup = data.event.type === 'program'
+	$: shouldGroup = data.event.eventFor === 'rsvp'
 	$: event = data.event
 	$: users = orderBy(
 		shouldGroup ? data.users : data.users.map((row) => ({ ...row, type: 'attendee' })),
