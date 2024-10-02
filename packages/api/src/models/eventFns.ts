@@ -19,6 +19,7 @@ import {
 	inArray,
 	isNotNull,
 	key,
+	like,
 	mediaTable,
 	menuTable,
 	ne,
@@ -88,6 +89,23 @@ export const EventFns = (args: string | Args) => {
 			if (!events) {
 				events = await db.query.eventTable.findMany({
 					where: and(eq(eventTable.eventId, eventId), eq(eventTable.type, 'meal')),
+					with: {
+						photo: true,
+						venue: { with: { photo: true } },
+						users: { with: { user: { with: { photo: true } } } },
+					},
+					orderBy: [asc(eventTable.startsAt), asc(eventTable.ord)],
+				})
+				redis.set(key, events)
+			}
+			return events
+		},
+		getDives: async () => {
+			const key = `event_dives:${eventId}`
+			let events = await redis.get<Event[]>(key)
+			if (!events || true) {
+				events = await db.query.eventTable.findMany({
+					where: and(eq(eventTable.eventId, eventId), like(eventTable.name, '%DIVE TEAM%')),
 					with: {
 						photo: true,
 						venue: { with: { photo: true } },
