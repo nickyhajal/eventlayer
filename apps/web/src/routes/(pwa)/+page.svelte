@@ -14,6 +14,8 @@
 	export let data
 	$: upcoming = data.upcoming
 	$: console.log(data)
+	$: team = data.info.find((info) => info.key === 'diveTeam')
+	$: table = data.info.find((info) => info.key === 'dinnerTable')
 	let event = getEventContext()
 	let tabs = $event.menus
 		.filter((m) => m.location === 'quick')
@@ -101,9 +103,27 @@
 		</div>
 		{#if data?.me?.type !== 'main-stage'}
 			<div
-				class="mb-8 rounded-b-xl text-a-accent/90 bg-amber-100/30 p-8 mt-8 text-center text-sm font-medium leading-snug md:text-base"
+				class="mb-8 rounded-xl overflow-hidden text-a-accent/90 bg-amber-100/30 mt-8 text-center text-sm font-medium leading-snug md:text-base"
 			>
-				<div class=" px-16 font-semibold flex flex-col items-center gap-5">
+				<div class="grid grid-cols-2 px-8 py-4 bg-amber-100/40">
+					<div class="border-r border-amber-600/10">
+						<div class="uppercase font-semibold text-sm text-amber-800/50">Your Dive Team</div>
+						<div
+							class="text-lg text-slate-600 px-2 py-1 bg-white/60 mt-2 rounded-md w-fit mx-auto font-semibold"
+						>
+							{team?.value || 'None'}
+						</div>
+					</div>
+					<div class="">
+						<div class="uppercase font-semibold text-sm text-amber-800/50">Your Dinner Table</div>
+						<div
+							class="text-lg text-slate-600 px-2 py-1 bg-white/60 mt-2 font-semibold rounded-md w-fit mx-auto"
+						>
+							{table?.value || 'None'}
+						</div>
+					</div>
+				</div>
+				<div class=" px-16 font-semibold flex flex-col items-center gap-5 py-8">
 					<div class="mx-auto max-w-sm">
 						Make sure to RSVP for one of the Day 1: Lunch options to add it to your schedule.
 					</div>
