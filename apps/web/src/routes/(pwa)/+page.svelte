@@ -111,8 +111,8 @@
 			<div
 				class="mb-8 rounded-xl overflow-hidden text-a-accent/90 bg-amber-100/30 mt-8 text-center text-sm font-medium leading-snug md:text-base"
 			>
-				<div class="grid grid-cols-2 px-8 py-4 bg-amber-100/40">
-					<div class="border-r border-amber-600/10">
+				<div class="grid grid-cols-1 px-8 py-4 bg-amber-100/40">
+					<div class="">
 						<div class="uppercase font-semibold text-sm text-amber-800/50">Your Dive Team</div>
 						<div
 							class="text-lg text-slate-600 px-2 py-1 bg-white/60 mt-2 rounded-md w-fit mx-auto font-semibold"
