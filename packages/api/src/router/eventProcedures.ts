@@ -12,7 +12,13 @@ import {
 	Event,
 	eventSchema,
 	eventTable,
+	eventTicketTable,
+	eventUserInfoTable,
 	eventUserTable,
+	formResponseTable,
+	formSessionTable,
+	formTable,
+	isNull,
 	type EventUser,
 } from '@matterloop/db'
 import { userTable, type User } from '@matterloop/db/types'
@@ -26,6 +32,14 @@ import {
 	verifyMe,
 	type TrpcContext,
 } from '../procedureWithContext'
+
+const assignTicketSchema = z.object({
+	ticketId: z.string(),
+	userId: z.string().optional(),
+	firstName: z.string().optional(),
+	lastName: z.string().optional(),
+	email: z.string().optional(),
+})
 
 async function getAttendeeStore(event: Event) {
 	if (!event?.id) return false
@@ -206,6 +220,7 @@ export const eventProcedures = t.router({
 							'replyEmail',
 							'maxAttendees',
 							'showAttendeeList',
+							'settings',
 							'emailFromName',
 							'largeLogoId',
 							'venueId',
@@ -243,4 +258,150 @@ export const eventProcedures = t.router({
 				return newForm[0]
 			}
 		}),
+	assignTicket: procedureWithContext
+		.use(verifyMe())
+		.use(verifyEvent())
+		.input(assignTicketSchema)
+		.mutation(async ({ ctx, input }) => {
+			if (!ctx.meId) {
+				throw new Error('User not found')
+			}
+			const eventId = ctx.event.id as string
+			const meId = ctx.meId as string
+			if (!eventId) {
+				throw new Error('Event not found')
+			}
+			if (!meId) {
+				throw new Error('User not found')
+			}
+			console.log(input)
+			const ticket = await db.query.eventTicketTable.findFirst({
+				where: and(
+					eq(eventTicketTable.id, input.ticketId),
+					eq(eventTicketTable.eventId, eventId),
+					eq(eventTicketTable.userId, meId),
+					isNull(eventTicketTable.assignedOn),
+				),
+			})
+			if (!ticket) {
+				throw new Error('Ticket not found')
+			}
+			if (input.userId) {
+				const existing = await db.query.eventUserTable.findFirst({
+					where: and(eq(eventUserTable.userId, input.userId), eq(eventUserTable.eventId, eventId)),
+				})
+				if (existing) {
+					throw new Error('This user is already attending the event')
+				}
+				const onboardForm = await db.query.formTable.findFirst({
+					where: and(eq(formTable.eventId, eventId), eq(formTable.type, 'onboarding')),
+				})
+				const onboardFormId = onboardForm?.id
+				const updatedTicket = await db
+					.update(eventTicketTable)
+					.set({ assignedTo: input.userId, assignedOn: dayjs().toISOString() })
+					.where(eq(eventTicketTable.id, ticket.id))
+					.returning()
+				const eventUser = await db
+					.insert(eventUserTable)
+					.values({
+						userId: input.userId,
+						eventId,
+						type: 'attendee',
+						onboardFormId,
+						onboardStatus: 'not-sent',
+					})
+					.returning()
+				return { ticket: updatedTicket[0], eventUser: eventUser[0] }
+			} else if (input.email && input.firstName && input.lastName) {
+				let user = await db.query.userTable.findFirst({
+					where: eq(userTable.email, input.email),
+				})
+				if (!user) {
+					const inserted = await db
+						.insert(userTable)
+						.values({
+							email: input.email,
+							firstName: input.firstName,
+							lastName: input.lastName,
+						})
+						.returning()
+					if (inserted) {
+						user = inserted[0]
+					}
+				}
+				if (!user) {
+					return false
+				}
+				const existing = await db.query.eventUserTable.findFirst({
+					where: and(eq(eventUserTable.userId, user.id), eq(eventUserTable.eventId, eventId)),
+				})
+				if (existing) {
+					throw new Error('User already has a ticket')
+				}
+				const eventUser = await db
+					.insert(eventUserTable)
+					.values({
+						userId: user.id,
+						eventId,
+						type: 'attendee',
+					})
+					.returning()
+				await db.insert(eventUserInfoTable).values([
+					{
+						userId: user.id,
+						eventId,
+						public: true,
+						key: 'firstName',
+						value: user.firstName,
+					},
+					{
+						userId: user.id,
+						eventId,
+						public: true,
+						key: 'lastName',
+						value: user.lastName,
+					},
+				])
+				const updatedTicket = await db
+					.update(eventTicketTable)
+					.set({ assignedTo: user.id, assignedOn: dayjs().toISOString() })
+					.where(eq(eventTicketTable.id, ticket.id))
+					.returning()
+				const sessionRes = await db
+					.insert(formSessionTable)
+					.values({
+						userId: user?.id,
+						eventId,
+						formId: formId,
+						status: 'submitted',
+						submissionDate: dayjs().format('YYYY-MM-DD'),
+					})
+					.returning()
+				const session = sessionRes[0]
+				if (session) {
+					const elementRows = Object.entries(elementMap)
+						.map(([key, rowKey]) => ({
+							userId: user?.id,
+							formId: formId,
+							eventId: eventId,
+							type: 'text',
+							sessionId: session.id,
+							elementId: rowKey,
+							value: user[key] || '',
+						}))
+						.filter(({ value }) => value)
+					if (elementRows.length) {
+						await db.insert(formResponseTable).values(elementRows)
+					}
+				}
+				return { ticket: updatedTicket[0], eventUser: eventUser[0] }
+			}
+		}),
 })
+
+const elementMap = {
+	firstName: '64021b5d-2b4d-4fb2-bdcd-6bc6aa81f5f8',
+	lastName: '2ff7bd05-56da-4ba0-a9c0-71a9ad320f07',
+}
+const formId = '1c98ccdf-76af-48b7-985b-a5e98dbd8b17'

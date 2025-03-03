@@ -13,10 +13,11 @@ export const load = async (req) => {
 			me &&
 			me.onboardStatus !== 'done' &&
 			me.onboardFormId &&
-			req.url.pathname !== '/welcome'
+			!req.url.pathname.includes('/welcome')
 		) {
 			const form = await eventFns.getOnboardForm()
 			if (form) {
+				console.log('redirecting to welcome', req.url.pathname)
 				redirect(301, '/welcome')
 			}
 		}

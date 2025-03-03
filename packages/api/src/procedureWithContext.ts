@@ -50,6 +50,7 @@ interface VerifyArgs<T> {
 	key?: keyof T
 	entity?: T | undefined | null
 }
+
 export const verifyMe = (require: string = '') =>
 	middleware(async ({ ctx, input, next }) => {
 		const me = ctx?.req?.locals?.me

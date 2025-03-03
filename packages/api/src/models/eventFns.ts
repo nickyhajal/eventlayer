@@ -177,6 +177,7 @@ export const EventFns = (args: string | Args) => {
 			} else {
 				const users = await fns.getUsers()
 				const ids = users.map((user) => user.userId)
+				if (!ids?.length) return []
 				const info = await db.query.eventUserInfoTable.findMany({
 					where: and(
 						inArray(eventUserInfoTable.userId, ids),

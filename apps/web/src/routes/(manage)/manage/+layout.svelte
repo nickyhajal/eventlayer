@@ -1,108 +1,114 @@
 <script lang="ts">
-import { page } from '$app/stores'
-import Calendar from 'lucide-svelte/icons/calendar'
-import FileQuestion from 'lucide-svelte/icons/file-question'
-import FileText from 'lucide-svelte/icons/file-text'
-import Handshake from 'lucide-svelte/icons/handshake'
-import HelpCircle from 'lucide-svelte/icons/help-circle'
-import Home from 'lucide-svelte/icons/home'
-import Mail from 'lucide-svelte/icons/mail'
-import Pin from 'lucide-svelte/icons/map-pinned'
-import SquareMenu from 'lucide-svelte/icons/menu-square'
-import NotePadText from 'lucide-svelte/icons/notepad-text'
-import Paintbrush from 'lucide-svelte/icons/paintbrush'
-import Settings from 'lucide-svelte/icons/settings'
-import TextCursor from 'lucide-svelte/icons/text-cursor-input'
-import Users from 'lucide-svelte/icons/users'
-import { setContext } from 'svelte'
-import { writable } from 'svelte/store'
+	import { page } from '$app/stores'
+	import Calendar from 'lucide-svelte/icons/calendar'
+	import FileQuestion from 'lucide-svelte/icons/file-question'
+	import FileText from 'lucide-svelte/icons/file-text'
+	import Handshake from 'lucide-svelte/icons/handshake'
+	import HelpCircle from 'lucide-svelte/icons/help-circle'
+	import Home from 'lucide-svelte/icons/home'
+	import Mail from 'lucide-svelte/icons/mail'
+	import Pin from 'lucide-svelte/icons/map-pinned'
+	import SquareMenu from 'lucide-svelte/icons/menu-square'
+	import NotePadText from 'lucide-svelte/icons/notepad-text'
+	import Paintbrush from 'lucide-svelte/icons/paintbrush'
+	import Settings from 'lucide-svelte/icons/settings'
+	import TextCursor from 'lucide-svelte/icons/text-cursor-input'
+	import Ticket from 'lucide-svelte/icons/ticket'
+	import Users from 'lucide-svelte/icons/users'
+	import { setContext } from 'svelte'
+	import { writable } from 'svelte/store'
 
-export let data
-$: currPath = $page.url.pathname.replace('/manage', '')
-let links = [
-	{
-		path: '/',
-		label: 'Dashboard',
-		icon: Home,
-	},
-	{
-		section: true,
-		label: 'Scheduling',
-	},
-	{
-		path: '/events',
-		label: 'Events',
-		icon: Calendar,
-		iconClass: 'mb-0.5',
-	},
-	{
-		path: '/venues',
-		label: 'Venues',
-		icon: Pin,
-	},
-	{
-		section: true,
-		label: 'Attendees',
-	},
-	{
-		path: '/people',
-		label: 'People',
-		icon: Users,
-	},
-	{
-		path: '/forms',
-		label: 'Forms',
-		icon: NotePadText,
-	},
-	{
-		path: '/sponsors',
-		label: 'Sponsors',
-		icon: Handshake,
-	},
-	{
-		section: true,
-		label: 'Content',
-	},
-	{
-		path: '/pages',
-		label: 'Pages',
-		icon: FileText,
-	},
-	{
-		path: '/content',
-		label: 'Strings',
-		icon: TextCursor,
-	},
-	{
-		path: '/faqs',
-		label: 'FAQs',
-		icon: FileQuestion,
-	},
-	{
-		section: true,
-		label: 'Settings',
-	},
-	{
-		path: '/settings',
-		label: 'Basics',
-		icon: Settings,
-	},
-	{
-		path: '/menus',
-		label: 'Menus',
-		icon: SquareMenu,
-	},
-	{
-		path: '/settings',
-		label: 'Appearance',
-		icon: Paintbrush,
-	},
-	// {
-	// 	path: '/notifications',
-	// 	label: 'Notifications',
-	// },
-]
-setContext('venues', writable(data.venues))
+	export let data
+	$: currPath = $page.url.pathname.replace('/manage', '')
+	let links = [
+		{
+			path: '/',
+			label: 'Dashboard',
+			icon: Home,
+		},
+		{
+			section: true,
+			label: 'Scheduling',
+		},
+		{
+			path: '/events',
+			label: 'Events',
+			icon: Calendar,
+			iconClass: 'mb-0.5',
+		},
+		{
+			path: '/venues',
+			label: 'Venues',
+			icon: Pin,
+		},
+		{
+			section: true,
+			label: 'Attendees',
+		},
+		{
+			path: '/people',
+			label: 'People',
+			icon: Users,
+		},
+		{
+			path: '/tickets',
+			label: 'Tickets',
+			icon: Ticket,
+		},
+		{
+			path: '/forms',
+			label: 'Forms',
+			icon: NotePadText,
+		},
+		{
+			path: '/sponsors',
+			label: 'Sponsors',
+			icon: Handshake,
+		},
+		{
+			section: true,
+			label: 'Content',
+		},
+		{
+			path: '/pages',
+			label: 'Pages',
+			icon: FileText,
+		},
+		{
+			path: '/content',
+			label: 'Strings',
+			icon: TextCursor,
+		},
+		{
+			path: '/faqs',
+			label: 'FAQs',
+			icon: FileQuestion,
+		},
+		{
+			section: true,
+			label: 'Settings',
+		},
+		{
+			path: '/settings',
+			label: 'Basics',
+			icon: Settings,
+		},
+		{
+			path: '/menus',
+			label: 'Menus',
+			icon: SquareMenu,
+		},
+		{
+			path: '/settings',
+			label: 'Appearance',
+			icon: Paintbrush,
+		},
+		// {
+		// 	path: '/notifications',
+		// 	label: 'Notifications',
+		// },
+	]
+	setContext('venues', writable(data.venues))
 </script>
 
 <div class="grid h-full grid-rows-[4.1rem_1fr]">
@@ -141,7 +147,10 @@ setContext('venues', writable(data.venues))
 					{@const thisBits = link.path.substr(1).split('/')}
 					{@const currBits = currPath.substr(1).split('/')}
 					<a
-						class="flex items-center gap-2 rounded-md px-2 py-2 text-[0.85rem] {thisBits[0] === currBits[0] ? 'bg-stone-200/50 text-stone-600' : 'text-stone-500/80 hover:bg-stone-100'}"
+						class="flex items-center gap-2 rounded-md px-2 py-2 text-[0.85rem] {thisBits[0] ===
+						currBits[0]
+							? 'bg-stone-200/50 text-stone-600'
+							: 'text-stone-500/80 hover:bg-stone-100'}"
 						href="/manage{link.path}"
 					>
 						{#if link.icon}
