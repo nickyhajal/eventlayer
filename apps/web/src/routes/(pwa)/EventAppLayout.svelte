@@ -1,23 +1,26 @@
 <script lang="ts">
-import { page } from '$app/stores'
-import { getEventContext } from '$lib/state/getContexts'
-import { getRawRgb } from '$lib/util/getRawRgb'
+	import { page } from '$app/stores'
+	import { getEventContext } from '$lib/state/getContexts'
+	import { getRawRgb } from '$lib/util/getRawRgb'
 
-import TabBar from './TabBar.svelte'
+	import TabBar from './TabBar.svelte'
 
-const event = getEventContext()
-$: cssVars = $event?.colors
-	? Object.entries($event?.colors)
-			.map(([key, value]) => {
-				return `--a-${key}: ${getRawRgb(value)};`
-			})
-			.join(' ')
-	: ''
-$: showSidebar = !$page.url.pathname.includes('/login') && $page.url.pathname !== '/welcome'
+	const event = getEventContext()
+	$: cssVars = $event?.colors
+		? Object.entries($event?.colors)
+				.map(([key, value]) => {
+					return `--a-${key}: ${getRawRgb(value)};`
+				})
+				.join(' ')
+		: ''
+	$: showSidebar =
+		!$page.url.pathname.includes('/login') && !$page.url.pathname.includes('/welcome')
 </script>
 
 <div
-	class="grid min-h-full w-screen overflow-x-hidden bg-slate-800 {showSidebar ? 'lg:grid-cols-[15rem_1fr]' : 'lg:grid-cols-[1fr]'} lg:bg-white"
+	class="grid min-h-full w-screen overflow-x-hidden bg-slate-800 {showSidebar
+		? 'lg:grid-cols-[15rem_1fr]'
+		: 'lg:grid-cols-[1fr]'} lg:bg-white"
 	style={cssVars}
 >
 	<div class="lg:order-1">
@@ -37,7 +40,7 @@ $: showSidebar = !$page.url.pathname.includes('/login') && $page.url.pathname !=
 </div>
 
 <style>
-:global(body) {
-	overflow-x: hidden;
-}
+	:global(body) {
+		overflow-x: hidden;
+	}
 </style>
