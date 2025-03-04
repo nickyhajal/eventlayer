@@ -1,55 +1,53 @@
 <script lang="ts">
-import * as Popover from '$lib/components/ui/popover'
-import { trpc } from '$lib/trpc/client'
+	import * as Popover from '$lib/components/ui/popover'
+	import { trpc } from '$lib/trpc/client'
 
-import type { FullEventUser } from '@matterloop/db'
-import { debounce } from '@matterloop/util'
+	import type { FullEventUser } from '@matterloop/db'
+	import { debounce } from '@matterloop/util'
 
-import Button from './ui/button/button.svelte'
-import Input from './ui/input/input.svelte'
+	import Button from './ui/button/button.svelte'
+	import Input from './ui/input/input.svelte'
 
-let userSearchQuery = ''
-let loading = false
-let showLoading = false
-let loadingTimo = 0
-let error = false
-let lastQuery = ''
-let results: false | any[] = false
-export let handleClick: (user: FullEventUser) => void
+	let userSearchQuery = ''
+	let loading = false
+	let showLoading = false
+	let loadingTimo = 0
+	let error = false
+	let lastQuery = ''
+	let results: false | any[] = false
+	export let handleClick: (user: FullEventUser) => void
 
-async function searchRaw() {
-	if (!loading) {
-		console.log('load search', userSearchQuery)
-		loading = true
-		clearTimeout(loadingTimo)
-		loadingTimo = setTimeout(() => {
-			showLoading = true
-		}, 800)
-		try {
-			const res = await trpc().user.search.query({ q: userSearchQuery })
-			console.log(res)
-			results = res
-			return res
-		} catch (e) {
-			error = e
-		} finally {
+	async function searchRaw() {
+		if (!loading) {
+			loading = true
 			clearTimeout(loadingTimo)
-			loading = false
-			showLoading = false
+			loadingTimo = setTimeout(() => {
+				showLoading = true
+			}, 800)
+			try {
+				const res = await trpc().user.search.query({ q: userSearchQuery })
+				results = res
+				return res
+			} catch (e) {
+				error = e
+			} finally {
+				clearTimeout(loadingTimo)
+				loading = false
+				showLoading = false
+			}
 		}
 	}
-}
-const search = debounce(searchRaw, 200)
-$: {
-	if (userSearchQuery !== lastQuery) {
-		lastQuery = userSearchQuery
-		search()
+	const search = debounce(searchRaw, 200)
+	$: {
+		if (userSearchQuery !== lastQuery) {
+			lastQuery = userSearchQuery
+			search()
+		}
 	}
-}
-function handleBaseClick(user: FullEventUser) {
-	handleClick(user)
-	userSearchQuery = ''
-}
+	function handleBaseClick(user: FullEventUser) {
+		handleClick(user)
+		userSearchQuery = ''
+	}
 </script>
 
 <div class="relative flex-grow">

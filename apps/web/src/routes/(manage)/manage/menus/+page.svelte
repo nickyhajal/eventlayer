@@ -1,32 +1,32 @@
 <script lang="ts">
-import { Button } from '$lib/components/ui/button'
-import { Textarea } from '$lib/components/ui/textarea'
-import { trpc } from '$lib/trpc/client.js'
-import Plus from 'lucide-svelte/icons/plus'
-import { toast } from 'svelte-sonner'
+	import { Button } from '$lib/components/ui/button'
+	import { Textarea } from '$lib/components/ui/textarea'
+	import { trpc } from '$lib/trpc/client.js'
+	import Plus from 'lucide-svelte/icons/plus'
+	import { toast } from 'svelte-sonner'
 
-import type { Content } from '@matterloop/db'
-import { groupBy } from '@matterloop/util'
+	import type { Content } from '@matterloop/db'
+	import { groupBy } from '@matterloop/util'
 
-import AdminScreen from '../AdminScreen.svelte'
-import MenuList from './MenuList.svelte'
+	import AdminScreen from '../AdminScreen.svelte'
+	import MenuList from './MenuList.svelte'
 
-export let data
+	export let data
 
-let content = data.content
-let lastContent = content.map((c) => JSON.stringify(c))
+	let content = data.content
+	let lastContent = content.map((c) => JSON.stringify(c))
 
-async function save() {
-	const toSave: Content[] = []
-	content.forEach((c, i) => {
-		if (JSON.stringify(c) !== lastContent[i]) {
-			toSave.push(c)
-		}
-	})
-	await Promise.all(toSave.map((c) => trpc().content.upsert.mutate(c)))
-	toast.success('Saved FAQs')
-}
-const menusByGroup = groupBy(data.event?.menus, 'location')
+	async function save() {
+		const toSave: Content[] = []
+		content.forEach((c, i) => {
+			if (JSON.stringify(c) !== lastContent[i]) {
+				toSave.push(c)
+			}
+		})
+		await Promise.all(toSave.map((c) => trpc().content.upsert.mutate(c)))
+		toast.success('Saved FAQs')
+	}
+	const menusByGroup = groupBy(data.event?.menus, 'location')
 </script>
 
 <AdminScreen title={true}>
