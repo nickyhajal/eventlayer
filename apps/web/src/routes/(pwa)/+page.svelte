@@ -107,7 +107,7 @@
 				</div>
 			</div>
 		</div>
-		{#if data?.me?.type !== 'main-stage'}
+		<!-- {#if data?.me?.type !== 'main-stage'}
 			<div
 				class="mb-8 rounded-xl overflow-hidden text-a-accent/90 bg-amber-100/30 mt-8 text-center text-sm font-medium leading-snug md:text-base"
 			>
@@ -140,7 +140,7 @@
 					</div>
 				</div> -->
 			</div>
-		{/if}
+		{/if} -->
 		<div class="mt-8">
 			<div class="mb-1.5 text-2xl font-semibold text-slate-700">Quick Links</div>
 			<div class="grid grid-cols-2 gap-2">
