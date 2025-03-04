@@ -128,8 +128,8 @@
 							{table?.value || 'None'}
 						</div>
 					</div> -->
-				</div>
-				<!-- <div class=" px-16 font-semibold flex flex-col items-center gap-5 py-8">
+		<!-- </div> -->
+		<!-- <div class=" px-16 font-semibold flex flex-col items-center gap-5 py-8">
 					<div class="mx-auto max-w-sm">
 						Make sure to RSVP for one of the Day 1: Lunch options to add it to your schedule.
 					</div>
@@ -139,8 +139,8 @@
 						>
 					</div>
 				</div> -->
-			</div>
-		{/if} -->
+		<!-- </div> -->
+		<!-- {/if} -->
 		<div class="mt-8">
 			<div class="mb-1.5 text-2xl font-semibold text-slate-700">Quick Links</div>
 			<div class="grid grid-cols-2 gap-2">
