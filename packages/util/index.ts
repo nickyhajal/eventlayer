@@ -201,3 +201,15 @@ export const formatDate = (date: DayjsConfigType) => {
     delta: cur.diff(dateObj, 'days'),
   }
 }
+
+export const copyToClipboard = (text: string) => {
+  if (typeof navigator !== 'undefined' && navigator.clipboard) {
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        console.log('Text copied to clipboard');
+    })
+    .catch(err => {
+      console.error('Error copying text: ', err);
+    });
+  }
+}
