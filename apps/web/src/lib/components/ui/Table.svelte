@@ -1,150 +1,151 @@
 <script lang="ts" generics="T">
-import {
-	createSvelteTable,
-	flexRender,
-	getCoreRowModel,
-	getFacetedMinMaxValues,
-	getFacetedRowModel,
-	getFacetedUniqueValues,
-	getFilteredRowModel,
-	getPaginationRowModel,
-	getSortedRowModel,
-	type FilterFn,
-	type SortDirection,
-} from '@tanstack/svelte-table'
-import type {
-	Cell,
-	ColumnDef,
-	ColumnSort,
-	Row,
-	SortingColumn,
-	TableOptions,
-} from '@tanstack/svelte-table'
-import { User } from 'lucide-static'
-import ChevronFirst from 'lucide-svelte/icons/chevron-first'
-import ChevronLast from 'lucide-svelte/icons/chevron-last'
-import ChevronLeft from 'lucide-svelte/icons/chevron-left'
-import ChevronRight from 'lucide-svelte/icons/chevron-right'
-// import { rankItem } from '@tanstack/match-sorter-utils';
-import { writable } from 'svelte/store'
+	import {
+		createSvelteTable,
+		flexRender,
+		getCoreRowModel,
+		getFacetedMinMaxValues,
+		getFacetedRowModel,
+		getFacetedUniqueValues,
+		getFilteredRowModel,
+		getPaginationRowModel,
+		getSortedRowModel,
+		type FilterFn,
+		type SortDirection,
+	} from '@tanstack/svelte-table'
+	import type {
+		Cell,
+		ColumnDef,
+		ColumnSort,
+		Row,
+		SortingColumn,
+		TableOptions,
+	} from '@tanstack/svelte-table'
+	import { User } from 'lucide-static'
+	import ChevronFirst from 'lucide-svelte/icons/chevron-first'
+	import ChevronLast from 'lucide-svelte/icons/chevron-last'
+	import ChevronLeft from 'lucide-svelte/icons/chevron-left'
+	import ChevronRight from 'lucide-svelte/icons/chevron-right'
+	// import { rankItem } from '@tanstack/match-sorter-utils';
+	import { writable } from 'svelte/store'
 
-import UserAvatar from '../UserAvatar.svelte'
+	import UserAvatar from '../UserAvatar.svelte'
+	import ChicletButton from './ChicletButton.svelte'
 
-export let emptyMsg: string
-export let sorting: ColumnSort[] = []
-export let rows: Array<T>
-export let columns: ColumnDef<T>[]
-export let globalFilterFn: FilterFn<any>
-export let pageSize = 50
-export let onRowClick: (row: Row<T>) => {}
-export let rowHref: undefined | ((cell: Cell<T, unknown>) => string)
-export const numFormat = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' })
+	export let emptyMsg: string
+	export let sorting: ColumnSort[] = []
+	export let rows: Array<T>
+	export let columns: ColumnDef<T>[]
+	export let globalFilterFn: FilterFn<any>
+	export let pageSize = 50
+	export let onRowClick: (row: Row<T>) => {}
+	export let rowHref: undefined | ((cell: Cell<T, unknown>) => string)
+	export const numFormat = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' })
 
-function getSortSymbol(isSorted: boolean | SortDirection) {
-	return isSorted ? (isSorted === 'asc' ? '🔼' : '🔽') : ''
-}
+	function getSortSymbol(isSorted: boolean | SortDirection) {
+		return isSorted ? (isSorted === 'asc' ? '🔼' : '🔽') : ''
+	}
 
-// Rank the item
-// const itemRank = rankItem(row.getValue(columnId), value);
+	// Rank the item
+	// const itemRank = rankItem(row.getValue(columnId), value);
 
-// Store the itemRank info
-// addMeta({
-// 	itemRank,
-// })
+	// Store the itemRank info
+	// addMeta({
+	// 	itemRank,
+	// })
 
-// Return if the item should be filtered in/out
-// return itemRank.passed
+	// Return if the item should be filtered in/out
+	// return itemRank.passed
 
-let globalFilter = ''
+	let globalFilter = ''
 
-const options = writable<TableOptions<T>>({
-	data: rows || [],
-	columns: columns,
-	getCoreRowModel: getCoreRowModel(),
-	getSortedRowModel: getSortedRowModel(),
-	getFilteredRowModel: getFilteredRowModel(),
-	globalFilterFn: globalFilterFn,
-	getFacetedRowModel: getFacetedRowModel(),
-	getFacetedUniqueValues: getFacetedUniqueValues(),
-	getFacetedMinMaxValues: getFacetedMinMaxValues(),
-	getPaginationRowModel: getPaginationRowModel(),
-	state: {
-		globalFilter,
-		pagination: {
-			pageSize,
-			pageIndex: 0,
+	const options = writable<TableOptions<T>>({
+		data: rows || [],
+		columns: columns,
+		getCoreRowModel: getCoreRowModel(),
+		getSortedRowModel: getSortedRowModel(),
+		getFilteredRowModel: getFilteredRowModel(),
+		globalFilterFn: globalFilterFn,
+		getFacetedRowModel: getFacetedRowModel(),
+		getFacetedUniqueValues: getFacetedUniqueValues(),
+		getFacetedMinMaxValues: getFacetedMinMaxValues(),
+		getPaginationRowModel: getPaginationRowModel(),
+		state: {
+			globalFilter,
+			pagination: {
+				pageSize,
+				pageIndex: 0,
+			},
 		},
-	},
-	initialState: {
-		sorting: sorting || [],
-	},
-	enableGlobalFilter: true,
-})
-
-export let table = createSvelteTable(options)
-
-export function setGlobalFilter(filter: string) {
-	setCurrentPage(0)
-	globalFilter = filter
-	options.update((old) => {
-		return {
-			...old,
-			state: {
-				...old.state,
-				globalFilter: filter,
-			},
-		}
+		initialState: {
+			sorting: sorting || [],
+		},
+		enableGlobalFilter: true,
 	})
-}
 
-export function setCurrentPage(page: number) {
-	options.update((old: any) => {
-		return {
-			...old,
-			state: {
-				...old.state,
-				pagination: {
-					...old.state?.pagination,
-					pageIndex: page,
+	export let table = createSvelteTable(options)
+
+	export function setGlobalFilter(filter: string) {
+		setCurrentPage(0)
+		globalFilter = filter
+		options.update((old) => {
+			return {
+				...old,
+				state: {
+					...old.state,
+					globalFilter: filter,
 				},
-			},
-		}
-	})
-}
+			}
+		})
+	}
 
-function setPageSize(e: Event) {
-	const target = e.target as HTMLInputElement
-	options.update((old: any) => {
-		return {
-			...old,
-			state: {
-				...old.state,
-				pagination: {
-					...old.state?.pagination,
-					pageSize: parseInt(target.value),
+	export function setCurrentPage(page: number) {
+		options.update((old: any) => {
+			return {
+				...old,
+				state: {
+					...old.state,
+					pagination: {
+						...old.state?.pagination,
+						pageIndex: page,
+					},
 				},
-			},
-		}
-	})
-}
+			}
+		})
+	}
 
-let timer: NodeJS.Timeout
-function handleSearch(e: Event) {
-	clearTimeout(timer)
-	timer = setTimeout(() => {
+	function setPageSize(e: Event) {
 		const target = e.target as HTMLInputElement
-		setGlobalFilter(target.value)
-	}, 300)
-}
+		options.update((old: any) => {
+			return {
+				...old,
+				state: {
+					...old.state,
+					pagination: {
+						...old.state?.pagination,
+						pageSize: parseInt(target.value),
+					},
+				},
+			}
+		})
+	}
 
-function handleCurrPageInput(e: Event) {
-	const target = e.target as HTMLInputElement
-	setCurrentPage(parseInt(target.value) - 1)
-}
+	let timer: NodeJS.Timeout
+	function handleSearch(e: Event) {
+		clearTimeout(timer)
+		timer = setTimeout(() => {
+			const target = e.target as HTMLInputElement
+			setGlobalFilter(target.value)
+		}, 300)
+	}
 
-const noTypeCheck = (x: any) => x
+	function handleCurrPageInput(e: Event) {
+		const target = e.target as HTMLInputElement
+		setCurrentPage(parseInt(target.value) - 1)
+	}
 
-let headerGroups = $table.getHeaderGroups()
+	const noTypeCheck = (x: any) => x
+
+	let headerGroups = $table.getHeaderGroups()
 </script>
 
 {#if !rows?.length}
@@ -202,7 +203,9 @@ let headerGroups = $table.getHeaderGroups()
 									{#each headerGroup.headers as header, i}
 										<th
 											colSpan={header.colSpan}
-											class="px-2 py-1 text-sm font-semibold text-gray-900/50 {i === 0 ? 'text-left' : 'text-left'}"
+											class="px-2 py-1 text-sm font-semibold text-gray-900/50 {i === 0
+												? 'text-left'
+												: 'text-left'}"
 										>
 											{#if !header.isPlaceholder}
 												<button
@@ -242,6 +245,15 @@ let headerGroups = $table.getHeaderGroups()
 														fallbackClass="text-md font-medium text-slate-400"
 														user={JSON.parse(cell.getValue().replace('userAvatar:', ''))}
 													/>
+												{:else if cell.getValue()?.startsWith?.('button:')}
+													<ChicletButton
+														on:click={(e) =>
+															cell
+																.getContext()
+																.column.columnDef.handleClick(e, cell.getContext().row.original)}
+													>
+														{cell.getValue().replace('button:', '').trim()}
+													</ChicletButton>
 												{:else}
 													<svelte:component
 														this={flexRender(cell.column.columnDef.cell, cell.getContext())}
