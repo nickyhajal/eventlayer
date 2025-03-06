@@ -274,7 +274,6 @@ export const eventProcedures = t.router({
 			if (!meId) {
 				throw new Error('User not found')
 			}
-			console.log(input)
 			const ticket = await db.query.eventTicketTable.findFirst({
 				where: and(
 					eq(eventTicketTable.id, input.ticketId),
@@ -395,6 +394,9 @@ export const eventProcedures = t.router({
 						await db.insert(formResponseTable).values(elementRows)
 					}
 				}
+				redis.del(`event_heavy:${eventId}`)
+				redis.del(`event_users:${eventId}`)
+				redis.del(`event_usersWithInfo:${eventId}`)
 				return { ticket: updatedTicket[0], eventUser: eventUser[0] }
 			}
 		}),

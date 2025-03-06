@@ -16,7 +16,6 @@ export const load = async (req) => {
 		})
 	}
 	const users = await eventFns.getUsers()
-	console.log(users)
 	return {
 		event: await eventFns.get(),
 		users: await eventFns.getUsers(),
