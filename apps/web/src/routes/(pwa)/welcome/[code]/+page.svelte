@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment'
+	import NdBase from '$lib/components/NDBase.svelte'
 	import Screen from '$lib/components/Screen.svelte'
 	import Button from '$lib/components/ui/button/button.svelte'
 	import Input from '$lib/components/ui/input/input.svelte'
@@ -133,10 +134,10 @@
 	}
 </script>
 
-<div class="bg-image fixed w-full top-0 left-0 z-10 h-full opacity-30"></div>
-<div>
+<div class="pt-6">
+	<NdBase />
 	<div
-		class="wrap mx-auto p-4 text-center fixed top-0 bg-slate-50 text-sm uppercase text-slate-700 font-semibold tracking-wide w-full"
+		class="wrap mx-auto font-bold py-2.5 text-center fixed top-0 bg-white/30 z-10 border-b-2 border-slate-200/50 text-sm uppercase text-slate-600 tracking-wide w-full"
 	>
 		Assign Your {data.event.name}
 		{plural(numTickets, 'ticket')}
