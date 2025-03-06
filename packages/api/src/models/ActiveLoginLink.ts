@@ -36,7 +36,11 @@ export class ActiveLoginLink extends BaseModel<LoginLink> {
 			if (!loginLink[0]) {
 				throw new Error('Error generating login link')
 			}
-			const domain = event?.domainId ? `${event?.domainId}.eventlayer.co` : 'eventlayer.co'
+			const domain = event?.domainId
+				? event.domainId.includes('.')
+					? event.domainId
+					: `${event?.domainId}.eventlayer.co`
+				: 'eventlayer.co'
 			return {
 				url: `https://${domain}/login/${loginLink[0].publicId}${to ? `?to=${to}` : ''}`,
 				code: loginLink[0].publicId,

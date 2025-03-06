@@ -311,6 +311,9 @@ export const eventProcedures = t.router({
 						onboardStatus: 'not-sent',
 					})
 					.returning()
+				redis.del(`event_heavy:${eventId}`)
+				redis.del(`event_users:${eventId}`)
+				redis.del(`event_usersWithInfo:${eventId}`)
 				return { ticket: updatedTicket[0], eventUser: eventUser[0] }
 			} else if (input.email && input.firstName && input.lastName) {
 				let user = await db.query.userTable.findFirst({
