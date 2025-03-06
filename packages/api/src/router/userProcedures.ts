@@ -380,7 +380,7 @@ export const userProcedures = t.router({
 								<p style="margin-bottom: 16px;">You purchased <b>${tickets.length} ${plural(tickets.length, 'ticket')}</b>.</p>
 								<p style="margin-bottom: 16px;">Click below to claim or assign your ${plural(tickets.length, 'ticket')}.</p>
 								<p style="margin-bottom: 16px;">Here's the link: ${url}</p>
-								<p style="margin-bottom: 16px;">If you have any questions, please reach out to us at <a href="mailto:${ctx.event?.settings?.email}">${ctx.event?.settings?.email}</a>.</p>
+								<p style="margin-bottom: 16px;">If you have any questions, reply to this email or please reach out to us at <a href="mailto:${ctx.event?.settings?.email}">${ctx.event?.replyEmail}</a>.</p>
 								<br><br>See you soon!<br>${sig}`,
 					},
 				})
