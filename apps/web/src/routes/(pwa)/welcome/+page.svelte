@@ -78,7 +78,12 @@
 	}
 </script>
 
-<form on:submit={(e) => submit(e)} class="pt-safe-offset-8 lg:pt-0">
+<form on:submit={(e) => submit(e)} class="pt-safe-offset-8 lg:pt-6">
+	<div
+		class="wrap mx-auto font-bold py-2.5 text-center fixed top-0 bg-white/30 z-10 border-b-2 border-slate-200/50 text-sm uppercase text-slate-600 tracking-wide w-full"
+	>
+		Create Your Account
+	</div>
 	<NdBase />
 	<div
 		class="relative mx-auto h-[95vh] max-w-lg overflow-hidden px-2 lg:h-[80vh] z-20"
