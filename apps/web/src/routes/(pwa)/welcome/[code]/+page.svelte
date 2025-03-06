@@ -20,7 +20,7 @@
 		email: '',
 	}
 	const user = getMeContext()
-	if (!$user) {
+	if (!$user && window?.location) {
 		location.reload()
 	}
 	if (browser && data.success) {
@@ -134,10 +134,10 @@
 	}
 </script>
 
-<div class="pt-6">
+<div class="pt-6 overflow-x-hidden w-full bg-blue">
 	<NdBase />
 	<div
-		class="wrap mx-auto font-bold py-2.5 text-center fixed top-0 bg-white/30 z-10 border-b-2 border-slate-200/50 text-sm uppercase text-slate-600 tracking-wide w-full"
+		class="wrap mx-auto font-bold py-2.5 text-center fixed top-0 bg-white/60 backdrop-blur-md z-10 border-b-2 border-slate-200/50 text-sm uppercase text-slate-600 tracking-wide w-full"
 	>
 		Assign Your {data.event.name}
 		{plural(numTickets, 'ticket')}
@@ -145,7 +145,9 @@
 	{#if data.error}
 		<div class="wrap mx-auto max-w-md p-4">That code isn't valid</div>
 	{:else}
-		<div class="text-3xl md:-mt-4 mb-10 w-full text-center font-bold max-w-md mx-auto">
+		<div
+			class="text-3xl -mt-8 md:-mt-4 mb-2 md:mb-10 w-full text-center font-bold max-w-md mx-auto relative z-10"
+		>
 			{#if numTickets > 0 && numClaimable === 0}
 				You're all set!
 			{:else if numTickets === 1}
