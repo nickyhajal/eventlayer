@@ -1,6 +1,7 @@
 // lib/trpc/router.ts
 import { error } from '@sveltejs/kit'
 import { initTRPC } from '@trpc/server'
+import { AVATAR_API_KEY, AVATAR_API_USER, BASE_HOST } from '$env/static/private'
 import { z } from 'zod'
 
 import {
@@ -10,6 +11,7 @@ import {
 	eq,
 	eventSchema,
 	eventTable,
+	eventTicketTable,
 	EventUser,
 	eventUserInfoTable,
 	eventUserTable,
@@ -29,7 +31,7 @@ import {
 	venueTable,
 } from '@matterloop/db'
 import { userTable, type User } from '@matterloop/db/types'
-import { dayjs, getId, omit, pick } from '@matterloop/util'
+import { dayjs, getId, omit, pick, plural } from '@matterloop/util'
 
 import { mailer } from '../../../../apps/web/src/lib/server/core/mailer'
 import { NotAuthdError } from '../core/Errors'
@@ -45,6 +47,8 @@ import {
 	type TrpcContext,
 } from '../procedureWithContext'
 import { getAvatarApiData } from '../util/getAvatarApiData'
+
+console.log(BASE_HOST, AVATAR_API_KEY, AVATAR_API_USER)
 
 function scoreMatch(query: string, value: string): number {
 	if (value.toLowerCase().startsWith(query.toLowerCase())) {
@@ -316,23 +320,16 @@ export const userProcedures = t.router({
 			if (url) {
 				const res = await mailer.send({
 					to: user?.email || '',
-					subject: 'Action Required: Get Access to the Gathering Event App',
+					subject: `Action Required: Claim Your ${ctx.event?.name} Ticket`,
 					event: ctx.event,
 					more_params: {
 						body: `Hey ${user?.firstName},
-								<br><br>We’re excited to have you join us for the Innovation Network Gathering to shape the future of human-centric clinical trials.
-								<br><br>Instead of a one-time-use printed program, we’ve developed a helpful event app to guide you through all things related to the conference.
-								<br><br>With the Gathering Conference app you’ll be able to:
-								<ul>
-								<li>View a full detailed schedule</li>
-								<li>RSVP for a lunch option on Day 1</li>
-								<li>Access an attendee list including information about our speakers</li>
-								<li>Connect with our amazing Partners</li>
-								<li>And more...</li>
-								</ul>
-								<br><br>To gain access, click the link below and set up your account.
-								<br><br>Here's the link: ${url} 
-								<br><br>See you soon!<br>${sig}`,
+								<p style="margin-bottom: 16px;">We’re excited to have you join us for ${ctx.event?.name}!</p>
+								<p style="margin-bottom: 16px;">Click the link below to claim your ticket and set up your account.</p>
+								<br>
+								<p style="margin-bottom: 16px;">Here's the link: ${url}</p>
+								<br>
+								<p style="margin-bottom: 16px;">See you soon!<br>${sig}</p>`,
 					},
 				})
 			}
@@ -342,6 +339,56 @@ export const userProcedures = t.router({
 				.where(eq(eventUserTable.id, eventUser.id))
 			redis.del(`event_users:${ctx.event.id}`)
 			redis.del(`event_usersWithInfo:${ctx.event.id}`)
+			return {
+				success: true,
+			}
+		}),
+	sendAssignEmail: procedureWithContext
+		.use(verifyAdmin())
+		.input(z.object({ assignKey: z.string() }))
+		.mutation(async ({ ctx, input }) => {
+			const tickets = await db.query.eventTicketTable.findMany({
+				where: eq(eventTicketTable.assignKey, input.assignKey),
+			})
+			if (!tickets?.length || !tickets?.[0]?.userId) {
+				return error(401, 'No tickets found')
+			}
+			const user = await db.query.userTable.findFirst({
+				where: eq(userTable.id, tickets[0].userId),
+			})
+			if (!user) {
+				return error(401, 'No user found')
+			}
+
+			const sig = ctx.event?.name
+				? `The ${ctx.event?.name} Team`.replace('The The', 'The')
+				: 'The Eventlayer Team'
+			let path = `welcome/${input.assignKey}`
+			let host = BASE_HOST // ctx.req.url.host
+			let url = `https://${ctx.event?.domainId}.${host}/${path}`
+			if (ctx.event.domainId.includes('.')) {
+				url = `https://${ctx.event.domainId}/${path}`
+			}
+			if (url) {
+				const res = await mailer.send({
+					to: user?.email || '',
+					subject: `Action Required: Assign Your ${ctx.event?.name} Ticket`,
+					event: ctx.event,
+					more_params: {
+						body: `Hey ${user?.firstName},
+								<p style="margin-bottom: 16px;">We’re excited to have you join us for ${ctx.event?.name}!</p>
+								<p style="margin-bottom: 16px;">You purchased <b>${tickets.length} ${plural(tickets.length, 'ticket')}</b>.</p>
+								<p style="margin-bottom: 16px;">Click below to claim or assign your ${plural(tickets.length, 'ticket')}.</p>
+								<p style="margin-bottom: 16px;">Here's the link: ${url}</p>
+								<p style="margin-bottom: 16px;">If you have any questions, please reach out to us at <a href="mailto:${ctx.event?.settings?.email}">${ctx.event?.settings?.email}</a>.</p>
+								<br><br>See you soon!<br>${sig}`,
+					},
+				})
+			}
+			await db
+				.update(eventTicketTable)
+				.set({ status: 'sent' })
+				.where(eq(eventTicketTable.assignKey, input.assignKey))
 			return {
 				success: true,
 			}
