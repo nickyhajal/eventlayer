@@ -245,15 +245,15 @@
 						{user.info.linkedin_url.value}
 					</a>
 				</div>
-				<div class="flex flex-col items-start justify-center gap-1">
+				<!-- <div class="flex flex-col items-start justify-center gap-1">
 					<Label for="proBio" class="text-right">Professional Bio</Label>
 					<Textarea id="proBio" bind:value={user.proBio} class="col-span-3" />
-				</div>
+				</div> -->
 				<div class="flex flex-col items-start justify-center gap-1">
 					<Label for="bio" class="text-right">User Bio</Label>
 					<Textarea id="bio" bind:value={user.bio} class="col-span-3" />
 				</div>
-				<div class="flex flex-col items-start justify-center gap-1">
+				<!-- <div class="flex flex-col items-start justify-center gap-1">
 					<Label for="dinnerTable" class="text-right">Dinner Table</Label>
 					<Input
 						id="dinnerTable"
@@ -281,7 +281,7 @@
 							class="col-span-3"
 						/>
 					</div>
-				{/if}
+				{/if} -->
 			{/if}
 		{/if}
 	</div>
