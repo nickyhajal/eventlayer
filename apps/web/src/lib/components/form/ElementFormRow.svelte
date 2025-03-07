@@ -198,6 +198,8 @@
 			<Input name="info" placeholder="Info" bind:value={$form.info} />
 			<label for="hint">Hint</label>
 			<Input name="hint" placeholder="Input Hint" bind:value={$form.hint} />
+			<label for="maxlength">Max Length</label>
+			<Input name="maxlength" placeholder="Max Length" bind:value={$form.props.maxlength} />
 			<label for="className">Input HTML Classes</label>
 			<Input name="className" placeholder="HTML Classes" bind:value={$form.className} />
 			<label for="wrapperClassName">Wrapper HTML Classes</label>
