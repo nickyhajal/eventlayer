@@ -93,9 +93,8 @@ export async function sendWelcomeEmail(user: User, event: Event, eventUser: Even
 			more_params: {
 				body: `<p style="margin-bottom: 16px;">Hey ${user?.firstName},</p>
 								<p style="margin-bottom: 16px;">We’re excited to have you join us for ${event?.name}!</p>
-								<p style="margin-bottom: 16px;">Click the link below to claim your ticket and set up your account.</p>
-								<br>
-								<p style="margin-bottom: 132px;">Here's the link: ${url}</p>
+								<p style="margin-bottom: 24px;">Click the link below to claim your ticket and set up your account.</p>
+								<p style="margin-bottom: 32px;">Here's the link: ${url}</p>
 								<p style="margin-bottom: 16px;">See you soon!<br>${sig}</p>`,
 			},
 		})
