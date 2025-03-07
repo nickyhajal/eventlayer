@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment'
+	import { invalidateAll } from '$app/navigation'
 	import NdBase from '$lib/components/NDBase.svelte'
 	import Screen from '$lib/components/Screen.svelte'
 	import Button from '$lib/components/ui/button/button.svelte'
@@ -66,6 +67,7 @@
 				tickets[ticketIndex] = updatedTicket.ticket
 				claimStatus = 'others'
 			}, 1000)
+			invalidateAll()
 			if (!updatedTicket) {
 				return
 			}
