@@ -56,7 +56,7 @@
 	setContext('event', eventWritable(data.event))
 	$: setMe(), $page.data.me
 	let nprogressReady = false
-	const tabbar = document.getElementById('tabbar')
+	const tabbar = typeof document !== 'undefined' ? document?.getElementById('tabbar') : null
 	if (tabbar) {
 		NProgress.configure({
 			// Full list: https://github.com/rstacruz/nprogress#configuration

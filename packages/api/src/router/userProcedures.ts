@@ -9,6 +9,7 @@ import {
 	createUserSchema,
 	db,
 	eq,
+	Event,
 	eventSchema,
 	eventTable,
 	eventTicketTable,
@@ -48,8 +49,6 @@ import {
 } from '../procedureWithContext'
 import { getAvatarApiData } from '../util/getAvatarApiData'
 
-console.log(BASE_HOST, AVATAR_API_KEY, AVATAR_API_USER)
-
 function scoreMatch(query: string, value: string): number {
 	if (value.toLowerCase().startsWith(query.toLowerCase())) {
 		return 2 // Higher score if the string starts with the query
@@ -74,6 +73,39 @@ function sortBestMatches(query: string, people: User[]): User[] {
 		// If scores are equal, you can add more sorting criteria here
 		return 0
 	})
+}
+
+export async function sendWelcomeEmail(user: User, event: Event, eventUser: EventUser) {
+	const { url } = await ActiveLoginLink.generate({
+		userId: user.id,
+		event: event,
+		codeLength: 10,
+	})
+
+	const sig = event?.name
+		? `The ${event?.name} Team`.replace('The The', 'The')
+		: 'The Eventlayer Team'
+	if (url) {
+		const res = await mailer.send({
+			to: user?.email ?? '',
+			subject: `Action Required: Claim Your ${event?.name} Ticket`,
+			event: event,
+			more_params: {
+				body: `<p style="margin-bottom: 16px;">Hey ${user?.firstName},</p>
+								<p style="margin-bottom: 16px;">We’re excited to have you join us for ${event?.name}!</p>
+								<p style="margin-bottom: 16px;">Click the link below to claim your ticket and set up your account.</p>
+								<br>
+								<p style="margin-bottom: 132px;">Here's the link: ${url}</p>
+								<p style="margin-bottom: 16px;">See you soon!<br>${sig}</p>`,
+			},
+		})
+	}
+	await db
+		.update(eventUserTable)
+		.set({ onboardStatus: 'pending' })
+		.where(eq(eventUserTable.id, eventUser.id))
+	redis.del(`event_users:${event.id}`)
+	redis.del(`event_usersWithInfo:${event.id}`)
 }
 
 const t = initTRPC.context<TrpcContext>().create()
@@ -276,7 +308,7 @@ export const userProcedures = t.router({
 			const sig = ctx.event?.name ? `The ${ctx.event?.name} Team` : 'The Eventlayer Team'
 			if (url) {
 				const res = await mailer.send({
-					to: user?.email || '',
+					to: user?.email ?? '',
 					subject: 'Your Magic Login Link',
 					event: ctx.event,
 					more_params: {
@@ -307,38 +339,8 @@ export const userProcedures = t.router({
 			if (!eventUser) {
 				return error(401, 'No user found')
 			}
+			await sendWelcomeEmail(user, ctx.event, eventUser)
 
-			const { code, url } = await ActiveLoginLink.generate({
-				userId: user.id,
-				event: ctx.event,
-				codeLength: 10,
-			})
-
-			const sig = ctx.event?.name
-				? `The ${ctx.event?.name} Team`.replace('The The', 'The')
-				: 'The Eventlayer Team'
-			if (url) {
-				const res = await mailer.send({
-					to: user?.email || '',
-					subject: `Action Required: Claim Your ${ctx.event?.name} Ticket`,
-					event: ctx.event,
-					more_params: {
-						body: `Hey ${user?.firstName},
-								<p style="margin-bottom: 16px;">We’re excited to have you join us for ${ctx.event?.name}!</p>
-								<p style="margin-bottom: 16px;">Click the link below to claim your ticket and set up your account.</p>
-								<br>
-								<p style="margin-bottom: 16px;">Here's the link: ${url}</p>
-								<br>
-								<p style="margin-bottom: 16px;">See you soon!<br>${sig}</p>`,
-					},
-				})
-			}
-			await db
-				.update(eventUserTable)
-				.set({ onboardStatus: 'pending' })
-				.where(eq(eventUserTable.id, eventUser.id))
-			redis.del(`event_users:${ctx.event.id}`)
-			redis.del(`event_usersWithInfo:${ctx.event.id}`)
 			return {
 				success: true,
 			}
@@ -375,13 +377,13 @@ export const userProcedures = t.router({
 					subject: `Action Required: Assign Your ${ctx.event?.name} Ticket`,
 					event: ctx.event,
 					more_params: {
-						body: `Hey ${user?.firstName},
+						body: `<p style="margin-bottom: 16px;">Hey ${user?.firstName},</p>
 								<p style="margin-bottom: 16px;">We’re excited to have you join us for ${ctx.event?.name}!</p>
-								<p style="margin-bottom: 16px;">You purchased <b>${tickets.length} ${plural(tickets.length, 'ticket')}</b>.</p>
+								<p style="margin-bottom: 16px;">You have <b>${tickets.length} ${plural(tickets.length, 'ticket')}</b>.</p>
 								<p style="margin-bottom: 16px;">Click below to claim or assign your ${plural(tickets.length, 'ticket')}.</p>
 								<p style="margin-bottom: 16px;">Here's the link: ${url}</p>
-								<p style="margin-bottom: 16px;">If you have any questions, reply to this email or please reach out to us at <a href="mailto:${ctx.event?.settings?.email}">${ctx.event?.replyEmail}</a>.</p>
-								<br><br>See you soon!<br>${sig}`,
+								<p style="margin-bottom: 32px;">If you have any questions, reply to this email or please reach out to us at <a href="mailto:${ctx.event?.settings?.email}">${ctx.event?.replyEmail}</a>.</p>
+								<p style="margin-bottom: 16px;">See you soon!<br>${sig}</p>`,
 					},
 				})
 			}

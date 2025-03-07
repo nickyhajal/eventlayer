@@ -32,6 +32,7 @@ import {
 	verifyMe,
 	type TrpcContext,
 } from '../procedureWithContext'
+import { sendWelcomeEmail } from './userProcedures'
 
 const assignTicketSchema = z.object({
 	ticketId: z.string(),
@@ -285,6 +286,8 @@ export const eventProcedures = t.router({
 			if (!ticket) {
 				throw new Error('Ticket not found')
 			}
+
+			// Assign to existing user
 			if (input.userId) {
 				const existing = await db.query.eventUserTable.findFirst({
 					where: and(eq(eventUserTable.userId, input.userId), eq(eventUserTable.eventId, eventId)),
@@ -315,6 +318,8 @@ export const eventProcedures = t.router({
 				redis.del(`event_users:${eventId}`)
 				redis.del(`event_usersWithInfo:${eventId}`)
 				return { ticket: updatedTicket[0], eventUser: eventUser[0] }
+
+				// Assign to new user
 			} else if (input.email && input.firstName && input.lastName) {
 				let user = await db.query.userTable.findFirst({
 					where: eq(userTable.email, input.email),
@@ -339,7 +344,7 @@ export const eventProcedures = t.router({
 					where: and(eq(eventUserTable.userId, user.id), eq(eventUserTable.eventId, eventId)),
 				})
 				if (existing) {
-					throw new Error('User already has a ticket')
+					throw new Error('This user is already attending the event')
 				}
 				const eventUser = await db
 					.insert(eventUserTable)
@@ -397,6 +402,7 @@ export const eventProcedures = t.router({
 						await db.insert(formResponseTable).values(elementRows)
 					}
 				}
+				await sendWelcomeEmail(user, ctx.event, eventUser[0])
 				redis.del(`event_heavy:${eventId}`)
 				redis.del(`event_users:${eventId}`)
 				redis.del(`event_usersWithInfo:${eventId}`)
