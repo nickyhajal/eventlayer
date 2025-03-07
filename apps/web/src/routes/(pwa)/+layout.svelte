@@ -55,22 +55,29 @@
 	setContext('seed', +new Date() / 1000)
 	setContext('event', eventWritable(data.event))
 	$: setMe(), $page.data.me
-	NProgress.configure({
-		// Full list: https://github.com/rstacruz/nprogress#configuration
-		showSpinner: false,
-		parent: '#tabbar',
-		minimum: 0.16,
-	})
+	let nprogressReady = false
+	const tabbar = document.getElementById('tabbar')
+	if (tabbar) {
+		NProgress.configure({
+			// Full list: https://github.com/rstacruz/nprogress#configuration
+			showSpinner: false,
+			parent: '#tabbar',
+			minimum: 0.16,
+		})
+		nprogressReady = true
+	}
 
 	$: {
-		if ($navigating) {
-			nprogTimo = setTimeout(() => {
-				NProgress.start()
-			}, 200)
-		}
-		if (!$navigating) {
-			clearTimeout(nprogTimo)
-			NProgress.done()
+		if (nprogressReady) {
+			if ($navigating) {
+				nprogTimo = setTimeout(() => {
+					NProgress.start()
+				}, 200)
+			}
+			if (!$navigating) {
+				clearTimeout(nprogTimo)
+				NProgress.done()
+			}
 		}
 	}
 
@@ -127,7 +134,6 @@
 	// if ($me && $me.id) {
 	// 	syncNotificationWorkerUserId();
 	// }
-	console.log(data.event)
 </script>
 
 <svelte:head>
