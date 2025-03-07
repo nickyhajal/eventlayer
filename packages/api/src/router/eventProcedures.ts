@@ -287,6 +287,11 @@ export const eventProcedures = t.router({
 				throw new Error('Ticket not found')
 			}
 
+			const onboardForm = await db.query.formTable.findFirst({
+				where: and(eq(formTable.eventId, eventId), eq(formTable.type, 'onboarding')),
+			})
+			const onboardFormId = onboardForm?.id
+
 			// Assign to existing user
 			if (input.userId) {
 				const existing = await db.query.eventUserTable.findFirst({
@@ -295,10 +300,6 @@ export const eventProcedures = t.router({
 				if (existing) {
 					throw new Error('This user is already attending the event')
 				}
-				const onboardForm = await db.query.formTable.findFirst({
-					where: and(eq(formTable.eventId, eventId), eq(formTable.type, 'onboarding')),
-				})
-				const onboardFormId = onboardForm?.id
 				const updatedTicket = await db
 					.update(eventTicketTable)
 					.set({ assignedTo: input.userId, assignedOn: dayjs().toISOString() })
@@ -352,6 +353,8 @@ export const eventProcedures = t.router({
 						userId: user.id,
 						eventId,
 						type: 'attendee',
+						onboardFormId,
+						onboardStatus: 'not-sent',
 					})
 					.returning()
 				await db.insert(eventUserInfoTable).values([
