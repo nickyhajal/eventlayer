@@ -51,11 +51,9 @@
 		}
 	}
 	async function next(e = null) {
-		if (onPage === elementsListedByPage.length - 1) {
+		// counting as done once they reach avatar, if they bail there, still counts as done
+		if (onPage === elementsListedByPage.length - 2) {
 			await trpc().user.upsert.mutate({ id: data.me.id, userId: data.me.id, onboardStatus: 'done' })
-			window.close()
-			// goto(`/`)
-			return
 		}
 		onPage += 1
 		scrollToCurrent()
