@@ -94,7 +94,7 @@ export async function sendWelcomeEmail(user: User, event: Event, eventUser: Even
 				body: `<p style="margin-bottom: 16px;">Hey ${user?.firstName},</p>
 								<p style="margin-bottom: 16px;">We’re excited to have you join us for ${event?.name}!</p>
 								<p style="margin-bottom: 24px;">Click the link below to claim your ticket and set up your account.</p>
-								<p style="margin-bottom: 32px;">Here's the link: ${url}</p>
+								<p style="margin-bottom: 32px;">Here's the link: <a href="${url}">${url}</a></p>
 								<p style="margin-bottom: 16px;">See you soon!<br>${sig}</p>`,
 			},
 		})
@@ -380,7 +380,7 @@ export const userProcedures = t.router({
 								<p style="margin-bottom: 16px;">We’re excited to have you join us for ${ctx.event?.name}!</p>
 								<p style="margin-bottom: 16px;">You have <b>${tickets.length} ${plural(tickets.length, 'ticket')}</b>.</p>
 								<p style="margin-bottom: 16px;">Click below to claim or assign your ${plural(tickets.length, 'ticket')}.</p>
-								<p style="margin-bottom: 16px;">Here's the link: ${url}</p>
+								<p style="margin-bottom: 16px;">Here's the link: <a href="${url}">${url}</a></p>
 								<p style="margin-bottom: 32px;">If you have any questions, reply to this email or please reach out to us at <a href="mailto:${ctx.event?.settings?.email}">${ctx.event?.replyEmail}</a>.</p>
 								<p style="margin-bottom: 16px;">See you soon!<br>${sig}</p>`,
 					},
