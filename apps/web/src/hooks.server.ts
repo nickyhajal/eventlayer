@@ -12,7 +12,7 @@ import { lucia } from '@matterloop/api'
 import { redis } from '@matterloop/api/src/core/redis'
 import { createContext } from '@matterloop/api/src/procedureWithContext'
 import { router } from '@matterloop/api/src/root'
-import { and, db, eq, Event, eventTable, eventUserTable } from '@matterloop/db'
+import { and, db, eq, Event, eventTable, eventUserTable, mediaTable } from '@matterloop/db'
 import { userTable } from '@matterloop/db/types'
 
 // import { getConfigForRoute } from '$lib/server/core/routeHelper';
@@ -28,8 +28,6 @@ import { userTable } from '@matterloop/db/types'
 // 	tracesSampleRate: 1.0 // Capture 100% of the transactions. Adjust this value in production as necessary.
 // });
 // export const handleError = Sentry.handleErrorWithSentry();
-
-// loadUsers()
 
 const handleRouteRedirect = (defaultRedirect = '/', route: RouteConfig) => {
 	const { failedAuthRedirect } = route
@@ -108,6 +106,14 @@ export const handleUserContext: Handle = async ({ event, resolve }) => {
 				if (eventUserRow) {
 					const { id, ...eventUser } = eventUserRow
 					event.locals.me = { ...fullUser[0], ...eventUser, eventUserId: id }
+				}
+				if (event.locals.me.mediaId) {
+					const media = await db.query.mediaTable.findFirst({
+						where: eq(mediaTable.id, fullUser[0].mediaId),
+					})
+					if (media) {
+						event.locals.me.photo = media
+					}
 				}
 			}
 		}
