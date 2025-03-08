@@ -37,6 +37,7 @@
 			speechTitle: { value: '' },
 			diveTeam: { value: '' },
 			dinnerTable: { value: '' },
+			bio: { value: '' },
 		},
 		user?.info || {},
 	)
@@ -251,7 +252,7 @@
 				</div> -->
 				<div class="flex flex-col items-start justify-center gap-1">
 					<Label for="bio" class="text-right">User Bio</Label>
-					<Textarea id="bio" bind:value={user.bio} class="col-span-3" />
+					<Textarea id="bio" bind:value={user.info.bio} class="col-span-3" />
 				</div>
 				<!-- <div class="flex flex-col items-start justify-center gap-1">
 					<Label for="dinnerTable" class="text-right">Dinner Table</Label>
