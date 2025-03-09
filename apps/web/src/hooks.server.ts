@@ -162,6 +162,12 @@ const handleLogout: Handle = async ({ event, resolve }) => {
 }
 const handleRouteConfig: Handle = async ({ event, resolve }) => {
 	const { me } = event.locals
+	if (me?.type === 'attendee') {
+		const allowed = ['/settings', '/welcome']
+		if (!allowed.includes(event.url.pathname)) {
+			return redirect(303, '/welcome')
+		}
+	}
 	const routeConfig = getConfigForRoute(event.url.pathname)
 	const { auth } = routeConfig
 	if (auth === 'logged-out' && me) {
