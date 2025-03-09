@@ -163,12 +163,13 @@ const handleLogout: Handle = async ({ event, resolve }) => {
 const handleRouteConfig: Handle = async ({ event, resolve }) => {
 	const { me } = event.locals
 	if (!me?.type) {
-		if (event.url.pathname !== '/login') {
+		const allowed = ['/login', '/trpc']
+		if (!allowed.includes(event.url.pathname)) {
 			return redirect(303, '/login')
 		}
 	}
 	if (me?.type === 'attendee') {
-		const allowed = ['/settings', '/welcome']
+		const allowed = ['/settings', '/welcome', '/trpc']
 		if (!allowed.includes(event.url.pathname)) {
 			return redirect(303, '/welcome')
 		}
