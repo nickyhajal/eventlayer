@@ -1,6 +1,6 @@
 import { redirect } from '@sveltejs/kit'
 
-import { EventFns, FormFns, VenueFns } from '@matterloop/api'
+import { FormFns } from '@matterloop/api'
 
 export const load = async (req) => {
 	const { locals, url, params } = req
@@ -12,7 +12,7 @@ export const load = async (req) => {
 	if (formId) {
 		const formFns = FormFns({ formId })
 		const form = await formFns.get()
-		const session = await formFns.getSessionForUser(locals.me.id)
+		const session = await formFns.getSessionForUser(locals.me.id, locals.event.id)
 		return { form, session }
 	} else {
 		redirect(302, '/')

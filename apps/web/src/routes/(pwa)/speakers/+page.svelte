@@ -38,14 +38,7 @@
 	bodyClass="bg-slate-100"
 >
 	<div class="mx-auto -mt-2 max-w-7xl bg-slate-100">
-		<div class="mb-8 max-w-2xl mt-16 px-4 sm:px-0">
-			<p class="text-lg mb-4">
-				Every conference has talks. Too many are overlong, underprepared, thinly vetted, and poorly
-				lit. The Gathering will feature a small number of tightly crafted talks, from different
-				perspectives and disciplines – bridging cultures from the clinical to the software worlds.
-			</p>
-			<p class="text-lg font-semibold">Here is our full speaker lineup for the 2024 Gathering:</p>
-		</div>
+		<div class="mb-8 max-w-2xl mt-16 px-4 sm:px-0"></div>
 		<div class="mt-2 grid grid-cols-2 gap-1.5 py-2 md:grid-cols-3 md:gap-4">
 			{#each ordered.filter(({ mainEventUser, media }) => media && (showType === 'all' || mainEventUser.type === showType)) as user}
 				{@const {

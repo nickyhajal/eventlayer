@@ -20,27 +20,27 @@
 	}, '')
 	$: name = `${user.firstName} ${user.lastName}`
 
-	const why = {
-		community: 'Join a community of like-minded people in Oregon',
-		learn: 'Learn about climate technology advancements being made in Oregon',
-		connect: 'Connect with other people from other knowledge areas than my own',
-		contribute:
-			'Contribute to climate tech policy recommendations for Oregon spanning economic development, workforce, etc.',
-		understand: 'Understand how I can help support climate efforts in Oregon',
-		justice: 'Learn about climate justice in Oregon',
-	}
+	// const why = {
+	// 	community: 'Join a community of like-minded people in Oregon',
+	// 	learn: 'Learn about climate technology advancements being made in Oregon',
+	// 	connect: 'Connect with other people from other knowledge areas than my own',
+	// 	contribute:
+	// 		'Contribute to climate tech policy recommendations for Oregon spanning economic development, workforce, etc.',
+	// 	understand: 'Understand how I can help support climate efforts in Oregon',
+	// 	justice: 'Learn about climate justice in Oregon',
+	// }
 
-	const topics = {
-		behavior: 'Behavior & Adoption',
-		future: 'Future-Planning',
-		health: 'Health',
-		workforce: 'Workforce',
-		energy: 'Energy & Storage',
-		buildings: 'Buildings',
-		vehicles: 'Vehicles',
-	}
-	$: openToWork = user?.info?.['seeking-job']?.value === '["yes"]'
-	$: openToHire = user?.info?.['hiring']?.value === '["yes"]'
+	// const topics = {
+	// 	behavior: 'Behavior & Adoption',
+	// 	future: 'Future-Planning',
+	// 	health: 'Health',
+	// 	workforce: 'Workforce',
+	// 	energy: 'Energy & Storage',
+	// 	buildings: 'Buildings',
+	// 	vehicles: 'Vehicles',
+	// }
+	// $: openToWork = user?.info?.['seeking-job']?.value === '["yes"]'
+	// $: openToHire = user?.info?.['hiring']?.value === '["yes"]'
 </script>
 
 <Screen title={name} back="/speakers">
@@ -49,7 +49,7 @@
 			<!-- {dayjs(data.v.startsAt).format('dddd MMMM Do [at] h:mma')} -->
 		</div>
 		<div class="flex flex-col items-center gap-2 pb-6">
-			{#if openToWork || openToHire}
+			<!-- {#if openToWork || openToHire}
 				<div class="mb-4 flex items-center gap-2.5">
 					{#if openToWork}
 						<div
@@ -66,7 +66,7 @@
 						</div>
 					{/if}
 				</div>
-			{/if}
+			{/if} -->
 			<UserAvatar {user} class="xs:w-36 h-36 w-28 rounded-full" />
 			{#if user.type !== 'attendee'}
 				<div class="mt-3 rounded-md bg-slate-50 px-3 py-0.5 text-sm font-medium text-slate-700">
