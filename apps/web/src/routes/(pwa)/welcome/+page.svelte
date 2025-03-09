@@ -13,6 +13,7 @@
 	export let data
 	let scrollElm: HTMLElement
 	$: sessionId = data.session?.id
+	let pageHeight = 'auto'
 	let values: Record<string, string> = data.form?.elements.reduce(
 		(out, curr) => {
 			out[curr.id] =
@@ -22,6 +23,7 @@
 		{} as Record<string, string>,
 	)
 	let onPage = -1
+	let lastPage = -1
 	const elementsByPage = groupBy(data.form?.elements, 'page')
 	const elementsListedByPage = Object.values(elementsByPage)
 	let lastValues = { ...values }
@@ -74,24 +76,36 @@
 			behavior: 'smooth',
 		})
 	}
+	let pageElms: HTMLElement[] = []
+	$: {
+		if (lastPage !== onPage) {
+			lastPage = onPage
+			setTimeout(() => {
+				const newHeight = `${pageElms[onPage].clientHeight + 64}px`
+				pageHeight = newHeight
+			}, 100)
+		}
+	}
 </script>
 
-<form on:submit={(e) => submit(e)} class="pt-safe-offset-8 lg:pt-6">
+<form on:submit={(e) => submit(e)} class="pt-safe-offset-8 lg:pt-">
 	<div
-		class="wrap mx-auto font-bold py-2.5 text-center fixed top-0 bg-white/30 z-10 border-b-2 border-slate-200/50 text-sm uppercase text-slate-600 tracking-wide w-full"
+		class="wrap mx-auto font-bold py-2.5 text-center fixed top-0 bg-white/60 backdrop-blur-md z-10 border-b-2 border-slate-200/50 text-sm uppercase text-slate-600 tracking-wide w-full"
 	>
 		Create Your Account
 	</div>
 	<NdBase />
 	<div
-		class="relative mx-auto h-[95vh] max-w-lg overflow-hidden px-2 lg:h-[80vh] z-20"
+		class="relative mx-auto -mt-5 max-w-lg overflow-hidden px-2 lg:h-[80vh] z-20"
 		bind:this={scrollElm}
+		style="height: {pageHeight}"
 	>
 		{#each Object.values(elementsByPage) as page, i}
 			<!-- <div id="page-{i}" class="h-16 w-full"></div> -->
 			<div
 				id="page-{i}"
-				class="relative top-[25%] mt-24 flex h-[80vh] flex-col justify-start gap-3 transition-all duration-300 lg:top-[15%] {onPage ===
+				bind:this={pageElms[i]}
+				class="relative top-[25%] mt-0 flex h-fit flex-col justify-start gap-3 transition-all duration-300 lg:top-[5vh] {onPage ===
 				i
 					? 'opacity-100'
 					: 'opacity-0'}"

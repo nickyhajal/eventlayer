@@ -1,6 +1,6 @@
 <img
 	src="https://coyklkkrxa.cloudimg.io/_e/prod/event-large-logo/a92f8ee4-8257-4e4b-a52a-e15681828436-1.png?v=1&"
-	class="w-32 mx-auto mb-16 mt-16"
+	class="w-20 mx-auto mb-10 mt-8"
 />
 <div class="fixed w-full top-0 left-0 h-full">
 	<div

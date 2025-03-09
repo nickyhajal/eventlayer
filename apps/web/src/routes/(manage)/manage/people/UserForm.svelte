@@ -46,15 +46,16 @@
 	$: title = editing ? `${user?.firstName} ${user?.lastName}` : 'Add a User'
 	let userTypes = [
 		{ value: 'attendee', label: 'Attendee' },
-		{ value: 'main-stage', label: 'Main Stage Only Attendee' },
+		// { value: 'main-stage', label: 'Main Stage Only Attendee' },
 		{ value: 'speaker', label: 'Speaker' },
-		{ value: 'main-stage-speaker', label: 'Main Stage Speaker' },
-		{ value: 'on-stage-host', label: 'On Stage Host' },
-		{ value: 'showcase-speaker', label: 'Showcase Speaker' },
-		{ value: 'impact-partner', label: 'Impact Partner' },
-		{ value: 'organizing-partner', label: 'Organizing Partner' },
-		{ value: 'divesession-facilitator', label: 'Dive-Session Facilitator' },
-		{ value: 'sponsor', label: 'Sponsor Rep' },
+		{ value: 'ambassador', label: 'Ambassador' },
+		// { value: 'main-stage-speaker', label: 'Main Stage Speaker' },
+		// { value: 'on-stage-host', label: 'On Stage Host' },
+		// { value: 'showcase-speaker', label: 'Showcase Speaker' },
+		// { value: 'impact-partner', label: 'Impact Partner' },
+		// { value: 'organizing-partner', label: 'Organizing Partner' },
+		// { value: 'divesession-facilitator', label: 'Dive-Session Facilitator' },
+		// { value: 'sponsor', label: 'Sponsor Rep' },
 		{ value: 'staff', label: 'Staff' },
 	]
 	let type = user?.type
