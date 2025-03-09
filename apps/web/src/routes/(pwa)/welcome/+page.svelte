@@ -105,7 +105,7 @@
 			<div
 				id="page-{i}"
 				bind:this={pageElms[i]}
-				class="relative top-[25%] mt-0 flex h-fit flex-col justify-start gap-3 transition-all duration-300 lg:top-[5vh] {onPage ===
+				class="relative top-[5vh] mt-0 flex h-fit flex-col justify-start gap-3 transition-all duration-300 lg:top-[5vh] {onPage ===
 				i
 					? 'opacity-100'
 					: 'opacity-0'}"
