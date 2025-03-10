@@ -162,14 +162,15 @@ const handleLogout: Handle = async ({ event, resolve }) => {
 }
 const handleRouteConfig: Handle = async ({ event, resolve }) => {
 	const { me } = event.locals
-	if (!me?.type) {
+	if (!me) {
 		if (!event.url.pathname.includes('/login') && !event.url.pathname.includes('/trpc')) {
 			return redirect(303, '/login')
 		}
 	}
-	if (me?.type === 'attendee') {
+	if (me?.type !== 'staff') {
 		if (
 			!event.url.pathname.includes('/settings') &&
+			!event.url.pathname.includes('/login') &&
 			!event.url.pathname.includes('/welcome') &&
 			!event.url.pathname.includes('/trpc')
 		) {
