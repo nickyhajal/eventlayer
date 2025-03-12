@@ -1,7 +1,7 @@
 // routes/login/+page.server.ts
 import { error, fail, redirect } from '@sveltejs/kit'
 
-import { db, eq, eventTicketTable, isNull } from '@matterloop/db'
+import { and, db, eq, eventTicketTable, isNull } from '@matterloop/db'
 
 export const load = async ({ locals }) => {
 	if (!locals.event.id) {
