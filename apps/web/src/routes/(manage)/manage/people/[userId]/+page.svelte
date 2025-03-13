@@ -1,32 +1,32 @@
 <script lang="ts">
-import { invalidateAll } from '$app/navigation'
-import ChicletButton from '$lib/components/ui/ChicletButton.svelte'
-import { trpc } from '$lib/trpc/client'
+	import { invalidateAll } from '$app/navigation'
+	import ChicletButton from '$lib/components/ui/ChicletButton.svelte'
+	import { trpc } from '$lib/trpc/client'
 
-import AdminScreen from '../../AdminScreen.svelte'
-import UserForm from '../UserForm.svelte'
+	import AdminScreen from '../../AdminScreen.svelte'
+	import UserForm from '../UserForm.svelte'
 
-export let data
-const fullName = `${data.user.firstName} ${data.user.lastName}`
-let confirmingSend = false
-$: onboardStatus = data.user.onboardStatus
+	export let data
+	const fullName = `${data.user.firstName} ${data.user.lastName}`
+	let confirmingSend = false
+	$: onboardStatus = data.user.onboardStatus
 
-async function sendWelcomeEmail() {
-	if (!confirmingSend) {
-		confirmingSend = true
-		setTimeout(() => {
-			confirmingSend = false
-		}, 700)
-	} else if (confirmingSend) {
-		await trpc().user.sendWelcomeEmail.mutate({ userId: data.user.userId })
+	async function sendWelcomeEmail() {
+		if (!confirmingSend) {
+			confirmingSend = true
+			setTimeout(() => {
+				confirmingSend = false
+			}, 700)
+		} else if (confirmingSend) {
+			await trpc().user.sendWelcomeEmail.mutate({ userId: data.user.userId })
+			invalidateAll()
+		}
+	}
+	async function getLinkedInData() {
+		const res = await trpc().user.syncLinkedInData.mutate({ userId: data.user.userId })
+		console.log('res', res)
 		invalidateAll()
 	}
-}
-async function getLinkedInData() {
-	const res = await trpc().user.syncLinkedInData.mutate({ userId: data.user.userId })
-	console.log('res', res)
-	invalidateAll()
-}
 </script>
 
 <AdminScreen title={fullName}>
@@ -40,6 +40,8 @@ async function getLinkedInData() {
 					<span>Send Welcome Email</span>
 				{:else if onboardStatus === 'pending'}
 					<span>Send Welcome Email Again</span>
+				{:else if onboardStatus === 'done'}
+					<span>Resend Welcome Email</span>
 				{/if}
 			</ChicletButton>
 		</div>

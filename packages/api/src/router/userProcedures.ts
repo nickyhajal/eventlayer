@@ -18,6 +18,7 @@ import {
 	eventUserTable,
 	formElementTable,
 	formResponseTable,
+	formTable,
 	ilike,
 	inArray,
 	like,
@@ -399,7 +400,7 @@ export const userProcedures = t.router({
 		.use(verifyEvent())
 		.input(upsertEventUserSchema)
 		.mutation(async ({ ctx, input }) => {
-			const eventId = ctx.event?.id
+			const eventId = ctx.event?.id as string
 			const { id, ...data } = input
 			if (!(ctx.me?.isSuperAdmin || data.userId === ctx.me?.id)) {
 				return NotAuthdError()
@@ -442,9 +443,21 @@ export const userProcedures = t.router({
 					where: and(eq(eventUserTable.userId, user.id), eq(eventUserTable.eventId, eventId)),
 				})
 				if (!id && !eventUser) {
+					let onboardingFormId: string | null = null
+					const onboardingForm = await db.query.formTable.findFirst({
+						where: and(eq(formTable.eventId, eventId), eq(formTable.type, 'onboarding')),
+					})
+					if (onboardingForm) {
+						onboardingFormId = onboardingForm.id
+					}
 					await db
 						.insert(eventUserTable)
-						.values({ type: eventUserData.type, userId: user.id, eventId: eventId })
+						.values({
+							type: eventUserData.type,
+							userId: user.id,
+							eventId: eventId,
+							onboardFormId: onboardingFormId,
+						})
 						.returning()
 					eventUser = await db.query.eventUserTable.findFirst({
 						where: and(eq(eventUserTable.userId, user.id), eq(eventUserTable.eventId, eventId)),
