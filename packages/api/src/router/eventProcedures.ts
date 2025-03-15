@@ -221,6 +221,7 @@ export const eventProcedures = t.router({
 							'replyEmail',
 							'maxAttendees',
 							'showAttendeeList',
+							'internalNotes',
 							'settings',
 							'emailFromName',
 							'largeLogoId',

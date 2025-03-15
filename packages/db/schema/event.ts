@@ -33,6 +33,7 @@ export const eventTable = pgTable('event', {
 	numAttendees: integer('num_attendees').default(0),
 	ord: integer('ord').default(0),
 	replyEmail: text('reply_email'),
+	internalNotes: text('internal_notes'),
 	emailFromName: text('email_from_name'),
 	colors: jsonb('colors'),
 	settings: jsonb('settings'),

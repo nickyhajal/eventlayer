@@ -1,90 +1,94 @@
 <script lang="ts">
-import { goto, invalidate, invalidateAll } from '$app/navigation'
-import AttendeeSearchInput from '$lib/components/AttendeeSearchInput.svelte'
-import SelectVenue from '$lib/components/SelectVenue.svelte'
-import { Button } from '$lib/components/ui/button'
-import DatetimePicker from '$lib/components/ui/DatetimePicker.svelte'
-import * as Dialog from '$lib/components/ui/dialog'
-import Switch from '$lib/components/ui/switch/switch.svelte'
-import { Input } from '$lib/components/ui/input'
-import Label from '$lib/components/ui/label/label.svelte'
-import * as Select from '$lib/components/ui/select'
-import { Textarea } from '$lib/components/ui/textarea'
-import Uploader from '$lib/components/ui/Uploader.svelte'
-import { trpc } from '$lib/trpc/client.js'
-import X from 'lucide-svelte/icons/x'
-import { toast } from 'svelte-sonner'
+	import { goto, invalidate, invalidateAll } from '$app/navigation'
+	import AttendeeSearchInput from '$lib/components/AttendeeSearchInput.svelte'
+	import SelectVenue from '$lib/components/SelectVenue.svelte'
+	import { Button } from '$lib/components/ui/button'
+	import DatetimePicker from '$lib/components/ui/DatetimePicker.svelte'
+	import * as Dialog from '$lib/components/ui/dialog'
+	import { Input } from '$lib/components/ui/input'
+	import Label from '$lib/components/ui/label/label.svelte'
+	import * as Select from '$lib/components/ui/select'
+	import Switch from '$lib/components/ui/switch/switch.svelte'
+	import { Textarea } from '$lib/components/ui/textarea'
+	import Uploader from '$lib/components/ui/Uploader.svelte'
+	import { trpc } from '$lib/trpc/client.js'
+	import X from 'lucide-svelte/icons/x'
+	import { toast } from 'svelte-sonner'
 
-import type { Event, FullEventUser, } from '@matterloop/db'
-import { tw } from '@matterloop/ui'
-import { capitalize, debounce, getMediaUrl } from '@matterloop/util'
+	import type { Event, FullEventUser } from '@matterloop/db'
+	import { tw } from '@matterloop/ui'
+	import { capitalize, debounce, getMediaUrl } from '@matterloop/util'
 
-export let simplified = false
-export let inDialog = false
-export let titleClass = ''
-export let users: FullEventUser[] = []
-export let event: Partial<Event> = {
-	name: '',
-	subtitle: '',
-}
+	export let simplified = false
+	export let inDialog = false
+	export let titleClass = ''
+	export let users: FullEventUser[] = []
+	export let event: Partial<Event> = {
+		name: '',
+		subtitle: '',
+	}
 
-let loading = false
-let userSearchQuery = ''
-let eventUserType = { value: 'attendee', label: 'Attendee' }
-let eventUserTypes = [
-	{ value: 'attendee', label: 'Attendee' },
-	{ value: 'host', label: 'Host' },
-	{ value: 'moderator', label: 'Moderator' },
-	{ value: 'attendee', label: 'Attendee' },
-	{ value: 'mc', label: 'MC' },
-	{ value: 'speaker', label: 'Speaker' },
-	{ value: 'panelist', label: 'Panelist' },
-	{ value: 'facilitator', label: 'Facilitator' },
-	{ value: 'staff', label: 'Staff' },
-	{ value: 'volunteer', label: 'Volunteer' },
-]
-let eventTypes = [
-	{ value: 'program', label: 'Program Event' },
-	{ value: 'panel', label: 'Panel' },
-	{ value: 'meetup', label: 'Meetup' },
-	{ value: 'meal', label: 'Group Meal' },
-	{ value: 'excursion', label: 'Excursion' },
-	{ value: 'dive-session', label: 'Dive Session' },
-]
-let eventForOptions = [
-	{ value: 'all', label: 'All Attendees' },
-	{ value: 'full', label: 'Full Attendees' },
-	{ value: 'main-stage', label: 'Main Stage' },
-	{ value: 'selected', label: 'Selected Attendees' },
-	{ value: 'rsvp', label: 'Allow RSVPs' },
-]
-$: buttonMsg = event?.id ? 'Save Event' : 'Add Event'
-$: editing = event?.id ? true : false
-$: title = editing ? event?.name : 'Add an Event'
-let type = eventTypes.find((t) => t.value === (event.type || 'program'))
-let eventFor = eventForOptions.find((t) => t.value === (event.eventFor || ''))
-$: event.type = type.value
-$: event.eventFor = eventFor?.value
-async function createEvent() {
-	const ord = event?.ord || 0
-	const res = await trpc().event.upsert.mutate({ ...event, ord: +ord, maxAttendees: +(event?.maxAttendees || 0) })
-	goto(`/manage/events/${res.id}`)
-	toast.success('Saved')
-}
-async function updateAvatar(mediaId: string) {
-	trpc().event.upsert.mutate({ id: event.id, mediaId })
-	invalidateAll()
-}
-async function addUser(user: FullEventUser) {
-	if (eventUserType?.value && event.id && user.userId) {
-		await trpc().event.addUser.mutate({
-			type: eventUserType.value,
-			eventId: event.id,
-			userId: user.userId,
+	let loading = false
+	let userSearchQuery = ''
+	let eventUserType = { value: 'attendee', label: 'Attendee' }
+	let eventUserTypes = [
+		{ value: 'attendee', label: 'Attendee' },
+		{ value: 'host', label: 'Host' },
+		{ value: 'moderator', label: 'Moderator' },
+		{ value: 'attendee', label: 'Attendee' },
+		{ value: 'mc', label: 'MC' },
+		{ value: 'speaker', label: 'Speaker' },
+		{ value: 'panelist', label: 'Panelist' },
+		{ value: 'facilitator', label: 'Facilitator' },
+		{ value: 'staff', label: 'Staff' },
+		{ value: 'volunteer', label: 'Volunteer' },
+	]
+	let eventTypes = [
+		{ value: 'program', label: 'Program Event' },
+		{ value: 'panel', label: 'Panel' },
+		{ value: 'meetup', label: 'Meetup' },
+		{ value: 'meal', label: 'Group Meal' },
+		{ value: 'excursion', label: 'Excursion' },
+		{ value: 'dive-session', label: 'Dive Session' },
+	]
+	let eventForOptions = [
+		{ value: 'all', label: 'All Attendees' },
+		{ value: 'full', label: 'Full Attendees' },
+		{ value: 'main-stage', label: 'Main Stage' },
+		{ value: 'selected', label: 'Selected Attendees' },
+		{ value: 'rsvp', label: 'Allow RSVPs' },
+	]
+	$: buttonMsg = event?.id ? 'Save Event' : 'Add Event'
+	$: editing = event?.id ? true : false
+	$: title = editing ? event?.name : 'Add an Event'
+	let type = eventTypes.find((t) => t.value === (event.type || 'program'))
+	let eventFor = eventForOptions.find((t) => t.value === (event.eventFor || ''))
+	$: event.type = type.value
+	$: event.eventFor = eventFor?.value
+	async function createEvent() {
+		const ord = event?.ord || 0
+		const res = await trpc().event.upsert.mutate({
+			...event,
+			ord: +ord,
+			maxAttendees: +(event?.maxAttendees || 0),
 		})
+		goto(`/manage/events/${res.id}`)
+		toast.success('Saved')
+	}
+	async function updateAvatar(mediaId: string) {
+		trpc().event.upsert.mutate({ id: event.id, mediaId })
 		invalidateAll()
 	}
-}
+	async function addUser(user: FullEventUser) {
+		if (eventUserType?.value && event.id && user.userId) {
+			await trpc().event.addUser.mutate({
+				type: eventUserType.value,
+				eventId: event.id,
+				userId: user.userId,
+			})
+			invalidateAll()
+		}
+	}
 </script>
 
 <form on:submit={createEvent}>
@@ -132,7 +136,7 @@ async function addUser(user: FullEventUser) {
 								<Select.Group>
 									<Select.Label>Event Type</Select.Label>
 									{#each eventTypes as { label, value }}
-										<Select.Item value={value} label={label}>{label}</Select.Item>
+										<Select.Item {value} {label}>{label}</Select.Item>
 									{/each}
 								</Select.Group>
 							</Select.Content>
@@ -149,7 +153,7 @@ async function addUser(user: FullEventUser) {
 								<Select.Group>
 									<Select.Label></Select.Label>
 									{#each eventForOptions as { label, value }}
-										<Select.Item value={value} label={label}>{label}</Select.Item>
+										<Select.Item {value} {label}>{label}</Select.Item>
 									{/each}
 								</Select.Group>
 							</Select.Content>
@@ -168,18 +172,23 @@ async function addUser(user: FullEventUser) {
 						<SelectVenue bind:value={event.venueId} />
 					</div>
 					{#if event?.eventFor?.includes('rsvp')}
-					<div class="flex flex-col items-start justify-center gap-1">
-						<Label for="event_maxAttendees" class="text-right">Max Attendees</Label>
-						<Input id="event_maxAttendees" type="number" bind:value={event.maxAttendees} class="col-span-3" />
-					</div>
+						<div class="flex flex-col items-start justify-center gap-1">
+							<Label for="event_maxAttendees" class="text-right">Max Attendees</Label>
+							<Input
+								id="event_maxAttendees"
+								type="number"
+								bind:value={event.maxAttendees}
+								class="col-span-3"
+							/>
+						</div>
 					{/if}
 					{#if event?.eventFor?.includes('rsvp') || event.eventFor.includes('selected')}
-					<div class="mt-0 flex items-center justify-between rounded-md border bg-stone-50 p-3">
-						<label for="showAttendeeList" class="text-sm font-medium text-stone-800"
-							>Show Attendee List on Event Page</label
-						>
-						<Switch name="showAttendeeList" bind:checked={event.showAttendeeList} class="" />
-					</div>
+						<div class="mt-0 flex items-center justify-between rounded-md border bg-stone-50 p-3">
+							<label for="showAttendeeList" class="text-sm font-medium text-stone-800"
+								>Show Attendee List on Event Page</label
+							>
+							<Switch name="showAttendeeList" bind:checked={event.showAttendeeList} class="" />
+						</div>
 					{/if}
 					<div class="flex flex-col items-start justify-center gap-1">
 						<Label for="event_ord" class="text-right">Event Order</Label>
@@ -188,7 +197,6 @@ async function addUser(user: FullEventUser) {
 						</div>
 						<Input id="event_ord" bind:value={event.ord} type="number" class="col-span-3" />
 					</div>
-				
 				{/if}
 			</div>
 			<Button type="submit">{buttonMsg}</Button>
@@ -200,7 +208,7 @@ async function addUser(user: FullEventUser) {
 					class="mb-1 mt-1 flex flex-col divide-y divide-stone-100 rounded-lg border border-stone-200"
 				>
 					{#each users || [] as user}
-						{@const {firstName, lastName, type, id} = user}
+						{@const { firstName, lastName, type, id } = user}
 						<div class="group relative flex items-center justify-between gap-2 px-2.5 py-2">
 							<div class="flex w-full items-center justify-between">
 								<div class="text-sm font-medium text-stone-600">{firstName} {lastName}</div>
@@ -236,7 +244,7 @@ async function addUser(user: FullEventUser) {
 								<Select.Group>
 									<Select.Label>Type</Select.Label>
 									{#each eventUserTypes as { label, value }}
-										<Select.Item value={value} label={label}>{label}</Select.Item>
+										<Select.Item {value} {label}>{label}</Select.Item>
 									{/each}
 								</Select.Group>
 							</Select.Content>
@@ -244,6 +252,16 @@ async function addUser(user: FullEventUser) {
 						</Select.Root>
 						<AttendeeSearchInput handleClick={addUser} />
 					</div>
+				</div>
+				<div class="mt-4">
+					<Label for="event_internalNotes" class="text-right">Internal Notes</Label>
+					<Textarea
+						id="event_internalNotes"
+						bind:value={event.internalNotes}
+						class="w-full"
+						rows="4"
+						placeholder="Add internal notes about this event..."
+					/>
 				</div>
 			</div>
 		{/if}
