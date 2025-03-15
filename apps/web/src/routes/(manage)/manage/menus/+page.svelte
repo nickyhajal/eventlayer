@@ -26,10 +26,14 @@
 		await Promise.all(toSave.map((c) => trpc().content.upsert.mutate(c)))
 		toast.success('Saved FAQs')
 	}
-	const menusByGroup = groupBy(data.event?.menus, 'location')
+
+	// Handle the case where data.event or data.event.menus might be undefined
+	const menus = data.event?.menus || []
+	const menusByGroup = groupBy(menus, 'location')
+	const eventId = data.event?.id || ''
 </script>
 
-<AdminScreen title={true}>
+<AdminScreen title="Menus">
 	<div class="flex items-center gap-3" slot="title">
 		<div class="text-2xl font-semibold">Menus</div>
 	</div>
@@ -39,31 +43,31 @@
 			<div class="px-3 pb-2 pt-2 text-base font-semibold text-stone-700">Desktop</div>
 			<div class="mb-2 rounded-xl bg-stone-50">
 				<div class="mb-0.5 px-3 pb-2 pt-3 text-sm font-semibold text-stone-800/70">Top Sidebar</div>
-				<MenuList items={menusByGroup['top-sidebar']} />
+				<MenuList items={menusByGroup['top-sidebar']} location="top-sidebar" {eventId} />
 			</div>
 			<div class="rounded-xl bg-stone-50">
 				<div class="mb-0.5 px-3 pb-2 pt-3 text-sm font-semibold text-stone-800/70">
 					Bottom Sidebar
 				</div>
-				<MenuList items={menusByGroup['bot-sidebar']} />
+				<MenuList items={menusByGroup['bot-sidebar']} location="bot-sidebar" {eventId} />
 			</div>
 		</div>
 		<div class="rounded-xl bg-stone-200/50 p-2">
 			<div class="px-3 pb-2 pt-2 text-base font-semibold text-stone-700">Mobile</div>
 			<div class="mb-2 rounded-xl bg-stone-50">
 				<div class="mb-0.5 px-3 pb-2 pt-3 text-sm font-semibold text-stone-800/70">Tabs</div>
-				<MenuList items={menusByGroup['tabs']} />
+				<MenuList items={menusByGroup['tabs']} location="tabs" {eventId} />
 			</div>
 			<div class="rounded-xl bg-stone-50">
 				<div class="mb-0.5 px-3 pb-2 pt-3 text-sm font-semibold text-stone-800/70">Menu Page</div>
-				<MenuList items={menusByGroup['menu']} />
+				<MenuList items={menusByGroup['menu']} location="menu" {eventId} />
 			</div>
 		</div>
 		<div class="rounded-xl bg-stone-200/50 p-2">
 			<div class="px-3 pb-2 pt-2 text-base font-semibold text-stone-700">Other</div>
 			<div class="mb-2 rounded-xl bg-stone-50">
 				<div class="mb-0.5 px-3 pb-2 pt-3 text-sm font-semibold text-stone-800/70">Quick Menu</div>
-				<MenuList items={menusByGroup['quick']} />
+				<MenuList items={menusByGroup['quick']} location="quick" {eventId} />
 			</div>
 		</div>
 	</div>
