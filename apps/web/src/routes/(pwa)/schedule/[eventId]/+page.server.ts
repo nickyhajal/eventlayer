@@ -12,7 +12,10 @@ export const load = async (req) => {
 	if (locals.me) {
 		const ids = meals.map((event) => event.id)
 		myLunch = await db.query.eventUserTable.findFirst({
-			where: and(inArray(eventUserTable.eventId, ids), eq(eventUserTable.userId, locals.me.id)),
+			where: and(
+				ids.length ? inArray(eventUserTable.eventId, ids) : undefined,
+				eq(eventUserTable.userId, locals.me.id),
+			),
 		})
 	}
 	const users = await eventFns.getUsers()
