@@ -49,7 +49,6 @@
 
 		try {
 			const result = await trpc().menu.upsert.mutate(newMenuItem as any)
-			console.log('result', result)
 			if (result) {
 				$menu = [...$menu, result]
 			}

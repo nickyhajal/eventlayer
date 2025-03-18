@@ -5,6 +5,7 @@ import { message, setError, superValidate } from 'sveltekit-superforms/server'
 import { z } from 'zod'
 
 import { EventFns, VenueFns } from '@matterloop/api'
+import { and, db, eq, eventTicketTable } from '@matterloop/db'
 
 const schema = z.object({
 	email: z.string().email(),
@@ -21,8 +22,19 @@ export const load = async ({ locals, params, url }) => {
 		return error(404, 'User not found')
 	}
 
+	const ticket = await db.query.eventTicketTable.findFirst({
+		where: and(
+			eq(eventTicketTable.assignedTo, user.userId),
+			eq(eventTicketTable.eventId, locals.event.id),
+		),
+		with: {
+			user: true,
+		},
+	})
+	console.log('ticket', ticket)
+
 	const qrcode = await QRCode.toDataURL(`${url.protocol}://${url.host}/user/${user.id}`, {
 		width: 320,
 	})
-	return { user, qrcode }
+	return { user, qrcode, ticket }
 }

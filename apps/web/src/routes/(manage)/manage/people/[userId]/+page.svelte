@@ -52,6 +52,21 @@
 				<UserForm user={data.user} titleClass="text-2xl font-semibold" showTitle={false} />
 			</div>
 			<div>
+				<div
+					class="flex flex-col gap-2 text-sm font-medium text-stone-600 py-2.5 px-4 rounded-lg bg-stone-100 w-fit"
+				>
+					{#if data.ticket}
+						{#if data.ticket.user.id === data.ticket.assignedTo}
+							Claimed their own ticket
+						{:else}
+							Ticket purchased by
+							{data.ticket.user.firstName}
+							{data.ticket.user.lastName}
+						{/if}
+					{:else}
+						No ticket purchased (probably comped)
+					{/if}
+				</div>
 				<label class="block pb-2.5 pt-3.5 text-sm font-semibold">Profile QR Code</label>
 				<div class="h-[10rem] w-[10.1rem] overflow-hidden rounded-md border border-slate-300 p-0">
 					<img src={data.qrcode} class="w-[10rem]" />
