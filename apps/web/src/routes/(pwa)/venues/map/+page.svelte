@@ -1,34 +1,36 @@
 <script lang="ts">
-import Screen from '$lib/components/Screen.svelte'
-import BiggerPicture from 'bigger-picture/svelte'
-import ChevronRight from 'lucide-svelte/icons/chevron-right'
+	import Screen from '$lib/components/Screen.svelte'
+	import BiggerPicture from 'bigger-picture/svelte'
+	import ChevronRight from 'lucide-svelte/icons/chevron-right'
 
-import '$lib/bigger-picture.css'
+	import '$lib/bigger-picture.css'
 
-import { onMount } from 'svelte'
+	import { onMount } from 'svelte'
 
-export let data
-let bp
-onMount(() => {
-	if (typeof window !== 'undefined') {
-		bp = BiggerPicture({
-			target: document.body,
+	import { getMediaUrl } from '@matterloop/util'
+
+	export let data
+	let bp
+	onMount(() => {
+		if (typeof window !== 'undefined') {
+			bp = BiggerPicture({
+				target: document.body,
+			})
+		}
+	})
+	function open() {
+		bp.open({
+			items: document.querySelectorAll('#bp > div'),
+			scale: 1,
+			intro: 'fadeup',
+			maxZoom: 3,
 		})
 	}
-})
-function open() {
-	bp.open({
-		items: document.querySelectorAll('#bp > div'),
-		scale: 1,
-		intro: 'fadeup',
-		maxZoom: 3,
-	})
-}
-let maps = data.media
-$: title = `Venue ${maps.length > 1 ? 'Maps' : 'Map'}`
+	let maps = data.media
+	$: title = `Venue ${maps.length > 1 ? 'Maps' : 'Map'}`
 </script>
 
-<Screen title={title} back="/menu" bigTitle={title}>
+<Screen {title} back="/menu" bigTitle={title}>
 	<div class="pt-safe-offset-4"></div>
 	{#if maps.length > 1}
 		<div class="flex flex-col gap-2">
@@ -43,17 +45,19 @@ $: title = `Venue ${maps.length > 1 ? 'Maps' : 'Map'}`
 			{/each}
 		</div>
 	{:else}
-		<div id="bp" class="inline-gallery container mx-auto h-full pt-12 md:max-w-7xl">
-			<div
-				on:click={() => open()}
-				data-img="/map.jpg"
-				data-alt="image description"
-				data-height="720"
-				data-width="568"
-			>
-				<img src="/map.jpg" alt="venue map" />
+		{#each data.media as map}
+			<div id="bp" class="inline-gallery container mx-auto h-full pt-12 md:max-w-xl">
+				<div
+					on:click={() => open()}
+					data-img={getMediaUrl(map)}
+					data-alt="image description"
+					data-height={map.height}
+					data-width={map.width}
+				>
+					<img src={getMediaUrl(map)} alt="venue map" />
+				</div>
 			</div>
-		</div>
+		{/each}
 	{/if}
 </Screen>
 

@@ -1,13 +1,13 @@
 <script lang="ts">
-import ChevronRight from 'lucide-svelte/icons/chevron-right'
+	import ChevronRight from 'lucide-svelte/icons/chevron-right'
 
-import type { Venue } from '@matterloop/db'
-import { Markdown } from '@matterloop/ui'
+	import type { Venue } from '@matterloop/db'
+	import { Markdown } from '@matterloop/ui'
 
-import Button from './ui/button/button.svelte'
+	import Button from './ui/button/button.svelte'
 
-export let venue: Venue
-export let showTitle = true
+	export let venue: Venue
+	export let showTitle = true
 </script>
 
 <div
