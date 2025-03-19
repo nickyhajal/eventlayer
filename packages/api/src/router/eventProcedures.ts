@@ -236,6 +236,7 @@ export const eventProcedures = t.router({
 					redis.del(`event_meals:${input.eventId}`)
 				}
 				redis.del(`event_heavy:${input.id}`)
+				redis.del(`event_heavy:${ctx.event.id}`)
 				return updated[0]
 			} else {
 				const createInput = eventSchema.parse(input)
@@ -256,6 +257,7 @@ export const eventProcedures = t.router({
 					.returning()
 				console.log(`create event_heavy:${newForm.id}`)
 				redis.del(`event_heavy:${newForm.id}`)
+				redis.del(`event_heavy:${ctx.event.id}`)
 
 				return newForm[0]
 			}
