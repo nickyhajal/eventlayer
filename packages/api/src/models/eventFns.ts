@@ -43,6 +43,7 @@ interface Args {
 
 interface GetEventsArgs {
 	eventFor?: string
+	type?: string
 }
 
 export const EventFns = (args: string | Args) => {
@@ -231,10 +232,11 @@ export const EventFns = (args: string | Args) => {
 			})
 			return sponsor
 		},
-		getEvents: async ({ eventFor }: GetEventsArgs = {}) => {
+		getEvents: async ({ eventFor, type }: GetEventsArgs = {}) => {
 			const events = await db.query.eventTable.findMany({
 				where: and(
 					eq(eventTable.eventId, eventId),
+					type ? eq(eventTable.type, type) : undefined,
 					eventFor ? eq(eventTable.eventFor, eventFor) : undefined,
 				),
 				with: {
