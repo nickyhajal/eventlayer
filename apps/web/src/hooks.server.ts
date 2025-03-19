@@ -115,6 +115,22 @@ export const handleUserContext: Handle = async ({ event, resolve }) => {
 						event.locals.me.photo = media
 					}
 				}
+				event.locals.me.rsvps = await db.query.eventUserTable.findMany({
+					where: and(
+						eq(eventUserTable.mainId, event.locals.event.id),
+						eq(eventUserTable.userId, user?.id),
+					),
+					with: {
+						event: {
+							columns: {
+								id: true,
+								name: true,
+								startsAt: true,
+							}
+						}
+					}
+				})
+				delete event.locals.me.internalNotes
 			}
 		}
 	}

@@ -14,16 +14,19 @@
 
 	export let data
 	const me = getMeContext()
+	let loading = false
 	$: shouldGroup = data.event.eventFor !== 'rsvp'
 	$: event = data.event
 	$: users = orderBy(
 		shouldGroup ? data.users : data.users.map((row) => ({ ...row, type: 'attendee' })),
 		['type'],
 	)
-	$: rsvpd = data.myLunch?.eventId && data.myLunch.eventId !== data.event.id
+	$: rsvpd = $me?.rsvps?.find(
+		(rsvp) => rsvp.event.startsAt.replace('T', ' ') === event.startsAt?.replace('T', ' '),
+	)
 	// $: users = shouldGroup ? orderBy(data.users, ['type']) : data.users
 	$: attendingEvent = users.find((user) => user?.userId === $me?.id)
-	$: canRsvp = users.length < (event?.maxAttendees || 0)
+	$: canRsvp = event?.maxAttendees === 0 || users.length < (event?.maxAttendees || 0)
 	let lastType = ''
 	function getLastType(user: EventUser) {
 		if (user.type !== lastType && user.type) {
@@ -35,10 +38,12 @@
 	async function toggleRsvp() {
 		if (!event?.id || !$me?.id) return
 		if (!attendingEvent && !canRsvp) return
-
+		if (loading) return
+		loading = true
 		attendingEvent = !attendingEvent
 		await trpc().event.toggleRsvp.mutate({ eventId: event.id })
 		await invalidateAll()
+		loading = false
 	}
 </script>
 
@@ -65,13 +70,15 @@
 					class="mb-8 font-semibold {attendingEvent
 						? '!bg-emerald-500'
 						: canRsvp && $me?.id && !rsvpd
-							? 'bg-a-accent'
+							? 'bg-a-accent !text-white/100'
 							: '!bg-slate-100/60 !text-slate-400 border border-slate-400/10 border-b-slate-700/10 cursor-not-allowed'}"
 				>
-					{#if attendingEvent}
+					{#if loading}
+						Loading...
+					{:else if attendingEvent}
 						You're Attending - Click to Cancel
 					{:else if rsvpd}
-						You're Attending Another Lunch
+						You Already Have an RSVP at this Time
 					{:else if !canRsvp}
 						Event Full
 					{:else if !$me?.id}
@@ -84,8 +91,8 @@
 				</Button>
 			{/if}
 			<!-- {#if event.showAttendeeList}
-			<button>Show Attendees</button>
-		{/if} -->
+				<button>Show Attendees</button>
+			{/if} -->
 		</div>
 		{#if event.description}
 			<div class="text-slate-600">
