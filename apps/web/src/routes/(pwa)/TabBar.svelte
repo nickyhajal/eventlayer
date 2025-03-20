@@ -1,59 +1,59 @@
 <script lang="ts">
-import { page } from '$app/stores'
-import Button from '$lib/components/ui/button/button.svelte'
-import { getEventContext, getMeContext } from '$lib/state/getContexts'
-import BadgeCheck from 'lucide-svelte/icons/badge-check'
-import Calendar from 'lucide-svelte/icons/calendar'
-import Cog from 'lucide-svelte/icons/cog'
-import Door from 'lucide-svelte/icons/door-open'
-import HelpCircle from 'lucide-svelte/icons/help-circle'
-import Home from 'lucide-svelte/icons/home'
-import Mail from 'lucide-svelte/icons/mail'
-import Map from 'lucide-svelte/icons/map'
-import Pin from 'lucide-svelte/icons/map-pinned'
-import Menu from 'lucide-svelte/icons/menu'
-import Rocket from 'lucide-svelte/icons/rocket'
-import Send from 'lucide-svelte/icons/send'
-import Users from 'lucide-svelte/icons/users'
-import Utensils from 'lucide-svelte/icons/utensils'
+	import { page } from '$app/stores'
+	import Button from '$lib/components/ui/button/button.svelte'
+	import { getEventContext, getMeContext } from '$lib/state/getContexts'
+	import BadgeCheck from 'lucide-svelte/icons/badge-check'
+	import Calendar from 'lucide-svelte/icons/calendar'
+	import Cog from 'lucide-svelte/icons/cog'
+	import Door from 'lucide-svelte/icons/door-open'
+	import HelpCircle from 'lucide-svelte/icons/help-circle'
+	import Home from 'lucide-svelte/icons/home'
+	import Mail from 'lucide-svelte/icons/mail'
+	import Map from 'lucide-svelte/icons/map'
+	import Pin from 'lucide-svelte/icons/map-pinned'
+	import Menu from 'lucide-svelte/icons/menu'
+	import Rocket from 'lucide-svelte/icons/rocket'
+	import Send from 'lucide-svelte/icons/send'
+	import Users from 'lucide-svelte/icons/users'
+	import Utensils from 'lucide-svelte/icons/utensils'
 
-import { tw } from '@matterloop/ui'
+	import { tw } from '@matterloop/ui'
 
-const event = getEventContext()
-const me = getMeContext()
+	const event = getEventContext()
+	const me = getMeContext()
 
-const topTabs = $event.menus.filter((m) => m.location === 'top-sidebar')
-const bottomTabs = $event.menus.filter((m) => m.location === 'bot-sidebar')
-const mobileTabs = $event.menus.filter((m) => m.location === 'tabs')
+	const topTabs = $event.menus.filter((m) => m.location === 'top-sidebar')
+	const bottomTabs = $event.menus.filter((m) => m.location === 'bot-sidebar')
+	const mobileTabs = $event.menus.filter((m) => m.location === 'tabs')
 
-// const bottomTabs = [
-// 	{
-// 		label: 'Venue Map',
-// 		icon: Map,
-// 		href: '/map',
-// 		classes: 'hidden lg:flex',
-// 	},
-// 	{
-// 		label: 'Meal Options',
-// 		icon: Utensils,
-// 		href: '/meals',
-// 		classes: 'hidden lg:flex',
-// 	},
-// 	{
-// 		label: 'FAQs',
-// 		icon: HelpCircle,
-// 		href: '/faq',
-// 		classes: 'hidden lg:flex',
-// 	},
-// 	{
-// 		label: 'Contact',
-// 		icon: Mail,
-// 		href: '/contact',
-// 		classes: 'hidden lg:flex',
-// 	},
-// ]
+	// const bottomTabs = [
+	// 	{
+	// 		label: 'Venue Map',
+	// 		icon: Map,
+	// 		href: '/map',
+	// 		classes: 'hidden lg:flex',
+	// 	},
+	// 	{
+	// 		label: 'Meal Options',
+	// 		icon: Utensils,
+	// 		href: '/meals',
+	// 		classes: 'hidden lg:flex',
+	// 	},
+	// 	{
+	// 		label: 'FAQs',
+	// 		icon: HelpCircle,
+	// 		href: '/faq',
+	// 		classes: 'hidden lg:flex',
+	// 	},
+	// 	{
+	// 		label: 'Contact',
+	// 		icon: Mail,
+	// 		href: '/contact',
+	// 		classes: 'hidden lg:flex',
+	// 	},
+	// ]
 
-$: bits = $page.url.pathname.split('/')
+	$: bits = $page.url.pathname.split('/')
 </script>
 
 {#if !['/login', '/welcome'].includes($page.url.pathname)}
@@ -68,9 +68,11 @@ $: bits = $page.url.pathname.split('/')
 				<Button
 					href={link}
 					variant="ghost"
-					class={tw(`flex h-full w-20 flex-none flex-col items-center gap-0.5 py-1 text-[0.7rem] transition-none hover:bg-transparent focus:bg-transparent lg:w-full lg:flex-row lg:items-center lg:justify-start lg:gap-3 lg:rounded-lg lg:bg-slate-800 lg:px-2.5 lg:py-2 lg:text-sm lg:text-white  lg:hover:text-white ${bits[1] === currBits[1]? 'text-a-accent hover:text-a-accent brightness-90 lg:bg-slate-900 lg:hover:bg-slate-900' : 'text-slate-600 hover:lg:bg-slate-700'} ${classes}`)}
+					class={tw(
+						`flex h-full w-20 flex-none flex-col items-center gap-0.5 py-1 text-[0.7rem] transition-none hover:bg-transparent focus:bg-transparent lg:w-full lg:flex-row lg:items-center lg:justify-start lg:gap-3 lg:rounded-lg lg:bg-slate-800 lg:px-2.5 lg:py-2 lg:text-sm lg:text-white  lg:hover:text-white ${bits[1] === currBits[1] ? 'text-a-accent hover:text-a-accent brightness-90 lg:bg-slate-900 lg:hover:bg-slate-900' : 'text-slate-600 hover:lg:bg-slate-700'} ${classes}`,
+					)}
 				>
-					<div class="icon {bits[1] === currBits[1]? 'selected' : ''}">{@html icon}</div>
+					<div class="icon {bits[1] === currBits[1] ? 'selected' : ''}">{@html icon}</div>
 					<!-- <svelte:component
 						this={icon}
 						class="w-[1.5rem] lg:w-[1.2rem]  {bits[1] === currBits[1]? 'text-a-accent w-[1.5rem] lg:text-white' : 'text-slate-600  lg:text-white/50'}"
@@ -85,9 +87,11 @@ $: bits = $page.url.pathname.split('/')
 				<Button
 					href={link}
 					variant="ghost"
-					class={tw(`flex h-full w-20 flex-none flex-col items-center gap-0.5 py-1 text-[0.7rem] transition-none hover:bg-transparent focus:bg-transparent lg:w-full lg:flex-row lg:items-center lg:justify-start lg:gap-3 lg:rounded-lg lg:bg-slate-800 lg:px-2.5 lg:py-2 lg:text-sm lg:text-white  lg:hover:text-white ${bits[1] === currBits[1]? 'text-a-accent hover:text-a-accent brightness-90 lg:bg-slate-900 lg:hover:bg-slate-900' : 'text-slate-600 hover:lg:bg-slate-700'} ${classes}`)}
+					class={tw(
+						`flex h-full w-20 flex-none flex-col items-center gap-0.5 py-1 text-[0.7rem] transition-none hover:bg-transparent focus:bg-transparent lg:w-full lg:flex-row lg:items-center lg:justify-start lg:gap-3 lg:rounded-lg lg:bg-slate-800 lg:px-2.5 lg:py-2 lg:text-sm lg:text-white  lg:hover:text-white ${bits[1] === currBits[1] ? 'text-a-accent hover:text-a-accent brightness-90 lg:bg-slate-900 lg:hover:bg-slate-900' : 'text-slate-600 hover:lg:bg-slate-700'} ${classes}`,
+					)}
 				>
-					<div class="icon {bits[1] === currBits[1]? 'selected' : ''}">{@html icon}</div>
+					<div class="icon {bits[1] === currBits[1] ? 'selected' : ''}">{@html icon}</div>
 					<!-- <svelte:component
 						this={icon}
 						class="w-[1.5rem] lg:w-[1.2rem]  {bits[1] === currBits[1]? 'text-a-accent w-[1.5rem] lg:text-white' : 'text-slate-600  lg:text-white/50'}"
@@ -104,33 +108,39 @@ $: bits = $page.url.pathname.split('/')
 				<Button
 					href={link}
 					variant="ghost"
-					class={tw(`hidden h-full w-20 flex-none flex-col items-center gap-0.5 py-1 text-[0.7rem] transition-none hover:bg-transparent focus:bg-transparent lg:flex lg:w-full lg:flex-row lg:items-center lg:justify-start lg:gap-3 lg:rounded-lg lg:bg-slate-800 lg:px-2.5 lg:py-2 lg:text-sm lg:text-white  lg:hover:text-white ${bits[1] === currBits[1]? 'text-a-accent hover:text-a-accent lg:bg-slate-900 lg:hover:bg-slate-900' : 'text-slate-600 hover:lg:bg-slate-700'} ${classes}`)}
+					class={tw(
+						`hidden h-full w-20 flex-none flex-col items-center gap-0.5 py-1 text-[0.7rem] transition-none hover:bg-transparent focus:bg-transparent lg:flex lg:w-full lg:flex-row lg:items-center lg:justify-start lg:gap-3 lg:rounded-lg lg:bg-slate-800 lg:px-2.5 lg:py-2 lg:text-sm lg:text-white  lg:hover:text-white ${bits[1] === currBits[1] ? 'text-a-accent hover:text-a-accent lg:bg-slate-900 lg:hover:bg-slate-900' : 'text-slate-600 hover:lg:bg-slate-700'} ${classes}`,
+					)}
 				>
-					<div class="icon {bits[1] === currBits[1]? 'selected' : ''}">{@html icon}</div>
+					<div class="icon {bits[1] === currBits[1] ? 'selected' : ''}">{@html icon}</div>
 					<div>{label}</div>
 				</Button>
 			{/each}
 			<div
-				class="relative -left-1 -mb-4 flex w-[calc(100%+1.3rem)] gap-1 bg-slate-900 py-2 pl-3 pr-2"
+				class="relative -left-1 -mb-4 flex w-[calc(100%+1.3rem)] gap-1.5 bg-slate-900 py-2 pl-3 pr-2"
 			>
 				{#if $me?.id}
 					<Button
 						href="/settings"
 						variant="ghost"
-						class={tw(`hidden h-full w-1/2 flex-none flex-col items-center gap-0.5 py-1 text-[0.7rem] transition-none hover:bg-transparent focus:bg-transparent lg:flex lg:w-1/2 lg:flex-row lg:items-center lg:justify-start lg:gap-3 lg:rounded-lg lg:bg-slate-900 lg:px-2.5 lg:py-2 lg:text-sm lg:text-white/80  lg:hover:text-white ${bits[1] === 'settings'? 'text-a-accent hover:text-a-accent lg:bg-slate-900 lg:hover:bg-slate-900' : 'text-slate-600 hover:lg:bg-slate-800'} `)}
+						class={tw(
+							`hidden h-full w-1/2 flex-none flex-col items-center gap-0.5 py-1 text-[0.7rem] transition-none hover:bg-transparent focus:bg-transparent lg:flex lg:w-1/2 lg:flex-row lg:items-center lg:justify-start lg:gap-3 lg:rounded-lg lg:bg-slate-900 lg:px-2.5 lg:py-2 lg:text-sm lg:text-white/80  lg:hover:text-white ${bits[1] === 'settings' ? 'text-a-accent hover:text-a-accent lg:bg-slate-900 lg:hover:bg-slate-900' : 'text-slate-600 hover:lg:bg-slate-800'} `,
+						)}
 					>
 						<div class="icon {bits[1] === '/settings' ? 'selected' : ''}">
-							<Cog class="h-5 w-5" />
+							<Cog class="h-5 w-5 -mr-1.5" />
 						</div>
-						<div>Settings</div>
+						<div>Your Profile</div>
 					</Button>
 					<Button
 						href="/logout"
 						variant="ghost"
-						class={tw(`hidden h-full w-1/2 flex-none flex-col items-center gap-0.5 py-1 text-[0.7rem] transition-none hover:bg-transparent focus:bg-transparent lg:flex lg:flex-row lg:items-center lg:justify-start lg:gap-3 lg:rounded-lg lg:bg-slate-900 lg:px-2.5 lg:py-2 lg:text-sm lg:text-white/80  lg:hover:text-white ${bits[1] === 'settings'? 'text-a-accent hover:text-a-accent lg:bg-slate-900 lg:hover:bg-slate-900' : 'text-slate-600 hover:lg:bg-slate-800'} `)}
+						class={tw(
+							`hidden h-full w-1/2 flex-none flex-col items-center gap-0.5 py-1 text-[0.7rem] transition-none hover:bg-transparent focus:bg-transparent lg:flex lg:flex-row lg:items-center lg:justify-start lg:gap-3 lg:rounded-lg lg:bg-slate-900 lg:px-2.5 lg:py-2 lg:text-sm lg:text-white/80  lg:hover:text-white ${bits[1] === 'settings' ? 'text-a-accent hover:text-a-accent lg:bg-slate-900 lg:hover:bg-slate-900' : 'text-slate-600 hover:lg:bg-slate-800'} `,
+						)}
 					>
 						<div class="icon {bits[1] === '/settings' ? 'selected' : ''}">
-							<Door class="h-5 w-5" />
+							<Door class="h-5 w-5 -mr-1.5" />
 						</div>
 						<div>Logout</div>
 					</Button>
@@ -138,7 +148,9 @@ $: bits = $page.url.pathname.split('/')
 					<Button
 						href="/login"
 						variant="ghost"
-						class={tw(`hidden h-full w-full flex-none flex-col items-center justify-center  py-1 text-[0.7rem] transition-none hover:bg-transparent focus:bg-transparent lg:flex lg:flex-row lg:items-center lg:justify-start lg:gap-3 lg:rounded-lg lg:bg-slate-900 lg:px-3.5 lg:py-2 lg:text-sm lg:text-white/80  lg:hover:text-white ${bits[1] === 'settings'? 'text-a-accent hover:text-a-accent lg:bg-slate-900 lg:hover:bg-slate-900' : 'text-slate-600 hover:lg:bg-slate-800'} `)}
+						class={tw(
+							`hidden h-full w-full flex-none flex-col items-center justify-center  py-1 text-[0.7rem] transition-none hover:bg-transparent focus:bg-transparent lg:flex lg:flex-row lg:items-center lg:justify-start lg:gap-3 lg:rounded-lg lg:bg-slate-900 lg:px-3.5 lg:py-2 lg:text-sm lg:text-white/80  lg:hover:text-white ${bits[1] === 'settings' ? 'text-a-accent hover:text-a-accent lg:bg-slate-900 lg:hover:bg-slate-900' : 'text-slate-600 hover:lg:bg-slate-800'} `,
+						)}
 					>
 						<div class="icon {bits[1] === '/settings' ? 'selected' : ''}">
 							<Door class="h-5 w-5" />
@@ -152,13 +164,13 @@ $: bits = $page.url.pathname.split('/')
 {/if}
 
 <style lang="postcss">
-.tabbar {
-	padding-bottom: env(safe-area-inset-bottom);
-}
-.icon :global(svg) {
-	@apply w-[1.5rem] text-slate-600  lg:w-[1.2rem]  lg:text-white/50;
-}
-.icon.selected :global(svg) {
-	@apply text-a-accent lg:text-white;
-}
+	.tabbar {
+		padding-bottom: env(safe-area-inset-bottom);
+	}
+	.icon :global(svg) {
+		@apply w-[1.5rem] text-slate-600  lg:w-[1.2rem]  lg:text-white/50;
+	}
+	.icon.selected :global(svg) {
+		@apply text-a-accent lg:text-white;
+	}
 </style>

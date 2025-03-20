@@ -18,6 +18,25 @@
 	}, '')
 	$: name = `${user.firstName} ${user.lastName}`
 
+	function instagramUrl(str: string) {
+		str = str.replace('@', '').replace('http://', '')
+		if (!str.includes('instagram.com')) return `https://instagram.com/${str}`
+		if (!str.includes('https://')) return `https://${str}`
+		return str
+	}
+	function fbUrl(str: string) {
+		str = str.replace('@', '').replace('http://', '')
+		if (!str.includes('facebook.com')) return `https://facebook.com/${str}`
+		if (!str.includes('https://')) return `https://${str}`
+		return str
+	}
+	function linkedinUrl(str: string) {
+		str = str.replace('http://', '')
+		if (!str.includes('linkedin.com')) return `https://linkedin.com/in/${str}`
+		if (!str.includes('https://')) return `https://${str}`
+		return str
+	}
+
 	// const why = {
 	// 	community: 'Join a community of like-minded people in Oregon',
 	// 	learn: 'Learn about climate technology advancements being made in Oregon',
@@ -116,9 +135,9 @@
 						View their Site
 					</Button>
 				{/if}
-				{#if user?.info?.linkedin_url?.value}
+				{#if info('linkedin_url')}
 					<Button
-						href={user?.info?.linkedin_url?.value}
+						href={linkedinUrl(info('linkedin_url') || '')}
 						target="_blank"
 						rel="noopener noreferrer"
 						class="relative mx-auto flex-grow block h-9 w-fit  rounded-lg bg-sky-800 text-center text-sm"
@@ -126,9 +145,9 @@
 						Connect on LinkedIn
 					</Button>
 				{/if}
-				{#if user?.info?.ig_url?.value}
+				{#if info('ig_url')}
 					<Button
-						href={user?.info?.ig_url?.value}
+						href={instagramUrl(info('ig_url') || '')}
 						target="_blank"
 						rel="noopener noreferrer"
 						class="relative mx-auto flex-grow block h-9 w-fit rounded-lg bg-purple-800 text-center text-sm"
@@ -136,9 +155,9 @@
 						Connect on Instagram
 					</Button>
 				{/if}
-				{#if user?.info?.fb_url?.value}
+				{#if info('fb_url')}
 					<Button
-						href={user?.info?.fb_url?.value}
+						href={fbUrl(info('fb_url') || '')}
 						target="_blank"
 						rel="noopener noreferrer"
 						class="relative mx-auto flex-grow block h-9 w-fit rounded-lg bg-sky-700 text-center text-sm"
