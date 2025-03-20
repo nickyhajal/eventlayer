@@ -36,6 +36,11 @@
 		if (!str.includes('https://')) return `https://${str}`
 		return str
 	}
+	function siteUrl(str: string) {
+		str = str.replace('http://', '')
+		if (!str.includes('https://')) return `https://${str}`
+		return str
+	}
 
 	// const why = {
 	// 	community: 'Join a community of like-minded people in Oregon',
@@ -127,7 +132,7 @@
 			<div class="flex flex-wrap justify-start gap-2 mb-4">
 				{#if info('site')}
 					<Button
-						href={info('site')}
+						href={siteUrl(info('site') || '')}
 						target="_blank"
 						rel="noopener noreferrer"
 						class="relative mx-auto flex-grow block h-9 w-fit  rounded-lg bg-teal-700 text-center text-sm"
