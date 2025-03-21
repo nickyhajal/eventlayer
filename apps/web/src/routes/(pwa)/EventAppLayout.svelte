@@ -75,7 +75,7 @@
 		<div></div>
 	{/if}
 </div>
-<Modal open={true} on:close={() => (installModalOpen = false)}>
+<Modal bind:open={installModalOpen} on:close={() => (installModalOpen = false)}>
 	<div class="p-8 h-full">
 		<h2 class="text-xl font-bold pb-3">Install on Your Home Screen</h2>
 		<p class="text-sm text-slate-500">
