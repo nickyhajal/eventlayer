@@ -30,30 +30,30 @@ import { gt, ilike } from 'drizzle-orm'
 // });
 // export const handleError = Sentry.handleErrorWithSentry();
 
-async function fixUsers() {
-	const infeb = await db.query.eventUserTable.findMany({
-		where: and(
-			gt(eventUserTable.createdAt, '2025-02-20 00:00:00'),
-			lt(eventUserTable.createdAt, '2025-02-22 00:00:00')
-		)
-	})
-	const infeb2 = await db.query.eventUserTable.findMany({
-		where: and(
-			eq(eventUserTable.eventId, '30c40f2f-05b9-480f-ba3b-1583f3d448e0'),
-			inArray(eventUserTable.userId, infeb.map((i) => i.userId))
-		)
-	})
-	const missing = []
-	for (const u of infeb) {
-		if (!infeb2.find((i) => i.userId === u.userId)) {
-			missing.push(u)
-		}
-	}
-	console.log('infeb', infeb.length)
-	console.log('infeb2', infeb2.length)
-	console.log('missing', missing.length)
-}
-fixUsers().then(() => console.log('done'))
+// async function fixUsers() {
+// 	const infeb = await db.query.eventUserTable.findMany({
+// 		where: and(
+// 			gt(eventUserTable.createdAt, '2025-02-20 00:00:00'),
+// 			lt(eventUserTable.createdAt, '2025-02-22 00:00:00')
+// 		)
+// 	})
+// 	const infeb2 = await db.query.eventUserTable.findMany({
+// 		where: and(
+// 			eq(eventUserTable.eventId, '30c40f2f-05b9-480f-ba3b-1583f3d448e0'),
+// 			inArray(eventUserTable.userId, infeb.map((i) => i.userId))
+// 		)
+// 	})
+// 	const missing = []
+// 	for (const u of infeb) {
+// 		if (!infeb2.find((i) => i.userId === u.userId)) {
+// 			missing.push(u)
+// 		}
+// 	}
+// 	console.log('infeb', infeb.length)
+// 	console.log('infeb2', infeb2.length)
+// 	console.log('missing', missing.length)
+// }
+// fixUsers().then(() => console.log('done'))
 
 const handleRouteRedirect = (defaultRedirect = '/', route: RouteConfig) => {
 	const { failedAuthRedirect } = route
