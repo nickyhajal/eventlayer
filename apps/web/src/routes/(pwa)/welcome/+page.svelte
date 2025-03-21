@@ -123,13 +123,11 @@
 						{/if}
 					</div>
 					<!-- class="border-a-accent/10 border-b-a-accent/10 bg-a-accent/5 text-a-accent hover:bg-a-accent/10 w-52 border border-b-2 py-5  font-semibold shadow-none brightness-90" -->
-					{#if i < elementsListedByPage.length - 1}
-						<Button
-							class="rounded-full bg-[#060C3A] text-white px-12 py-4 h-14 text-base tracking-wide"
-							type="button"
-							on:click={next}>{i === elementsListedByPage.length - 1 ? 'Done' : 'Continue'}</Button
-						>
-					{/if}
+					<Button
+						class="rounded-full bg-[#060C3A] text-white px-12 py-4 h-14 text-base tracking-wide"
+						type="button"
+						on:click={next}>{i === elementsListedByPage.length - 1 ? 'Done' : 'Continue'}</Button
+					>
 				</div>
 			</div>
 		{/each}
