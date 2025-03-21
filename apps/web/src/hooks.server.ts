@@ -6,15 +6,15 @@ import { PUBLIC_BASE_URL } from '$env/static/public'
 import type { RouteConfig } from '$lib/server/core/routeConfig'
 import { getConfigForRoute } from '$lib/server/core/routeHelper'
 import { loadUsers } from '$lib/server/loadUserData'
+import { gt, ilike } from 'drizzle-orm'
 import { createTRPCHandle } from 'trpc-sveltekit'
 
 import { lucia } from '@matterloop/api'
 import { redis } from '@matterloop/api/src/core/redis'
 import { createContext } from '@matterloop/api/src/procedureWithContext'
 import { router } from '@matterloop/api/src/root'
-import { and, db, eq, Event, eventTable, eventUserTable, lt, eventUserTable, mediaTable, inArray } from '@matterloop/db'
+import { and, db, eq, Event, eventTable, eventUserTable, mediaTable } from '@matterloop/db'
 import { userTable } from '@matterloop/db/types'
-import { gt, ilike } from 'drizzle-orm'
 
 // import { getConfigForRoute } from '$lib/server/core/routeHelper';
 // import type { RouteConfig } from '$lib/server/core/routeConfig';
@@ -152,9 +152,9 @@ export const handleUserContext: Handle = async ({ event, resolve }) => {
 								id: true,
 								name: true,
 								startsAt: true,
-							}
-						}
-					}
+							},
+						},
+					},
 				})
 				delete event.locals.me.internalNotes
 			}
@@ -205,20 +205,24 @@ const handleLogout: Handle = async ({ event, resolve }) => {
 const handleRouteConfig: Handle = async ({ event, resolve }) => {
 	const { me } = event.locals
 	if (!me) {
-		if (!event.url.pathname.includes('/login') && !event.url.pathname.includes('/trpc') && !event.url.pathname.includes('manifest')) {
+		if (
+			!event.url.pathname.includes('/login') &&
+			!event.url.pathname.includes('/trpc') &&
+			!event.url.pathname.includes('manifest')
+		) {
 			return redirect(303, '/login')
 		}
 	}
 	// if (me?.type !== 'staff') {
-		// if (
-		// 	!event.url.pathname.includes('/settings') &&
-		// 	!event.url.pathname.includes('/login') &&
-		// 	!event.url.pathname.includes('/welcome') &&
-		// 	!event.url.pathname.includes('/manifest') &&
-		// 	!event.url.pathname.includes('/trpc')
-		// ) {
-		// 	return redirect(303, '/welcome')
-		// }
+	// if (
+	// 	!event.url.pathname.includes('/settings') &&
+	// 	!event.url.pathname.includes('/login') &&
+	// 	!event.url.pathname.includes('/welcome') &&
+	// 	!event.url.pathname.includes('/manifest') &&
+	// 	!event.url.pathname.includes('/trpc')
+	// ) {
+	// 	return redirect(303, '/welcome')
+	// }
 	// }
 	const routeConfig = getConfigForRoute(event.url.pathname)
 	const { auth } = routeConfig
