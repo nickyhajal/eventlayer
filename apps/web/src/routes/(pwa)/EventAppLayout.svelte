@@ -83,7 +83,7 @@
 		</p>
 		<div class="pt-4">
 			First, tap this icon
-			{#if !isIos()}
+			{#if isIos()}
 				<ShareIcon class="w-6 inline-block -mt-[6px] text-blue-700" /> below. Then, select
 			{:else}
 				<EllipsisVertical class="w-6 inline-block -mt-[6px] text-blue-700" /> in your browser above.
