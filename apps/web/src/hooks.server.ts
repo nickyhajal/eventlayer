@@ -12,8 +12,9 @@ import { lucia } from '@matterloop/api'
 import { redis } from '@matterloop/api/src/core/redis'
 import { createContext } from '@matterloop/api/src/procedureWithContext'
 import { router } from '@matterloop/api/src/root'
-import { and, db, eq, Event, eventTable, eventUserTable, mediaTable } from '@matterloop/db'
+import { and, db, eq, Event, eventTable, eventUserTable, lt, eventUserTable, mediaTable, inArray } from '@matterloop/db'
 import { userTable } from '@matterloop/db/types'
+import { gt, ilike } from 'drizzle-orm'
 
 // import { getConfigForRoute } from '$lib/server/core/routeHelper';
 // import type { RouteConfig } from '$lib/server/core/routeConfig';
@@ -28,6 +29,31 @@ import { userTable } from '@matterloop/db/types'
 // 	tracesSampleRate: 1.0 // Capture 100% of the transactions. Adjust this value in production as necessary.
 // });
 // export const handleError = Sentry.handleErrorWithSentry();
+
+async function fixUsers() {
+	const infeb = await db.query.eventUserTable.findMany({
+		where: and(
+			gt(eventUserTable.createdAt, '2025-02-20 00:00:00'),
+			lt(eventUserTable.createdAt, '2025-02-22 00:00:00')
+		)
+	})
+	const infeb2 = await db.query.eventUserTable.findMany({
+		where: and(
+			eq(eventUserTable.eventId, '30c40f2f-05b9-480f-ba3b-1583f3d448e0'),
+			inArray(eventUserTable.userId, infeb.map((i) => i.userId))
+		)
+	})
+	const missing = []
+	for (const u of infeb) {
+		if (!infeb2.find((i) => i.userId === u.userId)) {
+			missing.push(u)
+		}
+	}
+	console.log('infeb', infeb.length)
+	console.log('infeb2', infeb2.length)
+	console.log('missing', missing.length)
+}
+fixUsers().then(() => console.log('done'))
 
 const handleRouteRedirect = (defaultRedirect = '/', route: RouteConfig) => {
 	const { failedAuthRedirect } = route
@@ -183,17 +209,17 @@ const handleRouteConfig: Handle = async ({ event, resolve }) => {
 			return redirect(303, '/login')
 		}
 	}
-	if (me?.type !== 'staff') {
-		if (
-			!event.url.pathname.includes('/settings') &&
-			!event.url.pathname.includes('/login') &&
-			!event.url.pathname.includes('/welcome') &&
-			!event.url.pathname.includes('/manifest') &&
-			!event.url.pathname.includes('/trpc')
-		) {
-			return redirect(303, '/welcome')
-		}
-	}
+	// if (me?.type !== 'staff') {
+		// if (
+		// 	!event.url.pathname.includes('/settings') &&
+		// 	!event.url.pathname.includes('/login') &&
+		// 	!event.url.pathname.includes('/welcome') &&
+		// 	!event.url.pathname.includes('/manifest') &&
+		// 	!event.url.pathname.includes('/trpc')
+		// ) {
+		// 	return redirect(303, '/welcome')
+		// }
+	// }
 	const routeConfig = getConfigForRoute(event.url.pathname)
 	const { auth } = routeConfig
 	if (auth === 'logged-out' && me) {
