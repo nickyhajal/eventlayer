@@ -60,7 +60,7 @@
 	}
 </script>
 
-<Screen title="Schedule" bigTitle="Schedule">
+<Screen title="Meetups" bigTitle="Meetups">
 	<div class="mx-auto max-w-7xl px-2">
 		<div class="">
 			<div
