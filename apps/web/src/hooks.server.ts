@@ -179,7 +179,7 @@ const handleLogout: Handle = async ({ event, resolve }) => {
 const handleRouteConfig: Handle = async ({ event, resolve }) => {
 	const { me } = event.locals
 	if (!me) {
-		if (!event.url.pathname.includes('/login') && !event.url.pathname.includes('/trpc')) {
+		if (!event.url.pathname.includes('/login') && !event.url.pathname.includes('/trpc') && !event.url.pathname.includes('manifest')) {
 			return redirect(303, '/login')
 		}
 	}
@@ -188,6 +188,7 @@ const handleRouteConfig: Handle = async ({ event, resolve }) => {
 			!event.url.pathname.includes('/settings') &&
 			!event.url.pathname.includes('/login') &&
 			!event.url.pathname.includes('/welcome') &&
+			!event.url.pathname.includes('/manifest') &&
 			!event.url.pathname.includes('/trpc')
 		) {
 			return redirect(303, '/welcome')
