@@ -96,7 +96,7 @@
 		<div class="flex gap-2 pt-10 justify-end">
 			<button
 				type="button"
-				class="text-sm text-blue-600 font-semibold cursor-pointer relative z-10"
+				class="text-sm text-blue-600 font-semibold cursor-pointer relative z-30"
 				on:click={() => (installModalOpen = false)}>Cancel</button
 			>
 		</div>

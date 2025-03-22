@@ -74,7 +74,7 @@
 </script>
 
 <Screen title={name} back="/speakers">
-	<div class="mx-auto max-w-7xl pb-28 pt-6 lg:pt-0">
+	<div class="mx-auto max-w-7xl pb-28 pt-safe-offset-8 lg:pt-0">
 		<div class="text-base font-semibold text-red-600">
 			<!-- {dayjs(data.v.startsAt).format('dddd MMMM Do [at] h:mma')} -->
 		</div>
