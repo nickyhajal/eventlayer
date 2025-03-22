@@ -16,7 +16,9 @@
 	const event = getEventContext()
 	let installModalOpen = false
 	let suggestedInstall =
-		typeof window !== 'undefined' && window.localStorage.getItem('pwa-install-blocked') !== 'true'
+		typeof window !== 'undefined' &&
+		window.localStorage.getItem('pwa-install-blocked') !== 'true' &&
+		!window.matchMedia('(display-mode: standalone)').matches
 	$: cssVars = $event?.colors
 		? Object.entries($event?.colors)
 				.map(([key, value]) => {
@@ -93,7 +95,8 @@
 		</div>
 		<div class="flex gap-2 pt-10 justify-end">
 			<button
-				class="text-sm text-blue-600 font-semibold cursor-pointer"
+				type="button"
+				class="text-sm text-blue-600 font-semibold cursor-pointer relative z-10"
 				on:click={() => (installModalOpen = false)}>Cancel</button
 			>
 		</div>

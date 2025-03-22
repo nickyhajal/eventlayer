@@ -71,7 +71,7 @@
 			<div
 				bind:this={modalElm}
 				class={tw(
-					`modal margin-0 absolute left-0 right-0 -mt-[10vh] max-w-[calc(100%-1rem)] lg:max-w-lg rounded-2xl bg-white shadow-2xl transition-all delay-150 duration-200 opacity-${
+					`modal margin-0 absolute left-0 right-0 -mt-[10vh] w-full lg:max-w-lg rounded-2xl bg-white shadow-2xl transition-all delay-150 duration-200 opacity-${
 						visible ? '100' : '0'
 					}`,
 					modalClass,
