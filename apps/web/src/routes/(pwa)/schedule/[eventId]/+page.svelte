@@ -15,11 +15,12 @@
 	export let data
 	const me = getMeContext()
 	let loading = false
-	$: shouldGroup = data.event.eventFor !== 'rsvp'
+	$: shouldGroup = data.event.eventFor === 'rsvp'
 	$: event = data.event
 	$: users = orderBy(
 		shouldGroup ? data.users : data.users.map((row) => ({ ...row, type: 'attendee' })),
 		['type'],
+		'desc',
 	)
 	$: rsvpd = $me?.rsvps?.find(
 		(rsvp) => rsvp.event.startsAt.replace('T', ' ') === event.startsAt?.replace('T', ' '),
@@ -116,9 +117,10 @@
 						{#if getLastType(user)}
 							<div class="text-a-accent mb-0 mt-2 text-lg font-semibold brightness-95">
 								{startCase(
-									event?.name?.includes('Dive Session') && user.type === 'attendee'
-										? 'facilitator'
-										: user.type,
+									// event?.name?.includes('Dive Session') && user.type === 'attendee'
+									// ? 'facilitator'
+									// : user.type,
+									user.type,
 								)}s
 							</div>
 						{/if}
