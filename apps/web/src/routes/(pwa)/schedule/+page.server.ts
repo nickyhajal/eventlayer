@@ -1,5 +1,5 @@
 import { EventFns } from '@matterloop/api'
-import { orderBy } from '@matterloop/util'
+import { orderBy, uniqBy } from '@matterloop/util'
 
 export const load = async (req) => {
 	const { locals, url } = req
@@ -7,6 +7,6 @@ export const load = async (req) => {
 	const events = await eventFns.getEvents({ type: 'program' })
 	const myEvents = await eventFns.getUserEvents(locals.me)
 	return {
-		events: orderBy([...events, ...myEvents], ['startsAt']),
+		events: uniqBy(orderBy([...events, ...myEvents], ['startsAt']), 'id'),
 	}
 }
