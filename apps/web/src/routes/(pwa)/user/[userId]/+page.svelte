@@ -131,7 +131,7 @@
 						{#if isMyFriend && didFriendMe}
 							Mutual Friend
 						{:else if isMyFriend}
-							You Friended
+							Your Friend
 						{:else}
 							Friended You
 						{/if}
