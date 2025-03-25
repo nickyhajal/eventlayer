@@ -60,6 +60,8 @@
 	const types = Object.keys(usersByType)
 	const typeOptions = [
 		{ label: 'All Attendees', value: 'all' },
+		{ label: 'My Friends', value: 'my-friends' },
+		{ label: 'Friended Me', value: 'friended-me' },
 		...types
 			.map((type) => ({
 				label: type === 'staff' ? 'Staff' : `${startCase(type)}s`,
@@ -89,6 +91,15 @@
 			return a.firstName.toLowerCase().localeCompare(b.firstName.toLowerCase())
 		})
 	}
+	function filterUsers(users: User[], showType: string) {
+		if (showType === 'my-friends') {
+			return users.filter((user) => data.me.connectionsTo.some((c) => c.toId === user.id))
+		}
+		if (showType === 'friended-me') {
+			return users.filter((user) => data.me.connectionsFrom.some((c) => c.fromId === user.id))
+		}
+		return users.filter((user) => showType === 'all' || user.type === showType)
+	}
 </script>
 
 <Screen
@@ -112,7 +123,7 @@
 	</div>
 	<div class=" relative mx-auto -mt-2 max-w-7xl bg-slate-100">
 		<div class="mt-4 grid grid-cols-1 gap-1.5 py-2 lg:grid-cols-2 lg:gap-4">
-			{#each sortUsers(users.filter(({ type }) => showType === 'all' || type === showType)) as user}
+			{#each sortUsers(filterUsers(users, showType)) as user}
 				{@const { id, firstName, lastName, url, bookingUrl, photo, description } = user}
 				<div
 					class="relative z-0 flex flex-col items-start justify-center rounded-2xl bg-white px-1 py-0 lg:items-center lg:py-4"
@@ -123,7 +134,7 @@
 							class="mb-2 h-20 w-20 rounded-full border border-slate-100 bg-slate-50/80 bg-cover bg-center"
 							style="background-image: url({})"
 						></div> -->
-						<div class="font-semibold text-slate-600">{firstName} {lastName}</div>
+						<div class="font-semibold text-slate-600">{firstName}&nbsp;{lastName}</div>
 					</a>
 					<div
 						class="text-a-accent -mb-3 mt-2.5 hidden h-12 w-full items-center justify-around border-t border-slate-100 font-semibold lg:flex"

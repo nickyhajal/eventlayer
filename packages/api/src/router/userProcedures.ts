@@ -14,6 +14,7 @@ import {
 	eventTable,
 	eventTicketTable,
 	EventUser,
+	eventUserConnectionTable,
 	eventUserInfoTable,
 	eventUserTable,
 	formElementTable,
@@ -210,6 +211,37 @@ export const userProcedures = t.router({
 			}
 		}
 	}),
+	toggleConnection: procedureWithContext
+		.use(verifyMe())
+		.use(verifyEvent())
+		.input(z.object({ userId: z.string() }))
+		.mutation(async ({ ctx, input }) => {
+			console.log('ctx.me', ctx.me)
+			const existing = await db.query.eventUserConnectionTable.findFirst({
+				where: and(
+					eq(eventUserConnectionTable.eventId, ctx.event.id),
+					eq(eventUserConnectionTable.fromId, ctx.me.id),
+					eq(eventUserConnectionTable.toId, input.userId),
+				),
+			})
+			if (existing) {
+				await db
+					.delete(eventUserConnectionTable)
+					.where(eq(eventUserConnectionTable.id, existing.id))
+			} else {
+				console.log('inserting', ctx.me.id, input.userId)
+				await db.insert(eventUserConnectionTable).values({
+					type: 'friend',
+					status: 'active',
+					eventId: ctx.event.id,
+					fromId: ctx.me.id,
+					toId: input.userId,
+				})
+			}
+			return {
+				success: true,
+			}
+		}),
 	syncLinkedInData: procedureWithContext
 		.input(z.object({ userId: z.string() }))
 		.mutation(async ({ ctx, input }) => {

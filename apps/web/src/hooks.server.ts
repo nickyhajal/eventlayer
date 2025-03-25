@@ -1,19 +1,27 @@
 // hooks.server.ts
-import { error, fail, redirect, type Handle } from '@sveltejs/kit'
+import { fail, redirect, type Handle } from '@sveltejs/kit'
 import { sequence } from '@sveltejs/kit/hooks'
 import { NODE_ENV } from '$env/static/private'
 import { PUBLIC_BASE_URL } from '$env/static/public'
 import type { RouteConfig } from '$lib/server/core/routeConfig'
 import { getConfigForRoute } from '$lib/server/core/routeHelper'
 import { loadUsers } from '$lib/server/loadUserData'
-import { gt, ilike } from 'drizzle-orm'
 import { createTRPCHandle } from 'trpc-sveltekit'
 
 import { lucia } from '@matterloop/api'
 import { redis } from '@matterloop/api/src/core/redis'
 import { createContext } from '@matterloop/api/src/procedureWithContext'
 import { router } from '@matterloop/api/src/root'
-import { and, db, eq, Event, eventTable, eventUserTable, mediaTable } from '@matterloop/db'
+import {
+	and,
+	db,
+	eq,
+	Event,
+	eventTable,
+	eventUserConnectionTable,
+	eventUserTable,
+	mediaTable,
+} from '@matterloop/db'
 import { userTable } from '@matterloop/db/types'
 
 // import { getConfigForRoute } from '$lib/server/core/routeHelper';
@@ -141,6 +149,18 @@ export const handleUserContext: Handle = async ({ event, resolve }) => {
 						event.locals.me.photo = media
 					}
 				}
+				event.locals.me.connectionsTo = await db.query.eventUserConnectionTable.findMany({
+					where: and(
+						eq(eventUserConnectionTable.eventId, event.locals.event.id),
+						eq(eventUserConnectionTable.fromId, user?.id),
+					),
+				})
+				event.locals.me.connectionsFrom = await db.query.eventUserConnectionTable.findMany({
+					where: and(
+						eq(eventUserConnectionTable.eventId, event.locals.event.id),
+						eq(eventUserConnectionTable.toId, user?.id),
+					),
+				})
 				event.locals.me.rsvps = await db.query.eventUserTable.findMany({
 					where: and(
 						eq(eventUserTable.mainId, event.locals.event.id),
