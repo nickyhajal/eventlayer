@@ -157,11 +157,13 @@ export const EventFns = (args: string | Args) => {
 				const userRows = await usersQuery
 				if (userRows.length) {
 					const finalUsers = userRows.map((user) => {
+						let type = user.event_user.type ?? 'attendee'
 						return {
 							photo: user.media,
 							...user.auth_user,
 							...user.event_user,
-							...user.mainEventUser,
+							...(user.mainEventUser ? user.mainEventUser : {}),
+							type,
 						}
 					})
 					redis.set(key, finalUsers)
