@@ -228,6 +228,7 @@ const handleRouteConfig: Handle = async ({ event, resolve }) => {
 		if (
 			!event.url.pathname.includes('/login') &&
 			!event.url.pathname.includes('/trpc') &&
+			!event.url.pathname.includes('/welcome') &&
 			!event.url.pathname.includes('manifest')
 		) {
 			return redirect(303, '/login')
