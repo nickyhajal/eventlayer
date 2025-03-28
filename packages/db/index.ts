@@ -63,4 +63,4 @@ export const db = drizzle(connection, {
 })
 
 export { alias } from 'drizzle-orm/pg-core'
-export * from 'drizzle-orm'
+export * from 'drizzle-orm/sql'
