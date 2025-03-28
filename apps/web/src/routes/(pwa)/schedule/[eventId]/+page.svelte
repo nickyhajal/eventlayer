@@ -54,7 +54,7 @@
 	back="/schedule"
 	photo={event.photo}
 >
-	<div class="shell mx-auto max-w-7xl py-6 pb-20">
+	<div class="shell mx-auto max-w-7xl pt-safe-offset-6 pb-20">
 		<div class="text-a-accent text-base font-semibold">
 			{dayjs(data.event.startsAt).format('dddd MMMM Do [at] h:mma')}
 		</div>
