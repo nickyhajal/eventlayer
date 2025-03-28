@@ -68,7 +68,9 @@
 					</div>
 				</a>
 			{:else}
-				<div class="bg-amber-100/30 rounded-xl p-4 text-sm text-center -mt-8 mb-16 text-slate-700">
+				<div
+					class="bg-amber-100/30 rounded-xl p-4 text-sm text-center -mt-8 md:-mt-16 md:mb-36 mb-16 text-slate-700"
+				>
 					<div class="text-sm font-semibold">
 						{$event.getContent('alert')}
 					</div>
