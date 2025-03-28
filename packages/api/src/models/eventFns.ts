@@ -5,6 +5,7 @@ import {
 	and,
 	asc,
 	contentTable,
+	count,
 	db,
 	eq,
 	eventTable,
@@ -247,6 +248,20 @@ export const EventFns = (args: string | Args) => {
 					users: { with: { user: { with: { photo: true } } } },
 				},
 				orderBy: [asc(eventTable.startsAt), asc(eventTable.ord)],
+			})
+			events.forEach(async (event) => {
+				if (event.eventFor === 'rsvp' && event.numAttendees === 0) {
+					const countRes = await db
+						.select({ count: count() })
+						.from(eventUserTable)
+						.where(eq(eventUserTable.eventId, event.id))
+					if (countRes?.[0]?.count) {
+						await db
+							.update(eventTable)
+							.set({ numAttendees: countRes[0].count })
+							.where(eq(eventTable.id, event.id))
+					}
+				}
 			})
 			return events
 		},

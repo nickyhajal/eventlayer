@@ -7,6 +7,7 @@ import { z } from 'zod'
 import {
 	and,
 	AttendeeStore,
+	count,
 	db,
 	eq,
 	Event,
@@ -130,6 +131,16 @@ export const eventProcedures = t.router({
 					.insert(eventUserTable)
 					.values({ eventId, userId, mainId: event.eventId })
 					.returning()
+				const countRes = await db
+					.select({ count: count() })
+					.from(eventUserTable)
+					.where(eq(eventUserTable.eventId, eventId))
+				if (countRes?.[0]?.count) {
+					await db
+						.update(eventTable)
+						.set({ numAttendees: countRes[0].count })
+						.where(eq(eventTable.id, eventId))
+				}
 				if (res) {
 					row = res[0]
 					action = 'add'
