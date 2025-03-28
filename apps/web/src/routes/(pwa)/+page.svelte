@@ -80,7 +80,7 @@
 		<img
 			src={getMediaUrl($event.largeLogo)}
 			alt="An alt text"
-			class="mx-auto mb-20 mt-0 w-3/12 pb-2 md:w-3/12 md:-mt-24"
+			class="mx-auto mb-12 -mt-8 w-3/12 pb-2 md:w-3/12 md:-mt-24"
 		/>
 		<div class="rounded-t-xl bg-slate-200/70 p-3 text-center font-medium">
 			<div class="text-base">
