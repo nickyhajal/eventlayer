@@ -58,6 +58,17 @@
 			return i
 		}
 	}
+	const nowPadded = dayjs().subtract(1, 'hour')
+	const previousEvents = data.events.filter(({ startsAt }) => {
+		console.log(startsAt)
+		if (dayjs(startsAt).isBefore(nowPadded)) return true
+	})
+	const nextEvents = data.events.filter(({ startsAt }) => {
+		if (dayjs(startsAt).isAfter(nowPadded)) return true
+	})
+	let showPrevious = false
+	$: visibleEvents =
+		showPrevious || nextEvents.length === 0 ? [...previousEvents, ...nextEvents] : nextEvents
 </script>
 
 <Screen title="Meetups" bigTitle="Meetups">
@@ -86,12 +97,19 @@
 				<div
 					class="fadeRect sticky z-20 -mb-7 h-5 w-full bg-gradient-to-b from-white to-white/0"
 				></div>
-				{#each data.events as event, i}
+				{#if previousEvents.length > 0}
+					<div class="flex w-full justify-center">
+						<button
+							on:click={() => (showPrevious = !showPrevious)}
+							class="bg-slate-100/80 p-2 text-slate-500 text-sm font-medium mt-6 mb-2 rounded-full w-1/2 mx-auto"
+							>{#if showPrevious}Hide Previous Events{:else}
+								Show Previous Events{/if}</button
+						>
+					</div>
+				{/if}
+				{#each visibleEvents as event, i}
 					{@const isNew = isNewHour(event)}
 					{#if isNew}
-						{#if checkIfUpcoming(event, i) === i}
-							<span id="scroll-anchor" class=" relative left-0"></span>
-						{/if}
 						<div
 							class="
 								timeMarker
