@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { invalidate, invalidateAll } from '$app/navigation'
 	import EventRow from '$lib/components/EventRow.svelte'
 	import Screen from '$lib/components/Screen.svelte'
 	import { getEventContext, getMeContext } from '$lib/state/getContexts'
@@ -59,11 +60,10 @@
 		}
 	}
 	const nowPadded = dayjs().subtract(1, 'hour')
-	const previousEvents = data.events.filter(({ startsAt }) => {
-		console.log(startsAt)
+	$: previousEvents = data.events.filter(({ startsAt }) => {
 		if (dayjs(startsAt).isBefore(nowPadded)) return true
 	})
-	const nextEvents = data.events.filter(({ startsAt }) => {
+	$: nextEvents = data.events.filter(({ startsAt }) => {
 		if (dayjs(startsAt).isAfter(nowPadded)) return true
 	})
 	let showPrevious = false

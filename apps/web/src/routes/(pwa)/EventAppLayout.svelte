@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { invalidateAll } from '$app/navigation'
 	import { page } from '$app/stores'
 	import ChicletButton from '$lib/components/ui/ChicletButton.svelte'
 	import { getEventContext } from '$lib/state/getContexts'
@@ -9,12 +10,14 @@
 	import X from 'lucide-svelte/icons/x'
 
 	import { Modal } from '@matterloop/ui'
-	import { isIos } from '@matterloop/util'
+	import { dayjs, isIos } from '@matterloop/util'
 
 	import TabBar from './TabBar.svelte'
 
 	const event = getEventContext()
 	let installModalOpen = false
+	let isPwa =
+		typeof window !== 'undefined' ? window.matchMedia('(display-mode: standalone)').matches : false
 	let suggestedInstall =
 		typeof window !== 'undefined' &&
 		window.localStorage.getItem('pwa-install-blocked') !== 'true' &&
@@ -32,6 +35,23 @@
 	function denyInstall() {
 		window.localStorage.setItem('pwa-install-blocked', 'true')
 		suggestedInstall = false
+	}
+
+	let lastRefresh = dayjs()
+	if (typeof document !== 'undefined') {
+		document.addEventListener('visibilitychange', () => {
+			const state = document.visibilityState
+			if (state === 'hidden') {
+				// your PWA is now in the background
+			}
+
+			if (state === 'visible') {
+				if (dayjs().diff(lastRefresh, 'm') > 3) {
+					invalidateAll()
+					lastRefresh = dayjs()
+				}
+			}
+		})
 	}
 </script>
 

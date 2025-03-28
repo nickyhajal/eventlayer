@@ -53,7 +53,17 @@
 	// }
 	setContext('attendeeSearcher', attendeeSearcher)
 	setContext('seed', +new Date() / 1000)
-	setContext('event', eventWritable(data.event))
+	let eventContextSet = false
+	const event = eventWritable(data.event)
+	$: if (data.event) {
+		if (!eventContextSet) {
+			setContext('event', event)
+			eventContextSet = true
+		} else {
+			event.set(data.event)
+		}
+	}
+
 	$: setMe(), $page.data.me
 	let nprogressReady = false
 	const tabbar = typeof document !== 'undefined' ? document?.getElementById('tabbar') : null
