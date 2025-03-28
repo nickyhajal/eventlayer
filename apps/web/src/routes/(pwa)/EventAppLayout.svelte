@@ -46,7 +46,7 @@
 			}
 
 			if (state === 'visible') {
-				if (dayjs().diff(lastRefresh, 'm') > 3) {
+				if (dayjs().diff(lastRefresh, 'm') > 1) {
 					invalidateAll()
 					lastRefresh = dayjs()
 				}
