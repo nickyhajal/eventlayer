@@ -90,7 +90,7 @@
 		{/if}
 		{#if $event.getContent('preorder') && !ignorePreorder}
 			<a
-				href={$event.getContent('preorder')}
+				href={`${$event.getContent('preorder')}?prefilled_email=${data.me?.email ?? ''}`}
 				target="_blank"
 				class="w-full overflow-hidden block hover:saturate-[140%] transition-all max-w-xl mx-auto relative border border-[#dae7e6] bg-[#F9FFFF] rounded-xl pt-4 text-center -mt-8 lg:-mt-20 lg:mb-16 mb-2 text-slate-700"
 			>
@@ -184,7 +184,7 @@
 			<div class="grid grid-cols-2 gap-2">
 				{#if $event.getContent('preorder')}
 					<Button
-						href={`${$event.getContent('preorder')}?prefilled_email=${$event.me?.email ?? ''}`}
+						href={`${$event.getContent('preorder')}?prefilled_email=${data.me?.email ?? ''}`}
 						target="_blank"
 						variant="secondary"
 						class="bg-a-accent col-span-2 border-a-accent hover:bg-a-accent border-b-main/10 text-a-accent flex w-full flex-none flex-col items-start justify-center gap-0.5 border border-b border-opacity-[0.07] bg-opacity-[0.02] py-9 text-left text-sm font-semibold hover:bg-opacity-[0.07]"
