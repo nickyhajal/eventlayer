@@ -158,7 +158,7 @@ export const handleUserContext: Handle = async ({ event, resolve }) => {
 				event.locals.me.connectionsFrom = await db.query.eventUserConnectionTable.findMany({
 					where: and(
 						eq(eventUserConnectionTable.eventId, event.locals.event.id),
-						eq(eventUserConnectionTable.toId, user?.id),
+						eq(eventUserConnectionTable.toId, eventUserRow?.id ?? ''),
 					),
 				})
 				event.locals.me.rsvps = await db.query.eventUserTable.findMany({
