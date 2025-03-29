@@ -184,7 +184,8 @@
 			<div class="grid grid-cols-2 gap-2">
 				{#if $event.getContent('preorder')}
 					<Button
-						href={$event.getContent('preorder')}
+						href={`${$event.getContent('preorder')}?prefilled_email=${$event.me?.email ?? ''}`}
+						target="_blank"
 						variant="secondary"
 						class="bg-a-accent col-span-2 border-a-accent hover:bg-a-accent border-b-main/10 text-a-accent flex w-full flex-none flex-col items-start justify-center gap-0.5 border border-b border-opacity-[0.07] bg-opacity-[0.02] py-9 text-left text-sm font-semibold hover:bg-opacity-[0.07]"
 					>
