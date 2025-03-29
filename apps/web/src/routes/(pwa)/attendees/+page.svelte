@@ -96,7 +96,7 @@
 			return users.filter((user) => data.me.connectionsTo.some((c) => c.toId === user.id))
 		}
 		if (showType === 'friended-me') {
-			return users.filter((user) => data.me.connectionsFrom.some((c) => c.fromId === user.id))
+			return users.filter((user) => data.me.connectionsFrom.some((c) => c.fromId === user.userId))
 		}
 		return users.filter((user) => showType === 'all' || user.type === showType)
 	}
