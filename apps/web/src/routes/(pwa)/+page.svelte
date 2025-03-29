@@ -2,6 +2,7 @@
 	import Screen from '$lib/components/Screen.svelte'
 	import Button from '$lib/components/ui/button/button.svelte'
 	import { getEventContext } from '$lib/state/getContexts.js'
+	import { ArrowRight, Ticket, X } from 'lucide-svelte'
 	import BadgeCheck from 'lucide-svelte/icons/badge-check'
 	import Calendar from 'lucide-svelte/icons/calendar'
 	import Map from 'lucide-svelte/icons/map'
@@ -52,6 +53,16 @@
 		}
 		return ''
 	}
+	let ignorePreorderKey = `ignorePreorder-nd26-${dayjs().format('YYYY')}`
+	let ignorePreorder =
+		typeof window === 'undefined' ? true : localStorage.getItem(ignorePreorderKey) === 'true'
+	function handleIgnorePreorder(e: MouseEvent) {
+		e.preventDefault()
+		e.stopPropagation()
+		ignorePreorder = true
+		localStorage.setItem(ignorePreorderKey, 'true')
+		return false
+	}
 </script>
 
 <Screen title={$event.name}>
@@ -77,11 +88,36 @@
 				</div>
 			{/if}
 		{/if}
-		<img
-			src={getMediaUrl($event.largeLogo)}
-			alt="An alt text"
-			class="mx-auto mb-12 -mt-8 w-3/12 pb-2 md:w-3/12 md:-mt-24"
-		/>
+		{#if $event.getContent('preorder') && !ignorePreorder}
+			<a
+				href={$event.getContent('preorder')}
+				target="_blank"
+				class="w-full overflow-hidden block hover:saturate-[140%] transition-all max-w-xl mx-auto relative border border-[#dae7e6] bg-[#F9FFFF] rounded-xl pt-4 text-center -mt-8 lg:-mt-20 lg:mb-16 mb-2 text-slate-700"
+			>
+				<button
+					class="absolute bg-white/80 p-1 group hover:text-accent rounded-full border border-slate-200/40 right-2.5 top-3.5"
+					on:click={handleIgnorePreorder}
+				>
+					<X class=" h-5 w-5 text-slate-800 group-hover:text-orange-800/60" />
+				</button>
+				<div class="text-2xl font-h font-semibold mb-6 mt-10 px-2">
+					Join us as we continue the adventure!
+				</div>
+				<div class="px-2"><img src="/banner.png" class="w-72 mx-auto" alt="" /></div>
+				<div
+					class="bg-[#E2FFFE] border-t border-[#dae7e6] items-center mt-10 font-semibold text-lg font-h py-4 pl-3 pr-2 flex justify-between"
+				>
+					<div>Pre-order for ND26</div>
+					<ArrowRight class="w-6 h-6 text-slate-800" />
+				</div>
+			</a>
+		{:else}
+			<img
+				src={getMediaUrl($event.largeLogo)}
+				alt="An alt text"
+				class="mx-auto mb-12 -mt-8 w-3/12 pb-2 md:w-3/12 md:-mt-24"
+			/>
+		{/if}
 		<div class="rounded-t-xl bg-slate-200/70 p-3 text-center font-medium">
 			<div class="text-base">
 				{$event.getContent('main-start-date')}
@@ -146,6 +182,19 @@
 		<div class="mt-8">
 			<div class="mb-1.5 text-2xl font-semibold text-slate-700">Quick Links</div>
 			<div class="grid grid-cols-2 gap-2">
+				{#if $event.getContent('preorder')}
+					<Button
+						href={$event.getContent('preorder')}
+						variant="secondary"
+						class="bg-a-accent col-span-2 border-a-accent hover:bg-a-accent border-b-main/10 text-a-accent flex w-full flex-none flex-col items-start justify-center gap-0.5 border border-b border-opacity-[0.07] bg-opacity-[0.02] py-9 text-left text-sm font-semibold hover:bg-opacity-[0.07]"
+					>
+						<div class="border-main/20 mb-0.5 rounded-full border bg-white/40 p-1.5 opacity-80">
+							<div class="icon"><Ticket /></div>
+							<!-- <svelte:component this={icon} class="text-main/70  h-[1rem] w-[1rem] flex-none" /> -->
+						</div>
+						Join us for ND26: Preorder Now
+					</Button>
+				{/if}
 				{#each tabs as { label, icon, link, className }}
 					<Button
 						href={link}
