@@ -185,6 +185,8 @@ export const eventProcedures = t.router({
 			redis.del(`event_heavy:${input.eventId}`)
 			redis.del(`event_users:${input.eventId}`)
 			redis.del(`event_usersWithInfo:${input.eventId}`)
+			// Invalidate stats cache
+			redis.del(`stats:attendees:${input.eventId}`)
 			return true
 		}),
 	removeUser: procedureWithContext
@@ -206,6 +208,8 @@ export const eventProcedures = t.router({
 			redis.del(`event_heavy:${input.eventId}`)
 			redis.del(`event_users:${input.eventId}`)
 			redis.del(`event_usersWithInfo:${input.eventId}`)
+			// Invalidate stats cache
+			redis.del(`stats:attendees:${input.eventId}`)
 			return true
 		}),
 	upsert: procedureWithContext
@@ -332,6 +336,10 @@ export const eventProcedures = t.router({
 				redis.del(`event_heavy:${eventId}`)
 				redis.del(`event_users:${eventId}`)
 				redis.del(`event_usersWithInfo:${eventId}`)
+				// Invalidate stats cache
+				redis.del(`stats:attendees:${eventId}`)
+				redis.del(`stats:assigned_tickets:${eventId}`)
+				redis.del(`stats:unassigned_tickets:${eventId}`)
 				return { ticket: updatedTicket[0], eventUser: eventUser[0] }
 
 				// Assign to new user
@@ -423,6 +431,11 @@ export const eventProcedures = t.router({
 				redis.del(`event_heavy:${eventId}`)
 				redis.del(`event_users:${eventId}`)
 				redis.del(`event_usersWithInfo:${eventId}`)
+				// Invalidate stats cache
+				redis.del(`stats:attendees:${eventId}`)
+				redis.del(`stats:assigned_tickets:${eventId}`)
+				redis.del(`stats:unassigned_tickets:${eventId}`)
+				redis.del(`stats:onboarding_completed:${eventId}`)
 				return { ticket: updatedTicket[0], eventUser: eventUser[0] }
 			}
 		}),

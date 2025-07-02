@@ -20,6 +20,7 @@ import {
 import { byKey, dayjs, makeCleanNumber } from '@matterloop/util'
 
 import { NotAuthdError } from '../core/Errors'
+import { redis } from '../core/redis'
 import { procedureWithContext, verifyMe, type TrpcContext } from '../procedureWithContext'
 
 // import { NotAuthdError } from '$lib/server/core/Errors'
@@ -239,6 +240,8 @@ export const formSessionProcedures = t.router({
 				)
 			}
 			console.timeLog(key, 'user sync done')
+			// Invalidate onboarding stats cache when form is submitted
+			redis.del(`stats:onboarding_completed:${eventId}`)
 			console.timeEnd(key)
 			return rows
 		}
