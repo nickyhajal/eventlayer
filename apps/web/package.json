@@ -105,6 +105,7 @@
 		"radix-icons-svelte": "^1.2.1",
 		"redis": "^4.6.13",
 		"resend": "^1.0.0",
+		"stripe": "^18.5.0",
 		"superjson": "^1.13.1",
 		"svelte-dnd-action": "^0.9.42",
 		"svelte-filepond": "^0.2.2",
