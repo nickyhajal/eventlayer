@@ -17,6 +17,7 @@ import {
   userTable,
 } from "@matterloop/db";
 import dayjs from "@matterloop/util/src/lib/dayjs";
+import { redis } from "@matterloop/api/src/core/redis";
 
 const schema = z.object({
   cid: z.string(),
@@ -218,6 +219,9 @@ const getOrCreateEventUser = async (userId: string, type: string) => {
         );
     }
   }
+  await redis.del(`event_users:d7ee6ca9-5df0-44ec-be1e-6ba1d2d895a4`);
+  await redis.del(`event_usersWithInfo:d7ee6ca9-5df0-44ec-be1e-6ba1d2d895a4`);
+  await redis.del(`event_heavy:d7ee6ca9-5df0-44ec-be1e-6ba1d2d895a4`);
   return eventUser;
 };
 
