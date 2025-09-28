@@ -84,7 +84,7 @@ export const handleCors: Handle = async ({ resolve, event }) => {
           "Access-Control-Allow-Methods":
             "GET, POST, PUT, DELETE, PATCH, OPTIONS",
           "Access-Control-Allow-Origin": origin,
-          // 'Access-Control-Allow-Headers': origin,
+          "Access-Control-Allow-Headers": "content-type",
           "Access-Control-Allow-Credentials": true,
         },
       });
@@ -93,7 +93,7 @@ export const handleCors: Handle = async ({ resolve, event }) => {
 
   const response = await resolve(event);
   response.headers.append("Access-Control-Allow-Origin", origin);
-  response.headers.append("Access-Control-Allow-Headers", "Content-Type");
+  response.headers.append("Access-Control-Allow-Headers", "content-type");
   response.headers.append("Access-Control-Allow-Credentials", true);
   return response;
 };
