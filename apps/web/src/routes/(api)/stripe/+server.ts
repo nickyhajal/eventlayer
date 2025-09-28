@@ -3,9 +3,11 @@ import type { RequestHandler } from "./$types";
 import { getStripeDataFromSession } from "$lib/stripe";
 import { db, eq, eventTicketTable, userTable } from "@matterloop/db";
 
-const REDIRECT_URL = "http://localhost:5173";
-const TICKET_ID = "prod_T7D44P6gpKyggR";
-const MEDIA_ID = "prod_T87kEIyazXtUww";
+const REDIRECT_URL = "https://neurodiversion.org";
+const TICKET_ID = "prod_T6sHMm2WwJ0Ems";
+const MEDIA_ID = "prod_T87jfY4Rq2PfyP";
+// const TICKET_ID = "prod_T7D44P6gpKyggR";
+// const MEDIA_ID = "prod_T87kEIyazXtUww";
 
 const getOrCreateUser = async (email: string) => {
   let user = await db.query.userTable.findFirst({
