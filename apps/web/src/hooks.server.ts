@@ -93,6 +93,7 @@ export const handleCors: Handle = async ({ resolve, event }) => {
 
   const response = await resolve(event);
   response.headers.append("Access-Control-Allow-Origin", origin);
+  response.headers.append("Access-Control-Allow-Headers", "Content-Type");
   response.headers.append("Access-Control-Allow-Credentials", true);
   return response;
 };
