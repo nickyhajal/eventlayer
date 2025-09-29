@@ -39,6 +39,7 @@ async function addToKit(email: string, name: string) {
     },
   });
   const data = await rsp.text();
+  console.log("add to kit - media", data);
 }
 
 export const GET: RequestHandler = async ({ url }) => {

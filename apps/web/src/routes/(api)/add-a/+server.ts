@@ -269,7 +269,8 @@ export const POST: RequestHandler = async ({ url, request }) => {
           if (!eventUser) {
             throw error(400, "Could not create event user");
           }
-          await addToKit(attendee.email, attendee.name);
+          const kitRsp = await addToKit(attendee.email, attendee.name);
+          console.log("add to kit - attendee", kitRsp);
 
           return db
             .update(eventTicketTable)
