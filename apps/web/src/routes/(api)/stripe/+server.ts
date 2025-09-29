@@ -31,15 +31,21 @@ const getOrCreateUser = async (email: string) => {
 
 async function addToKit(email: string, name: string) {
   const url = "https://app.kit.com/forms/8607759/subscriptions";
-  const rsp = await fetch(url, {
-    method: "POST",
-    body: `email_address=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}`,
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-  });
-  const data = await rsp.text();
-  console.log("add to kit - media", data);
+  try {
+    console.log("add to kit - media", email, name);
+    const rsp = await fetch(url, {
+      method: "POST",
+      body: `email_address=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}`,
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    });
+    console.log("add to kit - media", rsp.status, rsp.statusText);
+    const data = await rsp.text();
+    console.log("add to kit - media", data);
+  } catch (e) {
+    console.error("Failed to add to Kit", e);
+  }
 }
 
 export const GET: RequestHandler = async ({ url }) => {
