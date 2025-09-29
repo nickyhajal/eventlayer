@@ -226,7 +226,7 @@ const getOrCreateEventUser = async (userId: string, type: string) => {
 };
 
 async function addToKit(email: string, name: string) {
-  const url = "https://api.kit.com/v4/lists/8602469/subscribers";
+  const url = "https://api.kit.com/v4/forms/8602469/subscribers";
   try {
     console.log("add to kit - attendees", email, name);
     const rsp = await fetch(url, {
@@ -237,7 +237,7 @@ async function addToKit(email: string, name: string) {
       }),
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer kit_84309a9eff8218e4b7aebae051c8b09c`,
+        "X-Kit-Api-Key": `kit_84309a9eff8218e4b7aebae051c8b09c`,
       },
     });
     console.log("add to kit - attendees", rsp.status, rsp.statusText);
