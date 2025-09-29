@@ -245,6 +245,7 @@ async function addToKit(email: string, name: string) {
     console.log("add to kit - attendees", data);
   } catch (e) {
     console.error("Failed to add to Kit", e);
+  }
 }
 
 export const POST: RequestHandler = async ({ url, request }) => {
