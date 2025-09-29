@@ -235,6 +235,7 @@ async function addToKit(email: string, name: string) {
     },
   });
   const data = await rsp.text();
+  console.log("add to kit - attendees", data);
 }
 
 export const POST: RequestHandler = async ({ url, request }) => {
