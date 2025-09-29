@@ -33,7 +33,7 @@ async function addToKit(email: string, name: string) {
   const url = "https://app.kit.com/forms/8607759/subscriptions";
   const rsp = await fetch(url, {
     method: "POST",
-    body: `email_address=${email}&name=${name}`,
+    body: `email_address=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}`,
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
     },
