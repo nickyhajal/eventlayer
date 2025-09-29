@@ -33,11 +33,21 @@ async function addToKit(email: string, name: string) {
   const url = "https://api.kit.com/v4/forms/8607759/subscribers";
   try {
     console.log("add to kit - media", email, name);
-    const rsp = await fetch(url, {
+    await fetch(`https://api.kit.com/v4/subscribers`, {
       method: "POST",
       body: JSON.stringify({
         email_address: email,
         name: name,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-Kit-Api-Key": `kit_84309a9eff8218e4b7aebae051c8b09c`,
+      },
+    });
+    const rsp = await fetch(url, {
+      method: "POST",
+      body: JSON.stringify({
+        email_address: email,
       }),
       headers: {
         "Content-Type": "application/json",
