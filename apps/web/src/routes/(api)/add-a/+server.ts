@@ -233,7 +233,7 @@ async function addToKit(email: string, name: string) {
       method: "POST",
       body: JSON.stringify({
         email_address: email,
-        name: name,
+        first_name: name,
       }),
       headers: {
         "Content-Type": "application/json",
