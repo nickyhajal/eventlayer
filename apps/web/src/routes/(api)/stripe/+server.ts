@@ -30,14 +30,18 @@ const getOrCreateUser = async (email: string) => {
 };
 
 async function addToKit(email: string, name: string) {
-  const url = "https://app.kit.com/forms/8607759/subscriptions";
+  const url = "https://api.kit.com/v4/lists/8607759/subscribers";
   try {
     console.log("add to kit - media", email, name);
     const rsp = await fetch(url, {
       method: "POST",
-      body: `email_address=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}`,
+      body: JSON.stringify({
+        email_address: email,
+        name: name,
+      }),
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
+        "Content-Type": "application/json",
+        Authorization: `Bearer kit_84309a9eff8218e4b7aebae051c8b09c`,
       },
     });
     console.log("add to kit - media", rsp.status, rsp.statusText);
