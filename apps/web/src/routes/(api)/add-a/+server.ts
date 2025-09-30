@@ -251,9 +251,7 @@ async function addToKit(email: string, name: string) {
         "X-Kit-Api-Key": `kit_84309a9eff8218e4b7aebae051c8b09c`,
       },
     });
-    console.log("add to kit - attendees", rsp.status, rsp.statusText);
     const data = await rsp.text();
-    console.log("add to kit - attendees", data);
   } catch (e) {
     console.error("Failed to add to Kit", e);
   }
