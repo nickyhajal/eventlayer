@@ -1,7 +1,7 @@
 <script lang="ts">
-import LoginForm from '$lib/components/LoginForm.svelte'
-import Screen from '$lib/components/Screen.svelte'
-import { getEventContext } from '$lib/state/getContexts'
+	import LoginForm from '$lib/components/LoginForm.svelte'
+	import Screen from '$lib/components/Screen.svelte'
+	import { getEventContext } from '$lib/state/getContexts'
 </script>
 
 <Screen title="" back="/" noBgScreen={true}>

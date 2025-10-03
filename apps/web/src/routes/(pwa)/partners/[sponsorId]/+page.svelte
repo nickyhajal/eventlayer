@@ -20,7 +20,7 @@
 				class="mb-16 flex items-center justify-center rounded-lg border border-slate-100 bg-slate-50 p-8"
 			>
 				<img
-					src={getMediaUrl(sponsor.photo, 'trim=1&w=780')}
+					src={getMediaUrl(sponsor.photo, 'w-780')}
 					class=" w-80"
 					alt={`Photo of ${sponsor.title}`}
 				/>

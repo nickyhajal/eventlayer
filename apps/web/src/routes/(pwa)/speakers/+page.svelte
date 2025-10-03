@@ -50,10 +50,7 @@
 					<div
 						class="mb-2 h-48 w-full rounded-t-lg from-slate-100 to-slate-200 bg-gradient-to-tl bg-cover bg-center"
 						style={media
-							? `background-image: url(${getMediaUrl(
-									media,
-									`w=256&h=256&func=face&face_margin=60`,
-								)})`
+							? `background-image: url(${getMediaUrl(media, `w-256,h-256,fo-face,z-0.8`)})`
 							: ''}
 					></div>
 					<div class="px-2.5 pb-1.5 pt-1">

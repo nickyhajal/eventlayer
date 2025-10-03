@@ -1,91 +1,102 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap');
+
 #html {
-  scrollbar-gutter: stable;
-  scroll-behavior: smooth;
-  height: 100%;
+	scrollbar-gutter: stable;
+	scroll-behavior: smooth;
+	height: 100%;
 }
+
 #html,
 #body {
-  font-size: 16px;
-  width: 100%;
+	font-size: 16px;
+	width: 100%;
 }
+
 #body {
-  overflow: visible;
+	overflow: visible;
 }
+
 input {
-  -webkit-appearance: none;
+	-webkit-appearance: none;
 }
+
 .heroicon.outline {
-  outline: none !important;
+	outline: none !important;
 }
+
 @media screen and (max-width: 1440px) {
-  html {
-    font-size: 15px;
-  }
+	html {
+		font-size: 15px;
+	}
 }
+
 @media screen and (max-height: 799px) {
-  html {
-    font-size: 15px;
-  }
+	html {
+		font-size: 15px;
+	}
 }
+
 @media screen and (max-width: 1280px) {
-  html {
-    font-size: 14px;
-  }
+	html {
+		font-size: 14px;
+	}
 }
+
 #html * {
-  box-sizing: border-box;
+	box-sizing: border-box;
 }
+
 #body {
-  margin: 0;
-  font-family:
-    Inter,
-    Roboto,
-    -apple-system,
-    BlinkMacSystemFont,
-    Segoe UI,
-    Oxygen,
-    Ubuntu,
-    Cantarell,
-    Fira Sans,
-    Droid Sans,
-    Helvetica Neue,
-    sans-serif;
-  line-height: 1.5;
-  color: #333;
-  font-weight: 500;
+	margin: 0;
+	font-family:
+		Inter,
+		Roboto,
+		-apple-system,
+		BlinkMacSystemFont,
+		Segoe UI,
+		Oxygen,
+		Ubuntu,
+		Cantarell,
+		Fira Sans,
+		Droid Sans,
+		Helvetica Neue,
+		sans-serif;
+	line-height: 1.5;
+	color: #333;
+	font-weight: 500;
 }
+
 #svelte {
-  height: 100%;
+	height: 100%;
 }
 
 #body.highlighted *:not(.highlight) {
-  opacity: 0.4;
+	opacity: 0.4;
 }
 
 .highlight {
-  box-shadow: 0 0 0 99999px rgba(0, 0, 0, 0.8);
+	box-shadow: 0 0 0 99999px rgba(0, 0, 0, 0.8);
 }
 
 input,
 textarea {
-  font-weight: 500;
-  font-family:
-    Inter,
-    Roboto,
-    -apple-system,
-    BlinkMacSystemFont,
-    Segoe UI,
-    Oxygen,
-    Ubuntu,
-    Cantarell,
-    Fira Sans,
-    Droid Sans,
-    Helvetica Neue,
-    sans-serif;
-  font-size: 1.1rem;
+	font-weight: 500;
+	font-family:
+		Inter,
+		Roboto,
+		-apple-system,
+		BlinkMacSystemFont,
+		Segoe UI,
+		Oxygen,
+		Ubuntu,
+		Cantarell,
+		Fira Sans,
+		Droid Sans,
+		Helvetica Neue,
+		sans-serif;
+	font-size: 1.1rem;
 }
 
 h1,
@@ -94,40 +105,40 @@ h3,
 h4,
 h5,
 h6 {
-  margin: 0 0 0.5em 0;
-  font-weight: 500;
-  line-height: 1.2;
+	margin: 0 0 0.5em 0;
+	font-weight: 500;
+	line-height: 1.2;
 }
 
 button {
-  font-family: Inter, Arial, Helvetica, sans-serif;
+	font-family: Inter, Arial, Helvetica, sans-serif;
 }
 
 *:focus {
-  outline: none;
+	outline: none;
 }
 
 h1 {
-  font-size: 3.5em;
+	font-size: 3.5em;
 }
 
 h2 {
-  font-size: 2em;
+	font-size: 2em;
 }
 
 h3 {
-  font-size: 1.5em;
+	font-size: 1.5em;
 }
 
 a {
-  color: inherit;
+	color: inherit;
 }
 
 code {
-  font-family: menlo, inconsolata, monospace;
-  font-size: calc(1em - 2px);
-  color: #555;
-  background-color: #f0f0f0;
-  padding: 0.2em 0.4em;
-  border-radius: 2px;
+	font-family: menlo, inconsolata, monospace;
+	font-size: calc(1em - 2px);
+	color: #555;
+	background-color: #f0f0f0;
+	padding: 0.2em 0.4em;
+	border-radius: 2px;
 }

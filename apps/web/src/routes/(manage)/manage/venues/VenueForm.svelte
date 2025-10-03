@@ -1,52 +1,52 @@
 <script lang="ts">
-import { goto, invalidateAll } from '$app/navigation'
-import Button from '$lib/components/ui/button/button.svelte'
-import * as Dialog from '$lib/components/ui/dialog'
-import Input from '$lib/components/ui/input/input.svelte'
-import Label from '$lib/components/ui/label/label.svelte'
-import * as Select from '$lib/components/ui/select'
-import Switch from '$lib/components/ui/switch/switch.svelte'
-import Textarea from '$lib/components/ui/textarea/textarea.svelte'
-import Uploader from '$lib/components/ui/Uploader.svelte'
-import { trpc } from '$lib/trpc/client.js'
-import { getMediaUrl } from '$lib/util/getMediaUrl'
-import { Upload } from 'radix-icons-svelte'
-// import toast from 'svelte-french-toast'
-import { toast } from 'svelte-sonner'
+	import { goto, invalidateAll } from '$app/navigation'
+	import Button from '$lib/components/ui/button/button.svelte'
+	import * as Dialog from '$lib/components/ui/dialog'
+	import Input from '$lib/components/ui/input/input.svelte'
+	import Label from '$lib/components/ui/label/label.svelte'
+	import * as Select from '$lib/components/ui/select'
+	import Switch from '$lib/components/ui/switch/switch.svelte'
+	import Textarea from '$lib/components/ui/textarea/textarea.svelte'
+	import Uploader from '$lib/components/ui/Uploader.svelte'
+	import { trpc } from '$lib/trpc/client.js'
+	import { getMediaUrl } from '$lib/util/getMediaUrl'
+	import { Upload } from 'radix-icons-svelte'
+	// import toast from 'svelte-french-toast'
+	import { toast } from 'svelte-sonner'
 
-import type { Venue } from '@matterloop/db'
-import { tw } from '@matterloop/util'
+	import type { Venue } from '@matterloop/db'
+	import { tw } from '@matterloop/util'
 
-export let venue: Partial<Venue> = {
-	name: '',
-	type: 'building',
-	description: '',
-}
-export let simplified = false
-export let inDialog = false
-export let titleClass = ''
-$: buttonMsg = venue?.id ? 'Save Venue' : 'Add Venue'
-$: editing = venue?.id ? true : false
-$: title = editing ? venue?.name : 'Add a Venue'
-let venueTypes = [
-	{ value: 'building', label: 'Building' },
-	{ value: 'room', label: 'Room' },
-]
-let type = venue?.type
-	? venueTypes.find(({ value }) => value === venue?.type)
-	: { value: 'building', label: 'Building' }
-$: venue.type = type.value
-let image = ''
-let addOpen = false
-async function createVenue() {
-	const res = await trpc().venue.upsert.mutate(venue)
-	goto(`/manage/venues/${res.id}`)
-	toast.success('Venue Saved')
-}
-async function updateAvatar(mediaId: string) {
-	trpc().venue.upsert.mutate({ id: venue.id, mediaId })
-	invalidateAll()
-}
+	export let venue: Partial<Venue> = {
+		name: '',
+		type: 'building',
+		description: '',
+	}
+	export let simplified = false
+	export let inDialog = false
+	export let titleClass = ''
+	$: buttonMsg = venue?.id ? 'Save Venue' : 'Add Venue'
+	$: editing = venue?.id ? true : false
+	$: title = editing ? venue?.name : 'Add a Venue'
+	let venueTypes = [
+		{ value: 'building', label: 'Building' },
+		{ value: 'room', label: 'Room' },
+	]
+	let type = venue?.type
+		? venueTypes.find(({ value }) => value === venue?.type)
+		: { value: 'building', label: 'Building' }
+	$: venue.type = type.value
+	let image = ''
+	let addOpen = false
+	async function createVenue() {
+		const res = await trpc().venue.upsert.mutate(venue)
+		goto(`/manage/venues/${res.id}`)
+		toast.success('Venue Saved')
+	}
+	async function updateAvatar(mediaId: string) {
+		trpc().venue.upsert.mutate({ id: venue.id, mediaId })
+		invalidateAll()
+	}
 </script>
 
 <form on:submit={createVenue}>
@@ -84,7 +84,7 @@ async function updateAvatar(mediaId: string) {
 						<Select.Group>
 							<Select.Label>Venue Type</Select.Label>
 							{#each venueTypes as { label, value }}
-								<Select.Item value={value} label={label}>{label}</Select.Item>
+								<Select.Item {value} {label}>{label}</Select.Item>
 							{/each}
 						</Select.Group>
 					</Select.Content>
@@ -127,7 +127,7 @@ async function updateAvatar(mediaId: string) {
 						</div>
 					</Button>
 				{/if}
-				<div class="w-full bg-stone-100 p-3 {venue.parent? 'rounded-b-lg' : 'rounded-lg'}">
+				<div class="w-full bg-stone-100 p-3 {venue.parent ? 'rounded-b-lg' : 'rounded-lg'}">
 					<div class="pb-2 text-sm font-bold">Sub-Venues</div>
 					{#each venue.children || [] as { name, id }}
 						<Button
@@ -140,7 +140,7 @@ async function updateAvatar(mediaId: string) {
 					<Button
 						class="mt-3 w-full bg-stone-200 text-[0.85rem] hover:bg-stone-300"
 						variant="secondary"
-						on:click={() => addOpen = true}>Add Venue</Button
+						on:click={() => (addOpen = true)}>Add Venue</Button
 					>
 				</div>
 			</div>
@@ -153,7 +153,15 @@ async function updateAvatar(mediaId: string) {
 		<svelte:self
 			simplified={true}
 			inDialog={true}
-			venue={{...venue, id: undefined, type: 'room', name: '', mediaId: undefined, venueId: venue.id, description: ''}}
+			venue={{
+				...venue,
+				id: undefined,
+				type: 'room',
+				name: '',
+				mediaId: undefined,
+				venueId: venue.id,
+				description: '',
+			}}
 		/>
 	</Dialog.Content>
 </Dialog.Root>

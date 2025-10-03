@@ -1,19 +1,23 @@
 <script lang="ts">
-import Screen from '$lib/components/Screen.svelte'
-import { getMeContext } from '$lib/state/getContexts'
+	import Screen from '$lib/components/Screen.svelte'
+	import { getMeContext } from '$lib/state/getContexts'
 
-import { getMediaUrl } from '@matterloop/util'
+	import { getMediaUrl } from '@matterloop/util'
 
-export let data
-$: users = data.users
-const me = getMeContext()
+	export let data
+	$: users = data.users
+	const me = getMeContext()
 </script>
 
 <Screen title="Panelists & Moderators" bigTitle="Panelists & Moderators" bodyClass="bg-slate-100">
 	<div class="mx-auto -mt-2 max-w-7xl bg-slate-100">
 		<div class="mt-2 grid grid-cols-2 gap-4 py-2 md:grid-cols-3">
 			{#each users as user}
-				{@const {user: {id, firstName, lastName}, media, mainEventUser} = user}
+				{@const {
+					user: { id, firstName, lastName },
+					media,
+					mainEventUser,
+				} = user}
 				<a
 					href="/speakers/{mainEventUser.id}"
 					class="relative z-0 flex flex-col rounded-2xl bg-white p-1"

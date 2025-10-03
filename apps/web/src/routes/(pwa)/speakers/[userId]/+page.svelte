@@ -1,23 +1,23 @@
 <script lang="ts">
-import EventRow from '$lib/components/EventRow.svelte'
-import Screen from '$lib/components/Screen.svelte'
-import Button from '$lib/components/ui/button/button.svelte'
-import VenueBlock from '$lib/components/VenueBlock.svelte'
-import { getMeContext } from '$lib/state/getContexts'
+	import EventRow from '$lib/components/EventRow.svelte'
+	import Screen from '$lib/components/Screen.svelte'
+	import Button from '$lib/components/ui/button/button.svelte'
+	import VenueBlock from '$lib/components/VenueBlock.svelte'
+	import { getMeContext } from '$lib/state/getContexts'
 
-import type { Event } from '@matterloop/db'
-import { Markdown } from '@matterloop/ui'
-import { capitalize, dayjs, getMediaUrl } from '@matterloop/util'
+	import type { Event } from '@matterloop/db'
+	import { Markdown } from '@matterloop/ui'
+	import { capitalize, dayjs, getMediaUrl } from '@matterloop/util'
 
-export let data
-$: user = data.user
-$: events = data.events
-$: eventStr = events.reduce((acc, event, i) => {
-	return `${acc}${capitalize(event.type)}: ${event.event.name}${
-		events.length - 1 === i ? '' : ', '
-	}`
-}, '')
-$: name = `${user.firstName} ${user.lastName}`
+	export let data
+	$: user = data.user
+	$: events = data.events
+	$: eventStr = events.reduce((acc, event, i) => {
+		return `${acc}${capitalize(event.type)}: ${event.event.name}${
+			events.length - 1 === i ? '' : ', '
+		}`
+	}, '')
+	$: name = `${user.firstName} ${user.lastName}`
 </script>
 
 <Screen title={name} back="/speakers">

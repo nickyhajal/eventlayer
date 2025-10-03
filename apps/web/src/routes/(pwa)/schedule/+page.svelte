@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { invalidate, invalidateAll } from '$app/navigation'
 	import EventRow from '$lib/components/EventRow.svelte'
 	import Screen from '$lib/components/Screen.svelte'
 	import { getEventContext, getMeContext } from '$lib/state/getContexts'

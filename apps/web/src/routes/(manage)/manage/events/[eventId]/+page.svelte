@@ -1,8 +1,8 @@
 <script lang="ts">
-import AdminScreen from '../../AdminScreen.svelte'
-import EventForm from './EventForm.svelte'
+	import AdminScreen from '../../AdminScreen.svelte'
+	import EventForm from './EventForm.svelte'
 
-export let data
+	export let data
 </script>
 
 <AdminScreen>
