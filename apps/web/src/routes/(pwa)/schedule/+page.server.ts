@@ -7,17 +7,6 @@ export const load = async (req) => {
   const events = await eventFns.getEvents({ type: 'program' })
   const myEvents = await eventFns.getUserEvents(locals.me)
   return {
-    events: uniqBy(
-      orderBy(
-        [
-          ...events.filter(({ eventFor }) => {
-            eventFor !== 'selected' && eventFor !== 'rsvp'
-          }),
-          ...myEvents,
-        ],
-        ['startsAt'],
-      ),
-      'id',
-    ),
+    events: uniqBy(orderBy([...events, ...myEvents], ['startsAt']), 'id'),
   }
 }
