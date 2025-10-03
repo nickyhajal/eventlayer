@@ -1,40 +1,40 @@
 {
-  "name": "@matterloop/db",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "db:introspect": "drizzle-kit introspect:pg",
-    "db:gen": "drizzle-kit generate:pg",
-    "db:push": "drizzle-kit push:pg",
-    "db:drop": "drizzle-kit drop",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "eslintConfig": {
-    "root": true,
-    "extends": [
-      "@matterloop/eslint-config/base"
-    ]
-  },
-  "prettier": "@matterloop/prettier-config",
-  "dependencies": {
-    "@libsql/client": "^0.3.5",
-    "dotenv": "^16.4.5",
-    "drizzle-orm": "^0.30.7",
-    "drizzle-zod": "^0.5.1",
-    "pg": "^8.11.5",
-    "svelte-persisted-store": "^0.9.1",
-    "zod": "^3.22.4"
-  },
-  "devDependencies": {
-    "@matterloop/eslint-config": "workspace:*",
-    "@matterloop/prettier-config": "workspace:*",
-    "dotenv-cli": "^7.4.1",
-    "drizzle-kit": "^0.19.13",
-    "prettier": "^3.2.5",
-    "typescript": "^5.4.5"
-  }
+	"name": "@matterloop/db",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"db:introspect": "drizzle-kit introspect:pg",
+		"db:gen": "drizzle-kit generate:pg",
+		"db:push": "drizzle-kit push:pg",
+		"db:drop": "drizzle-kit drop",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"eslintConfig": {
+		"root": true,
+		"extends": [
+			"@matterloop/eslint-config/base"
+		]
+	},
+	"prettier": "@matterloop/prettier-config",
+	"dependencies": {
+		"@libsql/client": "^0.3.5",
+		"dotenv": "^16.4.5",
+		"drizzle-orm": "^0.30.7",
+		"drizzle-zod": "^0.5.1",
+		"pg": "^8.11.5",
+		"svelte-persisted-store": "^0.9.1",
+		"zod": "^3.22.4"
+	},
+	"devDependencies": {
+		"@matterloop/eslint-config": "workspace:*",
+		"@matterloop/prettier-config": "workspace:*",
+		"dotenv-cli": "^7.4.1",
+		"drizzle-kit": "^0.19.13",
+		"prettier": "^3.2.5",
+		"typescript": "^5.4.5"
+	}
 }
