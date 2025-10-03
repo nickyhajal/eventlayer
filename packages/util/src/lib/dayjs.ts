@@ -1,7 +1,8 @@
 import dayjs from 'dayjs'
 import type { ConfigType as DayjsConfigType } from 'dayjs'
-import RelativeTime from 'dayjs/plugin/relativeTime.js'
 import advancedFormat from 'dayjs/plugin/advancedFormat.js'
+import RelativeTime from 'dayjs/plugin/relativeTime.js'
+
 dayjs.extend(RelativeTime)
 dayjs.extend(advancedFormat)
 
@@ -11,7 +12,7 @@ const formats = {
   us: 'MM/DD/YYYY',
   euro: 'DD/MM/YYYY',
   humanFull: 'MMMM Do YYYY, h:mm:ss a',
-  humanShort: 'Do' 
+  humanShort: 'Do',
 }
 
 export default dayjs

@@ -79,10 +79,7 @@ export class ExternalContent {
           this.code = query.get('v') || this.url
         }
       } else if (this.subtype === 'wistia') {
-        if (
-          this.url.includes('wistia.com') ||
-          this.url.includes('wistia.net')
-        ) {
+        if (this.url.includes('wistia.com') || this.url.includes('wistia.net')) {
           if (this.url.includes('iframe')) {
             const regex = /embed\/iframe\/([\w-]+)/
             this.code = regex.exec(this.url)[1] || this.code
@@ -118,9 +115,7 @@ export class ExternalContent {
         }" title="YouTube video player" frameborder="0" allow="accelerometer; fullscreen; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
       }
       case 'vimeo': {
-        return `<iframe src="https://player.vimeo.com/video/${
-          this.code
-        }?autoplay=${
+        return `<iframe src="https://player.vimeo.com/video/${this.code}?autoplay=${
           this.autoplay ? 1 : 0
         }"  class="absolute top-0 left-0 w-full" style="height: 100%;" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe><script src="https://player.vimeo.com/api/player.js"></script>`
       }
@@ -132,16 +127,10 @@ export class ExternalContent {
   }
   initWistia() {
     const wistiajs = document.createElement('script')
-    wistiajs.setAttribute(
-      'src',
-      'https://fast.wistia.com/assets/external/E-v1.js'
-    )
+    wistiajs.setAttribute('src', 'https://fast.wistia.com/assets/external/E-v1.js')
     document.body.appendChild(wistiajs)
     const videoJson = document.createElement('script')
-    videoJson.setAttribute(
-      'src',
-      `https://fast.wistia.com/embed/medias/${this.code}.jsonp`
-    )
+    videoJson.setAttribute('src', `https://fast.wistia.com/embed/medias/${this.code}.jsonp`)
     document.body.appendChild(videoJson)
   }
   getUrlFromType() {

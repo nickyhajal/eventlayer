@@ -1,3 +1,3 @@
-import type { RequestHandler } from "@sveltejs/kit";
+import type { RequestHandler } from '@sveltejs/kit'
 
-export type { RequestHandler };
+export type { RequestHandler }

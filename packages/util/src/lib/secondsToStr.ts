@@ -32,7 +32,7 @@ type Separator = {
   separator: ':' | 'abbr'
 }
 type Section = 'h' | 'm' | 's'
-export function secondsToStr(seconds: number, { separator  }: Separator = {separator: ':'}) {
+export function secondsToStr(seconds: number, { separator }: Separator = { separator: ':' }) {
   const { h, m, s } = secondsToTimeParts(seconds)
   new Date()
   function getSeparator(section: Section) {
@@ -53,7 +53,5 @@ export function secondsToStr(seconds: number, { separator  }: Separator = {separ
 
   return `${h > 0 ? `${h}${getSeparator('h')}` : ''}${
     m > 0 ? (m < 10 && h > 0 ? `0${m}` : m) : h > 0 ? '00' : '0'
-  }${getSeparator('m')}${s > 0 ? (s < 10 ? `0${s}` : s) : '00'}${getSeparator(
-    's'
-  )}`.trim()
+  }${getSeparator('m')}${s > 0 ? (s < 10 ? `0${s}` : s) : '00'}${getSeparator('s')}`.trim()
 }

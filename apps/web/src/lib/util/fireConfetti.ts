@@ -1,4 +1,5 @@
 import confetti from 'canvas-confetti'
+
 export function fireConfetti(duration = 0.1) {
   var end = Date.now() + duration * 1000
   ;(function frame() {

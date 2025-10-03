@@ -1,26 +1,25 @@
-import Stripe from "stripe";
-import { env } from "$env/dynamic/private";
+import { env } from '$env/dynamic/private'
+import Stripe from 'stripe'
 
-const stripe = new Stripe(env.STRIPE_SECRET_KEY ?? "", {
-  apiVersion: "2025-08-27.basil",
-});
+const stripe = new Stripe(env.STRIPE_SECRET_KEY ?? '', {
+  apiVersion: '2025-08-27.basil',
+})
 
 export async function getStripeDataFromSession(checkoutId: string) {
   // Retrieve checkout session from Stripe
-  const session = await stripe.checkout.sessions.retrieve(checkoutId);
+  const session = await stripe.checkout.sessions.retrieve(checkoutId)
 
   // Retrieve line items (products, quantities, prices)
   const lineItems = await stripe.checkout.sessions.listLineItems(checkoutId, {
-    expand: ["data.price.product"],
-  });
+    expand: ['data.price.product'],
+  })
 
   // Retrieve payment intent for additional payment details (if exists)
-  let paymentIntent = null;
+  let paymentIntent = null
   if (session.payment_intent) {
-    paymentIntent = await stripe.paymentIntents.retrieve(
-      session.payment_intent as string,
-      { expand: ["charges"] },
-    );
+    paymentIntent = await stripe.paymentIntents.retrieve(session.payment_intent as string, {
+      expand: ['charges'],
+    })
   }
 
   // Structure comprehensive response
@@ -57,23 +56,17 @@ export async function getStripeDataFromSession(checkoutId: string) {
       },
       product: item.price?.product
         ? {
-            id:
-              typeof item.price.product === "string"
-                ? item.price.product
-                : item.price.product.id,
+            id: typeof item.price.product === 'string' ? item.price.product : item.price.product.id,
             name:
-              typeof item.price.product === "object" &&
-              "name" in item.price.product
+              typeof item.price.product === 'object' && 'name' in item.price.product
                 ? item.price.product.name
                 : null,
             description:
-              typeof item.price.product === "object" &&
-              "description" in item.price.product
+              typeof item.price.product === 'object' && 'description' in item.price.product
                 ? item.price.product.description
                 : null,
             images:
-              typeof item.price.product === "object" &&
-              "images" in item.price.product
+              typeof item.price.product === 'object' && 'images' in item.price.product
                 ? item.price.product.images
                 : null,
           }
@@ -102,5 +95,5 @@ export async function getStripeDataFromSession(checkoutId: string) {
     metadata: session.metadata,
     // Include raw session data for debugging/additional fields
     raw_session: session,
-  };
+  }
 }

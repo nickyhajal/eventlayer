@@ -4,13 +4,13 @@
 import type { Media, User } from '@matterloop/db'
 
 export interface SimpleAttendee {
-	photo: Media
-	firstName: string
-	lastName: string
+  photo: Media
+  firstName: string
+  lastName: string
 }
 export interface AttendeeStore {
-	attendees: SimpleAttendee[]
-	lastUpdate: string
-	hash: string
-	num: number
+  attendees: SimpleAttendee[]
+  lastUpdate: string
+  hash: string
+  num: number
 }

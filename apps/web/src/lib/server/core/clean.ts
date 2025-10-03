@@ -3,23 +3,15 @@ export function clean<T>(item: T): T {
     return item.map((i) => clean(i)) as T
   } else if (item && typeof item === 'object') {
     return Object.entries(item)
-      .map(([key, value]) => [
-        key,
-        value instanceof Date ? value.toISOString() : value,
-      ])
-      .filter(
-        ([key, value]) => typeof value !== 'function' || value instanceof Date
-      )
+      .map(([key, value]) => [key, value instanceof Date ? value.toISOString() : value])
+      .filter(([key, value]) => typeof value !== 'function' || value instanceof Date)
       .reduce((acc, [key, value]) => ({ ...acc, [key]: clean(value) }), {} as T)
   } else {
     return item
   }
 }
 
-export async function awaitClean<T>(
-  promise: Promise<T>,
-  verify?: (obj: T) => boolean
-): Promise<T> {
+export async function awaitClean<T>(promise: Promise<T>, verify?: (obj: T) => boolean): Promise<T> {
   const item = await promise
   const result = clean(item)
   if (!verify || verify(result as any)) {
@@ -30,7 +22,7 @@ export async function awaitClean<T>(
 
 export async function awaitCleanList<T>(
   promise: Promise<T[]>,
-  verify?: (obj: T[]) => boolean
+  verify?: (obj: T[]) => boolean,
 ): Promise<T[]> {
   const item = await promise
   const result = clean(item)

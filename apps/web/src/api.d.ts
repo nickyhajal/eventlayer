@@ -5,8 +5,8 @@
  */
 
 type ProjectAPI = {
-    POST: {
-        "/login": never;
-        "/signup": never;
-    };
-};
+  POST: {
+    '/login': never
+    '/signup': never
+  }
+}

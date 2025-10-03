@@ -13,9 +13,7 @@ export async function initWorkers() {
   }
   if (check()) {
     const registerServiceWorker = async () => {
-      const worker = await navigator.serviceWorker.register(
-        '/notification-worker.js'
-      )
+      const worker = await navigator.serviceWorker.register('/notification-worker.js')
 
       // if the worker is still installing, it will be done by the time it tries to re-register
       if (worker.installing) {

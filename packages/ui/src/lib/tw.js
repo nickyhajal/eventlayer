@@ -51,8 +51,5 @@ export const twSimple = (str) => {
     }
     return out
   }, [])
-  return [
-    ...final,
-    ...Object.entries(vals).map(([head, tail]) => `${head}-${tail}`),
-  ].join(' ')
+  return [...final, ...Object.entries(vals).map(([head, tail]) => `${head}-${tail}`)].join(' ')
 }

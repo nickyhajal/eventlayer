@@ -3,64 +3,64 @@ import { and, db, eq, eventUserTable, userTable } from '@matterloop/db'
 let eventId = '3b41ad8e-649e-42be-b9a4-e7b94dd98e74'
 
 export async function loadUsers() {
-	const eusers = await db.query.eventUserTable.findMany({
-		where: and(eq(eventUserTable.eventId, eventId)),
-	})
-	if (eusers.length > 100) return
-	const us = users.split('\n')
-	return await Promise.all(us.map((u) => loadUser(u)))
+  const eusers = await db.query.eventUserTable.findMany({
+    where: and(eq(eventUserTable.eventId, eventId)),
+  })
+  if (eusers.length > 100) return
+  const us = users.split('\n')
+  return await Promise.all(us.map((u) => loadUser(u)))
 }
 export async function loadUser(line: string) {
-	let [type, name, email, company, role, url] = line.replaceAll('"', '').split(',')
-	console.log(line, name)
-	const firstName = name.substring(0, name.indexOf(' ')).replace('&comma;', ',')
-	const lastName = name.substring(name.indexOf(' ') + 1).replace('&comma;', ',')
-	company = company.replace('&comma;', ',')
-	role = role.replace('&comma;', ',')
-	const types = {
-		Team: 'staff',
-		Attendee: 'attendee',
-		'Impact Partner': 'impact-partner',
-		Speaker: 'speaker',
-		Sponsor: 'sponsor',
-	}
-	let user = await db.query.userTable.findFirst({
-		where: eq(userTable.email, email),
-	})
-	if (!user) {
-		const inserted = await db
-			.insert(userTable)
-			.values({
-				email,
-				firstName,
-				lastName,
-			})
-			.returning()
-		if (inserted) {
-			user = inserted[0]
-		}
-	}
-	if (user) {
-		let eventUser = await db.query.eventUserTable.findFirst({
-			where: and(eq(eventUserTable.eventId, eventId), eq(eventUserTable.userId, user.id)),
-		})
-		if (!eventUser) {
-			const inserted = await db
-				.insert(eventUserTable)
-				.values({
-					type: types[type] || 'attendee',
-					userId: user.id,
-					eventId,
-					title: role,
-					url,
-					company,
-				})
-				.returning()
-			if (inserted) {
-				eventUser = inserted[0]
-			}
-		}
-	}
+  let [type, name, email, company, role, url] = line.replaceAll('"', '').split(',')
+  console.log(line, name)
+  const firstName = name.substring(0, name.indexOf(' ')).replace('&comma;', ',')
+  const lastName = name.substring(name.indexOf(' ') + 1).replace('&comma;', ',')
+  company = company.replace('&comma;', ',')
+  role = role.replace('&comma;', ',')
+  const types = {
+    Team: 'staff',
+    Attendee: 'attendee',
+    'Impact Partner': 'impact-partner',
+    Speaker: 'speaker',
+    Sponsor: 'sponsor',
+  }
+  let user = await db.query.userTable.findFirst({
+    where: eq(userTable.email, email),
+  })
+  if (!user) {
+    const inserted = await db
+      .insert(userTable)
+      .values({
+        email,
+        firstName,
+        lastName,
+      })
+      .returning()
+    if (inserted) {
+      user = inserted[0]
+    }
+  }
+  if (user) {
+    let eventUser = await db.query.eventUserTable.findFirst({
+      where: and(eq(eventUserTable.eventId, eventId), eq(eventUserTable.userId, user.id)),
+    })
+    if (!eventUser) {
+      const inserted = await db
+        .insert(eventUserTable)
+        .values({
+          type: types[type] || 'attendee',
+          userId: user.id,
+          eventId,
+          title: role,
+          url,
+          company,
+        })
+        .returning()
+      if (inserted) {
+        eventUser = inserted[0]
+      }
+    }
+  }
 }
 
 const users = `Team,Michelle Jones,michelle@smithandjonesinnovation.com,Smith and Jones Innovation,Partner,https://www.linkedin.com/in/michelledjones1/

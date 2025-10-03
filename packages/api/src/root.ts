@@ -14,19 +14,19 @@ import { userProcedures } from './router/userProcedures'
 import { venueProcedures } from './router/venueProcedures'
 
 export const router = trpcApp.router({
-	me: meRouter,
-	event: eventProcedures,
-	venue: venueProcedures,
-	form: formProcedures,
-	checkin: checkinProcedures,
-	formElement: formElementProcedures,
-	formSession: formSessionProcedures,
-	user: userProcedures,
-	media: mediaProcedures,
-	content: contentProcedures,
-	page: pageProcedures,
-	sponsor: sponsorProcedures,
-	menu: menuProcedures,
+  me: meRouter,
+  event: eventProcedures,
+  venue: venueProcedures,
+  form: formProcedures,
+  checkin: checkinProcedures,
+  formElement: formElementProcedures,
+  formSession: formSessionProcedures,
+  user: userProcedures,
+  media: mediaProcedures,
+  content: contentProcedures,
+  page: pageProcedures,
+  sponsor: sponsorProcedures,
+  menu: menuProcedures,
 })
 
 export type Router = typeof router

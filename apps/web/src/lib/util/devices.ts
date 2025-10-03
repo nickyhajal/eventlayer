@@ -1,4 +1,5 @@
-import { writable, get } from 'svelte/store'
+import { get, writable } from 'svelte/store'
+
 export const device = writable()
 export const isPhone = writable(false)
 export const isTablet = writable(false)

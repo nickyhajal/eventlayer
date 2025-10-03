@@ -38,28 +38,28 @@ export * from './schema/event_user_connection'
 export * from './types'
 
 export const connection = new postgres.Pool({
-	connectionString: DB_URL,
+  connectionString: DB_URL,
 })
 export const db = drizzle(connection, {
-	logger: false,
-	schema: {
-		...userSchema,
-		...eventSchema,
-		...eventUserInfoSchema,
-		...eventUserCheckinSchema,
-		...eventUserConnectionSchema,
-		...organizationSchema,
-		...eventUserSchema,
-		...eventTicketSchema,
-		...mediaSchema,
-		...venueSchema,
-		...contentSchema,
-		...pageSchema,
-		...menuSchema,
-		...sponsorSchema,
-		...loginLinkSchema,
-		...formSchema,
-	},
+  logger: false,
+  schema: {
+    ...userSchema,
+    ...eventSchema,
+    ...eventUserInfoSchema,
+    ...eventUserCheckinSchema,
+    ...eventUserConnectionSchema,
+    ...organizationSchema,
+    ...eventUserSchema,
+    ...eventTicketSchema,
+    ...mediaSchema,
+    ...venueSchema,
+    ...contentSchema,
+    ...pageSchema,
+    ...menuSchema,
+    ...sponsorSchema,
+    ...loginLinkSchema,
+    ...formSchema,
+  },
 })
 
 export { alias } from 'drizzle-orm/pg-core'

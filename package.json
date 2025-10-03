@@ -1,27 +1,32 @@
 {
-  "private": true,
-  "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev --filter=!./packages/db --filter=!./apps/seeder --filter=!./apps/admin",
-    "lint": "turbo run lint",
-    "ws:deploy": "turbo run ws:deploy",
-    "format": "prettier --write ."
-  },
-  "workspaces": {
-    "packages": [
-      "packages/*",
-      "apps/*",
-      "tooling/*"
-    ],
-    "nohoist": ["**/react-native", "**/react-native/**", "**/expo", "**/expo/**"]
-  },
-  "devDependencies": {
-    "eslint": "^8.44.0",
-    "prettier": "^3.6.2",
-    "prettier-plugin-svelte": "^2.10.1",
-    "turbo": "^1.10.7"
-  },
-  "packageManager": "pnpm@9.1.1",
+	"private": true,
+	"scripts": {
+		"build": "turbo run build",
+		"dev": "turbo run dev --filter=!./packages/db --filter=!./apps/seeder --filter=!./apps/admin",
+		"lint": "turbo run lint",
+		"ws:deploy": "turbo run ws:deploy",
+		"format": "prettier --write ."
+	},
+	"workspaces": {
+		"packages": [
+			"packages/*",
+			"apps/*",
+			"tooling/*"
+		],
+		"nohoist": [
+			"**/react-native",
+			"**/react-native/**",
+			"**/expo",
+			"**/expo/**"
+		]
+	},
+	"devDependencies": {
+		"eslint": "^8.44.0",
+		"prettier": "^3.6.2",
+		"prettier-plugin-svelte": "^2.10.1",
+		"turbo": "^1.10.7"
+	},
+	"packageManager": "pnpm@9.1.1",
 	"pnpm": {
 		"overrides": {
 			"sharp": "0.32.6"
