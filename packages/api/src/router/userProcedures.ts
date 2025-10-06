@@ -95,8 +95,8 @@ export async function sendWelcomeEmail(user: User, event: Event, eventUser: Even
       more_params: {
         body: `Hey ${user?.firstName},
 								<br><br>We’re excited to have you join us for the Innovation Network Gathering to shape the future of human-centric clinical trials.
-								<br><br>Instead of a one-time-use printed program, we’ve developed a helpful event app to guide you through all things related to the conference.
-								<br><br>With the Gathering Conference app you’ll be able to:
+								<br><br>Instead of a one-time-use printed program, we’ve developed a helpful event app to guide you through all things related to the event.
+								<br><br>With the Gathering Event app you’ll be able to:
 								<ul>
 								<li>View a full detailed schedule</li>
 								<li>RSVP for a lunch option on Day 1</li>
