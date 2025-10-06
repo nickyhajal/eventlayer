@@ -94,11 +94,11 @@
 </script>
 
 <form on:submit={(e) => submit(e)} class="pt-safe-offset-8 lg:pt-">
-  <div
+  <!-- <div
     class="wrap mx-auto font-bold py-2.5 text-center fixed top-0 bg-white/60 backdrop-blur-md z-10 border-b-2 border-slate-200/50 text-sm uppercase text-slate-600 tracking-wide w-full"
   >
     Create Your Account
-  </div>
+  </div> -->
   <!-- <NdBase /> -->
   <div
     class="relative mx-auto -mt-5 max-w-lg overflow-hidden px-2 lg:h-[80vh] z-20"
