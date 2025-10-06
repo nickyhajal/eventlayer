@@ -89,7 +89,7 @@ export const EventFns = (args: string | Args) => {
     getMeals: async () => {
       const key = `event_meals:${eventId}`
       let events = await redis.get<Event[]>(key)
-      if (!events) {
+      if (!events || true) {
         events = await db.query.eventTable.findMany({
           where: and(eq(eventTable.eventId, eventId), eq(eventTable.type, 'meal')),
           with: {
