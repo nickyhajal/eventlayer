@@ -90,14 +90,29 @@ export async function sendWelcomeEmail(user: User, event: Event, eventUser: Even
   if (url) {
     const res = await mailer.send({
       to: user?.email ?? '',
-      subject: `Action Required: Claim Your ${event?.name} Ticket`,
+      subject: `Action Required: Get Access to the Gathering Event App`,
       event: event,
       more_params: {
-        body: `<p style="margin-bottom: 16px;">Hey ${user?.firstName},</p>
-								<p style="margin-bottom: 16px;">We’re excited to have you join us for ${event?.name}!</p>
-								<p style="margin-bottom: 24px;">Click the link below to claim your ticket and set up your account.</p>
-								<p style="margin-bottom: 32px;">Here's the link: <a href="${url}">${url}</a></p>
-								<p style="margin-bottom: 16px;">See you soon!<br>${sig}</p>`,
+        body: `Hey ${user?.firstName},
+								<br><br>We’re excited to have you join us for the Innovation Network Gathering to shape the future of human-centric clinical trials.
+								<br><br>Instead of a one-time-use printed program, we’ve developed a helpful event app to guide you through all things related to the conference.
+								<br><br>With the Gathering Conference app you’ll be able to:
+								<ul>
+								<li>View a full detailed schedule</li>
+								<li>RSVP for a lunch option on Day 1</li>
+								<li>Access an attendee list including information about our speakers</li>
+								<li>Connect with our amazing Partners</li>
+								<li>And more...</li>
+								</ul>
+								<br><br>To gain access, click the link below and set up your account.
+								<br><br>Here's the link: ${url} 
+								<br><br>See you soon!<br>${sig}`,
+					},
+        // body: `<p style="margin-bottom: 16px;">Hey ${user?.firstName},</p>
+				// 				<p style="margin-bottom: 16px;">We’re excited to have you join us for ${event?.name}!</p>
+				// 				<p style="margin-bottom: 24px;">Click the link below to claim your ticket and set up your account.</p>
+				// 				<p style="margin-bottom: 32px;">Here's the link: <a href="${url}">${url}</a></p>
+				// 				<p style="margin-bottom: 16px;">See you soon!<br>${sig}</p>`,
       },
     })
   }
