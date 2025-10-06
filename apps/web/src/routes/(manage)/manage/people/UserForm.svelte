@@ -279,10 +279,10 @@
             {user.info.linkedin_url.value}
           </a>
         </div>
-        <!-- <div class="flex flex-col items-start justify-center gap-1">
-					<Label for="proBio" class="text-right">Professional Bio</Label>
-					<Textarea id="proBio" bind:value={user.proBio} class="col-span-3" />
-				</div> -->
+        <div class="flex flex-col items-start justify-center gap-1">
+          <Label for="proBio" class="text-right">Professional Bio</Label>
+          <Textarea id="proBio" bind:value={user.proBio} class="col-span-3" />
+        </div>
         <div class="flex flex-col items-start justify-center gap-1">
           <Label for="bio" class="text-right">User Bio</Label>
           <Textarea
