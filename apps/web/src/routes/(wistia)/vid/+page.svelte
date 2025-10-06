@@ -1,7 +1,7 @@
 <script lang="ts">
-import { browser } from '$app/environment'
+	import { browser } from '$app/environment'
 
-const size = browser ? window.location.search.replace('?', '') || 0 : 0
+	const size = browser ? window.location.search.replace('?', '') || 0 : 0
 </script>
 
 <div class="left-0 top-0 mx-auto grid h-screen w-full grid-rows-[1fr_8rem] bg-[#132A54]">

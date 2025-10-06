@@ -1,7 +1,8 @@
 <script>
-import { HeroIcon } from '@matterloop/ui'
-import { ExclamationTriangle } from '@steeze-ui/heroicons'
-import { page } from '$app/stores'
+	import { ExclamationTriangle } from '@steeze-ui/heroicons'
+	import { page } from '$app/stores'
+
+	import { HeroIcon } from '@matterloop/ui'
 </script>
 
 {#if $page.error}

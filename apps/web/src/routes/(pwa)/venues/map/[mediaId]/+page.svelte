@@ -1,36 +1,36 @@
 <script lang="ts">
-import Screen from '$lib/components/Screen.svelte'
-import BiggerPicture from 'bigger-picture/svelte'
+	import Screen from '$lib/components/Screen.svelte'
+	import BiggerPicture from 'bigger-picture/svelte'
 
-import '$lib/bigger-picture.css'
+	import '$lib/bigger-picture.css'
 
-import { date } from 'drizzle-orm/mysql-core'
-import { onMount } from 'svelte'
+	import { date } from 'drizzle-orm/mysql-core'
+	import { onMount } from 'svelte'
 
-import { getMediaUrl } from '@matterloop/util'
+	import { getMediaUrl } from '@matterloop/util'
 
-export let data
-let bp
-onMount(() => {
-	if (typeof window !== 'undefined') {
-		bp = BiggerPicture({
-			target: document.body,
+	export let data
+	let bp
+	onMount(() => {
+		if (typeof window !== 'undefined') {
+			bp = BiggerPicture({
+				target: document.body,
+			})
+		}
+	})
+	function open() {
+		bp.open({
+			items: document.querySelectorAll('#bp > div'),
+			scale: 1,
+			intro: 'fadeup',
+			maxZoom: 3,
 		})
 	}
-})
-function open() {
-	bp.open({
-		items: document.querySelectorAll('#bp > div'),
-		scale: 1,
-		intro: 'fadeup',
-		maxZoom: 3,
-	})
-}
-$: url = getMediaUrl(data.media)
-$: title = data.media.title
+	$: url = getMediaUrl(data.media)
+	$: title = data.media.title
 </script>
 
-<Screen title={title} back="/venue/map" bigTitle={title}>
+<Screen {title} back="/venue/map" bigTitle={title}>
 	<div id="bp" class="inline-gallery container mx-auto h-full pt-12 md:max-w-7xl">
 		<div
 			on:click={() => open()}

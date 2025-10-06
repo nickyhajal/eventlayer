@@ -46,6 +46,11 @@
 		await invalidateAll()
 		loading = false
 	}
+	function getUserTitle(type) {
+		if (type === 'staff') return 'Team'
+		const title = startCase(type)
+		return title
+	}
 </script>
 
 <Screen
@@ -116,12 +121,7 @@
 					{#if shouldGroup}
 						{#if getLastType(user)}
 							<div class="text-a-accent mb-0 mt-2 text-lg font-semibold brightness-95">
-								{startCase(
-									// event?.name?.includes('Dive Session') && user.type === 'attendee'
-									// ? 'facilitator'
-									// : user.type,
-									user.type,
-								)}s
+								{getUserTitle(user.type)}
 							</div>
 						{/if}
 					{/if}

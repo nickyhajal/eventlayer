@@ -1,17 +1,17 @@
 <script lang="ts">
-import { page } from '$app/stores'
-import Screen from '$lib/components/Screen.svelte'
-import * as Accordion from '$lib/components/ui/accordion'
-import Button from '$lib/components/ui/button/button.svelte'
-import { getEventContext, getMeContext } from '$lib/state/getContexts'
-import Mail from 'lucide-svelte/icons/mail'
-import MessageCircleMore from 'lucide-svelte/icons/message-circle-more'
-import { ChatBubble } from 'radix-icons-svelte'
+	import { page } from '$app/stores'
+	import Screen from '$lib/components/Screen.svelte'
+	import * as Accordion from '$lib/components/ui/accordion'
+	import Button from '$lib/components/ui/button/button.svelte'
+	import { getEventContext, getMeContext } from '$lib/state/getContexts'
+	import Mail from 'lucide-svelte/icons/mail'
+	import MessageCircleMore from 'lucide-svelte/icons/message-circle-more'
+	import { ChatBubble } from 'radix-icons-svelte'
 
-export let data
-const event = getEventContext()
+	export let data
+	const event = getEventContext()
 
-const smsMessage = `Hi, this is `
+	const smsMessage = `Hi, this is `
 </script>
 
 <Screen title="FAQs" bigTitle="FAQs">

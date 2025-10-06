@@ -1,12 +1,12 @@
 <script lang="ts">
-import { writable } from 'svelte/store'
+	import { writable } from 'svelte/store'
 
-import FormBuilder from '../FormBuilder.svelte'
-import FormInfoForm from '../FormInfoForm.svelte'
+	import FormBuilder from '../FormBuilder.svelte'
+	import FormInfoForm from '../FormInfoForm.svelte'
 
-export let data
+	export let data
 
-let loading = false
+	let loading = false
 </script>
 
 <FormBuilder form={data.form} />

@@ -126,7 +126,7 @@
 						>
 							<div
 								class="h-full w-full bg-contain bg-center bg-no-repeat"
-								style="background-image: url({getMediaUrl(photo, 'trim=1&w=780')})"
+								style="background-image: url({getMediaUrl(photo, 'w-780')})"
 							></div>
 						</div>
 					</a>

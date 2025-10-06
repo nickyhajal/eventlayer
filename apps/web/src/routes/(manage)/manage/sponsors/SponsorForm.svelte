@@ -1,63 +1,63 @@
 <script lang="ts">
-import { goto, invalidateAll } from '$app/navigation'
-import AttendeeSearchInput from '$lib/components/AttendeeSearchInput.svelte'
-import Select from '$lib/components/form/Select.svelte'
-import Button from '$lib/components/ui/button/button.svelte'
-import * as Dialog from '$lib/components/ui/dialog'
-import Input from '$lib/components/ui/input/input.svelte'
-import Label from '$lib/components/ui/label/label.svelte'
-import Textarea from '$lib/components/ui/textarea/textarea.svelte'
-import Uploader from '$lib/components/ui/Uploader.svelte'
-import { trpc } from '$lib/trpc/client.js'
-import { getMediaUrl } from '$lib/util/getMediaUrl'
-import X from 'lucide-svelte/icons/x'
-import { toast } from 'svelte-sonner'
+	import { goto, invalidateAll } from '$app/navigation'
+	import AttendeeSearchInput from '$lib/components/AttendeeSearchInput.svelte'
+	import Select from '$lib/components/form/Select.svelte'
+	import Button from '$lib/components/ui/button/button.svelte'
+	import * as Dialog from '$lib/components/ui/dialog'
+	import Input from '$lib/components/ui/input/input.svelte'
+	import Label from '$lib/components/ui/label/label.svelte'
+	import Textarea from '$lib/components/ui/textarea/textarea.svelte'
+	import Uploader from '$lib/components/ui/Uploader.svelte'
+	import { trpc } from '$lib/trpc/client.js'
+	import { getMediaUrl } from '$lib/util/getMediaUrl'
+	import X from 'lucide-svelte/icons/x'
+	import { toast } from 'svelte-sonner'
 
-import type { FullEventUser, Sponsor } from '@matterloop/db'
-import { capitalize, tw } from '@matterloop/util'
+	import type { FullEventUser, Sponsor } from '@matterloop/db'
+	import { capitalize, tw } from '@matterloop/util'
 
-export let sponsor: Partial<Sponsor> = {
-	title: '',
-	url: '',
-	description: '',
-}
-export let simplified = false
-export let inDialog = false
-export let users: FullEventUser[] = []
-export let titleClass = ''
-$: buttonMsg = sponsor?.id ? 'Save Sponsor' : 'Add Sponsor'
-$: editing = sponsor?.id ? true : false
-$: title = editing ? sponsor?.title : 'Add a Sponsor'
-let sponsorTypes = [
-	{ value: 'sponsor', label: 'Sponsor' },
-	{ value: 'impact-partner', label: 'Impact Partner' },
-	{ value: 'organizing-partner', label: 'Organizing Partner' },
-	{ value: 'whale', label: 'Whale Tank' },
-]
-let sponsorExpoOptions = [
-	{ value: '0', label: 'No' },
-	{ value: '1', label: 'Yes' },
-]
-let image = ''
-let addOpen = false
-async function createSponsor() {
-	const res = await trpc().sponsor.upsert.mutate(sponsor)
-	goto(`/manage/sponsors/${res.id}`)
-	toast.success('Sponsor Saved')
-}
-async function updateAvatar(mediaId: string) {
-	trpc().sponsor.upsert.mutate({ id: sponsor.id, mediaId })
-	invalidateAll()
-}
-async function addUser(user: FullEventUser) {
-	if (sponsor?.id && user.userId) {
-		await trpc().sponsor.addRep.mutate({
-			sponsorId: sponsor.id,
-			eventUserId: user.id,
-		})
+	export let sponsor: Partial<Sponsor> = {
+		title: '',
+		url: '',
+		description: '',
+	}
+	export let simplified = false
+	export let inDialog = false
+	export let users: FullEventUser[] = []
+	export let titleClass = ''
+	$: buttonMsg = sponsor?.id ? 'Save Sponsor' : 'Add Sponsor'
+	$: editing = sponsor?.id ? true : false
+	$: title = editing ? sponsor?.title : 'Add a Sponsor'
+	let sponsorTypes = [
+		{ value: 'sponsor', label: 'Sponsor' },
+		{ value: 'impact-partner', label: 'Impact Partner' },
+		{ value: 'organizing-partner', label: 'Organizing Partner' },
+		{ value: 'whale', label: 'Whale Tank' },
+	]
+	let sponsorExpoOptions = [
+		{ value: '0', label: 'No' },
+		{ value: '1', label: 'Yes' },
+	]
+	let image = ''
+	let addOpen = false
+	async function createSponsor() {
+		const res = await trpc().sponsor.upsert.mutate(sponsor)
+		goto(`/manage/sponsors/${res.id}`)
+		toast.success('Sponsor Saved')
+	}
+	async function updateAvatar(mediaId: string) {
+		trpc().sponsor.upsert.mutate({ id: sponsor.id, mediaId })
 		invalidateAll()
 	}
-}
+	async function addUser(user: FullEventUser) {
+		if (sponsor?.id && user.userId) {
+			await trpc().sponsor.addRep.mutate({
+				sponsorId: sponsor.id,
+				eventUserId: user.id,
+			})
+			invalidateAll()
+		}
+	}
 </script>
 
 <div class="grid grid-cols-[22rem_24rem] gap-8">
@@ -67,7 +67,9 @@ async function addUser(user: FullEventUser) {
 				<Dialog.Title>{title}</Dialog.Title>
 			</Dialog.Header>
 		{:else}
-			<div class={tw(`mb-2 mt-0 text-lg font-semibold ${titleClass}`)}>{title}</div>
+			<div class={tw(`mb-2 mt-0 text-lg font-semibold ${titleClass}`)}>
+				{title}
+			</div>
 		{/if}
 		<div class="grid gap-4 py-4">
 			{#if !simplified && sponsor?.id}
@@ -78,7 +80,7 @@ async function addUser(user: FullEventUser) {
 					class="flex flex-col items-center gap-2 overflow-hidden rounded-lg border border-stone-200 bg-stone-50 p-1"
 				>
 					{#if sponsor.photo}
-						<img src={getMediaUrl(sponsor.photo, 'w=690')} alt="at" class="w-full" />
+						<img src={getMediaUrl(sponsor.photo, 'w-690')} alt="at" class="w-full" />
 					{/if}
 					<div class="w-full bg-stone-100">
 						<Uploader parentId={sponsor.id} parentType="sponsor" onSuccess={updateAvatar} />
@@ -128,7 +130,9 @@ async function addUser(user: FullEventUser) {
 					<Textarea id="description" bind:value={sponsor.description} class="col-span-3" />
 				</div>
 			{/if}
-			<div class="flex justify-end"><Button type="submit">{buttonMsg}</Button></div>
+			<div class="flex justify-end">
+				<Button type="submit">{buttonMsg}</Button>
+			</div>
 		</div>
 	</form>
 	{#if !simplified}
@@ -138,10 +142,13 @@ async function addUser(user: FullEventUser) {
 				class="mb-1 mt-1 flex flex-col divide-y divide-stone-100 rounded-lg border border-stone-200"
 			>
 				{#each sponsor.users || [] as { id, user }}
-					{@const {firstName, lastName, type} = user}
+					{@const { firstName, lastName, type } = user}
 					<div class="group relative flex items-center justify-between gap-2 px-2.5 py-2">
 						<div class="flex w-full items-center justify-between">
-							<div class="text-sm font-medium text-stone-600">{firstName} {lastName}</div>
+							<div class="text-sm font-medium text-stone-600">
+								{firstName}
+								{lastName}
+							</div>
 							<div
 								class="absolute right-3 text-xs text-stone-500 transition-all group-hover:right-10"
 							>
@@ -152,9 +159,9 @@ async function addUser(user: FullEventUser) {
 							variant="ghost"
 							class="my-0 h-6 px-1 py-2 opacity-0 transition-all group-hover:opacity-100"
 							on:click={() => {
-										trpc().sponsor.removeRep.mutate({ eventUserId: id })
-										invalidateAll()
-									}}
+								trpc().sponsor.removeRep.mutate({ eventUserId: id })
+								invalidateAll()
+							}}
 						>
 							<X class="h-4 w-4 text-stone-500"></X>
 						</Button>
