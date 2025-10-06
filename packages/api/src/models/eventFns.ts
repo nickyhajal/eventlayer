@@ -24,6 +24,7 @@ import {
   mediaTable,
   menuTable,
   ne,
+  not,
   or,
   pageTable,
   sponsorTable,
@@ -123,6 +124,7 @@ export const EventFns = (args: string | Args) => {
       return db.query.eventTable.findMany({
         where: and(
           eq(eventTable.eventId, eventId),
+          and(not(eq(eventTable.eventFor, 'selected')), not(eq(eventTable.eventFor, 'rsvp'))),
           gte(eventTable.startsAt, dayjs().subtract(timezoneShift, 'h').toISOString()),
         ),
         orderBy: asc(eventTable.startsAt),

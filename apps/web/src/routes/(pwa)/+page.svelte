@@ -13,9 +13,7 @@
   import { dayjs, getMediaUrl } from "@matterloop/util";
 
   export let data;
-  $: upcoming = data.upcoming.filter(
-    (event) => event.eventFor !== "selected" && event.eventFor !== "rsvp",
-  );
+  $: upcoming = data.upcoming;
   $: team = data.info.find((info) => info.key === "diveTeam");
   $: table = data.info.find((info) => info.key === "dinnerTable");
   let event = getEventContext();
