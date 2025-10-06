@@ -8,8 +8,14 @@ const options = {
 const geocoder = NodeGeocoder(options)
 export const getGeoCodedAddress = async (address: string) => {
   const response = await fetch(
-    `https://nominatim.openstreetmap.org/search?addressdetails=1&q=${address.replace(' ', '+')}&format=json`,
+    `https://nominatim.openstreetmap.org/search?addressdetails=1&q=${address.replace(' ', '+')}&format=jsonv2`,
+    {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; EventLayer/1.0)',
+      },
+    },
   )
+  console.log(response)
   const addr = await response.json()
   if (addr.length) {
     const a = addr[0]
