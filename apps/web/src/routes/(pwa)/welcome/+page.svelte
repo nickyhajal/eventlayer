@@ -101,7 +101,7 @@
   </div> -->
   <!-- <NdBase /> -->
   <div
-    class="relative mx-auto -mt-5 max-w-lg overflow-hidden px-2 lg:h-[80vh] z-20"
+    class="relative mx-auto mt-0 max-w-lg overflow-hidden px-2 lg:h-[80vh] z-20"
     bind:this={scrollElm}
     style="height: {pageHeight}"
   >
