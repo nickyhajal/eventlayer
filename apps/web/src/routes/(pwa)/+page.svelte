@@ -123,7 +123,7 @@
       <img
         src={getMediaUrl($event.largeLogo)}
         alt="An alt text"
-        class="mx-auto mb-12 -mt-8 w-3/12 pb-2 md:w-5/12 md:-mt-24"
+        class="mx-auto mb-12 -mt-8 w-6/12 pb-2 md:w-6/12 md:-mt-24"
       />
     {/if}
     <div class="rounded-t-xl bg-slate-200/70 p-3 text-center font-medium">
