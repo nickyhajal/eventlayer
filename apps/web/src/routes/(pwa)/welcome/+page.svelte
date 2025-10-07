@@ -55,12 +55,13 @@
   }
   async function next(e = null) {
     // counting as done once they reach avatar, if they bail there, still counts as done
-    if (onPage === elementsListedByPage.length - 2) {
+    if (onPage === elementsListedByPage.length - 1) {
       await trpc().user.upsert.mutate({
         id: data.me.id,
         userId: data.me.id,
         onboardStatus: "done",
       });
+      location.href = "/";
     }
     onPage += 1;
     scrollToCurrent();
@@ -84,36 +85,38 @@
   let pageElms: HTMLElement[] = [];
   $: {
     if (lastPage !== onPage) {
+      console.log("onPage", onPage, lastPage);
       lastPage = onPage;
       setTimeout(() => {
         const newHeight = `${pageElms[onPage].clientHeight + 64}px`;
         pageHeight = newHeight;
-      }, 100);
+      }, 0);
     }
   }
 </script>
 
-<form on:submit={(e) => submit(e)} class="pt-safe-offset-8 lg:pt-">
-  <div
+<form on:submit={(e) => submit(e)} class="pt-safe-offset-8 lg:pt- pb-80">
+  <!-- <div
     class="wrap mx-auto font-bold py-2.5 text-center fixed top-0 bg-white/60 backdrop-blur-md z-10 border-b-2 border-slate-200/50 text-sm uppercase text-slate-600 tracking-wide w-full"
   >
     Create Your Account
-  </div>
+  </div> -->
   <!-- <NdBase /> -->
   <div
-    class="relative mx-auto -mt-5 max-w-lg overflow-hidden px-2 lg:h-[80vh] z-20"
+    class="relative mx-auto mt-10 max-w-lg overflow-hidden px-6 lg:h-[80vh] z-20"
     bind:this={scrollElm}
     style="height: {pageHeight}"
   >
     {#each Object.values(elementsByPage) as page, i}
       <!-- <div id="page-{i}" class="h-16 w-full"></div> -->
+      {@const lastPage = i === elementsListedByPage.length - 1}
       <div
         id="page-{i}"
         bind:this={pageElms[i]}
         class="relative top-[5vh] mt-0 flex h-fit flex-col justify-start gap-3 transition-all duration-300 lg:top-[5vh] {onPage ===
         i
           ? 'opacity-100'
-          : 'opacity-0'}"
+          : 'opacity-0'} {lastPage ? 'pb-32' : 'pb-0'}"
       >
         <FormElements elements={page} bind:values shouldAutoFocus={i === 0} />
         <div class="mt-8 flex w-full items-center justify-between">
@@ -127,14 +130,11 @@
               >
             {/if}
           </div>
-          <!-- class="border-a-accent/10 border-b-a-accent/10 bg-a-accent/5 text-a-accent hover:bg-a-accent/10 w-52 border border-b-2 py-5  font-semibold shadow-none brightness-90" -->
+          <!-- class="rounded-full bg-[#060C3A] text-white px-12 py-4 h-14 text-base tracking-wide" -->
           <Button
-            class="rounded-full bg-[#060C3A] text-white px-12 py-4 h-14 text-base tracking-wide"
+            class="border-a-accent/10 flex items-center border-b-a-accent/10 bg-a-accent/5 text-a-accent hover:bg-a-accent/10 w-52 border border-b-2 py-5  font-semibold shadow-none brightness-90"
             type="button"
-            on:click={next}
-            >{i === elementsListedByPage.length - 1
-              ? "Done"
-              : "Continue"}</Button
+            on:click={next}>{lastPage ? "Done" : "Continue"}</Button
           >
         </div>
       </div>
