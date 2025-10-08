@@ -59,25 +59,12 @@
 
 <!-- class="flex w-full flex-none flex-col items-start justify-center gap-0.5 border border-b-2 border-slate-200/50 border-b-slate-300/50 bg-slate-100/70 py-9 text-left text-sm font-semibold text-slate-600 {bits[1] === currBits[1]?'' : ''} {classes ||''}" -->
 <Screen title="Menu">
-	<div class="mx-auto min-h-[calc(100vh-5rem)] max-w-7xl">
-		<div class="flex flex-col justify-end gap-2 pt-2">
-			<div class="login">
-				{#if !$me?.id}
-					<Button
-						href="/login"
-						variant="ghost"
-						class="login border-a-accent/30 bg-a-accent/5 text-a-accent  w-full border border-b-2 font-semibold brightness-90"
-						>Login to your account</Button
-					>
-				{:else}
-					<Button
-						href="/settings"
-						variant="ghost"
-						class="login bg-a-accent/5  text-a-accent w-full font-semibold brightness-90"
-						>Your Profile</Button
-					>
-				{/if}
-			</div>
+          <Button
+            href="/logout"
+            variant="ghost"
+            class="login border-a-accent/30 bg-a-accent/5 text-a-accent  w-full border border-b-2 font-semibold brightness-90"
+            >Logout</Button
+          >
 
 			<div class="menu fixed grid w-[calc(100dvw-1.5rem)] grid-cols-2 gap-2 lg:relative lg:w-full">
 				{#each tabs as { label, icon, link, props: { classes } }, i}
