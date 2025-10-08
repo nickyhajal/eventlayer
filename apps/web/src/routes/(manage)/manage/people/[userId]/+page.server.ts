@@ -5,7 +5,7 @@ import { message, setError, superValidate } from 'sveltekit-superforms/server'
 import { z } from 'zod'
 
 import { EventFns, VenueFns } from '@matterloop/api'
-import { and, db, desc, eq, eventTicketTable, loginLinkTable, loginLinkTable } from '@matterloop/db'
+import { and, db, desc, eq, eventTicketTable, loginLinkTable } from '@matterloop/db'
 import { ActiveLoginLink } from '@matterloop/api/src/models/ActiveLoginLink'
 
 const schema = z.object({
