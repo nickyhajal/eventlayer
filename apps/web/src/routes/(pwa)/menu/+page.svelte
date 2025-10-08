@@ -79,7 +79,7 @@
           <Button
             href="/logout"
             variant="ghost"
-            class="login border-a-accent/30 bg-a-accent/5 text-a-accent  w-full border border-b-2 font-semibold brightness-90"
+            class="login bg-a-accent/5  text-a-accent w-full font-semibold brightness-90"
             >Logout</Button
           >
         {/if}
