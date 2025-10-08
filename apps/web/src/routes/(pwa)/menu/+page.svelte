@@ -61,7 +61,7 @@
 <Screen title="Menu">
   <div class="mx-auto min-h-[calc(100vh-5rem)] max-w-7xl">
     <div class="flex flex-col justify-end gap-2 pt-2">
-      <div class="login">
+      <div class="login flex gap-2">
         {#if !$me?.id}
           <Button
             href="/login"
