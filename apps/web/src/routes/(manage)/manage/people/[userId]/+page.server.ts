@@ -5,7 +5,8 @@ import { message, setError, superValidate } from 'sveltekit-superforms/server'
 import { z } from 'zod'
 
 import { EventFns, VenueFns } from '@matterloop/api'
-import { and, db, eq, eventTicketTable } from '@matterloop/db'
+import { and, db, desc, eq, eventTicketTable, loginLinkTable, loginLinkTable } from '@matterloop/db'
+import { ActiveLoginLink } from '@matterloop/api/src/models/ActiveLoginLink'
 
 const schema = z.object({
   email: z.string().email(),
@@ -31,10 +32,18 @@ export const load = async ({ locals, params, url }) => {
       user: true,
     },
   })
-  console.log('ticket', ticket)
+
+  let login_link = null
+  const login_links = await db.query.loginLinkTable.findMany({
+    where: eq(loginLinkTable.userId, user.userId),
+    orderBy: desc(loginLinkTable.createdAt),
+  })
+  if (login_links.length) {
+    login_link = ActiveLoginLink.getUrl({ loginLink: login_links[0], event: locals.event })
+  }
 
   const qrcode = await QRCode.toDataURL(`${url.protocol}://${url.host}/user/${user.id}`, {
     width: 320,
   })
-  return { user, qrcode, ticket }
+  return { user, qrcode, ticket, login_link: login_link.url }
 }

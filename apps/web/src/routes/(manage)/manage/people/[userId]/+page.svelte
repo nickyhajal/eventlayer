@@ -2,6 +2,7 @@
   import { invalidateAll } from "$app/navigation";
   import ChicletButton from "$lib/components/ui/ChicletButton.svelte";
   import { trpc } from "$lib/trpc/client";
+  import { onMount } from "svelte";
 
   import AdminScreen from "../../AdminScreen.svelte";
   import UserForm from "../UserForm.svelte";
@@ -9,8 +10,17 @@
   export let data;
   const fullName = `${data.user.firstName} ${data.user.lastName}`;
   let confirmingSend = false;
+  let loginLinkInput: HTMLInputElement;
   $: onboardStatus = data.user.onboardStatus;
 
+  onMount(() => {
+    loginLinkInput.addEventListener("mouseover", () => {
+      loginLinkInput.select();
+    });
+    loginLinkInput.addEventListener("mouseout", () => {
+      window.getSelection()?.removeAllRanges();
+    });
+  });
   async function sendWelcomeEmail() {
     if (!confirmingSend) {
       confirmingSend = true;
@@ -76,11 +86,23 @@
         <label class="block pb-2.5 pt-3.5 text-sm font-semibold"
           >Profile QR Code</label
         >
-        <div
-          class="h-[10rem] w-[10.1rem] overflow-hidden rounded-md border border-slate-300 p-0"
-        >
+        <div class="">
           <img src={data.qrcode} class="w-[10rem]" />
         </div>
+        {#if data?.login_link}
+          <label class="block pb-2.5 pt-3.5 text-sm font-semibold"
+            >Login Link</label
+          >
+          <div class="">
+            <input
+              type="text"
+              bind:this={loginLinkInput}
+              value={data?.login_link}
+              readonly
+              class="border border-slate-300 rounded-md p-1.5 text-sm w-64"
+            />
+          </div>
+        {/if}
       </div>
     </div>
   </div></AdminScreen

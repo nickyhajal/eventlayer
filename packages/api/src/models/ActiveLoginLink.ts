@@ -19,6 +19,17 @@ export class ActiveLoginLink extends BaseModel<LoginLink> {
     super(data)
   }
 
+  static getUrl({ loginLink, event, to }: { loginLink: LoginLink; event: Event; to?: string }) {
+    let domain = 'eventlayer.co'
+    if (event?.domainId) {
+      domain = event?.domainId.includes('.') ? event?.domainId : `${event?.domainId}.eventlayer.co`
+    }
+    return {
+      url: `https://${domain}/login/${loginLink.publicId}${to ? `?to=${to}` : ''}`,
+      code: loginLink.publicId,
+    }
+  }
+
   static async generate({ userId, event, to, codeLength }: GenerateArgs) {
     try {
       await db
