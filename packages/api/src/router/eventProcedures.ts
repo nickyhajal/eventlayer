@@ -17,6 +17,8 @@ import {
   eventUserInfoTable,
   eventMetaTable,
   eventMetaSchema,
+  eventApiKeyTable,
+  eventApiKeySchema,
   eventUserTable,
   formResponseTable,
   formSessionTable,
@@ -492,6 +494,69 @@ export const eventProcedures = t.router({
         throw new Error('Event meta not found')
       }
       await db.delete(eventMetaTable).where(eq(eventMetaTable.id, input.id))
+      redis.del(`event_heavy:${existing.eventId}`)
+      return true
+    }),
+  listApiKeys: procedureWithContext
+    .use(verifyEvent())
+    .input(z.object({ eventId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const event = await db.query.eventTable.findFirst({
+        where: and(eq(eventTable.id, input.eventId), eq(eventTable.eventId, ctx.event?.id)),
+      })
+      if (!event) return []
+
+      const apiKeys = await db.query.eventApiKeyTable.findMany({
+        where: eq(eventApiKeyTable.eventId, input.eventId),
+      })
+      return apiKeys
+    }),
+  createApiKey: procedureWithContext
+    .use(verifyEvent())
+    .input(z.object({ eventId: z.string(), name: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const event = await db.query.eventTable.findFirst({
+        where: and(eq(eventTable.id, input.eventId), eq(eventTable.eventId, ctx.event?.id)),
+      })
+      if (!event) {
+        throw new Error('Event not found')
+      }
+
+      // Generate a secure random API key
+      const apiKey = `el_${crypto.randomBytes(32).toString('hex')}`
+
+      const newKey = await db
+        .insert(eventApiKeyTable)
+        .values({
+          eventId: input.eventId,
+          name: input.name,
+          key: apiKey,
+        })
+        .returning()
+
+      redis.del(`event_heavy:${input.eventId}`)
+      return newKey[0]
+    }),
+  deleteApiKey: procedureWithContext
+    .use(verifyEvent())
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const existing = await db.query.eventApiKeyTable.findFirst({
+        where: eq(eventApiKeyTable.id, input.id),
+      })
+      if (!existing) {
+        throw new Error('API key not found')
+      }
+
+      // Verify the API key belongs to an event the user has access to
+      const event = await db.query.eventTable.findFirst({
+        where: and(eq(eventTable.id, existing.eventId), eq(eventTable.eventId, ctx.event?.id)),
+      })
+      if (!event) {
+        throw new Error('Access denied')
+      }
+
+      await db.delete(eventApiKeyTable).where(eq(eventApiKeyTable.id, input.id))
       redis.del(`event_heavy:${existing.eventId}`)
       return true
     }),

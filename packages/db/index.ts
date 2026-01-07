@@ -5,6 +5,7 @@ import postgres from 'pg'
 import * as contentSchema from './schema/content'
 import * as eventSchema from './schema/event'
 import * as organizationSchema from './schema/event'
+import * as eventApiKeySchema from './schema/event_api_key'
 import * as eventTicketSchema from './schema/event_ticket'
 import * as eventUserSchema from './schema/event_user'
 import * as eventUserCheckinSchema from './schema/event_user_checkin'
@@ -28,6 +29,7 @@ export * from './schema/menu'
 export * from './schema/event_user'
 export * from './schema/event_user_info'
 export * from './schema/event_meta'
+export * from './schema/event_api_key'
 export * from './schema/user'
 export * from './schema/venue'
 export * from './schema/media'
@@ -49,6 +51,7 @@ export const db = drizzle(connection, {
     ...eventSchema,
     ...eventUserInfoSchema,
     ...eventMetaSchema,
+    ...eventApiKeySchema,
     ...eventUserCheckinSchema,
     ...eventUserConnectionSchema,
     ...organizationSchema,

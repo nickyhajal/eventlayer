@@ -10,6 +10,6 @@
 
 {#if $event?.id}
 	<AdminScreen title={$event.name}>
-		<EventForm event={$event} showTitle={false} />
+		<EventForm event={$event} apiKeys={data.apiKeys} showTitle={false} />
 	</AdminScreen>
 {/if}
