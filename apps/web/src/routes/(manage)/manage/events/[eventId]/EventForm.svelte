@@ -15,7 +15,7 @@
 	import X from 'lucide-svelte/icons/x'
 	import { toast } from 'svelte-sonner'
 
-	import type { Event, FullEventUser } from '@matterloop/db'
+	import type { Event, FullEventUser, EventMeta } from '@matterloop/db'
 	import { tw } from '@matterloop/ui'
 	import { capitalize, debounce, getMediaUrl } from '@matterloop/util'
 
@@ -23,6 +23,7 @@
 	export let inDialog = false
 	export let titleClass = ''
 	export let users: FullEventUser[] = []
+	export let eventMeta: EventMeta[] = []
 	export let event: Partial<Event> = {
 		name: '',
 		subtitle: '',
@@ -87,6 +88,64 @@
 				userId: user.userId,
 			})
 			invalidateAll()
+		}
+	}
+
+	// Event Meta management
+	let newMetaKey = ''
+	let newMetaValue = ''
+	let newMetaType = ''
+	let newMetaPublic = false
+	let editingMetaId: string | null = null
+
+	async function addOrUpdateMeta() {
+		if (!newMetaKey || !event.id) return
+
+		try {
+			await trpc().event.upsertEventMeta.mutate({
+				id: editingMetaId || undefined,
+				eventId: event.id,
+				key: newMetaKey,
+				value: newMetaValue,
+				type: newMetaType || null,
+				public: newMetaPublic,
+			})
+			// Reset form
+			newMetaKey = ''
+			newMetaValue = ''
+			newMetaType = ''
+			newMetaPublic = false
+			editingMetaId = null
+			invalidateAll()
+			toast.success(editingMetaId ? 'Metadata updated' : 'Metadata added')
+		} catch (error) {
+			toast.error('Failed to save metadata')
+		}
+	}
+
+	function editMeta(meta: EventMeta) {
+		editingMetaId = meta.id
+		newMetaKey = meta.key || ''
+		newMetaValue = meta.value || ''
+		newMetaType = meta.type || ''
+		newMetaPublic = meta.public || false
+	}
+
+	function cancelEdit() {
+		editingMetaId = null
+		newMetaKey = ''
+		newMetaValue = ''
+		newMetaType = ''
+		newMetaPublic = false
+	}
+
+	async function removeMeta(id: string) {
+		try {
+			await trpc().event.removeEventMeta.mutate({ id })
+			invalidateAll()
+			toast.success('Metadata removed')
+		} catch (error) {
+			toast.error('Failed to remove metadata')
 		}
 	}
 </script>
@@ -262,6 +321,109 @@
 						rows="4"
 						placeholder="Add internal notes about this event..."
 					/>
+				</div>
+				<div class="mt-6">
+					<div class="text-lg font-semibold mb-2">Event Metadata</div>
+					<div
+						class="mb-2 flex flex-col divide-y divide-stone-100 rounded-lg border border-stone-200"
+					>
+						{#each eventMeta || [] as meta}
+							{@const { key, value, type, public: isPublic, id } = meta}
+							<div class="group relative flex items-start justify-between gap-2 px-2.5 py-2">
+								<div class="flex w-full flex-col gap-1">
+									<div class="flex items-center justify-between">
+										<div class="text-sm font-medium text-stone-700">{key}</div>
+										<div class="flex items-center gap-1">
+											{#if type}
+												<div class="text-xs text-stone-400 mr-2">{type}</div>
+											{/if}
+											{#if isPublic}
+												<div
+													class="rounded bg-green-100 px-1.5 py-0.5 text-xs text-green-700 mr-2"
+												>
+													Public
+												</div>
+											{/if}
+											<Button
+												variant="ghost"
+												class="h-6 px-2 py-2 text-xs opacity-0 transition-all group-hover:opacity-100"
+												on:click={() => editMeta(meta)}
+											>
+												Edit
+											</Button>
+											<Button
+												variant="ghost"
+												class="my-0 h-6 px-1 py-2 opacity-0 transition-all group-hover:opacity-100"
+												on:click={() => removeMeta(id)}
+											>
+												<X class="h-4 w-4 text-stone-500"></X>
+											</Button>
+										</div>
+									</div>
+									<div class="text-sm text-stone-600">{value || '(empty)'}</div>
+								</div>
+							</div>
+						{:else}
+							<div class="text-sm text-center text-gray-500 py-6">No metadata yet.</div>
+						{/each}
+					</div>
+					<div class="rounded-lg bg-stone-100 p-3">
+						<div class="mb-2 pl-0.5 text-sm font-medium text-gray-700">
+							{editingMetaId ? 'Edit Metadata' : 'Add Metadata'}
+						</div>
+						<div class="flex flex-col gap-2">
+							<div class="grid grid-cols-2 gap-2">
+								<div>
+									<Label for="meta_key" class="text-xs text-gray-600">Key</Label>
+									<Input
+										id="meta_key"
+										bind:value={newMetaKey}
+										class="bg-white"
+										placeholder="e.g., registration_url"
+									/>
+								</div>
+								<div>
+									<Label for="meta_type" class="text-xs text-gray-600">Type (optional)</Label>
+									<Input
+										id="meta_type"
+										bind:value={newMetaType}
+										class="bg-white"
+										placeholder="e.g., url, text"
+									/>
+								</div>
+							</div>
+							<div>
+								<Label for="meta_value" class="text-xs text-gray-600">Value</Label>
+								<Textarea
+									id="meta_value"
+									bind:value={newMetaValue}
+									class="bg-white"
+									rows="2"
+									placeholder="Enter value..."
+								/>
+							</div>
+							<div class="flex items-center justify-between rounded-md border bg-white p-2">
+								<label for="meta_public" class="text-sm text-stone-700">Public</label>
+								<Switch name="meta_public" bind:checked={newMetaPublic} class="" />
+							</div>
+							<div class="flex gap-2">
+								<Button
+									type="button"
+									variant="default"
+									size="sm"
+									on:click={addOrUpdateMeta}
+									disabled={!newMetaKey}
+								>
+									{editingMetaId ? 'Update' : 'Add'}
+								</Button>
+								{#if editingMetaId}
+									<Button type="button" variant="outline" size="sm" on:click={cancelEdit}>
+										Cancel
+									</Button>
+								{/if}
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		{/if}

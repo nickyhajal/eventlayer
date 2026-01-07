@@ -15,6 +15,8 @@ import {
   eventTable,
   eventTicketTable,
   eventUserInfoTable,
+  eventMetaTable,
+  eventMetaSchema,
   eventUserTable,
   formResponseTable,
   formSessionTable,
@@ -425,6 +427,73 @@ export const eventProcedures = t.router({
         redis.del(`event_usersWithInfo:${eventId}`)
         return { ticket: updatedTicket[0], eventUser: eventUser[0] }
       }
+    }),
+  listEventMeta: procedureWithContext
+    .input(z.object({ eventId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const event = await db.query.eventTable.findFirst({
+        where: and(eq(eventTable.id, input.eventId), eq(eventTable.eventId, ctx.event?.id)),
+      })
+      if (!event) return []
+
+      const meta = await db.query.eventMetaTable.findMany({
+        where: eq(eventMetaTable.eventId, input.eventId),
+      })
+      return meta
+    }),
+  upsertEventMeta: procedureWithContext
+    .use(verifyEvent())
+    .input(eventMetaSchema.partial().extend({ id: z.string().optional() }))
+    .mutation(async ({ ctx, input }) => {
+      if (input.id) {
+        // Update existing
+        const existing = await db.query.eventMetaTable.findFirst({
+          where: eq(eventMetaTable.id, input.id),
+        })
+        if (!existing) {
+          throw new Error('Event meta not found')
+        }
+        await db
+          .update(eventMetaTable)
+          .set({
+            type: input.type,
+            key: input.key,
+            value: input.value,
+            public: input.public,
+            updatedAt: dayjs().toISOString(),
+          })
+          .where(eq(eventMetaTable.id, input.id))
+        redis.del(`event_heavy:${existing.eventId}`)
+        return true
+      } else {
+        // Create new
+        if (!input.eventId) {
+          throw new Error('Event ID is required')
+        }
+        await db.insert(eventMetaTable).values({
+          eventId: input.eventId,
+          type: input.type,
+          key: input.key,
+          value: input.value,
+          public: input.public,
+        })
+        redis.del(`event_heavy:${input.eventId}`)
+        return true
+      }
+    }),
+  removeEventMeta: procedureWithContext
+    .use(verifyEvent())
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const existing = await db.query.eventMetaTable.findFirst({
+        where: eq(eventMetaTable.id, input.id),
+      })
+      if (!existing) {
+        throw new Error('Event meta not found')
+      }
+      await db.delete(eventMetaTable).where(eq(eventMetaTable.id, input.id))
+      redis.del(`event_heavy:${existing.eventId}`)
+      return true
     }),
 })
 

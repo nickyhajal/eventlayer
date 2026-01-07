@@ -3,7 +3,8 @@ import { error, fail, redirect } from '@sveltejs/kit'
 import { message, setError, superValidate } from 'sveltekit-superforms/server'
 import { z } from 'zod'
 
-import { EventFns } from '@matterloop/api'
+import { createContext, EventFns } from '@matterloop/api'
+import { eventProcedures } from '@matterloop/api/src/router/eventProcedures'
 
 const schema = z.object({
   email: z.string().email(),
@@ -19,5 +20,12 @@ export const load = async ({ locals, params }) => {
   if (!event) {
     return error(404, 'Event not found')
   }
-  return { event, users: await eventFns.getUsers() }
+
+  // Load event_meta
+  const ctx = await createContext({ event: locals.event, me: locals.me })
+  const eventMeta = await eventProcedures
+    .createCaller(ctx)
+    .listEventMeta({ eventId: params.eventId })
+
+  return { event, users: await eventFns.getUsers(), eventMeta }
 }

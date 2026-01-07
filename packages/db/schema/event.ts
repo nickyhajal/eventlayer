@@ -3,6 +3,7 @@ import { boolean, integer, jsonb, pgTable, text, timestamp, uuid } from 'drizzle
 import { createInsertSchema } from 'drizzle-zod'
 
 import { contentTable } from './content'
+import { eventMetaTable } from './event_meta'
 import { eventUserTable } from './event_user'
 import { mediaTable } from './media'
 import { menuTable } from './menu'
@@ -62,6 +63,7 @@ export const eventRelations = relations(eventTable, ({ many, one }) => ({
   }),
   menus: many(menuTable),
   content: many(contentTable),
+  eventMeta: many(eventMetaTable),
 }))
 
 export const eventSchema = createInsertSchema(eventTable, {

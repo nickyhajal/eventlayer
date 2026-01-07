@@ -8,7 +8,12 @@
 <AdminScreen>
 	<div class="grid grid-cols-[50rem_1fr] px-4">
 		<div>
-			<EventForm users={data.users} event={data.event} titleClass="text-2xl font-semibold" />
+			<EventForm
+				users={data.users}
+				event={data.event}
+				eventMeta={data.eventMeta}
+				titleClass="text-2xl font-semibold"
+			/>
 		</div>
 	</div>
 </AdminScreen>
