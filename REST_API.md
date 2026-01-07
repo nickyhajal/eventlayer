@@ -37,9 +37,9 @@ Lists all events (main event and sub-events) associated with your API key.
 - `sortOrder` (string) - Sort direction: `asc` or `desc` (default: `asc`)
 
 **Filtering:**
-- `filter[type]` (string) - Filter by event type (e.g., `program`, `panel`, `meal`)
-- `filter[eventFor]` (string) - Filter by eventFor field (e.g., `all`, `full`, `rsvp`)
-- `meta[key]` (string) - Filter by event_meta key/value pairs
+- `filter.type` (string) - Filter by event type (e.g., `program`, `panel`, `meal`)
+- `filter.eventFor` (string) - Filter by eventFor field (e.g., `all`, `full`, `rsvp`)
+- `filter.meta.key` (string) - Filter by event_meta key/value pairs
 
 #### Example Requests
 
@@ -58,15 +58,15 @@ curl -H "Authorization: Bearer el_..." \
 
 # Filter by event type
 curl -H "Authorization: Bearer el_..." \
-  "https://yourevent.eventlayer.io/rest/event?filter[type]=panel"
+  "https://yourevent.eventlayer.io/rest/event?filter.type=panel"
 
 # Filter events with visible_on_site=1 metadata
 curl -H "Authorization: Bearer el_..." \
-  "https://yourevent.eventlayer.io/rest/event?meta[visible_on_site]=1"
+  "https://yourevent.eventlayer.io/rest/event?filter.meta.visible_on_site=1"
 
 # Combine multiple filters
 curl -H "Authorization: Bearer el_..." \
-  "https://yourevent.eventlayer.io/rest/event?filter[type]=program&meta[featured]=1&limit=5"
+  "https://yourevent.eventlayer.io/rest/event?filter.type=program&filter.meta.featured=1&limit=5"
 ```
 
 #### Response Format
@@ -129,9 +129,9 @@ Lists all users associated with the event.
 - `sortOrder` (string) - Sort direction: `asc` or `desc` (default: `asc`)
 
 **Filtering:**
-- `filter[type]` (string) - Filter by user type (e.g., `attendee`, `speaker`, `host`)
-- `filter[status]` (string) - Filter by user status (e.g., `active`, `inactive`)
-- `meta[key]` (string) - Filter by event_user_info key/value pairs
+- `filter.type` (string) - Filter by user type (e.g., `attendee`, `speaker`, `host`)
+- `filter.status` (string) - Filter by user status (e.g., `active`, `inactive`)
+- `filter.meta.key` (string) - Filter by event_user_info key/value pairs
 
 #### Example Requests
 
@@ -142,7 +142,7 @@ curl -H "Authorization: Bearer el_..." \
 
 # Get speakers only
 curl -H "Authorization: Bearer el_..." \
-  "https://yourevent.eventlayer.io/rest/users?filter[type]=speaker"
+  "https://yourevent.eventlayer.io/rest/users?filter.type=speaker"
 
 # Sort by last name
 curl -H "Authorization: Bearer el_..." \
@@ -150,11 +150,11 @@ curl -H "Authorization: Bearer el_..." \
 
 # Filter users with specific metadata
 curl -H "Authorization: Bearer el_..." \
-  "https://yourevent.eventlayer.io/rest/users?meta[vip]=1"
+  "https://yourevent.eventlayer.io/rest/users?filter.meta.vip=1"
 
 # Get active attendees, sorted by company
 curl -H "Authorization: Bearer el_..." \
-  "https://yourevent.eventlayer.io/rest/users?filter[type]=attendee&filter[status]=active&sortBy=company"
+  "https://yourevent.eventlayer.io/rest/users?filter.type=attendee&filter.status=active&sortBy=company"
 
 # Pagination example
 curl -H "Authorization: Bearer el_..." \
@@ -202,7 +202,7 @@ curl -H "Authorization: Bearer el_..." \
 
 ## Filtering by Metadata
 
-Both endpoints support filtering by metadata fields using the `meta[key]=value` syntax.
+Both endpoints support filtering by metadata fields using the `filter.meta.key=value` syntax.
 
 ### Event Metadata Filtering
 
@@ -211,11 +211,11 @@ Event metadata is stored in the `event_meta` table. Only events that have a meta
 ```bash
 # Find events marked as visible
 curl -H "Authorization: Bearer el_..." \
-  "https://yourevent.eventlayer.io/rest/event?meta[visible_on_site]=1"
+  "https://yourevent.eventlayer.io/rest/event?filter.meta.visible_on_site=1"
 
 # Find featured events
 curl -H "Authorization: Bearer el_..." \
-  "https://yourevent.eventlayer.io/rest/event?meta[featured]=true"
+  "https://yourevent.eventlayer.io/rest/event?filter.meta.featured=true"
 ```
 
 ### User Metadata Filtering
@@ -225,11 +225,11 @@ User metadata is stored in the `event_user_info` table. Only users with **public
 ```bash
 # Find VIP attendees
 curl -H "Authorization: Bearer el_..." \
-  "https://yourevent.eventlayer.io/rest/users?meta[vip]=1"
+  "https://yourevent.eventlayer.io/rest/users?filter.meta.vip=1"
 
 # Find users with specific dietary restrictions
 curl -H "Authorization: Bearer el_..." \
-  "https://yourevent.eventlayer.io/rest/users?meta[dietary_restrictions]=vegetarian"
+  "https://yourevent.eventlayer.io/rest/users?filter.meta.dietary_restrictions=vegetarian"
 ```
 
 ## Rate Limiting
@@ -286,14 +286,14 @@ async function getEvents(filters = {}) {
 
 // Get featured events
 const featuredEvents = await getEvents({
-  'meta[featured]': '1',
+  'filter.meta.featured': '1',
   'sortBy': 'startsAt',
   'limit': 10
 })
 
 // Get speakers
 async function getSpeakers() {
-  const response = await fetch(`${BASE_URL}/rest/users?filter[type]=speaker`, {
+  const response = await fetch(`${BASE_URL}/rest/users?filter.type=speaker`, {
     headers: {
       'Authorization': `Bearer ${API_KEY}`
     }

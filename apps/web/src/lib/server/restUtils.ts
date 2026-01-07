@@ -38,8 +38,8 @@ export function parseRestQuery(url: URL): RestQueryParams {
 
 /**
  * Parse filter parameters from URL
- * Supports: ?filter[field]=value for direct field filtering
- * Supports: ?meta[key]=value for event_meta filtering
+ * Supports: ?filter.field=value for direct field filtering
+ * Supports: ?filter.meta.key=value for metadata filtering
  */
 export function parseFilters(url: URL): {
 	fields: Record<string, string>
@@ -49,16 +49,15 @@ export function parseFilters(url: URL): {
 	const meta: Record<string, string> = {}
 
 	url.searchParams.forEach((value, key) => {
-		// Parse filter[field]=value
-		const filterMatch = key.match(/^filter\[(.+)\]$/)
-		if (filterMatch) {
-			fields[filterMatch[1]] = value
+		// Parse filter.meta.key=value for metadata filters
+		if (key.startsWith('filter.meta.')) {
+			const metaKey = key.substring('filter.meta.'.length)
+			meta[metaKey] = value
 		}
-
-		// Parse meta[key]=value
-		const metaMatch = key.match(/^meta\[(.+)\]$/)
-		if (metaMatch) {
-			meta[metaMatch[1]] = value
+		// Parse filter.field=value for direct field filters
+		else if (key.startsWith('filter.')) {
+			const fieldKey = key.substring('filter.'.length)
+			fields[fieldKey] = value
 		}
 	})
 
