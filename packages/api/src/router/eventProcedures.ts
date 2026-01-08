@@ -185,6 +185,7 @@ export const eventProcedures = t.router({
       redis.del(`event_heavy:${input.eventId}`)
       redis.del(`event_users:${input.eventId}`)
       redis.del(`event_usersWithInfo:${input.eventId}`)
+      redis.del(`event_meals:${input.eventId}`)
       return true
     }),
   removeUser: procedureWithContext
@@ -206,6 +207,25 @@ export const eventProcedures = t.router({
       redis.del(`event_heavy:${input.eventId}`)
       redis.del(`event_users:${input.eventId}`)
       redis.del(`event_usersWithInfo:${input.eventId}`)
+      redis.del(`event_meals:${input.eventId}`)
+      return true
+    }),
+  delete: procedureWithContext
+    .use(verifyEvent())
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const event = await db.query.eventTable.findFirst({
+        where: and(eq(eventTable.id, input.id), eq(eventTable.eventId, ctx.event?.id)),
+      })
+      if (!event) return error(404, 'Event not found')
+      // Delete associated event users first
+      await db.delete(eventUserTable).where(eq(eventUserTable.eventId, input.id))
+      // Delete the event
+      await db.delete(eventTable).where(eq(eventTable.id, input.id))
+      redis.del(`event_heavy:${input.id}`)
+      redis.del(`event_heavy:${ctx.event.id}`)
+      redis.del(`event_users:${input.id}`)
+      redis.del(`event_usersWithInfo:${input.id}`)
       return true
     }),
   upsert: procedureWithContext
@@ -242,7 +262,6 @@ export const eventProcedures = t.router({
           .where(eq(eventTable.id, input.id))
           .returning()
         const updated = await db.select().from(eventTable).where(eq(eventTable.id, input.id))
-        console.log(`update event_heavy:${input.id}`)
         if (input.type === 'meal' && input.eventId) {
           redis.del(`event_meals:${input.eventId}`)
         }
