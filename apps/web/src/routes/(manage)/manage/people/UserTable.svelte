@@ -14,11 +14,10 @@
 	export let setGlobalFilter
 
 	const globalFilterFn: FilterFn<any> = (row, columnId, value, addMeta) => {
-		if (value.length) {
-			const colVal = row.getValue(columnId)
-			// if (value.length === 0) return true
-			return colVal.includes(value)
-		}
+		if (!value || value.length === 0) return true
+		const colVal = row.getValue(columnId)
+		if (!colVal) return false
+		return colVal.toString().toLowerCase().includes(value.toLowerCase())
 	}
 	const onRowClick = (row: Row<Event>) => {
 		goto(`/manage/people/${row.original.id}`)
