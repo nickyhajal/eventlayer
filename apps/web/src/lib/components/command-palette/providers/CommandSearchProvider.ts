@@ -3,6 +3,7 @@ import ExternalLink from 'lucide-svelte/icons/external-link'
 import LayoutDashboard from 'lucide-svelte/icons/layout-dashboard'
 import Terminal from 'lucide-svelte/icons/terminal'
 
+import { fuzzyScoreMulti } from '../fuzzyMatch'
 import type { SearchProvider, SearchResult } from '../types'
 
 export class CommandSearchProvider implements SearchProvider {
@@ -19,7 +20,7 @@ export class CommandSearchProvider implements SearchProvider {
 				groupOrder: this.groupOrder,
 				icon: ArrowLeft,
 				action: () => history.back(),
-				keywords: ['back', 'previous', 'return'],
+				keywords: ['back', 'previous', 'return', 'navigate'],
 			},
 			{
 				id: 'cmd-dashboard',
@@ -28,7 +29,7 @@ export class CommandSearchProvider implements SearchProvider {
 				groupOrder: this.groupOrder,
 				icon: LayoutDashboard,
 				href: '/manage/',
-				keywords: ['home', 'dashboard', 'main'],
+				keywords: ['home', 'dashboard', 'main', 'overview'],
 			},
 			{
 				id: 'cmd-open-site',
@@ -37,19 +38,22 @@ export class CommandSearchProvider implements SearchProvider {
 				groupOrder: this.groupOrder,
 				icon: ExternalLink,
 				action: () => window.open('/', '_blank'),
-				keywords: ['open', 'site', 'preview', 'view', 'external'],
+				keywords: ['open', 'site', 'preview', 'view', 'external', 'public'],
 			},
 		]
 
-		const q = query.toLowerCase().trim()
+		const q = query.trim()
 		if (!q) {
 			return commands
 		}
 
-		return commands.filter((cmd) => {
-			const label = cmd.label.toLowerCase()
-			const keywords = (cmd.keywords || []).join(' ').toLowerCase()
-			return label.includes(q) || keywords.includes(q)
-		})
+		return commands
+			.map((cmd) => ({
+				cmd,
+				score: fuzzyScoreMulti(q, cmd.label, ...(cmd.keywords || [])),
+			}))
+			.filter(({ score }) => score > 0)
+			.sort((a, b) => b.score - a.score)
+			.map(({ cmd }) => cmd)
 	}
 }

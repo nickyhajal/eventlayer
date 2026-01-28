@@ -1,5 +1,6 @@
 import LayoutDashboard from 'lucide-svelte/icons/layout-dashboard'
 
+import { fuzzyScoreMulti } from '../fuzzyMatch'
 import { sidebarLinks } from '../sidebarLinks'
 import type { SearchProvider, SearchResult } from '../types'
 
@@ -10,7 +11,7 @@ export class SidebarSearchProvider implements SearchProvider {
 
 	search(query: string): SearchResult[] {
 		const navigableLinks = sidebarLinks.filter((link) => !link.section && link.path)
-		const q = query.toLowerCase().trim()
+		const q = query.trim()
 
 		const toResult = (link: (typeof navigableLinks)[0]): SearchResult => ({
 			id: `sidebar-${link.label.toLowerCase().replace(/\s+/g, '-')}`,
@@ -26,11 +27,12 @@ export class SidebarSearchProvider implements SearchProvider {
 		}
 
 		return navigableLinks
-			.filter((link) => {
-				const label = link.label.toLowerCase()
-				const path = (link.path || '').toLowerCase()
-				return label.includes(q) || path.includes(q)
-			})
-			.map(toResult)
+			.map((link) => ({
+				link,
+				score: fuzzyScoreMulti(q, link.label, link.path),
+			}))
+			.filter(({ score }) => score > 0)
+			.sort((a, b) => b.score - a.score)
+			.map(({ link }) => toResult(link))
 	}
 }
