@@ -31,6 +31,7 @@ export const eventUserTable = pgTable('event_user', {
 
   // Tracking a mainEventId when a user RSVPs to a sub-event
   mainId: uuid('main_id').references(() => eventTable.id, { onDelete: 'cascade' }),
+  internalNotes: text('internal_notes'),
   createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
 })

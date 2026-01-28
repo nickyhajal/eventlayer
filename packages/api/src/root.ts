@@ -1,4 +1,5 @@
 import { trpcApp } from './procedureWithContext'
+import { apiKeyProcedures } from './router/apiKeyProcedures'
 import { checkinProcedures } from './router/checkinProcedures'
 import { contentProcedures } from './router/contentProcedures'
 import { eventProcedures } from './router/eventProcedures'
@@ -15,6 +16,7 @@ import { venueProcedures } from './router/venueProcedures'
 
 export const router = trpcApp.router({
   me: meRouter,
+  apiKey: apiKeyProcedures,
   event: eventProcedures,
   venue: venueProcedures,
   form: formProcedures,

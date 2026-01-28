@@ -1,0 +1,369 @@
+# EventLayer REST API Documentation
+
+> This file documents the public REST API for EventLayer. It is designed to be read by LLMs and developers integrating with the platform.
+
+## Overview
+
+EventLayer provides a REST API that allows external applications to access event data. This is useful for:
+- Displaying event content on marketing websites
+- Building custom integrations
+- Syncing attendee data with other systems
+
+## Authentication
+
+All REST API endpoints require authentication via API key.
+
+### Obtaining an API Key
+
+1. Log into your event's admin dashboard
+2. Navigate to **Settings > Advanced**
+3. Click **Create API Key**
+4. Give it a descriptive name (e.g., "Marketing Website")
+5. **Copy the key immediately** - it will only be shown once
+
+### Using the API Key
+
+Include the API key in the `Authorization` header as a Bearer token:
+
+```
+Authorization: Bearer el_your_api_key_here
+```
+
+### Example Request
+
+```bash
+curl -H "Authorization: Bearer el_abc123..." \
+  https://yourevent.eventlayer.io/rest/pages
+```
+
+## Base URL
+
+The API is accessed via your event's domain:
+- Subdomain: `https://{event-subdomain}.eventlayer.io/rest/`
+- Custom domain: `https://{your-custom-domain}/rest/`
+
+## API Documentation
+
+This documentation is also available at `/llms.txt` on any event domain:
+```
+https://yourevent.eventlayer.io/llms.txt
+```
+
+## CORS
+
+The API supports CORS for browser-based requests. All endpoints return appropriate CORS headers.
+
+---
+
+## Common Query Parameters
+
+All list endpoints support filtering, ordering, and pagination through query parameters.
+
+### Pagination
+
+| Parameter | Description | Example |
+|-----------|-------------|---------|
+| `limit` | Maximum number of items to return | `?limit=20` |
+| `offset` | Number of items to skip (for pagination) | `?offset=40` |
+
+**Example: Get page 3 with 20 items per page:**
+```bash
+curl -H "Authorization: Bearer el_..." \
+  "https://event.eventlayer.io/rest/users?limit=20&offset=40"
+```
+
+### Ordering
+
+| Parameter | Description | Example |
+|-----------|-------------|---------|
+| `orderBy` | Field to sort by (endpoint-specific) | `?orderBy=lastName` |
+| `order` | Sort direction: `asc` or `desc` | `?order=asc` |
+
+**Example: Get users sorted by last name:**
+```bash
+curl -H "Authorization: Bearer el_..." \
+  "https://event.eventlayer.io/rest/users?orderBy=lastName&order=asc"
+```
+
+### Special Filters
+
+| Parameter | Description | Example |
+|-----------|-------------|---------|
+| `has` | Only include items where field is not null/empty | `?has=avatar` |
+| `null` | Only include items where field is null/empty | `?null=bio` |
+
+**Example: Get only users with avatars:**
+```bash
+curl -H "Authorization: Bearer el_..." \
+  "https://event.eventlayer.io/rest/users?has=avatar"
+```
+
+**Example: Get speakers with avatars, sorted by last name:**
+```bash
+curl -H "Authorization: Bearer el_..." \
+  "https://event.eventlayer.io/rest/users?type=speaker&has=avatar&orderBy=lastName&order=asc"
+```
+
+### Response Metadata
+
+All list endpoints return metadata about the query:
+
+```json
+{
+  "data": [...],
+  "meta": {
+    "count": 20,
+    "totalCount": 150,
+    "limit": 20,
+    "offset": 0,
+    "hasMore": true,
+    "eventId": "uuid",
+    "eventName": "My Conference 2025"
+  }
+}
+```
+
+| Field | Description |
+|-------|-------------|
+| `count` | Number of items in this response |
+| `totalCount` | Total items matching filters (before pagination) |
+| `limit` | Limit applied (null if no limit) |
+| `offset` | Offset applied |
+| `hasMore` | Whether there are more items after this page |
+
+---
+
+## Endpoints
+
+### Pages
+
+#### GET /rest/pages
+
+Returns all published pages for the event.
+
+**Query Parameters:**
+| Parameter | Values | Default |
+|-----------|--------|---------|
+| `type` | Filter by page type | - |
+| `orderBy` | `ord`, `title`, `createdAt`, `updatedAt` | `ord` |
+| `order` | `asc`, `desc` | `asc` |
+| `limit` | 1-100 | no limit |
+| `offset` | Number | 0 |
+
+**Response:**
+```json
+{
+  "data": [
+    {
+      "id": "uuid",
+      "path": "/about",
+      "title": "About the Event",
+      "subtitle": "Learn more about us",
+      "body": "<p>HTML content...</p>",
+      "type": "info",
+      "ord": 1,
+      "createdAt": "2025-01-15T10:00:00Z",
+      "updatedAt": "2025-01-20T14:30:00Z"
+    }
+  ],
+  "meta": {
+    "count": 5,
+    "totalCount": 5,
+    "limit": null,
+    "offset": 0,
+    "hasMore": false,
+    "eventId": "uuid",
+    "eventName": "My Conference 2025"
+  }
+}
+```
+
+#### GET /rest/pages/{pageId}
+
+Returns a single page by ID or path.
+
+**Parameters:**
+- `pageId` - The page UUID or path (e.g., "about" or "/about")
+
+**Response:**
+```json
+{
+  "data": {
+    "id": "uuid",
+    "path": "/about",
+    "title": "About the Event",
+    "subtitle": "Learn more about us",
+    "body": "<p>HTML content...</p>",
+    "ord": 1,
+    "createdAt": "2025-01-15T10:00:00Z",
+    "updatedAt": "2025-01-20T14:30:00Z"
+  }
+}
+```
+
+---
+
+### Users (Attendees)
+
+#### GET /rest/users
+
+Returns all active attendees/users for the event with their profile information and avatar.
+
+**Query Parameters:**
+| Parameter | Values | Default |
+|-----------|--------|---------|
+| `type` | `attendee`, `speaker`, `staff`, `volunteer`, `sponsor`, `host` | - |
+| `orderBy` | `firstName`, `lastName`, `createdAt`, `company`, `type` | `lastName` |
+| `order` | `asc`, `desc` | `asc` |
+| `limit` | 1-500 | no limit |
+| `offset` | Number | 0 |
+| `has` | Field name (e.g., `avatar`, `bio`, `company`) | - |
+| `null` | Field name | - |
+
+**Examples:**
+```bash
+# Get all users
+curl -H "Authorization: Bearer el_..." \
+  "https://event.eventlayer.io/rest/users"
+
+# Get only speakers
+curl -H "Authorization: Bearer el_..." \
+  "https://event.eventlayer.io/rest/users?type=speaker"
+
+# Get speakers with avatars, sorted by last name
+curl -H "Authorization: Bearer el_..." \
+  "https://event.eventlayer.io/rest/users?type=speaker&has=avatar&orderBy=lastName"
+
+# Paginate: get 20 users starting from offset 40
+curl -H "Authorization: Bearer el_..." \
+  "https://event.eventlayer.io/rest/users?limit=20&offset=40"
+```
+
+**Response:**
+```json
+{
+  "data": [
+    {
+      "id": "uuid",
+      "eventUserId": "uuid",
+      "firstName": "Jane",
+      "lastName": "Smith",
+      "email": "jane@example.com",
+      "type": "speaker",
+      "title": "CEO",
+      "company": "Acme Corp",
+      "bio": "Jane is a technology leader...",
+      "avatar": "https://media.eventlayer.io/tr:w-400/...",
+      "avatarLarge": "https://media.eventlayer.io/tr:w-800/...",
+      "linkedinUrl": "https://linkedin.com/in/janesmith",
+      "twitterUrl": "https://twitter.com/janesmith",
+      "websiteUrl": "https://janesmith.com",
+      "createdAt": "2025-01-10T09:00:00Z"
+    }
+  ],
+  "meta": {
+    "count": 20,
+    "totalCount": 150,
+    "limit": 20,
+    "offset": 0,
+    "hasMore": true,
+    "eventId": "uuid",
+    "eventName": "My Conference 2025"
+  }
+}
+```
+
+**User Types:**
+- `attendee` - Regular event attendee
+- `speaker` - Event speaker or presenter
+- `host` - Session host or moderator
+- `staff` - Event staff member
+- `volunteer` - Event volunteer
+- `sponsor` - Sponsor representative
+
+---
+
+## Error Responses
+
+### 401 Unauthorized
+
+```json
+{
+  "message": "Missing Authorization header. Use: Authorization: Bearer <api_key>"
+}
+```
+
+```json
+{
+  "message": "Invalid or revoked API key"
+}
+```
+
+### 404 Not Found
+
+```json
+{
+  "message": "Page not found"
+}
+```
+
+---
+
+## Rate Limiting
+
+Currently, there are no rate limits on the REST API. Please be respectful and cache responses where appropriate.
+
+---
+
+## Changelog
+
+### 2025-01-22
+- Added filtering, ordering, and pagination to all list endpoints
+- Added `has` and `null` special filters (e.g., `?has=avatar` for users with avatars)
+- Added response metadata: `totalCount`, `hasMore`, `limit`, `offset`
+- Added `/rest/users` endpoint for attendee data with avatar URLs
+- Added `/rest/pages` endpoint for page content
+- Added `/rest/pages/{pageId}` endpoint for single page retrieval
+- Initial API key authentication system
+
+---
+
+## For Developers
+
+### Source Code Location
+
+REST API endpoints are located in:
+- `apps/web/src/routes/(api)/rest/` - Route handlers
+- `apps/web/src/lib/server/rest/auth.ts` - Authentication utilities
+- `apps/web/src/lib/server/rest/query.ts` - Query utilities (filtering, ordering, pagination)
+
+API key management:
+- `packages/db/schema/api_key.ts` - Database schema
+- `packages/api/src/router/apiKeyProcedures.ts` - tRPC procedures for key management
+
+### Adding New Endpoints
+
+1. Create a new directory under `apps/web/src/routes/(api)/rest/`
+2. Add `+server.ts` with GET/POST handlers
+3. Use `validateApiKey(request)` for authentication
+4. Use `getCorsHeaders(origin)` for CORS support
+5. Use `parseQueryParams()` and `applyQueryToArray()` for filtering/ordering/pagination
+6. **Update this llms.txt file with the new endpoint documentation**
+
+### Using Query Utilities
+
+```typescript
+import { parseQueryParams, applyQueryToArray } from '$lib/server/rest/query'
+
+// Parse query parameters
+const query = parseQueryParams(url, {
+  allowedFilters: ['type', 'status'],
+  allowedOrderBy: ['createdAt', 'name'],
+  defaultOrderBy: 'createdAt',
+  defaultOrder: 'desc',
+  maxLimit: 100,
+})
+
+// Apply to data array
+const { data, meta } = applyQueryToArray(formattedData, query)
+```
