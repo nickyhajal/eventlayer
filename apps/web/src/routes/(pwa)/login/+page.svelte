@@ -6,7 +6,7 @@
 
 <Screen title="" back="/" noBgScreen={true}>
 	<div
-		class="wrap pt-safe fixed left-0 top-10 mx-auto mt-24 min-h-screen w-screen bg-white p-4 lg:top-0 lg:mt-40"
+		class="wrap fixed left-0 top-10 mx-auto mt-24 min-h-screen w-screen bg-white p-4 pt-safe lg:top-0 lg:mt-40"
 	>
 		<div class="mx-auto w-full max-w-md">
 			<LoginForm />

@@ -1,14 +1,14 @@
 <img
 	src="https://coyklkkrxa.cloudimg.io/_e/prod/event-large-logo/a92f8ee4-8257-4e4b-a52a-e15681828436-1.png?v=1&"
-	class="w-20 mx-auto mb-10 mt-8"
+	class="mx-auto mb-10 mt-8 w-20"
 />
-<div class="fixed w-full top-0 left-0 h-full">
+<div class="fixed left-0 top-0 h-full w-full">
 	<div
-		class="ball-blue w-72 absolute -right-[220px] md:-right-[120px] bottom-[12%] md:bottom-[20%]"
+		class="ball-blue absolute -right-[220px] bottom-[12%] w-72 md:-right-[120px] md:bottom-[20%]"
 	></div>
-	<div class="ball-oj w-48 absolute -left-[150px] md:-left-[60px] top-[8%] md:top-[12%]"></div>
+	<div class="ball-oj absolute -left-[150px] top-[8%] w-48 md:-left-[60px] md:top-[12%]"></div>
 </div>
-<div class="bg-image fixed w-full top-0 left-0 z-10 h-full opacity-30"></div>
+<div class="bg-image fixed left-0 top-0 z-10 h-full w-full opacity-30"></div>
 
 <style>
 	.bg-image {

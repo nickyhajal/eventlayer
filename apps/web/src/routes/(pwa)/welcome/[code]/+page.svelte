@@ -136,10 +136,10 @@
 	}
 </script>
 
-<div class="pt-6 overflow-x-hidden w-full bg-blue">
+<div class="bg-blue w-full overflow-x-hidden pt-6">
 	<NdBase />
 	<div
-		class="wrap mx-auto font-bold py-2.5 text-center fixed top-0 bg-white/60 backdrop-blur-md z-10 border-b-2 border-slate-200/50 text-sm uppercase text-slate-600 tracking-wide w-full"
+		class="wrap fixed top-0 z-10 mx-auto w-full border-b-2 border-slate-200/50 bg-white/60 py-2.5 text-center text-sm font-bold uppercase tracking-wide text-slate-600 backdrop-blur-md"
 	>
 		Assign Your {data.event.name}
 		{plural(numTickets, 'ticket')}
@@ -148,7 +148,7 @@
 		<div class="wrap mx-auto max-w-md p-4">That code isn't valid</div>
 	{:else}
 		<div
-			class="text-3xl -mt-8 md:-mt-4 mb-2 md:mb-10 w-full text-center font-bold max-w-md mx-auto relative z-10"
+			class="relative z-10 mx-auto -mt-8 mb-2 w-full max-w-md text-center text-3xl font-bold md:-mt-4 md:mb-10"
 		>
 			{#if numTickets > 0 && numClaimable === 0}
 				You're all set!
@@ -170,7 +170,7 @@
 		</div>
 		<div class="wrap mx-auto max-w-md p-4">
 			<div
-				class="text-center font-semibold bg-slate-200/20 p-6 rounded-xl flex flex-col gap-4 relative z-10"
+				class="relative z-10 flex flex-col gap-4 rounded-xl bg-slate-200/20 p-6 text-center font-semibold"
 			>
 				{#if numTickets === 0}
 					<div class="text-center text-2xl font-semibold">No tickets found</div>
@@ -184,7 +184,7 @@
 					</p>
 					<div class="flex flex-col gap-2">
 						<button
-							class="text-lg bg-black text-white px-4 py-3 border-2 border-black rounded-full"
+							class="rounded-full border-2 border-black bg-black px-4 py-3 text-lg text-white"
 							type="button"
 							on:click={() => handleSelfClaim()}
 							disabled={status === 'saving'}
@@ -196,7 +196,7 @@
 									: 'Claim for Me'}
 						</button>
 						<button
-							class="text-lg bg-slate-200 px-4 py-3 border-0 !text-slate-700 rounded-full"
+							class="rounded-full border-0 bg-slate-200 px-4 py-3 text-lg !text-slate-700"
 							type="button"
 							on:click={() => (claimStatus = 'others')}
 							disabled={status === 'saving'}
@@ -215,17 +215,17 @@
 							<div
 								class="{status === 'ready'
 									? 'opacity-100'
-									: 'opacity-20 pointer-events-none'} transition-all flex flex-col gap-2"
+									: 'pointer-events-none opacity-20'} flex flex-col gap-2 transition-all"
 							>
 								<div class="div flex gap-2 pt-2">
 									<Input
 										name="firstName"
-										class="text-lg bg-white text-black px-4 py-6 border-2 border-black rounded-full"
+										class="rounded-full border-2 border-black bg-white px-4 py-6 text-lg text-black"
 										bind:value={newAssignee.firstName}
 										placeholder="First Name"
 									/>
 									<Input
-										class="text-lg bg-white text-black px-4 py-6 border-2 border-black rounded-full"
+										class="rounded-full border-2 border-black bg-white px-4 py-6 text-lg text-black"
 										name="lastName"
 										bind:value={newAssignee.lastName}
 										placeholder="Last Name"
@@ -233,14 +233,14 @@
 								</div>
 								<Input
 									name="email"
-									class="text-lg bg-white text-black px-4 py-6 border-2 border-black rounded-full"
+									class="rounded-full border-2 border-black bg-white px-4 py-6 text-lg text-black"
 									bind:value={newAssignee.email}
 									placeholder="Email"
 								/>
 							</div>
 							<Button
 								type="submit"
-								class="text-lg bg-black text-white px-4 py-6 border-2 border-black rounded-full"
+								class="rounded-full border-2 border-black bg-black px-4 py-6 text-lg text-white"
 								>{status === 'saving'
 									? 'Assigning...'
 									: status === 'success'
@@ -262,7 +262,7 @@
 							</div>
 							<Button
 								href="/welcome"
-								class="text-lg bg-black text-white px-4 py-6 w-full mt-6 border-2 border-black rounded-full"
+								class="mt-6 w-full rounded-full border-2 border-black bg-black px-4 py-6 text-lg text-white"
 								>Continue</Button
 							>
 						{:else}
@@ -276,7 +276,7 @@
 			</div>
 			{#if error}
 				<div
-					class="text-red-700/70 bg-red-50 rounded-b-xl px-4 -mt-4 pt-8 font-semibold relative z-0 py-4 text-center text-lg"
+					class="relative z-0 -mt-4 rounded-b-xl bg-red-50 px-4 py-4 pt-8 text-center text-lg font-semibold text-red-700/70"
 				>
 					{error}
 				</div>

@@ -166,7 +166,7 @@
 						{/if}
 					</div>
 					<div
-						class="text-a-accent mt-2 flex h-12 w-full items-center justify-around border-t border-slate-100 font-semibold"
+						class="mt-2 flex h-12 w-full items-center justify-around border-t border-slate-100 font-semibold text-a-accent"
 					>
 						{#if id}
 							<a

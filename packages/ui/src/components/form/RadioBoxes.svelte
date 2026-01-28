@@ -1,6 +1,6 @@
 <script lang="ts">
-	import Button from './Button.svelte'
 	import Icon from '../Icon.svelte'
+	import Button from './Button.svelte'
 
 	export let value = []
 	export let options = []
@@ -27,9 +27,9 @@
 	{#each options as { label, value: val }}
 		<button
 			on:click={() => toggle(val)}
-			class={`transition hover:border-brightgreen-800 hover:border-opacity-20 duration-200 text-sm flex-none rounded-xl text-left bg-slate-500 border-2 border-slate-600 font-semibold flex items-center p-4 ${
+			class={`hover:border-brightgreen-800 flex flex-none items-center rounded-xl border-2 border-slate-600 bg-slate-500 p-4 text-left text-sm font-semibold transition duration-200 hover:border-opacity-20 ${
 				selected(val)
-					? '!bg-emerald-50 border-brightgreen-800 border-opacity-30 text-slate-900'
+					? 'border-brightgreen-800 border-opacity-30 !bg-emerald-50 text-slate-900'
 					: 'text-slate-900'
 			} ${options.length === 3 ? '' : ''}`}
 		>
@@ -44,7 +44,7 @@
 							? 'border-brightgreen-800'
 							: 'border-brightgreen-800'
 						: 'border-gray-200'
-				} flex flex-none transition duration-200 items-center justify-center w-6 h-6  mr-4 border`}
+				} mr-4 flex h-6 w-6 flex-none items-center justify-center border  transition duration-200`}
 			>
 				{#if multi}
 					<Icon icon="check" />

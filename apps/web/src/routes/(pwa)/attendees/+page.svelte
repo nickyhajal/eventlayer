@@ -137,7 +137,7 @@
 						<div class="font-semibold text-slate-600">{firstName}&nbsp;{lastName}</div>
 					</a>
 					<div
-						class="text-a-accent -mb-3 mt-2.5 hidden h-12 w-full items-center justify-around border-t border-slate-100 font-semibold lg:flex"
+						class="-mb-3 mt-2.5 hidden h-12 w-full items-center justify-around border-t border-slate-100 font-semibold text-a-accent lg:flex"
 					>
 						<a href="/user/{id}" class="flex h-full w-1/2 items-center justify-center text-center"
 							>View Profile</a

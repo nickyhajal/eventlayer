@@ -1,18 +1,20 @@
 <script lang="ts">
-	import FileUpload from 'sveltefileuploadcomponent'
-	import Modal from '../Modal.svelte'
-	import { CloudArrowUp, XMark, CloudArrowDown, Pencil } from '@steeze-ui/heroicons'
-	import { getMediaUrl, v4 } from '@matterloop/util'
-	import prettyBytes from 'pretty-bytes'
-	import imageCompression from 'browser-image-compression'
-	import HeroIcon from '../HeroIcon.svelte'
-	import { tw } from 'src/lib/tw'
-	import { createEventDispatcher } from 'svelte'
-	import Animate from '../Animate.svelte'
-	import Input from './Input.svelte'
+	import { CloudArrowDown, CloudArrowUp, Pencil, XMark } from '@steeze-ui/heroicons'
 	import { getMeContext } from '$lib/state/getContexts'
 	import { trpc } from '$lib/trpc/client'
+	import imageCompression from 'browser-image-compression'
+	import prettyBytes from 'pretty-bytes'
+	import { tw } from 'src/lib/tw'
+	import { createEventDispatcher } from 'svelte'
 	import { fade, fly } from 'svelte/transition'
+	import FileUpload from 'sveltefileuploadcomponent'
+
+	import { getMediaUrl, v4 } from '@matterloop/util'
+
+	import Animate from '../Animate.svelte'
+	import HeroIcon from '../HeroIcon.svelte'
+	import Modal from '../Modal.svelte'
+	import Input from './Input.svelte'
 
 	// Perhaps we can use this to resize/compress prior to upload?
 	// https://github.com/WangYuLue/image-conversion
@@ -97,7 +99,7 @@
 		const existing = await trpc().media.get.query({
 			parentType: parent.type,
 			parentId: parent.id,
-			userId: $me.id
+			userId: $me.id,
 		})
 		if (existing?.length) {
 			uploads = [
@@ -108,9 +110,9 @@
 						id: m.id,
 						uuid: m.id,
 						src: getMediaUrl(m),
-						file: { name: 'Already uploaded' }
+						file: { name: 'Already uploaded' },
 					})),
-				...uploads
+				...uploads,
 			]
 		}
 	}
@@ -137,7 +139,7 @@
 				'image/gif',
 				'image/tiff',
 				'image/svg+xml',
-				'image/webp'
+				'image/webp',
 			].includes(file.type)
 		) {
 			error = "This filetype isn't supported but you can take a screenshot and upload that"
@@ -152,7 +154,7 @@
 						file,
 						compressing: true,
 						uuid: v4(),
-						inx
+						inx,
 					}
 					if (method === 'insert') {
 						uploads.splice(inx, 0, newRow)
@@ -179,7 +181,7 @@
 				const options = {
 					maxSizeMB: 0.8,
 					maxWidthOrHeight: 1920,
-					useWebWorker: true
+					useWebWorker: true,
 				}
 				const compressedFile = await imageCompression(file, options)
 				compressor.onload = function (e) {
@@ -205,18 +207,18 @@
 				parentId: parent.id,
 				parentType: parent.type,
 				attachToFeedItemId,
-				mimetype: img.file.type
+				mimetype: img.file.type,
 				// feedItemId,
 			})
 			uploadStatus[img.uuid] = {
 				progressStr: 'Processing...',
-				progress: 0
+				progress: 0,
 			}
 			console.log(rsp)
 			if (rsp) {
 				uploadStatus[img.uuid] = {
 					progressStr: 'Uploading',
-					progress: 0
+					progress: 0,
 				}
 				await uploadToSignedUrl({ url: rsp.url, file: img.file })
 				console.log(' do upload ')
@@ -234,8 +236,8 @@
 			body: file,
 			headers: {
 				'Content-Type': 'application/octet-stream',
-				'Content-Length': file.size
-			}
+				'Content-Length': file.size,
+			},
 		}
 
 		return fetch(url, requestOptions)
@@ -287,12 +289,12 @@
 					remote: true,
 					webshot: true,
 					uuid,
-					file: { name: urlTitle || url }
-				}
+					file: { name: urlTitle || url },
+				},
 			]
 			uploadStatus[uuid] = {
 				progressStr: 'Processing...',
-				progress: 0
+				progress: 0,
 			}
 			setTimeout(() => (url = ''), 50)
 			const rsp = await mutate({
@@ -301,8 +303,8 @@
 					url,
 					parentId: parent.id,
 					attachToFeedItemId,
-					parentType: parent.type
-				}
+					parentType: parent.type,
+				},
 			})
 			if (rsp.data.uploadMedia) {
 				uploads[inx].src = getMediaUrl(rsp.data.uploadMedia)
@@ -385,7 +387,7 @@
 <FileUpload multiple={true} on:input={gotFile}>
 	<div
 		class={tw(
-			`dropzone transition duration-500  relative bg-emerald-50 border-2 border-dashed border-emerald-200 ${className}`
+			`dropzone relative border-2  border-dashed border-emerald-200 bg-emerald-50 transition duration-500 ${className}`,
 		)}
 		on:dragenter={dragStart}
 		on:dragover={mousemove}
@@ -396,20 +398,20 @@
 	>
 		{#if draggingOver}
 			<div
-				class="dragHint pointer-events-none absolute top-0 left-0 m-auto h-0 w-0 rounded-full bg-gradient-to-bl from-brightgreen to-emerald-500 opacity-0"
+				class="dragHint from-brightgreen pointer-events-none absolute left-0 top-0 m-auto h-0 w-0 rounded-full bg-gradient-to-bl to-emerald-500 opacity-0"
 				bind:this={dragHint}
 			/>
 		{/if}
 		<div
-			class={`w-full h-full placeholder flex-col flex ${draggingOver ? 'pointer-events-none' : ''}`}
+			class={`placeholder flex h-full w-full flex-col ${draggingOver ? 'pointer-events-none' : ''}`}
 		>
 			<Animate>
 				<div
-					class={`flex flex-col items-center w-full placeholder transition-all duration-500 ${
+					class={`placeholder flex w-full flex-col items-center transition-all duration-500 ${
 						uploads.length && showPreview ? 'slide-away' : ''
 					}`}
 				>
-					<HeroIcon src={CloudArrowUp} size="30" class={`opacity-70 mx-auto mb-3 mt-2`} />
+					<HeroIcon src={CloudArrowUp} size="30" class={`mx-auto mb-3 mt-2 opacity-70`} />
 				</div>
 				{#if uploads.length && showPreview}
 					<div class="uploads mb-5 w-full flex-col space-y-2" transition:fade|local>
@@ -423,7 +425,7 @@
 										<div class="imgwrap flex items-center justify-center">
 											<HeroIcon
 												src={CloudArrowDown}
-												class={`animate-bounce text-emerald-500 w-6 relative top-0.5`}
+												class={`relative top-0.5 w-6 animate-bounce text-emerald-500`}
 											/>
 										</div>
 									{:else}
@@ -456,7 +458,7 @@
 												<span class="text-xs">{Math.ceil(uploadStatus[uuid].progress * 100)}%</span>
 												<div class="relative h-2 w-12 overflow-hidden rounded-xl bg-white">
 													<div
-														class="absolute top-0 left-0 h-full bg-emerald-500"
+														class="absolute left-0 top-0 h-full bg-emerald-500"
 														style={`width: ${uploadStatus[uuid].progress * 100}%`}
 													/>
 												</div>
@@ -491,13 +493,13 @@
 	>
 		<input
 			bind:value={url}
-			class={`focus:bg-yellow-100 focus:bg-opacity-50 focus:py-5 text-mdsm w-full px-2 ${
+			class={`text-mdsm w-full px-2 focus:bg-yellow-100 focus:bg-opacity-50 focus:py-5 ${
 				url.length ? 'pr-32' : ''
-			} py-3 font-medium text-center text-gray-600 transition-all duration-200`}
+			} py-3 text-center font-medium text-gray-600 transition-all duration-200`}
 			placeholder="Or paste a link to a website or photo here"
 		/>
 		<button
-			class="absolute top-0 bottom-0 right-2 my-1.5 flex items-center justify-center rounded border border-slate-600 bg-white px-3 py-1 text-sm font-medium text-slate-700 transition-all duration-200 hover:text-green"
+			class="hover:text-green absolute bottom-0 right-2 top-0 my-1.5 flex items-center justify-center rounded border border-slate-600 bg-white px-3 py-1 text-sm font-medium text-slate-700 transition-all duration-200"
 			style={`transform: translateX(${url.length ? '0rem' : '7rem'})`}
 			><HeroIcon src={CloudArrowUp} solid class="mr-1 w-5 fill-current" />{urlError
 				? 'Try Again'
@@ -506,7 +508,7 @@
 	</form>
 	{#if urlError}
 		<div
-			class="rounded-b-llg rounded-b-lg border-2 border-t-0 border-dashed border-red-100 bg-red-50 p-3 text-sm text-red"
+			class="rounded-b-llg text-red rounded-b-lg border-2 border-t-0 border-dashed border-red-100 bg-red-50 p-3 text-sm"
 		>
 			{urlError}
 		</div>
@@ -516,8 +518,8 @@
 	<PinturaEditor
 		{...getEditorDefaults({
 			imageWriter: createDefaultImageWriter({
-				renameFile: (file) => openItem.file.name
-			})
+				renameFile: (file) => openItem.file.name,
+			}),
 		})}
 		src={openItem.src}
 		utils={['redact', 'crop', 'annotate', 'sticker', 'filter', 'finetune']}
@@ -528,20 +530,30 @@
 
 <style lang="postcss">
 	.dragHint {
-		transition: width 0.1s, height 0.1s, opacity 0.1s;
+		transition:
+			width 0.1s,
+			height 0.1s,
+			opacity 0.1s;
 		transform-origin: center;
 		&.appeared {
 			opacity: 0.2;
 			width: 6rem;
 			height: 6rem;
 			transform: translateX(50%), translateY(50%);
-			transition: width 0.2s, height 0.2s, opacity 0.4s;
+			transition:
+				width 0.2s,
+				height 0.2s,
+				opacity 0.4s;
 		}
 		&.completed {
 			opacity: 0;
 			width: 6rem;
 			height: 6rem;
-			transition: width 0.2s, height 0.2s, opacity 0.4s, transform 0.8s;
+			transition:
+				width 0.2s,
+				height 0.2s,
+				opacity 0.4s,
+				transform 0.8s;
 		}
 	}
 	.placeholder.slide-away {
@@ -551,7 +563,7 @@
 		min-height: 6.375rem;
 		overflow: hidden;
 		padding: 0.75rem 0.75rem 0.75rem;
-		@apply rounded-xl text-green;
+		@apply text-green rounded-xl;
 		h4 {
 			font-size: 0.9rem;
 			margin: 0 auto;

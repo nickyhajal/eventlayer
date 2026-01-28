@@ -1,46 +1,46 @@
 <script lang="ts">
-import { invalidateAll } from '$app/navigation'
-import Input from '$lib/components/ui/input/input.svelte'
-import Label from '$lib/components/ui/label/label.svelte'
-import { trpc } from '$lib/trpc/client'
-import { trpcCaller } from '$lib/util/trpcCaller'
-import { toast } from 'svelte-sonner'
-import { writable } from 'svelte/store'
+	import { invalidateAll } from '$app/navigation'
+	import Input from '$lib/components/ui/input/input.svelte'
+	import Label from '$lib/components/ui/label/label.svelte'
+	import { trpc } from '$lib/trpc/client'
+	import { trpcCaller } from '$lib/util/trpcCaller'
+	import { toast } from 'svelte-sonner'
+	import { writable } from 'svelte/store'
 
-import type { Media, Venue } from '@matterloop/db'
-import { debounce, getMediaUrl } from '@matterloop/util'
+	import type { Media, Venue } from '@matterloop/db'
+	import { debounce, getMediaUrl } from '@matterloop/util'
 
-import SelectVenue from './SelectVenue.svelte'
-import Uploader from './ui/Uploader.svelte'
+	import SelectVenue from './SelectVenue.svelte'
+	import Uploader from './ui/Uploader.svelte'
 
-export let venues: Venue[] = []
-export let media: Media | undefined
-let lastSaved = ''
-let saving = false
-$: store = writable(media)
-$: selectedVenueId = $store?.parentId || venues[0]?.id
-$: venue = venues.find((v) => v.id === selectedVenueId)
-const { call, status, enhance } = trpcCaller(trpc($store).media.update.mutate)
-async function updateAvatar(mediaId: string) {
-	queueMicrotask(() => invalidateAll())
-}
-async function submitRaw() {
-	if (saving) return
-	if (lastSaved !== JSON.stringify($store)) {
-		const inited = lastSaved
-		lastSaved = JSON.stringify($store)
-		if (!inited) return
-		saving = true
-		const res = await call({
-			...$store,
-		})
-		saving = false
-		toast.success('Map Updated')
+	export let venues: Venue[] = []
+	export let media: Media | undefined
+	let lastSaved = ''
+	let saving = false
+	$: store = writable(media)
+	$: selectedVenueId = $store?.parentId || venues[0]?.id
+	$: venue = venues.find((v) => v.id === selectedVenueId)
+	const { call, status, enhance } = trpcCaller(trpc($store).media.update.mutate)
+	async function updateAvatar(mediaId: string) {
+		queueMicrotask(() => invalidateAll())
 	}
-}
+	async function submitRaw() {
+		if (saving) return
+		if (lastSaved !== JSON.stringify($store)) {
+			const inited = lastSaved
+			lastSaved = JSON.stringify($store)
+			if (!inited) return
+			saving = true
+			const res = await call({
+				...$store,
+			})
+			saving = false
+			toast.success('Map Updated')
+		}
+	}
 
-const save = debounce(submitRaw, 900)
-$: save(), $store
+	const save = debounce(submitRaw, 900)
+	$: (save(), $store)
 </script>
 
 <div class="rounded-lg bg-stone-50/80 p-2">

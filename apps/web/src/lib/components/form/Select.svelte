@@ -1,18 +1,18 @@
 <script lang="ts">
-import * as Select from '$lib/components/ui/select'
+	import * as Select from '$lib/components/ui/select'
 
-interface Option {
-	label: string
-	value: string
-}
+	interface Option {
+		label: string
+		value: string
+	}
 
-export let value = ''
-export let name = ''
-export let label = ''
-export let placeholder = ''
-export let options: Option[] = []
-let selectedOption = options.find((o) => o.value === value) ?? options[0]
-$: value = selectedOption?.value || ''
+	export let value = ''
+	export let name = ''
+	export let label = ''
+	export let placeholder = ''
+	export let options: Option[] = []
+	let selectedOption = options.find((o) => o.value === value) ?? options[0]
+	$: value = selectedOption?.value || ''
 </script>
 
 <Select.Root bind:selected={selectedOption}>
@@ -23,11 +23,11 @@ $: value = selectedOption?.value || ''
 		<Select.Group>
 			<Select.Label>{label}</Select.Label>
 			{#each options as { label, value }}
-				<Select.Item value={value} label={label}>{label}</Select.Item>
+				<Select.Item {value} {label}>{label}</Select.Item>
 			{/each}
 		</Select.Group>
 	</Select.Content>
 	{#if name}
-		<Select.Input name={name} />
+		<Select.Input {name} />
 	{/if}
 </Select.Root>

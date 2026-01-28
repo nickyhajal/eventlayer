@@ -1,21 +1,22 @@
 <script>
-import { Modal } from '@matterloop/ui'
-import { tw } from '@matterloop/util'
-import { confirmations } from '$lib/util/confirmationDialogs'
+	import { confirmations } from '$lib/util/confirmationDialogs'
 
-export let open = true
-export let type = 'confirmation'
-export let confirmationTitle = 'Are you sure you want to delete this?'
-export let confirmationText = ''
-export let confirmationButtonClass = ''
-export let confirmationLabel = 'Delete'
-export let alertLabel = 'Ok'
-export let cancelButtonClass = ''
-export let cancelLabel = 'Nevermind'
-export let handleConfirm = () => {}
+	import { Modal } from '@matterloop/ui'
+	import { tw } from '@matterloop/util'
+
+	export let open = true
+	export let type = 'confirmation'
+	export let confirmationTitle = 'Are you sure you want to delete this?'
+	export let confirmationText = ''
+	export let confirmationButtonClass = ''
+	export let confirmationLabel = 'Delete'
+	export let alertLabel = 'Ok'
+	export let cancelButtonClass = ''
+	export let cancelLabel = 'Nevermind'
+	export let handleConfirm = () => {}
 </script>
 
-<Modal bind:open={open} allowOverlayClose={false}>
+<Modal bind:open allowOverlayClose={false}>
 	<div class="">
 		<div class=" p-10 pb-8">
 			{#if confirmationTitle}
@@ -32,20 +33,19 @@ export let handleConfirm = () => {}
 				<button
 					class="{tw(
 						'bg-slate rounded-2xl px-6 py-3 text-base font-semibold transition-all duration-200 hover:bg-slate-600',
-						cancelButtonClass
+						cancelButtonClass,
 					)}}"
 					on:click={() => {
 						open = false
 						setTimeout(() => {
 							confirmations.pop()
 						}, 220)
-					}}
-					>{cancelLabel}</button
+					}}>{cancelLabel}</button
 				>
 				<button
 					class={tw(
 						'bg-red rounded-xl px-6 py-3 text-base font-semibold text-white transition-all duration-200 hover:bg-red-600 hover:bg-opacity-90',
-						confirmationButtonClass
+						confirmationButtonClass,
 					)}
 					on:click={(e) => {
 						open = false
@@ -53,14 +53,13 @@ export let handleConfirm = () => {}
 							confirmations.pop()
 						}, 220)
 						handleConfirm(e)
-					}}
-					>{confirmationLabel}</button
+					}}>{confirmationLabel}</button
 				>
 			{:else}
 				<button
 					class={tw(
 						'rounded-xl bg-emerald-500 px-6 py-3 text-base font-semibold text-white transition-all duration-200 hover:bg-emerald-600 hover:bg-opacity-90',
-						confirmationButtonClass
+						confirmationButtonClass,
 					)}
 					on:click={(e) => {
 						open = false
@@ -68,8 +67,7 @@ export let handleConfirm = () => {}
 							confirmations.pop()
 						}, 220)
 						handleConfirm(e)
-					}}
-					>{alertLabel || 'Ok'}</button
+					}}>{alertLabel || 'Ok'}</button
 				>
 			{/if}
 		</div>

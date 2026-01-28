@@ -39,7 +39,7 @@
 				series that explores this exact question:
 			</p>
 			<Button
-				class="bg-a-accent mb-16 mt-6 w-full text-white"
+				class="mb-16 mt-6 w-full bg-a-accent text-white"
 				href="https://saveoursites.com/webinars"
 				target="_blank"
 			>

@@ -1,75 +1,75 @@
 <script lang="ts">
-import Button from '$lib/components/ui/button/button.svelte'
-import { getEventContext } from '$lib/state/getContexts'
-import { post, trpc } from '$lib/trpc/client'
-import { Pincode, PincodeInput } from 'svelte-pincode'
+	import Button from '$lib/components/ui/button/button.svelte'
+	import { getEventContext } from '$lib/state/getContexts'
+	import { post, trpc } from '$lib/trpc/client'
+	import { Pincode, PincodeInput } from 'svelte-pincode'
 
-export let handleSuccess: undefined | ((id: string) => Promise<void>)
-export let handleCreateAccount = () => {}
-let firstName = ''
-let lastName = ''
-let email = ''
-let password = ''
-let view = 'login'
-let code = ''
-let justcode = ''
-const event = getEventContext()
-let codeEmailSent = false
-let loading = false
+	export let handleSuccess: undefined | ((id: string) => Promise<void>)
+	export let handleCreateAccount = () => {}
+	let firstName = ''
+	let lastName = ''
+	let email = ''
+	let password = ''
+	let view = 'login'
+	let code = ''
+	let justcode = ''
+	const event = getEventContext()
+	let codeEmailSent = false
+	let loading = false
 
-async function submit(e?: Event | undefined) {
-	if (loading) return
-	if (e) {
-		e.preventDefault()
-		e.stopPropagation()
-	}
-	if (view === 'login') {
-		if (!code) {
-			loading = true
-			const res = await trpc().user.sendMagicLinkEmail.mutate({ email })
-			codeEmailSent = true
-			loading = false
-		} else if (code.length === 4) {
-			loading = true
-			try {
-				const rsp = await post(`login`, { code })
-				if (handleSuccess) {
-					const me = await trpc().me.get.query()
-					if (me) {
-						handleSuccess(me.id)
-					}
-					navigator.serviceWorker.getRegistrations().then((registrations) => {
-						for (const registration of registrations) {
-							registration.unregister()
-						}
-					})
-				}
-				const data = await rsp.json()
-				if (data) {
-					window.location.pathname = '/'
-					location.href = '/'
-				}
-			} catch (e) {
-				console.log(e)
-			} finally {
-				loading = false
-			}
+	async function submit(e?: Event | undefined) {
+		if (loading) return
+		if (e) {
+			e.preventDefault()
+			e.stopPropagation()
 		}
-	} else {
-		const rsp = await post(`signup`, {
-			email,
-			password,
-			firstName,
-			lastName,
-		})
-		const data = await rsp.json()
-		return data
+		if (view === 'login') {
+			if (!code) {
+				loading = true
+				const res = await trpc().user.sendMagicLinkEmail.mutate({ email })
+				codeEmailSent = true
+				loading = false
+			} else if (code.length === 4) {
+				loading = true
+				try {
+					const rsp = await post(`login`, { code })
+					if (handleSuccess) {
+						const me = await trpc().me.get.query()
+						if (me) {
+							handleSuccess(me.id)
+						}
+						navigator.serviceWorker.getRegistrations().then((registrations) => {
+							for (const registration of registrations) {
+								registration.unregister()
+							}
+						})
+					}
+					const data = await rsp.json()
+					if (data) {
+						window.location.pathname = '/'
+						location.href = '/'
+					}
+				} catch (e) {
+					console.log(e)
+				} finally {
+					loading = false
+				}
+			}
+		} else {
+			const rsp = await post(`signup`, {
+				email,
+				password,
+				firstName,
+				lastName,
+			})
+			const data = await rsp.json()
+			return data
+		}
 	}
-}
 
-$: if (codeEmailSent && code.length === 4) {
-	submit()
-}
+	$: if (codeEmailSent && code.length === 4) {
+		submit()
+	}
 </script>
 
 <form on:submit|preventDefault|stopPropagation={submit} class="mx-auto w-11/12 pb-10 pt-3">
@@ -94,7 +94,7 @@ $: if (codeEmailSent && code.length === 4) {
 					placeholder="Email"
 					bind:value={email}
 				/>
-				<Button class="py-2" loading={loading} type="submit">Send Magic Link</Button>
+				<Button class="py-2" {loading} type="submit">Send Magic Link</Button>
 			{:else}
 				<div>
 					<div class="text-center text-sm font-medium text-slate-500">Enter your code here</div>
@@ -107,7 +107,7 @@ $: if (codeEmailSent && code.length === 4) {
 						</Pincode>
 					</div>
 				</div>
-				<Button loading={loading}>Login</Button>
+				<Button {loading}>Login</Button>
 			{/if}
 		</div>
 		<Button
@@ -147,18 +147,18 @@ $: if (codeEmailSent && code.length === 4) {
 </form>
 
 <style lang="postcss">
-input {
-	@apply px-3.5 py-2;
-}
-.wrap :global(button) {
-	@apply h-12 rounded-lg border border-b-2 border-emerald-200/70 bg-emerald-50 text-sm font-semibold text-emerald-600 hover:bg-emerald-100/80;
-}
-.pinshell :global(> div) {
-	@apply flex gap-1.5;
-	border: none;
-}
-.pinshell :global(> div input) {
-	@apply rounded-lg focus:outline-sky-300;
-	border: 2px solid #d1d5db70;
-}
+	input {
+		@apply px-3.5 py-2;
+	}
+	.wrap :global(button) {
+		@apply h-12 rounded-lg border border-b-2 border-emerald-200/70 bg-emerald-50 text-sm font-semibold text-emerald-600 hover:bg-emerald-100/80;
+	}
+	.pinshell :global(> div) {
+		@apply flex gap-1.5;
+		border: none;
+	}
+	.pinshell :global(> div input) {
+		@apply rounded-lg focus:outline-sky-300;
+		border: 2px solid #d1d5db70;
+	}
 </style>

@@ -119,7 +119,7 @@
 					{/if}
 				</div>
 			{/if} -->
-			<UserAvatar {user} class="xs:w-36 h-36 w-28 rounded-full" />
+			<UserAvatar {user} class="h-36 w-28 rounded-full xs:w-36" />
 			<div class="flex gap-2">
 				{#if user.type !== 'attendee'}
 					<div class="mt-3 rounded-md bg-slate-50 px-3 py-0.5 text-sm font-medium text-slate-700">
@@ -139,15 +139,15 @@
 				{/if}
 			</div>
 			<div class="flex flex-col text-center">
-				<div class="xs:text-3xl pb-0 text-2xl font-bold">{name}</div>
+				<div class="pb-0 text-2xl font-bold xs:text-3xl">{name}</div>
 				{#if info('title')}
 					<div
-						class="xs:text-base pb-0 text-[0.9rem] justify-center font-semibold text-slate-700 flex"
+						class="flex justify-center pb-0 text-[0.9rem] font-semibold text-slate-700 xs:text-base"
 					>
 						{info('title')}
 						{#if info('location')}
-							<span class="pl-3 flex items-center gap-0.5">
-								<Pin class="w-4 inline text-stone-600 fill-blue-100 stroke-blue-300" />
+							<span class="flex items-center gap-0.5 pl-3">
+								<Pin class="inline w-4 fill-blue-100 stroke-blue-300 text-stone-600" />
 								{info('location')}
 							</span>
 						{/if}
@@ -159,28 +159,28 @@
 			</div>
 		</div>
 		<div class="flex flex-wrap gap-2">
-			<div class="text-a-accent -mt-3 mb-5 text-xs">
+			<div class="-mt-3 mb-5 text-xs text-a-accent">
 				{eventStr}
 			</div>
 		</div>
-		<div class="flex gap-4 flex-col">
-			<div class="flex flex-wrap justify-start gap-2 mb-4">
+		<div class="flex flex-col gap-4">
+			<div class="mb-4 flex flex-wrap justify-start gap-2">
 				<div
-					class="pb-6 mb-3.5 border-b border-b-slate-100 w-full flex justify-center items-center"
+					class="mb-3.5 flex w-full items-center justify-center border-b border-b-slate-100 pb-6"
 				>
 					<Button
 						{loading}
 						href="#add-friend"
 						on:click={toggleFriend}
-						class="grid grid-cols-[3rem_1fr] w-fit items-center overflow-hidden hover:bg-blue-50 relative p-0  h-9   rounded-lg bg-slate-100 text-slate-700 text-center text-sm"
+						class="relative grid h-9 w-fit grid-cols-[3rem_1fr] items-center overflow-hidden rounded-lg  bg-slate-100   p-0 text-center text-sm text-slate-700 hover:bg-blue-50"
 					>
 						<div
-							class="bg-slate-200/50 border-r border-slate-300/50 px-3 h-full flex items-center justify-center"
+							class="flex h-full items-center justify-center border-r border-slate-300/50 bg-slate-200/50 px-3"
 						>
 							{#if isMyFriend}
-								<SmileIcon class="w-4 inline text-green-600" />
+								<SmileIcon class="inline w-4 text-green-600" />
 							{:else}
-								<SmilePlusIcon class="w-4 inline text-blue-800" />
+								<SmilePlusIcon class="inline w-4 text-blue-800" />
 							{/if}
 						</div>
 						{#if isMyFriend}
@@ -195,12 +195,12 @@
 						href={siteUrl(info('site') || '')}
 						target="_blank"
 						rel="noopener noreferrer"
-						class="grid grid-cols-[3rem_1fr] min-w-[32%] items-center overflow-hidden hover:bg-blue-50 relative p-0 flex-grow h-9 w-fit  rounded-lg bg-slate-100 text-slate-700 text-center text-sm"
+						class="relative grid h-9 w-fit min-w-[32%] flex-grow grid-cols-[3rem_1fr] items-center overflow-hidden rounded-lg bg-slate-100  p-0 text-center text-sm text-slate-700 hover:bg-blue-50"
 					>
 						<div
-							class="bg-slate-200/50 border-r border-slate-300/50 px-3 h-full flex items-center justify-center"
+							class="flex h-full items-center justify-center border-r border-slate-300/50 bg-slate-200/50 px-3"
 						>
-							<SiteIcon class="w-4 inline text-teal-800" />
+							<SiteIcon class="inline w-4 text-teal-800" />
 						</div>
 						<div class="px-3">View their Site</div>
 					</Button>
@@ -210,12 +210,12 @@
 						href={linkedinUrl(info('linkedin_url') || '')}
 						target="_blank"
 						rel="noopener noreferrer"
-						class="grid grid-cols-[3rem_1fr] items-center overflow-hidden hover:bg-blue-50 relative p-0 flex-grow h-9 w-fit  rounded-lg bg-slate-100 text-slate-700 text-center text-sm"
+						class="relative grid h-9 w-fit flex-grow grid-cols-[3rem_1fr] items-center overflow-hidden rounded-lg bg-slate-100  p-0 text-center text-sm text-slate-700 hover:bg-blue-50"
 					>
 						<div
-							class="bg-slate-200/50 border-r border-slate-300/50 px-3 h-full flex items-center justify-center"
+							class="flex h-full items-center justify-center border-r border-slate-300/50 bg-slate-200/50 px-3"
 						>
-							<LinkedInIcon class="w-4 inline text-sky-800" />
+							<LinkedInIcon class="inline w-4 text-sky-800" />
 						</div>
 						<div class="px-3">Connect on LinkedIn</div>
 					</Button>
@@ -225,12 +225,12 @@
 						href={instagramUrl(info('ig_url') || '')}
 						target="_blank"
 						rel="noopener noreferrer"
-						class="grid grid-cols-[3rem_1fr] min-w-[32%]  items-center overflow-hidden hover:bg-blue-50 relative p-0 flex-grow h-9 w-fit  rounded-lg bg-slate-100 text-slate-700 text-center text-sm"
+						class="relative grid h-9  w-fit min-w-[32%] flex-grow grid-cols-[3rem_1fr] items-center overflow-hidden rounded-lg bg-slate-100  p-0 text-center text-sm text-slate-700 hover:bg-blue-50"
 					>
 						<div
-							class="bg-slate-200/50 border-r border-slate-300/50 px-3 h-full flex items-center justify-center"
+							class="flex h-full items-center justify-center border-r border-slate-300/50 bg-slate-200/50 px-3"
 						>
-							<IGIcon class="w-4 inline text-red-800" />
+							<IGIcon class="inline w-4 text-red-800" />
 						</div>
 						<div class="px-3">Connect on Instagram</div>
 					</Button>
@@ -240,12 +240,12 @@
 						href={fbUrl(info('fb_url') || '')}
 						target="_blank"
 						rel="noopener noreferrer"
-						class="grid grid-cols-[3rem_1fr] min-w-[32%] items-center overflow-hidden hover:bg-blue-50 relative p-0 flex-grow h-9 w-fit  rounded-lg bg-slate-100 text-slate-700 text-center text-sm"
+						class="relative grid h-9 w-fit min-w-[32%] flex-grow grid-cols-[3rem_1fr] items-center overflow-hidden rounded-lg bg-slate-100  p-0 text-center text-sm text-slate-700 hover:bg-blue-50"
 					>
 						<div
-							class="bg-slate-200/50 border-r border-slate-300/50 px-3 h-full flex items-center justify-center"
+							class="flex h-full items-center justify-center border-r border-slate-300/50 bg-slate-200/50 px-3"
 						>
-							<FBIcon class="w-4 inline text-blue-800" />
+							<FBIcon class="inline w-4 text-blue-800" />
 						</div>
 						<div class="px-3">Connect on Facebook</div>
 					</Button>
@@ -253,12 +253,12 @@
 				{#if info('phone_shared')}
 					<Button
 						href={`tel:${info('phone_shared')}`}
-						class="grid grid-cols-[3rem_1fr] min-w-[32%] items-center overflow-hidden hover:bg-blue-50 relative p-0 flex-grow h-9 w-fit  rounded-lg bg-slate-100 text-slate-700 text-center text-sm"
+						class="relative grid h-9 w-fit min-w-[32%] flex-grow grid-cols-[3rem_1fr] items-center overflow-hidden rounded-lg bg-slate-100  p-0 text-center text-sm text-slate-700 hover:bg-blue-50"
 					>
 						<div
-							class="bg-slate-200/50 border-r border-slate-300/50 px-3 h-full flex items-center justify-center"
+							class="flex h-full items-center justify-center border-r border-slate-300/50 bg-slate-200/50 px-3"
 						>
-							<PhoneIcon class="w-4 inline text-blue-800" />
+							<PhoneIcon class="inline w-4 text-blue-800" />
 						</div>
 						<div class="px-3">Show Phone Number</div>
 					</Button>
@@ -269,7 +269,7 @@
 			{/if}
 			<Markdown
 				data={user.bio || user.info?.bio?.value || ''}
-				class="text-lg font-medium text-slate-600 pb-4 border-b border-slate-200"
+				class="border-b border-slate-200 pb-4 text-lg font-medium text-slate-600"
 			/>
 			{#if user.proBio}
 				<Markdown data={user.proBio} class="border-t border-slate-200 pr-4 pt-8 text-slate-600" />

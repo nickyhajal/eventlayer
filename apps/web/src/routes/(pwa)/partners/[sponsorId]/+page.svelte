@@ -26,7 +26,7 @@
 				/>
 			</div>
 			<div class="flex flex-grow flex-col items-start">
-				<div class="xs:text-3xl w-fell flex-grow pb-0 text-left text-2xl font-bold">
+				<div class="w-fell flex-grow pb-0 text-left text-2xl font-bold xs:text-3xl">
 					{sponsor.title}
 				</div>
 			</div>

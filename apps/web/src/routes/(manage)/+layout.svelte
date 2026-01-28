@@ -31,7 +31,7 @@
 	// $: if ($navigating) {
 	//   mixpanel.track_pageview()
 	// }
-	$: setMe(), $page.data.me
+	$: (setMe(), $page.data.me)
 
 	setContext('event', eventWritable(data.event))
 	onMount(async () => {

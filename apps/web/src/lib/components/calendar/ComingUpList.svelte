@@ -1,25 +1,26 @@
 <script lang="ts">
-import { dayjs } from '@matterloop/util'
-import type { CalendarEventClient } from '$lib/server/procedures/event'
+	import type { CalendarEventClient } from '$lib/server/procedures/event'
 
-import ComingUpRow from './ComingUpRow.svelte'
+	import { dayjs } from '@matterloop/util'
 
-let className = ''
+	import ComingUpRow from './ComingUpRow.svelte'
 
-export { className as class }
-export let events: CalendarEventClient[] = []
+	let className = ''
 
-const today = dayjs().format('YYYY-MM-DD')
-const sundayOfThisWeek = dayjs().add(-dayjs().day(), 'day').format('YYYY-MM-DD') //first date of this week
-const sundayOfNextWeek = dayjs(sundayOfThisWeek).add(7, 'day').format('YYYY-MM-DD') //first date of next week
-$: todayEvents = events.filter((event) => dayjs(event.startAt).format('YYYY-MM-DD') === today)
-$: weekEvents = events.filter((event) => {
-	const startDay = dayjs(event.startAt).format('YYYY-MM-DD')
-	return startDay !== today && startDay >= sundayOfThisWeek && startDay < sundayOfNextWeek
-})
-$: laterEvents = events
-	.filter((event) => dayjs(event.startAt).format('YYYY-MM-DD') >= sundayOfNextWeek)
-	.slice(0, 4)
+	export { className as class }
+	export let events: CalendarEventClient[] = []
+
+	const today = dayjs().format('YYYY-MM-DD')
+	const sundayOfThisWeek = dayjs().add(-dayjs().day(), 'day').format('YYYY-MM-DD') //first date of this week
+	const sundayOfNextWeek = dayjs(sundayOfThisWeek).add(7, 'day').format('YYYY-MM-DD') //first date of next week
+	$: todayEvents = events.filter((event) => dayjs(event.startAt).format('YYYY-MM-DD') === today)
+	$: weekEvents = events.filter((event) => {
+		const startDay = dayjs(event.startAt).format('YYYY-MM-DD')
+		return startDay !== today && startDay >= sundayOfThisWeek && startDay < sundayOfNextWeek
+	})
+	$: laterEvents = events
+		.filter((event) => dayjs(event.startAt).format('YYYY-MM-DD') >= sundayOfNextWeek)
+		.slice(0, 4)
 </script>
 
 <div class={`${className} text-center`}>
@@ -36,7 +37,7 @@ $: laterEvents = events
 		{#if todayEvents.length}
 			<h1 class="font-title pl-5 text-left text-base font-semibold text-gray-900">Today</h1>
 			{#each todayEvents as event}
-				<ComingUpRow event={event} on:itemClick />
+				<ComingUpRow {event} on:itemClick />
 			{:else}
 				<h1 class="mt-2 text-gray-700">No events</h1>
 			{/each}
@@ -44,14 +45,14 @@ $: laterEvents = events
 		{#if weekEvents.length}
 			<h1 class="font-title pl-5 text-left text-base font-semibold text-gray-900">This Week</h1>
 			{#each weekEvents as event}
-				<ComingUpRow event={event} on:itemClick />
+				<ComingUpRow {event} on:itemClick />
 			{:else}
 				<h1 class="mt-2 text-gray-700">No events</h1>
 			{/each}
 		{/if}
 		<h1 class="font-title pl-5 text-left text-base font-semibold text-gray-900">Later On</h1>
 		{#each laterEvents as event}
-			<ComingUpRow event={event} on:itemClick />
+			<ComingUpRow {event} on:itemClick />
 		{:else}
 			<h1 class="mt-2 text-gray-700 text-sm bg-white mx-5 rounded-lg p-3">No events, yet.</h1>
 		{/each}

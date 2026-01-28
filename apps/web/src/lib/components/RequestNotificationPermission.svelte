@@ -1,35 +1,36 @@
 <script lang="ts">
-import { Button, HeroIcon } from '@matterloop/ui'
-import { InformationCircle } from '@steeze-ui/heroicons'
-import type { NotificationWorker } from '$lib/ServiceWorkerController'
+	import { InformationCircle } from '@steeze-ui/heroicons'
+	import type { NotificationWorker } from '$lib/ServiceWorkerController'
 
-export let notificationRequestOpen = true
-export let notificationWorker: typeof NotificationWorker | undefined
+	import { Button, HeroIcon } from '@matterloop/ui'
 
-let containerOpen = false
+	export let notificationRequestOpen = true
+	export let notificationWorker: typeof NotificationWorker | undefined
 
-async function handleRequestPermission() {
-	try {
-		const permission = await window.Notification.requestPermission()
-		if (permission === 'granted' && notificationWorker) {
-			notificationWorker.postMessage({ action: 'subscribe' })
+	let containerOpen = false
+
+	async function handleRequestPermission() {
+		try {
+			const permission = await window.Notification.requestPermission()
+			if (permission === 'granted' && notificationWorker) {
+				notificationWorker.postMessage({ action: 'subscribe' })
+			}
+		} catch (e) {
+			console.error(e)
 		}
-	} catch (e) {
-		console.error(e)
 	}
-}
-function handleNoThanksToNotifications() {
-	window.localStorage.setItem('notificationsDenied', '1')
-	notificationRequestOpen = false
-	containerOpen = false
-}
-$: {
-	if (notificationRequestOpen) {
-		setTimeout(() => {
-			containerOpen = true
-		}, 100)
+	function handleNoThanksToNotifications() {
+		window.localStorage.setItem('notificationsDenied', '1')
+		notificationRequestOpen = false
+		containerOpen = false
 	}
-}
+	$: {
+		if (notificationRequestOpen) {
+			setTimeout(() => {
+				containerOpen = true
+			}, 100)
+		}
+	}
 </script>
 
 <div

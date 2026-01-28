@@ -39,14 +39,14 @@
 		<span class="justify-start text-left text-[0.96rem] font-semibold text-black/60">
 			{shouldMarkComplete
 				? action.proofDescription ||
-				  `Upload a photo or screenshot that proves you've completed this ${type}.`
+					`Upload a photo or screenshot that proves you've completed this ${type}.`
 				: `Upload a screenshot or image that shows your progress on this ${type}`}
 		</span>
 	</div>
 </h3>
 <Dropzone
-	placeholder={placeholder}
+	{placeholder}
 	parent={{ type: 'action_submission', id: submission.id }}
 	showPreview
-	bind:uploads={uploads}
+	bind:uploads
 />

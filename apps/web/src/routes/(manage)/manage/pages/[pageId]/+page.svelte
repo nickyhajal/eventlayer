@@ -53,7 +53,7 @@
 	$: if (lastPage !== JSON.stringify($page)) {
 		lastPage = JSON.stringify($page)
 	}
-	$: save(), $page
+	$: (save(), $page)
 </script>
 
 <AdminScreen title={true}>

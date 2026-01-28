@@ -1,402 +1,408 @@
 <script lang="ts">
-import type { Upload } from '@matterloop/types'
-import { Animate, HeroIcon, Modal } from '@matterloop/ui'
-import { CloudArrowDown, CloudArrowUp, Pencil, XMark } from '@steeze-ui/heroicons'
-import { getMeContext } from '$lib/state/getContexts'
-import { trpc } from '$lib/trpc/client'
-import { tw } from '$lib/tw'
-import { getMediaUrl } from '$lib/util/getMediaUrl'
-import imageCompression from 'browser-image-compression'
-import prettyBytes from 'pretty-bytes'
-import { createEventDispatcher } from 'svelte'
-import { fade, fly } from 'svelte/transition'
-import FileUpload from 'sveltefileuploadcomponent'
-import v4 from 'uuid/v4'
+	import { CloudArrowDown, CloudArrowUp, Pencil, XMark } from '@steeze-ui/heroicons'
+	import { getMeContext } from '$lib/state/getContexts'
+	import { trpc } from '$lib/trpc/client'
+	import { tw } from '$lib/tw'
+	import { getMediaUrl } from '$lib/util/getMediaUrl'
+	import imageCompression from 'browser-image-compression'
+	import prettyBytes from 'pretty-bytes'
+	import { createEventDispatcher } from 'svelte'
+	import { fade, fly } from 'svelte/transition'
+	import FileUpload from 'sveltefileuploadcomponent'
+	import v4 from 'uuid/v4'
 
-// Perhaps we can use this to resize/compress prior to upload?
-// https://github.com/WangYuLue/image-conversion
+	import type { Upload } from '@matterloop/types'
+	import { Animate, HeroIcon, Modal } from '@matterloop/ui'
 
-interface UploadParent {
-	id: string
-	type: string
-}
-interface File {
-	name: string
-	size: number
-	type: string
-	lastModified: number
-	lastModifiedDate: Date
-	webkitRelativePath: string
-}
+	// Perhaps we can use this to resize/compress prior to upload?
+	// https://github.com/WangYuLue/image-conversion
 
-interface UploadStatus {
-	id: string
-	progressStr: string
-	progress: number
-	error?: string
-	uuid: string
-}
-
-let className = 'mb-4'
-export let placeholder =
-	"Drop Photos Here or <div class='text-blue inline underline'>Browse Files</div>"
-export { className as class }
-export let showPreview = true
-export let uploads: Upload[] = []
-export let parent: UploadParent
-export let attachToFeedItemId = ''
-export let allowEditing = true
-export let loadExisting = true
-export let allowUrl = false
-const dispatch = createEventDispatcher()
-let url = ''
-let urlTitle = ''
-let urlError = ''
-let checkedUrl: string | false = false
-let abort
-let processingWebshot = false
-let shell
-let loaded = ''
-let uploadStatus: { [key: string]: UploadStatus } = {}
-let draggingOver: Date | false = false
-let dragHint
-let error = ''
-let openUUID: string
-let openItem = false
-let itemIsOpen = false
-let currrentEditorUtil = 'redact'
-const me = getMeContext()
-$: {
-	if (!url) {
-		checkedUrl = false
+	interface UploadParent {
+		id: string
+		type: string
 	}
-	if (url.includes('https://docs.google.com') && checkedUrl !== url) {
-		checkGoogleDocUrl()
+	interface File {
+		name: string
+		size: number
+		type: string
+		lastModified: number
+		lastModifiedDate: Date
+		webkitRelativePath: string
 	}
-	checkedUrl = url
-}
-$: {
-	const ignoreTypes = ['user']
-	if (loadExisting && parent && parent.id && parent.type && !ignoreTypes.includes(parent.type)) {
-		if (loaded !== `${parent.id}-${parent.type}`) {
-			getExistingRemoteMedia()
+
+	interface UploadStatus {
+		id: string
+		progressStr: string
+		progress: number
+		error?: string
+		uuid: string
+	}
+
+	let className = 'mb-4'
+	export let placeholder =
+		"Drop Photos Here or <div class='text-blue inline underline'>Browse Files</div>"
+	export { className as class }
+	export let showPreview = true
+	export let uploads: Upload[] = []
+	export let parent: UploadParent
+	export let attachToFeedItemId = ''
+	export let allowEditing = true
+	export let loadExisting = true
+	export let allowUrl = false
+	const dispatch = createEventDispatcher()
+	let url = ''
+	let urlTitle = ''
+	let urlError = ''
+	let checkedUrl: string | false = false
+	let abort
+	let processingWebshot = false
+	let shell
+	let loaded = ''
+	let uploadStatus: { [key: string]: UploadStatus } = {}
+	let draggingOver: Date | false = false
+	let dragHint
+	let error = ''
+	let openUUID: string
+	let openItem = false
+	let itemIsOpen = false
+	let currrentEditorUtil = 'redact'
+	const me = getMeContext()
+	$: {
+		if (!url) {
+			checkedUrl = false
+		}
+		if (url.includes('https://docs.google.com') && checkedUrl !== url) {
+			checkGoogleDocUrl()
+		}
+		checkedUrl = url
+	}
+	$: {
+		const ignoreTypes = ['user']
+		if (loadExisting && parent && parent.id && parent.type && !ignoreTypes.includes(parent.type)) {
+			if (loaded !== `${parent.id}-${parent.type}`) {
+				getExistingRemoteMedia()
+			}
 		}
 	}
-}
-async function getExistingRemoteMedia() {
-	if (typeof window === 'undefined') return
-	loaded = `${parent.id}-${parent.type}`
-	const existing = await trpc().media.get.query({
-		parentType: parent.type,
-		parentId: parent.id,
-		userId: $me.id,
-	})
-	if (existing?.length) {
-		uploads = [
-			...existing
-				.filter(({ id }) => !uploads.find((u) => u.id === id))
-				.map((m) => ({
-					remote: true,
-					id: m.id,
-					uuid: m.id,
-					src: getMediaUrl(m),
-					file: { name: 'Already uploaded' },
-				})),
-			...uploads,
-		]
-	}
-}
-async function gotFile(fs) {
-	dispatch('fileStart')
-	endDrag('complete')
-	const files = fs.detail.files
-	const len = uploads.length
-	if (Array.isArray(files)) {
-		files.forEach((f, i) => processFile(f, len + i))
-	} else {
-		processFile(files, len)
-	}
-}
-async function processFile(file, inx, method = 'insert') {
-	if (file.name.match(/\.icloud$/)) {
-		error = 'Make sure to sync any iCloud files before uploading'
-	} else if (file.type.includes('pdf')) {
-		error = 'Please screenshot PDFs and upload images'
-	} else if (
-		!['image/png', 'image/jpeg', 'image/gif', 'image/tiff', 'image/svg+xml', 'image/webp'].includes(
-			file.type,
-		)
-	) {
-		error = "This filetype isn't supported but you can take a screenshot and upload that"
-	}
-	if (!error) {
-		try {
-			// Initial file load
-			var reader = new FileReader()
-			reader.onload = function (e) {
-				const newRow = {
-					src: e.target.result,
-					file,
-					compressing: true,
-					uuid: v4(),
-					inx,
-				}
-				if (method === 'insert') {
-					uploads.splice(inx, 0, newRow)
-				} else {
-					uploads[inx] = newRow
-				}
-				// uploads = [
-				//   ...uploads,
-				//   {
-				//     src: e.target.result,
-				//     file,
-				//     compressing: true,
-				//     uuid: v4(),
-				//     inx,
-				//   },
-				// ]
-				// setShellHeight()
-				dispatch('fileChange', { files: uploads })
-			}
-			let url = reader.readAsDataURL(file) // convert to base64 string
-
-			// Compress
-			var compressor = new FileReader()
-			const options = {
-				maxSizeMB: 0.8,
-				maxWidthOrHeight: 1920,
-				useWebWorker: true,
-			}
-			const compressedFile = await imageCompression(file, options)
-			compressor.onload = function (e) {
-				uploads[inx].file = compressedFile
-				uploads[inx].compressing = false
-				dispatch('fileReady', { file: compressedFile })
-				const existing = Object.keys(uploadStatus)
-				uploads
-					.filter(({ uuid, remote }) => !existing.includes(uuid) && !remote)
-					.forEach((u) => uploadImage(u))
-			}
-			let compurl = compressor.readAsDataURL(compressedFile) // convert to base64 string
-		} catch (error) {
-			console.log('problem', error)
-		}
-	} else {
-		setTimeout(() => (error = ''), 9000)
-	}
-}
-async function uploadImage(img: Upload) {
-	if (parent) {
-		uploadStatus[img.uuid] = {
-			...uploadStatus[img.uuid],
-			progressStr: 'Processing...',
-			progress: 0,
-		}
-		const rsp = await trpc().media.getUploadUrl.mutate({
-			parentId: parent.id,
+	async function getExistingRemoteMedia() {
+		if (typeof window === 'undefined') return
+		loaded = `${parent.id}-${parent.type}`
+		const existing = await trpc().media.get.query({
 			parentType: parent.type,
-			attachToFeedItemId,
-			mimetype: img.file.type,
-			// feedItemId,
+			parentId: parent.id,
+			userId: $me.id,
 		})
-		if (rsp) {
-			img.id = rsp.media.id
+		if (existing?.length) {
+			uploads = [
+				...existing
+					.filter(({ id }) => !uploads.find((u) => u.id === id))
+					.map((m) => ({
+						remote: true,
+						id: m.id,
+						uuid: m.id,
+						src: getMediaUrl(m),
+						file: { name: 'Already uploaded' },
+					})),
+				...uploads,
+			]
+		}
+	}
+	async function gotFile(fs) {
+		dispatch('fileStart')
+		endDrag('complete')
+		const files = fs.detail.files
+		const len = uploads.length
+		if (Array.isArray(files)) {
+			files.forEach((f, i) => processFile(f, len + i))
+		} else {
+			processFile(files, len)
+		}
+	}
+	async function processFile(file, inx, method = 'insert') {
+		if (file.name.match(/\.icloud$/)) {
+			error = 'Make sure to sync any iCloud files before uploading'
+		} else if (file.type.includes('pdf')) {
+			error = 'Please screenshot PDFs and upload images'
+		} else if (
+			![
+				'image/png',
+				'image/jpeg',
+				'image/gif',
+				'image/tiff',
+				'image/svg+xml',
+				'image/webp',
+			].includes(file.type)
+		) {
+			error = "This filetype isn't supported but you can take a screenshot and upload that"
+		}
+		if (!error) {
+			try {
+				// Initial file load
+				var reader = new FileReader()
+				reader.onload = function (e) {
+					const newRow = {
+						src: e.target.result,
+						file,
+						compressing: true,
+						uuid: v4(),
+						inx,
+					}
+					if (method === 'insert') {
+						uploads.splice(inx, 0, newRow)
+					} else {
+						uploads[inx] = newRow
+					}
+					// uploads = [
+					//   ...uploads,
+					//   {
+					//     src: e.target.result,
+					//     file,
+					//     compressing: true,
+					//     uuid: v4(),
+					//     inx,
+					//   },
+					// ]
+					// setShellHeight()
+					dispatch('fileChange', { files: uploads })
+				}
+				let url = reader.readAsDataURL(file) // convert to base64 string
+
+				// Compress
+				var compressor = new FileReader()
+				const options = {
+					maxSizeMB: 0.8,
+					maxWidthOrHeight: 1920,
+					useWebWorker: true,
+				}
+				const compressedFile = await imageCompression(file, options)
+				compressor.onload = function (e) {
+					uploads[inx].file = compressedFile
+					uploads[inx].compressing = false
+					dispatch('fileReady', { file: compressedFile })
+					const existing = Object.keys(uploadStatus)
+					uploads
+						.filter(({ uuid, remote }) => !existing.includes(uuid) && !remote)
+						.forEach((u) => uploadImage(u))
+				}
+				let compurl = compressor.readAsDataURL(compressedFile) // convert to base64 string
+			} catch (error) {
+				console.log('problem', error)
+			}
+		} else {
+			setTimeout(() => (error = ''), 9000)
+		}
+	}
+	async function uploadImage(img: Upload) {
+		if (parent) {
 			uploadStatus[img.uuid] = {
 				...uploadStatus[img.uuid],
-				progressStr: 'Uploading...',
+				progressStr: 'Processing...',
 				progress: 0,
 			}
-			await uploadToSignedUrl({ url: rsp.url, image: img })
-			uploadStatus[img.uuid] = {
-				...uploadStatus[img.uuid],
-				progressStr: 'Uploaded',
-				progress: 1,
-			}
-			dispatch('fileUploaded', { file: rsp.media })
-		}
-	}
-}
-function uploadToSignedUrl({ url, image }: { url: string; image: Upload }) {
-	return new Promise((resolve, reject) => {
-		const { file, uuid } = image
-		const req = new XMLHttpRequest()
-		req.open('PUT', url)
-		req.upload.addEventListener('progress', (e) => {
-			console.log(e.loaded / e.total)
-			uploadStatus[uuid].progressStr = ''
-			uploadStatus[uuid].progress = e.loaded / e.total
-		})
-		req.addEventListener('load', (e) => {
-			if (req.status === 200) {
-				trpc().media.update.mutate({
-					id: image.id,
-					status: 'live',
-				})
-				resolve(true)
-			} else {
-				reject(req)
-			}
-		})
-		// var requestOptions = {
-		//   method: 'PUT',
-		//   body: file,
-		//   headers: {
-		//     'Content-Type': 'application/octet-stream',
-		//     'Content-Length': file.size,
-		//   },
-		// }
-		req.send(file)
-
-		// await fetch(url, requestOptions)
-	})
-}
-// function setShellHeight() {
-//   if (shell) {
-//     shell.style.height = ''
-//     setTimeout(() => {
-//       shell.style.height = `${shell.clientHeight}px`
-//     }, 5)
-//   }
-// }
-function remoteDelete(id: string) {
-	trpc().media.delete.mutate({ id })
-}
-function deleteUpload(uuid: string) {
-	// if (shell) {
-	//   const shift = uploads.length === 1 ? 32 : 65
-	//   shell.style.height = `${shell.clientHeight - shift}px`
-	// }
-	uploads = uploads.filter((upload) => {
-		if (upload.uuid === uuid) {
-			if (upload.id) {
-				remoteDelete(upload.id)
-			}
-			return false
-		}
-		return true
-	})
-}
-async function handleUrlSubmission() {
-	if (processingWebshot) return false
-	if (!checkedUrl || checkedUrl !== url || urlError) {
-		await checkGoogleDocUrl()
-	}
-	if (!urlError) {
-		processingWebshot = true
-		const uuid = v4()
-		let inx = uploads.length
-		uploads = [
-			...uploads,
-			{
-				remote: true,
-				webshot: true,
-				uuid,
-				file: { name: urlTitle || url },
-			},
-		]
-		uploadStatus[uuid] = {
-			progressStr: 'Processing...',
-			progress: 0,
-		}
-		setTimeout(() => (url = ''), 50)
-		const rsp = await mutate({
-			mutation: UploadMediaMutation,
-			variables: {
-				url,
+			const rsp = await trpc().media.getUploadUrl.mutate({
 				parentId: parent.id,
-				attachToFeedItemId,
 				parentType: parent.type,
-			},
-		})
-		if (rsp.data.uploadMedia) {
-			uploads[inx].src = getMediaUrl(rsp.data.uploadMedia)
-			uploadStatus[uuid].progressStr = false
-			uploadStatus[uuid].progress = 1
-		} else {
-			uploadStatus[uuid].progressStr = 'Error...'
-		}
-		processingWebshot = false
-	}
-}
-async function checkGoogleDocUrl() {
-	const res = await rest.get('isvalid-gdoc', { url })
-	if (res.data.isValid) {
-		urlError = ''
-		if (res.data.title) {
-			urlTitle = res.data.title
-		}
-	} else {
-		if (res.data.redirect.includes('ServiceLogin')) {
-			urlError = "It seems that doc hasn't been made public. Update and try again."
-		} else {
-			urlError = 'This URL is not a valid Google Doc URL'
+				attachToFeedItemId,
+				mimetype: img.file.type,
+				// feedItemId,
+			})
+			if (rsp) {
+				img.id = rsp.media.id
+				uploadStatus[img.uuid] = {
+					...uploadStatus[img.uuid],
+					progressStr: 'Uploading...',
+					progress: 0,
+				}
+				await uploadToSignedUrl({ url: rsp.url, image: img })
+				uploadStatus[img.uuid] = {
+					...uploadStatus[img.uuid],
+					progressStr: 'Uploaded',
+					progress: 1,
+				}
+				dispatch('fileUploaded', { file: rsp.media })
+			}
 		}
 	}
-}
+	function uploadToSignedUrl({ url, image }: { url: string; image: Upload }) {
+		return new Promise((resolve, reject) => {
+			const { file, uuid } = image
+			const req = new XMLHttpRequest()
+			req.open('PUT', url)
+			req.upload.addEventListener('progress', (e) => {
+				console.log(e.loaded / e.total)
+				uploadStatus[uuid].progressStr = ''
+				uploadStatus[uuid].progress = e.loaded / e.total
+			})
+			req.addEventListener('load', (e) => {
+				if (req.status === 200) {
+					trpc().media.update.mutate({
+						id: image.id,
+						status: 'live',
+					})
+					resolve(true)
+				} else {
+					reject(req)
+				}
+			})
+			// var requestOptions = {
+			//   method: 'PUT',
+			//   body: file,
+			//   headers: {
+			//     'Content-Type': 'application/octet-stream',
+			//     'Content-Length': file.size,
+			//   },
+			// }
+			req.send(file)
 
-// Handle Drag Hints
-async function dragStart(e) {
-	if (!draggingOver) {
-		console.log('start drag')
-		draggingOver = new Date()
+			// await fetch(url, requestOptions)
+		})
 	}
-}
-async function mousemove(e) {
-	if (dragHint) {
-		if (!dragHint.classList.contains('appeared')) {
-			dragHint.classList.add('appeared')
-		}
-		dragHint.style.transform = `translateX(${e.layerX - dragHint.clientWidth / 2}px) translateY(${
-			e.layerY - dragHint.clientHeight / 2
-		}px)`
+	// function setShellHeight() {
+	//   if (shell) {
+	//     shell.style.height = ''
+	//     setTimeout(() => {
+	//       shell.style.height = `${shell.clientHeight}px`
+	//     }, 5)
+	//   }
+	// }
+	function remoteDelete(id: string) {
+		trpc().media.delete.mutate({ id })
 	}
-}
-function endDrag(type) {
-	if (dragHint) {
-		if (type === 'complete') {
-			dragHint.classList.add('completed')
-			dragHint.style.transform += ' scale(15)'
-		}
-		dragHint.classList.remove('appeared')
+	function deleteUpload(uuid: string) {
+		// if (shell) {
+		//   const shift = uploads.length === 1 ? 32 : 65
+		//   shell.style.height = `${shell.clientHeight - shift}px`
+		// }
+		uploads = uploads.filter((upload) => {
+			if (upload.uuid === uuid) {
+				if (upload.id) {
+					remoteDelete(upload.id)
+				}
+				return false
+			}
+			return true
+		})
 	}
-	setTimeout(() => {
-		draggingOver = false
-	}, 1000)
-}
-function openEditor(uuid) {
-	// open pintura image editor
-	openUUID = uuid
-	openItem = uploads.find((item) => item.uuid === openUUID)
-	itemIsOpen = true
-}
-function handlePinturaProcess(event) {
-	const exportedFile = event.detail.dest
-	let atIndex
-	uploads.forEach((item, i) => {
-		if (item.uuid === openUUID) {
-			remoteDelete(item.id)
-			atIndex = i
-			return false
+	async function handleUrlSubmission() {
+		if (processingWebshot) return false
+		if (!checkedUrl || checkedUrl !== url || urlError) {
+			await checkGoogleDocUrl()
 		}
-		return true
-	})
-	processFile(exportedFile, atIndex, 'replace')
-	openItem = false
-	itemIsOpen = false
-}
+		if (!urlError) {
+			processingWebshot = true
+			const uuid = v4()
+			let inx = uploads.length
+			uploads = [
+				...uploads,
+				{
+					remote: true,
+					webshot: true,
+					uuid,
+					file: { name: urlTitle || url },
+				},
+			]
+			uploadStatus[uuid] = {
+				progressStr: 'Processing...',
+				progress: 0,
+			}
+			setTimeout(() => (url = ''), 50)
+			const rsp = await mutate({
+				mutation: UploadMediaMutation,
+				variables: {
+					url,
+					parentId: parent.id,
+					attachToFeedItemId,
+					parentType: parent.type,
+				},
+			})
+			if (rsp.data.uploadMedia) {
+				uploads[inx].src = getMediaUrl(rsp.data.uploadMedia)
+				uploadStatus[uuid].progressStr = false
+				uploadStatus[uuid].progress = 1
+			} else {
+				uploadStatus[uuid].progressStr = 'Error...'
+			}
+			processingWebshot = false
+		}
+	}
+	async function checkGoogleDocUrl() {
+		const res = await rest.get('isvalid-gdoc', { url })
+		if (res.data.isValid) {
+			urlError = ''
+			if (res.data.title) {
+				urlTitle = res.data.title
+			}
+		} else {
+			if (res.data.redirect.includes('ServiceLogin')) {
+				urlError = "It seems that doc hasn't been made public. Update and try again."
+			} else {
+				urlError = 'This URL is not a valid Google Doc URL'
+			}
+		}
+	}
+
+	// Handle Drag Hints
+	async function dragStart(e) {
+		if (!draggingOver) {
+			console.log('start drag')
+			draggingOver = new Date()
+		}
+	}
+	async function mousemove(e) {
+		if (dragHint) {
+			if (!dragHint.classList.contains('appeared')) {
+				dragHint.classList.add('appeared')
+			}
+			dragHint.style.transform = `translateX(${e.layerX - dragHint.clientWidth / 2}px) translateY(${
+				e.layerY - dragHint.clientHeight / 2
+			}px)`
+		}
+	}
+	function endDrag(type) {
+		if (dragHint) {
+			if (type === 'complete') {
+				dragHint.classList.add('completed')
+				dragHint.style.transform += ' scale(15)'
+			}
+			dragHint.classList.remove('appeared')
+		}
+		setTimeout(() => {
+			draggingOver = false
+		}, 1000)
+	}
+	function openEditor(uuid) {
+		// open pintura image editor
+		openUUID = uuid
+		openItem = uploads.find((item) => item.uuid === openUUID)
+		itemIsOpen = true
+	}
+	function handlePinturaProcess(event) {
+		const exportedFile = event.detail.dest
+		let atIndex
+		uploads.forEach((item, i) => {
+			if (item.uuid === openUUID) {
+				remoteDelete(item.id)
+				atIndex = i
+				return false
+			}
+			return true
+		})
+		processFile(exportedFile, atIndex, 'replace')
+		openItem = false
+		itemIsOpen = false
+	}
 </script>
 
 <FileUpload multiple={true} on:input={gotFile}>
 	<div
 		class={tw(
-			`dropzone relative border-2  border-dashed border-emerald-200 bg-emerald-50 transition duration-500 ${className}`
+			`dropzone relative border-2  border-dashed border-emerald-200 bg-emerald-50 transition duration-500 ${className}`,
 		)}
 		on:dragenter={dragStart}
 		on:dragover={mousemove}
-		on:dragend={() => console.log('dragend'), endDrag()}
-		on:dragleave={() => console.log('dragleave'), endDrag()}
-		on:mouseup={() => console.log('mouseup'), endDrag()}
+		on:dragend={(() => console.log('dragend'), endDrag())}
+		on:dragleave={(() => console.log('dragleave'), endDrag())}
+		on:mouseup={(() => console.log('mouseup'), endDrag())}
 		bind:this={shell}
 	>
 		{#if draggingOver}
@@ -504,11 +510,7 @@ function handlePinturaProcess(event) {
 		<button
 			class="hover:text-green absolute bottom-0 right-2 top-0 my-1.5 flex items-center justify-center rounded border border-slate-600 bg-white px-3 py-1 text-sm font-medium text-slate-700 transition-all duration-200"
 			style={`transform: translateX(${url.length ? '0rem' : '7rem'})`}
-			><HeroIcon
-				src={CloudArrowUp}
-				solid
-				class="mr-1 w-5 fill-current"
-			/>{urlError
+			><HeroIcon src={CloudArrowUp} solid class="mr-1 w-5 fill-current" />{urlError
 				? 'Try Again'
 				: 'Upload'}</button
 		>
@@ -525,8 +527,8 @@ function handlePinturaProcess(event) {
 	<PinturaEditor
 		{...getEditorDefaults({
 			imageWriter: createDefaultImageWriter({
-				renameFile: (file) => openItem.file.name
-			})
+				renameFile: (file) => openItem.file.name,
+			}),
 		})}
 		src={openItem.src}
 		utils={['redact', 'crop', 'annotate', 'sticker', 'filter', 'finetune']}
@@ -536,70 +538,70 @@ function handlePinturaProcess(event) {
 </Modal>
 
 <style lang="postcss">
-.dragHint {
-	transition:
-		width 0.1s,
-		height 0.1s,
-		opacity 0.1s;
-	transform-origin: center;
-	&.appeared {
-		opacity: 0.2;
-		width: 6rem;
-		height: 6rem;
-		transform: translateX(50%), translateY(50%);
+	.dragHint {
 		transition:
-			width 0.2s,
-			height 0.2s,
-			opacity 0.4s;
-	}
-	&.completed {
-		opacity: 0;
-		width: 6rem;
-		height: 6rem;
-		transition:
-			width 0.2s,
-			height 0.2s,
-			opacity 0.4s,
-			transform 0.8s;
-	}
-}
-.placeholder.slide-away {
-	margin-top: -5.002rem;
-}
-.dropzone {
-	min-height: 6.375rem;
-	overflow: hidden;
-	padding: 0.75rem 0.75rem 0.75rem;
-	@apply text-green rounded-xl;
-	h4 {
-		font-size: 0.9rem;
-		margin: 0 auto;
-		text-align: center;
-		:global(span) {
-			display: block;
-			font-size: 0.85rem;
-			font-weight: 600;
-			margin-top: 0.4rem;
-			@apply text-gray-700;
-			opacity: 0.85;
+			width 0.1s,
+			height 0.1s,
+			opacity 0.1s;
+		transform-origin: center;
+		&.appeared {
+			opacity: 0.2;
+			width: 6rem;
+			height: 6rem;
+			transform: translateX(50%), translateY(50%);
+			transition:
+				width 0.2s,
+				height 0.2s,
+				opacity 0.4s;
+		}
+		&.completed {
+			opacity: 0;
+			width: 6rem;
+			height: 6rem;
+			transition:
+				width 0.2s,
+				height 0.2s,
+				opacity 0.4s,
+				transform 0.8s;
 		}
 	}
-	.imgwrap {
-		width: 3.5rem;
-		height: 3.5rem;
-		background-size: cover;
+	.placeholder.slide-away {
+		margin-top: -5.002rem;
 	}
-}
-.error {
-	@apply bg-red rounded-b-xl;
-	padding: 1rem;
-	font-size: 0.85rem;
-	font-weight: 600;
-	position: relative;
-	text-align: center;
-	z-index: 1;
-}
-:global(.pintura-editor) {
-	height: 600px;
-}
+	.dropzone {
+		min-height: 6.375rem;
+		overflow: hidden;
+		padding: 0.75rem 0.75rem 0.75rem;
+		@apply text-green rounded-xl;
+		h4 {
+			font-size: 0.9rem;
+			margin: 0 auto;
+			text-align: center;
+			:global(span) {
+				display: block;
+				font-size: 0.85rem;
+				font-weight: 600;
+				margin-top: 0.4rem;
+				@apply text-gray-700;
+				opacity: 0.85;
+			}
+		}
+		.imgwrap {
+			width: 3.5rem;
+			height: 3.5rem;
+			background-size: cover;
+		}
+	}
+	.error {
+		@apply bg-red rounded-b-xl;
+		padding: 1rem;
+		font-size: 0.85rem;
+		font-weight: 600;
+		position: relative;
+		text-align: center;
+		z-index: 1;
+	}
+	:global(.pintura-editor) {
+		height: 600px;
+	}
 </style>

@@ -1,11 +1,11 @@
-<div class="arrow relative mx-auto mt-20 h-28 w-72 overflow-hidden bg-brightgreen-800">
-	<div class="stripes absolute top-0 left-0 h-full w-full" />
-	<div class="flex h-full w-[200rem] animate-panX-7 opacity-90">
+<div class="arrow bg-brightgreen-800 relative mx-auto mt-20 h-28 w-72 overflow-hidden">
+	<div class="stripes absolute left-0 top-0 h-full w-full" />
+	<div class="animate-panX-7 flex h-full w-[200rem] opacity-90">
 		<div
-			class="h-full w-[100rem] bg-gradient-to-r from-transparent via-emerald-200 to-brightgreen-800"
+			class="to-brightgreen-800 h-full w-[100rem] bg-gradient-to-r from-transparent via-emerald-200"
 		/>
 		<div
-			class="h-full w-[100rem] bg-gradient-to-r from-brightgreen-800 via-emerald-200 to-transparent"
+			class="from-brightgreen-800 h-full w-[100rem] bg-gradient-to-r via-emerald-200 to-transparent"
 		/>
 	</div>
 </div>

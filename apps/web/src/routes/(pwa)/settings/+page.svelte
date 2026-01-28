@@ -55,11 +55,11 @@
 </script>
 
 <Screen title="Settings" bigTitle="Settings">
-	<form on:submit={(e) => submit(e)} class="pt-safe-offset-8 relative top-6 lg:pt-0">
+	<form on:submit={(e) => submit(e)} class="relative top-6 pt-safe-offset-8 lg:pt-0">
 		<div class="relative mx-auto flex max-w-lg flex-col gap-5 px-2" bind:this={scrollElm}>
 			<FormElements elements={visibleElements} bind:values shouldAutoFocus={true} />
 			<Button
-				class="border-a-accent/10 border-b-a-accent/10 bg-a-accent/5 text-a-accent hover:bg-a-accent/10 mt-8 w-52 border border-b-2 py-5  font-semibold shadow-none brightness-90"
+				class="mt-8 w-52 border border-b-2 border-a-accent/10 border-b-a-accent/10 bg-a-accent/5 py-5 font-semibold text-a-accent  shadow-none brightness-90 hover:bg-a-accent/10"
 				type="submit"
 				>{status === 'ready' ? 'Save' : status === 'success' ? 'Saved!' : 'Saving...'}</Button
 			>

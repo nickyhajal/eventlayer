@@ -1,13 +1,14 @@
 <script lang="ts">
 	// import InfoPane from './InfoPane.svelte'
-	import { SvelteComponent, createEventDispatcher } from 'svelte'
-	import FormRow from './FormRow.svelte'
-	import Input from './Input.svelte'
-	import IconButton from './IconButton.svelte'
-	import Element from './Element.svelte'
-	import { tw } from 'src/lib/tw'
-	import Button from './Button.svelte'
 	import { page } from '$app/stores'
+	import { tw } from 'src/lib/tw'
+	import { createEventDispatcher, SvelteComponent } from 'svelte'
+
+	import Button from './Button.svelte'
+	import Element from './Element.svelte'
+	import FormRow from './FormRow.svelte'
+	import IconButton from './IconButton.svelte'
+	import Input from './Input.svelte'
 
 	export let fields
 	export let values = {}

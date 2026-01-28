@@ -1,7 +1,9 @@
 <script lang="ts">
-	import { createEventDispatcher, type SvelteComponent } from 'svelte'
 	import { ChevronLeft, ChevronRight } from '@steeze-ui/heroicons'
+	import { createEventDispatcher, type SvelteComponent } from 'svelte'
+
 	import { dayjs } from '@matterloop/util'
+
 	import Carousel from './Carousel.svelte'
 	import HeroIcon from './HeroIcon.svelte'
 
@@ -36,7 +38,7 @@
 		'September',
 		'October',
 		'November',
-		'December'
+		'December',
 	]
 	let now = new Date()
 	let year = now.getFullYear() //	this is the month & year displayed
@@ -46,7 +48,7 @@
 
 	const dispatch = createEventDispatcher()
 
-	$: month, year, items, initContent()
+	$: (month, year, items, initContent())
 	$: isThisMonth = `${year}-${month + 1}` === dayjs().format('YYYY-M')
 
 	//	The Calendar Component just displays stuff in a row & column. It has no knowledge of dates.
@@ -67,7 +69,7 @@
 			const existing = days.find((d) => date === dayjs(d.date).format('YYYY-MM-DD'))
 			if (existing) {
 				values[date] = items.filter(
-					(item) => dayjs(item.event.startAt).format('YYYY-MM-DD') === date
+					(item) => dayjs(item.event.startAt).format('YYYY-MM-DD') === date,
 				)
 			}
 		})
@@ -121,7 +123,7 @@
 				days.push({
 					name: nextMonthAbbrev + ' ' + (i + 1),
 					enabled: false,
-					date: d
+					date: d,
 				})
 			else days.push({ name: '' + (i + 1), enabled: false, date: d })
 		}
@@ -171,43 +173,43 @@
 	}
 </script>
 
-<div class={`${className} m-auto bg-white overflow-hidden `}>
+<div class={`${className} m-auto overflow-hidden bg-white `}>
 	<div
-		class="relative w-full py-4 flex items-center justify-between h-14 border-b border-slate-700"
+		class="relative flex h-14 w-full items-center justify-between border-b border-slate-700 py-4"
 	>
 		{#if !isThisMonth}
 			<button
-				class="absolute ml-4 text-gray-900/80 bg-slate-100 px-3 py-1.5 rounded-lg text-xs"
+				class="absolute ml-4 rounded-lg bg-slate-100 px-3 py-1.5 text-xs text-gray-900/80"
 				on:click={handleClickToday}
 			>
 				Back to Today
 			</button>
 		{/if}
-		<div class="w-full py-4 flex items-center justify-center">
+		<div class="flex w-full items-center justify-center py-4">
 			<button
 				on:click={() => prev()}
-				class="px-1.5 py-1 rounded-md text-slate-700 bg-gray-400 hover:text-gray-800 hover:bg-gray-500 transition-all flex justify-center items-center"
+				class="flex items-center justify-center rounded-md bg-gray-400 px-1.5 py-1 text-slate-700 transition-all hover:bg-gray-500 hover:text-gray-800"
 			>
-				<HeroIcon src={ChevronLeft} class="w-4 h-4 stroke-[3px]" />
+				<HeroIcon src={ChevronLeft} class="h-4 w-4 stroke-[3px]" />
 			</button>
-			<div class="w-60 text-sm flex font-semibold items-center justify-center">
+			<div class="flex w-60 items-center justify-center text-sm font-semibold">
 				{monthNames[month]}
 				{year}
 			</div>
 			<button
 				on:click={() => next()}
-				class="px-1.5 py-1 rounded-md text-slate-700 bg-gray-400 hover:text-gray-800 hover:bg-gray-500 transitin-all flex justify-center items-center"
+				class="transitin-all flex items-center justify-center rounded-md bg-gray-400 px-1.5 py-1 text-slate-700 hover:bg-gray-500 hover:text-gray-800"
 			>
-				<HeroIcon src={ChevronRight} class="w-4 h-4 stroke-[3px] relative left-[1px]" />
+				<HeroIcon src={ChevronRight} class="relative left-[1px] h-4 w-4 stroke-[3px]" />
 			</button>
 		</div>
 	</div>
 	<div
-		class="calendar grid grid grid-cols-[repeat(7,minmax(120px,1fr))] grid-rows-[40px] auto-rows-[120px]"
+		class="calendar grid grid auto-rows-[120px] grid-cols-[repeat(7,minmax(120px,1fr))] grid-rows-[40px]"
 	>
 		{#each headers as header}
 			<span
-				class="text-xs uppercase text-gray-900 text-center leading-[40px] border-b border-gray-600 font-medium"
+				class="border-b border-gray-600 text-center text-xs font-medium uppercase leading-[40px] text-gray-900"
 			>
 				{header}
 			</span>
@@ -231,7 +233,7 @@
 				{@const firstItem = itemsOnDay[0]}
 				{#if firstItem}
 					<section
-						class={`z-10 h-full mx-2 flex justify-end flex-col ${
+						class={`z-10 mx-2 flex h-full flex-col justify-end ${
 							itemsOnDay.length > 1 ? 'pb-2' : 'pb-8'
 						}`}
 						style="grid-column: {firstItem.startCol} / span 1;      
@@ -241,7 +243,7 @@
 						<Carousel>
 							{#each itemsOnDay as item (item.event.id)}
 								<button
-									class="flex flex-col justify-end cursor-pointer text-left"
+									class="flex cursor-pointer flex-col justify-end text-left"
 									on:click={(e) => itemClick(item)}
 								>
 									<svelte:component this={contentComponent} event={item.event} />
@@ -257,13 +259,13 @@
 
 <style lang="postcss">
 	.day {
-		@apply px-3 py-2 bg-slate-200 border-b border-r border-gray-600 text-xs  text-gray-800;
+		@apply border-b border-r border-gray-600 bg-slate-200 px-3 py-2 text-xs  text-gray-800;
 	}
 	.day.today {
 		@apply bg-yellow-100;
 	}
 	.day-disabled {
-		@apply bg-white cursor-not-allowed text-gray-700;
+		@apply cursor-not-allowed bg-white text-gray-700;
 	}
 	.day:nth-of-type(7n + 7) {
 		border-right: 0;

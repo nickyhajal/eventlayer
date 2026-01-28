@@ -112,8 +112,8 @@
 		/>
 	</div>
 	<div class="relative mx-auto -mt-2 max-w-7xl bg-slate-100">
-		<div class="mb-8 max-w-2xl mt-16 px-4 sm:px-0">
-			<p class="text-lg mb-4">
+		<div class="mb-8 mt-16 max-w-2xl px-4 sm:px-0">
+			<p class="mb-4 text-lg">
 				A massive thank you to the companies and organizations that without their support this
 				Gathering would not be possible.
 			</p>
@@ -163,7 +163,7 @@
 						{/if}
 					</div>
 					<div
-						class="text-a-accent mt-2 flex h-12 w-full items-center justify-around border-t border-slate-100 font-semibold"
+						class="mt-2 flex h-12 w-full items-center justify-around border-t border-slate-100 font-semibold text-a-accent"
 					>
 						{#if id}
 							<a

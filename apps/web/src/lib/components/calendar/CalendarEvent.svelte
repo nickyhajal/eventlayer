@@ -1,37 +1,38 @@
 <script lang="ts">
-import { Avatar, HeroIcon } from '@matterloop/ui'
-import { dayjs } from '@matterloop/util'
-import { isMobile } from '$lib/core/stores'
-import type { CalendarEventClient } from '$lib/server/procedures/event'
-import { getMeContext } from '$lib/state/getContexts'
-import { trpc } from '$lib/trpc/client'
-import { createEventDispatcher } from 'svelte'
-import { X } from 'svelte-hero-icons'
+	import { isMobile } from '$lib/core/stores'
+	import type { CalendarEventClient } from '$lib/server/procedures/event'
+	import { getMeContext } from '$lib/state/getContexts'
+	import { trpc } from '$lib/trpc/client'
+	import { createEventDispatcher } from 'svelte'
+	import { X } from 'svelte-hero-icons'
 
-let className = ''
+	import { Avatar, HeroIcon } from '@matterloop/ui'
+	import { dayjs } from '@matterloop/util'
 
-export { className as class }
-export let event: CalendarEventClient | null
+	let className = ''
 
-let submitting = false
-const me = getMeContext()
-const dispatch = createEventDispatcher()
-$: isAttended = event?.event_users.some((user) => user.userId === $me.id)
-$: event_owner = event?.event_users?.find((user) => user.role === 'owner')
+	export { className as class }
+	export let event: CalendarEventClient | null
 
-const handleAttend = async () => {
-	if (!event) {
-		return
+	let submitting = false
+	const me = getMeContext()
+	const dispatch = createEventDispatcher()
+	$: isAttended = event?.event_users.some((user) => user.userId === $me.id)
+	$: event_owner = event?.event_users?.find((user) => user.role === 'owner')
+
+	const handleAttend = async () => {
+		if (!event) {
+			return
+		}
+		submitting = true
+		try {
+			const rsp = await trpc().event.toggleEventSignUp.mutate({ eventId: event.id })
+		} catch (error) {
+			console.log(error)
+		}
+		dispatch('refresh')
+		submitting = false
 	}
-	submitting = true
-	try {
-		const rsp = await trpc().event.toggleEventSignUp.mutate({ eventId: event.id })
-	} catch (error) {
-		console.log(error)
-	}
-	dispatch('refresh')
-	submitting = false
-}
 </script>
 
 {#if event}
@@ -113,7 +114,7 @@ const handleAttend = async () => {
 {/if}
 
 <style lang="postcss">
-.close {
-	@apply mx-auto w-80;
-}
+	.close {
+		@apply mx-auto w-80;
+	}
 </style>

@@ -1,37 +1,37 @@
 <script lang="ts">
-import Element from '$lib/components/form/Element.svelte'
-import { createEventDispatcher, type SvelteComponent } from 'svelte'
+	import Element from '$lib/components/form/Element.svelte'
+	import { createEventDispatcher, type SvelteComponent } from 'svelte'
 
-import { FormRow, tw } from '@matterloop/ui'
+	import { FormRow, tw } from '@matterloop/ui'
 
-interface Option {
-	label: string
-	value: string
-}
-interface FormElement {
-	formId: string
-	type: string
-	content: string
-	label: string
-	placeholder: string
-	ord: number
-	page: number
-	step: number
-	group: number
-	options: Option[]
-	key?: string
-}
-export let elements: FormElement[]
-export let rowClass = ''
-export let values = {}
-export let shouldAutoFocus = true
-export let includedComponents: { [key: string]: SvelteComponent } = {}
-export let handleRowClick: false | ((e: FormElement) => void) = false
-export let selectedId: string
+	interface Option {
+		label: string
+		value: string
+	}
+	interface FormElement {
+		formId: string
+		type: string
+		content: string
+		label: string
+		placeholder: string
+		ord: number
+		page: number
+		step: number
+		group: number
+		options: Option[]
+		key?: string
+	}
+	export let elements: FormElement[]
+	export let rowClass = ''
+	export let values = {}
+	export let shouldAutoFocus = true
+	export let includedComponents: { [key: string]: SvelteComponent } = {}
+	export let handleRowClick: false | ((e: FormElement) => void) = false
+	export let selectedId: string
 
-function getVisibleElements(elements) {
-	return elements.filter(({ hide }) => !hide || !hide(values))
-}
+	function getVisibleElements(elements) {
+		return elements.filter(({ hide }) => !hide || !hide(values))
+	}
 </script>
 
 {#each elements as el, i}
@@ -52,15 +52,15 @@ function getVisibleElements(elements) {
 				{/if}
 				<FormRow>
 					{#each getVisibleElements(el) as props}
-						<Element props={props} bind:values={values} includedComponents={includedComponents} />
+						<Element {props} bind:values {includedComponents} />
 					{/each}
 				</FormRow>
 			</div>
 		{:else}
 			<Element
-				props={{...el, autofocus: shouldAutoFocus && i === 0}}
-				bind:values={values}
-				includedComponents={includedComponents}
+				props={{ ...el, autofocus: shouldAutoFocus && i === 0 }}
+				bind:values
+				{includedComponents}
 			/>
 		{/if}
 	</div>

@@ -35,7 +35,7 @@
 	bodyClass="bg-slate-100"
 >
 	<div class="mx-auto -mt-2 max-w-7xl bg-slate-100">
-		<div class="mb-8 max-w-2xl mt-16 px-4 sm:px-0"></div>
+		<div class="mb-8 mt-16 max-w-2xl px-4 sm:px-0"></div>
 		<div class="mt-2 grid grid-cols-2 gap-1.5 py-2 md:grid-cols-3 md:gap-4">
 			{#each ordered.filter(({ mainEventUser, media }) => true || (media && (showType === 'all' || mainEventUser.type === showType))) as user}
 				{@const {
@@ -48,7 +48,7 @@
 					class="relative z-0 flex flex-col overflow-hidden rounded-xl border border-b-2 border-slate-400/20 bg-white p-0"
 				>
 					<div
-						class="mb-2 h-48 w-full rounded-t-lg from-slate-100 to-slate-200 bg-gradient-to-tl bg-cover bg-center"
+						class="mb-2 h-48 w-full rounded-t-lg bg-gradient-to-tl from-slate-100 to-slate-200 bg-cover bg-center"
 						style={media
 							? `background-image: url(${getMediaUrl(media, `w-256,h-256,fo-face,z-0.8`)})`
 							: ''}

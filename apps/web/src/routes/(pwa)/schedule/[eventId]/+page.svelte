@@ -59,8 +59,8 @@
 	back="/schedule"
 	photo={event.photo}
 >
-	<div class="shell mx-auto max-w-7xl pt-safe-offset-3 pb-20">
-		<div class="text-a-accent text-base font-semibold">
+	<div class="shell mx-auto max-w-7xl pb-20 pt-safe-offset-3">
+		<div class="text-base font-semibold text-a-accent">
 			{dayjs(data.event.startsAt).format('dddd MMMM Do [at] h:mma')}
 		</div>
 		<div class="pb-3 text-3xl font-bold">{event.name}</div>
@@ -77,7 +77,7 @@
 						? '!bg-emerald-500'
 						: canRsvp && $me?.id && !rsvpd
 							? 'bg-a-accent !text-white/100'
-							: '!bg-slate-100/60 !text-slate-400 border border-slate-400/10 border-b-slate-700/10 cursor-not-allowed'}"
+							: 'cursor-not-allowed border border-slate-400/10 border-b-slate-700/10 !bg-slate-100/60 !text-slate-400'}"
 				>
 					{#if loading}
 						Loading...
@@ -113,14 +113,14 @@
 		{#if users?.length > 0 && event?.showAttendeeList}
 			<div class="mt-3 flex flex-col gap-2">
 				{#if !shouldGroup}
-					<div class="text-a-accent mb-0 mt-2 text-lg font-semibold brightness-95">
+					<div class="mb-0 mt-2 text-lg font-semibold text-a-accent brightness-95">
 						Attending this Event
 					</div>
 				{/if}
 				{#each users as user}
 					{#if shouldGroup}
 						{#if getLastType(user)}
-							<div class="text-a-accent mb-0 mt-2 text-lg font-semibold brightness-95">
+							<div class="mb-0 mt-2 text-lg font-semibold text-a-accent brightness-95">
 								{getUserTitle(user.type)}
 							</div>
 						{/if}
