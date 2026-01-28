@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit'
 
-import { and, apiKeyTable, db, eq, isNull } from '@matterloop/db'
+import { and, apiKeyTable, asc, db, eq, eventUserFieldTable, isNull } from '@matterloop/db'
 
 export const load = async ({ locals }) => {
 	if (!locals.event?.id) {
@@ -13,7 +13,13 @@ export const load = async ({ locals }) => {
 		orderBy: (table, { desc }) => [desc(table.createdAt)],
 	})
 
-	// Return safe data (no hash)
+	// Load custom user fields for this event
+	const customFields = await db.query.eventUserFieldTable.findMany({
+		where: eq(eventUserFieldTable.eventId, locals.event.id),
+		orderBy: [asc(eventUserFieldTable.ord)],
+	})
+
+	// Return safe data (no hash for API keys)
 	return {
 		apiKeys: apiKeys.map((key) => ({
 			id: key.id,
@@ -22,5 +28,6 @@ export const load = async ({ locals }) => {
 			lastUsedAt: key.lastUsedAt,
 			createdAt: key.createdAt,
 		})),
+		customFields,
 	}
 }

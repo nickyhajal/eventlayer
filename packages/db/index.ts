@@ -10,6 +10,7 @@ import * as eventTicketSchema from './schema/event_ticket'
 import * as eventUserSchema from './schema/event_user'
 import * as eventUserCheckinSchema from './schema/event_user_checkin'
 import * as eventUserConnectionSchema from './schema/event_user_connection'
+import * as eventUserFieldSchema from './schema/event_user_field'
 import * as eventUserInfoSchema from './schema/event_user_info'
 import * as formSchema from './schema/form'
 import * as loginLinkSchema from './schema/login_link'
@@ -27,6 +28,7 @@ export * from './schema/organization'
 export * from './schema/page'
 export * from './schema/menu'
 export * from './schema/event_user'
+export * from './schema/event_user_field'
 export * from './schema/event_user_info'
 export * from './schema/user'
 export * from './schema/venue'
@@ -48,6 +50,7 @@ export const db = drizzle(connection, {
     ...apiKeySchema,
     ...userSchema,
     ...eventSchema,
+    ...eventUserFieldSchema,
     ...eventUserInfoSchema,
     ...eventUserCheckinSchema,
     ...eventUserConnectionSchema,

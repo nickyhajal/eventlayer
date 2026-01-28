@@ -7,11 +7,14 @@ import { z } from "zod";
 import { EventFns, VenueFns } from "@matterloop/api";
 import {
   and,
+  asc,
   db,
   desc,
   eq,
   eventTicketTable,
+  eventUserFieldTable,
   loginLinkTable,
+  or,
 } from "@matterloop/db";
 import { ActiveLoginLink } from "@matterloop/api/src/models/ActiveLoginLink";
 
@@ -58,5 +61,20 @@ export const load = async ({ locals, params, url }) => {
       width: 320,
     },
   );
-  return { user, qrcode, ticket, login_link: login_link?.url };
+
+  // Load custom fields applicable to this user
+  const allCustomFields = await db.query.eventUserFieldTable.findMany({
+    where: eq(eventUserFieldTable.eventId, locals.event.id),
+    orderBy: [asc(eventUserFieldTable.ord)],
+  });
+
+  // Filter fields by scope
+  const customFields = allCustomFields.filter((field) => {
+    if (field.scope === 'all') return true;
+    if (field.scope === 'user' && field.scopeValue === user.userId) return true;
+    if (field.scope === 'type' && field.scopeValue === user.type) return true;
+    return false;
+  });
+
+  return { user, qrcode, ticket, login_link: login_link?.url, customFields };
 };

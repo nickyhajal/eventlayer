@@ -258,7 +258,12 @@ curl -H "Authorization: Bearer el_..." \
       "linkedinUrl": "https://linkedin.com/in/janesmith",
       "twitterUrl": "https://twitter.com/janesmith",
       "websiteUrl": "https://janesmith.com",
-      "createdAt": "2025-01-10T09:00:00Z"
+      "createdAt": "2025-01-10T09:00:00Z",
+      "customFields": {
+        "dietary_restrictions": "Vegetarian",
+        "tshirt_size": "L",
+        "special_needs": null
+      }
     }
   ],
   "meta": {
@@ -272,6 +277,17 @@ curl -H "Authorization: Bearer el_..." \
   }
 }
 ```
+
+**Custom Fields:**
+
+If your event has custom user fields configured with "Public" visibility, they will be included in the `customFields` object for each user. Only fields applicable to each user (based on the field's scope setting) are included.
+
+- Fields scoped to "All Users" appear for all users
+- Fields scoped to a specific "User Type" (e.g., "Speaker") only appear for users of that type
+- Fields scoped to a specific user only appear for that user
+- The value is `null` if the user has not provided a value for that field
+
+Custom fields can be configured in **Settings > Advanced > Custom User Fields** in the admin dashboard.
 
 **User Types:**
 - `attendee` - Regular event attendee
@@ -317,6 +333,11 @@ Currently, there are no rate limits on the REST API. Please be respectful and ca
 
 ## Changelog
 
+### 2025-01-27
+- Added `customFields` property to `/rest/users` response for users with public custom fields
+- Custom fields allow event admins to define additional user properties (text, textarea, boolean, options)
+- Only fields with "Public" visibility are included in the REST API response
+
 ### 2025-01-22
 - Added filtering, ordering, and pagination to all list endpoints
 - Added `has` and `null` special filters (e.g., `?has=avatar` for users with avatars)
@@ -340,6 +361,10 @@ REST API endpoints are located in:
 API key management:
 - `packages/db/schema/api_key.ts` - Database schema
 - `packages/api/src/router/apiKeyProcedures.ts` - tRPC procedures for key management
+
+Custom user fields:
+- `packages/db/schema/event_user_field.ts` - Database schema for field definitions
+- `packages/api/src/router/eventUserFieldProcedures.ts` - tRPC procedures for field management
 
 ### Adding New Endpoints
 

@@ -13,8 +13,10 @@
 	import Check from 'lucide-svelte/icons/check'
 	import { toast } from 'svelte-sonner'
 
-	import type { FullEventUser, User } from '@matterloop/db'
+	import type { EventUserField, FullEventUser, User } from '@matterloop/db'
 	import { merge, tw } from '@matterloop/util'
+
+	import Switch from '$lib/components/ui/switch/switch.svelte'
 
 	export let user: Partial<FullEventUser> = {
 		firstName: '',
@@ -26,11 +28,15 @@
 	export let inDialog = false
 	export let titleClass = ''
 	export let showTitle = true
+	// Custom fields passed from the page
+	export let customFields: EventUserField[] = []
 	let error = ''
 	let userInEvent = false
 	let emailConfirmed: string = user?.id ? 'existing-user' : ''
-	user.info = merge(
-		{
+
+	// Build default info object including custom fields
+	function buildDefaultInfo() {
+		const defaultInfo: Record<string, { value: string }> = {
 			company: { value: '' },
 			title: { value: '' },
 			linkedin_url: { value: '' },
@@ -38,9 +44,27 @@
 			diveTeam: { value: '' },
 			dinnerTable: { value: '' },
 			bio: { value: '' },
-		},
-		user?.info || {},
-	)
+		}
+		// Add custom fields to default info
+		customFields.forEach((field) => {
+			defaultInfo[field.key] = { value: '' }
+		})
+		return defaultInfo
+	}
+
+	user.info = merge(buildDefaultInfo(), user?.info || {})
+
+	// Helper to get custom field value with proper type handling
+	function getCustomFieldValue(key: string): string {
+		return user.info?.[key]?.value ?? ''
+	}
+
+	// Helper to set custom field value
+	function setCustomFieldValue(key: string, value: string) {
+		if (!user.info) user.info = {}
+		if (!user.info[key]) user.info[key] = { value: '' }
+		user.info[key].value = value
+	}
 	$: buttonMsg = emailConfirmed ? (user?.id ? 'Save User' : 'Add User') : 'Check Email'
 	$: editing = user?.id ? true : false
 	$: title = editing ? `${user?.firstName} ${user?.lastName}` : 'Add a User'
@@ -289,6 +313,62 @@
 						/>
 					</div>
 				{/if} -->
+
+				<!-- Custom Fields Section -->
+				<!-- TODO: Implement attendee-editable fields in PWA profile edit -->
+				{#if customFields.length > 0}
+					<div class="mt-4 border-t border-stone-200 pt-4">
+						<Label class="mb-3 block text-sm font-semibold text-stone-700">Custom Fields</Label>
+						{#each customFields as field (field.id)}
+							<div class="mb-3 flex flex-col items-start justify-center gap-1">
+								<Label for={`custom-${field.key}`} class="text-right">{field.label}</Label>
+								{#if field.fieldType === 'text'}
+									<Input
+										id={`custom-${field.key}`}
+										type="text"
+										value={getCustomFieldValue(field.key)}
+										on:input={(e) => setCustomFieldValue(field.key, e.currentTarget.value)}
+										class="col-span-3"
+									/>
+								{:else if field.fieldType === 'textarea'}
+									<Textarea
+										id={`custom-${field.key}`}
+										value={getCustomFieldValue(field.key)}
+										on:input={(e) => setCustomFieldValue(field.key, e.currentTarget.value)}
+										class="col-span-3"
+									/>
+								{:else if field.fieldType === 'boolean'}
+									<Switch
+										id={`custom-${field.key}`}
+										checked={getCustomFieldValue(field.key) === 'true'}
+										onCheckedChange={(checked) =>
+											setCustomFieldValue(field.key, checked ? 'true' : 'false')}
+									/>
+								{:else if field.fieldType === 'options'}
+									{@const options = field.options?.split(',').map((o) => o.trim()) || []}
+									<Select.Root
+										selected={options.includes(getCustomFieldValue(field.key))
+											? {
+													value: getCustomFieldValue(field.key),
+													label: getCustomFieldValue(field.key),
+												}
+											: undefined}
+										onSelectedChange={(v) => setCustomFieldValue(field.key, v?.value || '')}
+									>
+										<Select.Trigger class="w-full">
+											<Select.Value placeholder="Select an option" />
+										</Select.Trigger>
+										<Select.Content>
+											{#each options as option}
+												<Select.Item value={option} label={option}>{option}</Select.Item>
+											{/each}
+										</Select.Content>
+									</Select.Root>
+								{/if}
+							</div>
+						{/each}
+					</div>
+				{/if}
 			{/if}
 		{/if}
 	</div>

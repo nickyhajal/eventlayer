@@ -61,7 +61,12 @@
 	<div>
 		<div class="grid grid-cols-[20rem_1fr] gap-8">
 			<div>
-				<UserForm user={data.user} titleClass="text-2xl font-semibold" showTitle={false} />
+				<UserForm
+					user={data.user}
+					titleClass="text-2xl font-semibold"
+					showTitle={false}
+					customFields={data.customFields}
+				/>
 			</div>
 			<div>
 				<!-- <div
