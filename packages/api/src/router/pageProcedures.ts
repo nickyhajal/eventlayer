@@ -1,8 +1,9 @@
 // lib/trpc/router.ts
 import { error } from '@sveltejs/kit'
 import { initTRPC, TRPCError } from '@trpc/server'
+import { z } from 'zod'
 
-import { and, db, eq, pageSchema, pageTable } from '@matterloop/db'
+import { and, db, eq, ilike, or, pageSchema, pageTable } from '@matterloop/db'
 
 import {
   procedureWithContext,
@@ -14,6 +15,23 @@ import {
 
 const t = initTRPC.context<TrpcContext>().create()
 export const pageProcedures = t.router({
+  search: procedureWithContext
+    .use(verifyEvent())
+    .input(z.object({ q: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const pages = await db.query.pageTable.findMany({
+        where: and(
+          eq(pageTable.eventId, ctx.event.id),
+          or(
+            ilike(pageTable.title, `%${input.q}%`),
+            ilike(pageTable.subtitle, `%${input.q}%`),
+            ilike(pageTable.path, `%${input.q}%`),
+          ),
+        ),
+        limit: 10,
+      })
+      return pages
+    }),
   upsert: procedureWithContext
     .use(verifyAdmin())
     .use(verifyEvent())

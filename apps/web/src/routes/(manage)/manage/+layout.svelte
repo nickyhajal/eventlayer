@@ -1,121 +1,19 @@
 <script lang="ts">
 	import { page } from '$app/stores'
-	import Calendar from 'lucide-svelte/icons/calendar'
-	import FileQuestion from 'lucide-svelte/icons/file-question'
-	import FileText from 'lucide-svelte/icons/file-text'
-	import Handshake from 'lucide-svelte/icons/handshake'
-	import HelpCircle from 'lucide-svelte/icons/help-circle'
-	import Home from 'lucide-svelte/icons/home'
-	import KeyRound from 'lucide-svelte/icons/key-round'
-	import Mail from 'lucide-svelte/icons/mail'
-	import Pin from 'lucide-svelte/icons/map-pinned'
-	import SquareMenu from 'lucide-svelte/icons/menu-square'
-	import NotePadText from 'lucide-svelte/icons/notepad-text'
-	import Paintbrush from 'lucide-svelte/icons/paintbrush'
-	import Settings from 'lucide-svelte/icons/settings'
-	import TextCursor from 'lucide-svelte/icons/text-cursor-input'
-	import Ticket from 'lucide-svelte/icons/ticket'
-	import Users from 'lucide-svelte/icons/users'
+	import CommandPalette from '$lib/components/command-palette/CommandPalette.svelte'
+	import { sidebarLinks } from '$lib/components/command-palette/sidebarLinks'
+	import Search from 'lucide-svelte/icons/search'
 	import { setContext } from 'svelte'
 	import { writable } from 'svelte/store'
 
 	export let data
 	$: currPath = $page.url.pathname.replace('/manage', '')
-	let links = [
-		{
-			path: '/',
-			label: 'Dashboard',
-			icon: Home,
-		},
-		{
-			section: true,
-			label: 'Scheduling',
-		},
-		{
-			path: '/events',
-			label: 'Events',
-			icon: Calendar,
-			iconClass: 'mb-0.5',
-		},
-		{
-			path: '/venues',
-			label: 'Venues',
-			icon: Pin,
-		},
-		{
-			section: true,
-			label: 'Attendees',
-		},
-		{
-			path: '/people',
-			label: 'People',
-			icon: Users,
-		},
-		{
-			path: '/tickets',
-			label: 'Tickets',
-			icon: Ticket,
-		},
-		{
-			path: '/forms',
-			label: 'Forms',
-			icon: NotePadText,
-		},
-		{
-			path: '/sponsors',
-			label: 'Sponsors',
-			icon: Handshake,
-		},
-		{
-			section: true,
-			label: 'Content',
-		},
-		{
-			path: '/pages',
-			label: 'Pages',
-			icon: FileText,
-		},
-		{
-			path: '/content',
-			label: 'Strings',
-			icon: TextCursor,
-		},
-		{
-			path: '/faqs',
-			label: 'FAQs',
-			icon: FileQuestion,
-		},
-		{
-			section: true,
-			label: 'Settings',
-		},
-		{
-			path: '/settings',
-			label: 'Basics',
-			icon: Settings,
-		},
-		{
-			path: '/menus',
-			label: 'Menus',
-			icon: SquareMenu,
-		},
-		{
-			path: '/settings',
-			label: 'Appearance',
-			icon: Paintbrush,
-		},
-		{
-			path: '/advanced',
-			label: 'Advanced',
-			icon: KeyRound,
-		},
-		// {
-		// 	path: '/notifications',
-		// 	label: 'Notifications',
-		// },
-	]
+	$: links = sidebarLinks
+	let commandPaletteOpen = false
 	setContext('venues', writable(data.venues))
 </script>
+
+<CommandPalette bind:open={commandPaletteOpen} />
 
 <div class="grid h-full grid-rows-[4.1rem_1fr]">
 	<div class="bg-whitefont-semibold grid grid-cols-[15rem_1fr] items-center">
@@ -131,11 +29,19 @@
 			</a>
 		</div>
 		<div class="border-b border-stone-100 px-1.5 py-1.5">
-			<input
-				type="text"
-				placeholder="Search anything..."
-				class="font-xl w-8/12 rounded-md bg-white px-4 py-3 font-medium !outline-0 !ring-0 transition-all focus-within:outline-none focus-within:ring-0 hover:bg-stone-50 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 active:outline-none active:ring-0"
-			/>
+			<button
+				type="button"
+				on:click={() => (commandPaletteOpen = true)}
+				class="font-xl flex w-8/12 items-center gap-2 rounded-md bg-white px-4 py-3 font-medium text-stone-400 transition-all hover:bg-stone-50"
+			>
+				<Search class="h-4 w-4" />
+				<span>Search anything...</span>
+				<kbd
+					class="ml-auto rounded-md border border-stone-200 bg-stone-50 px-1.5 py-0.5 text-[11px] font-medium text-stone-400"
+				>
+					⌘K
+				</kbd>
+			</button>
 		</div>
 	</div>
 	<div class="grid h-full grid-cols-[15em_1fr]">

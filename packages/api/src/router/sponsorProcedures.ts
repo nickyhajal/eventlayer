@@ -9,6 +9,8 @@ import {
   eq,
   eventSchema,
   eventUserTable,
+  ilike,
+  or,
   sponsorSchema,
   sponsorTable,
 } from '@matterloop/db'
@@ -25,6 +27,23 @@ import {
 
 const t = initTRPC.context<TrpcContext>().create()
 export const sponsorProcedures = t.router({
+  search: procedureWithContext
+    .use(verifyEvent())
+    .input(z.object({ q: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const sponsors = await db.query.sponsorTable.findMany({
+        where: and(
+          eq(sponsorTable.eventId, ctx.event.id),
+          or(
+            ilike(sponsorTable.title, `%${input.q}%`),
+            ilike(sponsorTable.description, `%${input.q}%`),
+          ),
+        ),
+        with: { photo: true },
+        limit: 10,
+      })
+      return sponsors
+    }),
   get: procedureWithContext
     .input(
       z
