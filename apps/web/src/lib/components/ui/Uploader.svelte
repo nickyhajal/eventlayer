@@ -104,10 +104,10 @@
 			// Should call the load method when done and pass the returned server file id
 			// this server file id is then used later on when reverting or restoring a file
 			// so your server knows which file to return without exposing that info to the client
-			request.onload = function () {
+			request.onload = async function () {
 				if (request.status >= 200 && request.status < 300) {
 					// the load method accepts either a string (id) or an object
-					trpc().media.update.mutate({
+					await trpc().media.update.mutate({
 						id: res.media.id,
 						width,
 						height,

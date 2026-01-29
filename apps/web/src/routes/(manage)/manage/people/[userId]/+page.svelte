@@ -2,6 +2,7 @@
 	import { invalidateAll } from '$app/navigation'
 	import ChicletButton from '$lib/components/ui/ChicletButton.svelte'
 	import { trpc } from '$lib/trpc/client'
+	import ChevronLeft from 'lucide-svelte/icons/chevron-left'
 	import { onMount } from 'svelte'
 
 	import AdminScreen from '../../AdminScreen.svelte'
@@ -41,9 +42,18 @@
 	}
 </script>
 
-<AdminScreen title={fullName}>
-	<div slot="title">
-		<div class="f flexitems-end gap-1">
+<AdminScreen title={true}>
+	<div slot="title" class="flex w-full items-center justify-between">
+		<div class="flex items-center gap-2">
+			<a
+				href="/manage/people"
+				class="flex items-center justify-center rounded-md p-1 text-stone-400 hover:bg-stone-100 hover:text-stone-600"
+			>
+				<ChevronLeft class="h-5 w-5" />
+			</a>
+			<div class="text-2xl font-semibold">{fullName}</div>
+		</div>
+		<div class="flex items-end gap-1">
 			<ChicletButton on:click={() => sendWelcomeEmail()}>
 				<span class="pl-1 pr-2 text-xs">👋</span>
 				{#if confirmingSend}

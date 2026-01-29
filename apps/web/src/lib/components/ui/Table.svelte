@@ -230,7 +230,7 @@
 						<tbody>
 							{#each $table.getRowModel().rows as row}
 								<tr
-									class="bg-stone-100/20 font-medium text-gray-800/80 odd:bg-stone-100"
+									class="bg-stone-100/20 font-medium text-gray-800/80 odd:bg-stone-100 cursor-pointer transition-colors hover:bg-sky-50"
 									on:click={() => onRowClick(row)}
 								>
 									{#each row.getVisibleCells() as cell}
