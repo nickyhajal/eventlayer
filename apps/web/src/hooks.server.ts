@@ -71,12 +71,17 @@ const handleRouteRedirect = (defaultRedirect = '/', route: RouteConfig) => {
 export const handleCors: Handle = async ({ resolve, event }) => {
 	// Apply CORS header for API routes
 	const origin = event.request.headers.get('origin')
+
+	// Let /rest routes handle their own CORS (they need Authorization header)
+	if (event.url.pathname.startsWith('/rest')) {
+		return resolve(event)
+	}
+
 	if (
 		event.url.pathname.startsWith('/trpc') ||
 		event.url.pathname.startsWith('/signup') ||
 		event.url.pathname.startsWith('/add-a') ||
-		event.url.pathname.startsWith('/login') ||
-		event.url.pathname.startsWith('/rest')
+		event.url.pathname.startsWith('/login')
 	) {
 		// Required for CORS to work
 		if (event.request.method === 'OPTIONS') {

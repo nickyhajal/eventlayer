@@ -7,18 +7,16 @@ import type { RequestHandler } from './$types'
 import { uuid } from '@matterloop/util'
 
 // Handle CORS preflight
-export const OPTIONS: RequestHandler = async ({ request }) => {
-	const origin = request.headers.get('origin')
+export const OPTIONS: RequestHandler = async () => {
 	return new Response(null, {
 		status: 204,
-		headers: getCorsHeaders(origin),
+		headers: getCorsHeaders(),
 	})
 }
 
 // GET /rest/pages/:pageId - Returns a single page by ID or path
 export const GET: RequestHandler = async ({ request, params }) => {
-	const origin = request.headers.get('origin')
-	const corsHeaders = getCorsHeaders(origin)
+	const corsHeaders = getCorsHeaders()
 
 	const { event } = await validateApiKey(request)
 

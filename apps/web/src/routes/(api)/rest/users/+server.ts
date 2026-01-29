@@ -30,18 +30,16 @@ function getMediaUrl(media: Media | null | undefined, transforms = ''): string |
 }
 
 // Handle CORS preflight
-export const OPTIONS: RequestHandler = async ({ request }) => {
-	const origin = request.headers.get('origin')
+export const OPTIONS: RequestHandler = async () => {
 	return new Response(null, {
 		status: 204,
-		headers: getCorsHeaders(origin),
+		headers: getCorsHeaders(),
 	})
 }
 
 // GET /rest/users - Returns all attendees for the event with user info and avatar
 export const GET: RequestHandler = async ({ request, url }) => {
-	const origin = request.headers.get('origin')
-	const corsHeaders = getCorsHeaders(origin)
+	const corsHeaders = getCorsHeaders()
 
 	const { event } = await validateApiKey(request)
 

@@ -7,18 +7,16 @@ import { EventFns } from '@matterloop/api'
 import type { RequestHandler } from './$types'
 
 // Handle CORS preflight
-export const OPTIONS: RequestHandler = async ({ request }) => {
-	const origin = request.headers.get('origin')
+export const OPTIONS: RequestHandler = async () => {
 	return new Response(null, {
 		status: 204,
-		headers: getCorsHeaders(origin),
+		headers: getCorsHeaders(),
 	})
 }
 
 // GET /rest/pages - Returns all pages for the event
 export const GET: RequestHandler = async ({ request, url }) => {
-	const origin = request.headers.get('origin')
-	const corsHeaders = getCorsHeaders(origin)
+	const corsHeaders = getCorsHeaders()
 
 	const { event } = await validateApiKey(request)
 

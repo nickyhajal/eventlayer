@@ -59,11 +59,12 @@ export async function validateApiKey(request: Request) {
 }
 
 /**
- * CORS headers for REST API responses
+ * CORS headers for REST API responses.
+ * Allows any domain to connect to the REST API.
  */
-export function getCorsHeaders(origin: string | null) {
+export function getCorsHeaders() {
 	return {
-		'Access-Control-Allow-Origin': origin ?? '*',
+		'Access-Control-Allow-Origin': '*',
 		'Access-Control-Allow-Methods': 'GET, OPTIONS',
 		'Access-Control-Allow-Headers': 'Authorization, Content-Type',
 		'Access-Control-Max-Age': '86400',
