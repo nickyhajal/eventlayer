@@ -6,6 +6,7 @@
 	import Input from '$lib/components/ui/input/input.svelte'
 	import Label from '$lib/components/ui/label/label.svelte'
 	import * as Select from '$lib/components/ui/select'
+	import Switch from '$lib/components/ui/switch/switch.svelte'
 	import Textarea from '$lib/components/ui/textarea/textarea.svelte'
 	import Uploader from '$lib/components/ui/Uploader.svelte'
 	import { trpc } from '$lib/trpc/client.js'
@@ -15,8 +16,6 @@
 
 	import type { EventUserField, FullEventUser, User } from '@matterloop/db'
 	import { merge, tw } from '@matterloop/util'
-
-	import Switch from '$lib/components/ui/switch/switch.svelte'
 
 	export let user: Partial<FullEventUser> = {
 		firstName: '',
