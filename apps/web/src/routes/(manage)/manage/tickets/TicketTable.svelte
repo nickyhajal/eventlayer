@@ -6,13 +6,21 @@
 	import { trpc } from '$lib/trpc/client'
 
 	import type { EventTicket, User } from '@matterloop/db'
-	// import { rankItem } from '@tanstack/match-sorter-utils';
 	import { capitalize, copyToClipboard, dayjs, getMediaUrl, startCase } from '@matterloop/util'
 
 	export let rows: User[]
 	export let table
 	export let setCurrentPage
 	export let setGlobalFilter
+
+	let filterStatus = ''
+
+	$: statuses = [...new Set(rows.map((r) => r.status).filter(Boolean))].sort()
+
+	$: filteredRows = rows.filter((r) => {
+		if (filterStatus && r.status !== filterStatus) return false
+		return true
+	})
 
 	const globalFilterFn: FilterFn<any> = (row, columnId, value, addMeta) => {
 		if (!value || value.length === 0) return true
@@ -65,9 +73,8 @@
 		{
 			accessorKey: 'photo',
 			header: 'Photo',
-			// cell: (info) => startCase(info.getValue()),
 			accessorFn: (row) => `userAvatar:${JSON.stringify(row.user)}`,
-			// filterFn: globalFilterFn,
+			enableSorting: false,
 		},
 		{
 			accessorKey: 'status',
@@ -93,25 +100,36 @@
 		{
 			accessorKey: 'email-actin',
 			header: 'Send Email',
-			// cell: (info) => startCase(info.getValue()),
 			handleClick: (e, row) => sendClaimEmail(e, row),
-			accessorFn: (row) => `button: ${row.status === 'sent' ? 'Send Email Again' : 'Send Email'}`,
-			// filterFn: globalFilterFn,
+			accessorFn: (row) =>
+				`button: ${row.status === 'sent' ? 'Send Email Again' : 'Send Email'}`,
+			enableSorting: false,
 		},
 		{
 			accessorKey: 'copy-link',
 			header: 'Copy Link',
-			// cell: (info) => startCase(info.getValue()),
 			handleClick: (e, row) => copyTicketLink(e, row),
 			accessorFn: (row) => `button: Copy Link`,
-			// filterFn: globalFilterFn,
+			enableSorting: false,
 		},
+	]
+
+	const csvFields = [
+		{
+			key: 'purchaser',
+			label: 'Purchaser',
+			accessor: (row) => `${row.user?.firstName || ''} ${row.user?.lastName || ''}`,
+		},
+		{ key: 'email', label: 'Email', accessor: (row) => row.user?.email || '' },
+		{ key: 'status', label: 'Status' },
+		{ key: 'quantity', label: 'Quantity' },
+		{ key: 'type', label: 'Type', default: false },
 	]
 </script>
 
 <Table
 	{columns}
-	{rows}
+	rows={filteredRows}
 	sorting={[{ id: 'purchaser', desc: false }]}
 	pageSize={25}
 	{globalFilterFn}
@@ -120,4 +138,18 @@
 	bind:setGlobalFilter
 	{onRowClick}
 	emptyMsg="No tickets yet"
-/>
+	csvFilename="tickets"
+	{csvFields}
+>
+	<svelte:fragment slot="filters">
+		<select
+			bind:value={filterStatus}
+			class="rounded-lg border border-stone-200 bg-white px-2 py-1.5 text-xs font-medium text-stone-600"
+		>
+			<option value="">All Statuses</option>
+			{#each statuses as s}
+				<option value={s}>{startCase(s)}</option>
+			{/each}
+		</select>
+	</svelte:fragment>
+</Table>
