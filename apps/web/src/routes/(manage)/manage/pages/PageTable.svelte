@@ -5,18 +5,24 @@
 	import Table from '$lib/components/ui/Table.svelte'
 
 	import type { Form } from '@matterloop/db'
-	// import { rankItem } from '@tanstack/match-sorter-utils';
 	import { capitalize, dayjs } from '@matterloop/util'
-
-	import Page from '../+page.svelte'
 
 	export let rows: Page[]
 
+	let filterStatus = ''
+
+	$: statuses = [...new Set(rows.map((r) => r.status).filter(Boolean))].sort()
+
+	$: filteredRows = rows.filter((r) => {
+		if (filterStatus && r.status !== filterStatus) return false
+		return true
+	})
+
 	const globalFilterFn: FilterFn<any> = (row, columnId, value, addMeta) => {
-		if (Array.isArray(value)) {
-			if (value.length === 0) return true
-			return value.includes(row.getValue(columnId))
-		}
+		if (!value || value.length === 0) return true
+		const colVal = row.getValue(columnId)
+		if (!colVal) return false
+		return colVal.toString().toLowerCase().includes(value.toLowerCase())
 	}
 	const onRowClick = (row: Row<Event>) => {
 		goto(`/manage/pages/${row.original.id}`)
@@ -33,7 +39,6 @@
 			accessorKey: 'title',
 			header: 'Title',
 			filterFn: globalFilterFn,
-
 			cell: (info) => info.getValue().toString(),
 		},
 		{
@@ -45,10 +50,38 @@
 		{
 			accessorKey: 'startsAt',
 			id: 'Starts At',
-			cell: (info) => dayjs(info.getValue()).format('MMM. Do [at] h:mma'),
+			cell: (info) =>
+				info.getValue() ? dayjs(info.getValue()).format('MMM. Do [at] h:mma') : '-',
 			header: () => 'Starts',
 		},
 	]
+
+	const csvFields = [
+		{ key: 'title', label: 'Title' },
+		{ key: 'path', label: 'Path' },
+		{ key: 'status', label: 'Status' },
+		{ key: 'body', label: 'Body', default: false },
+	]
 </script>
 
-<Table {columns} {rows} {globalFilterFn} {onRowClick} emptyMsg="No pages yet" />
+<Table
+	{columns}
+	rows={filteredRows}
+	{globalFilterFn}
+	{onRowClick}
+	emptyMsg="No pages yet"
+	csvFilename="pages"
+	{csvFields}
+>
+	<svelte:fragment slot="filters">
+		<select
+			bind:value={filterStatus}
+			class="rounded-lg border border-stone-200 bg-white px-2 py-1.5 text-xs font-medium text-stone-600"
+		>
+			<option value="">All Statuses</option>
+			{#each statuses as s}
+				<option value={s}>{capitalize(s)}</option>
+			{/each}
+		</select>
+	</svelte:fragment>
+</Table>

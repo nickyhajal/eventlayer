@@ -20,12 +20,14 @@
 		SortingColumn,
 		TableOptions,
 	} from '@tanstack/svelte-table'
-	import { User } from 'lucide-static'
+	import ArrowDown from 'lucide-svelte/icons/arrow-down'
+	import ArrowUp from 'lucide-svelte/icons/arrow-up'
+	import ArrowUpDown from 'lucide-svelte/icons/arrow-up-down'
 	import ChevronFirst from 'lucide-svelte/icons/chevron-first'
 	import ChevronLast from 'lucide-svelte/icons/chevron-last'
 	import ChevronLeft from 'lucide-svelte/icons/chevron-left'
 	import ChevronRight from 'lucide-svelte/icons/chevron-right'
-	// import { rankItem } from '@tanstack/match-sorter-utils';
+	import Download from 'lucide-svelte/icons/download'
 	import { writable } from 'svelte/store'
 
 	import UserAvatar from '../UserAvatar.svelte'
@@ -39,22 +41,62 @@
 	export let pageSize = 50
 	export let onRowClick: (row: Row<T>) => {}
 	export let rowHref: undefined | ((cell: Cell<T, unknown>) => string)
+	export let csvFilename = 'export'
+	export let csvFields: { key: string; label: string; default?: boolean; accessor?: (row: T) => string }[] = []
 	export const numFormat = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' })
 
-	function getSortSymbol(isSorted: boolean | SortDirection) {
-		return isSorted ? (isSorted === 'asc' ? '🔼' : '🔽') : ''
+	let csvModalOpen = false
+	let csvScope: 'page' | 'all' = 'all'
+	let csvSelectedFields: Record<string, boolean> = {}
+
+	function initCsvFields() {
+		csvSelectedFields = {}
+		for (const f of csvFields) {
+			csvSelectedFields[f.key] = f.default !== false
+		}
 	}
 
-	// Rank the item
-	// const itemRank = rankItem(row.getValue(columnId), value);
+	function openCsvModal() {
+		initCsvFields()
+		csvModalOpen = true
+	}
 
-	// Store the itemRank info
-	// addMeta({
-	// 	itemRank,
-	// })
+	function closeCsvModal() {
+		csvModalOpen = false
+	}
 
-	// Return if the item should be filtered in/out
-	// return itemRank.passed
+	function downloadCsv() {
+		const selected = csvFields.filter((f) => csvSelectedFields[f.key])
+		if (!selected.length) return
+		const dataRows =
+			csvScope === 'page'
+				? $table.getRowModel().rows.map((r) => r.original)
+				: $table.getPrePaginationRowModel().rows.map((r) => r.original)
+
+		const header = selected.map((f) => `"${f.label}"`).join(',')
+		const csvRows = dataRows.map((row) => {
+			return selected
+				.map((f) => {
+					let val = ''
+					if (f.accessor) {
+						val = f.accessor(row as T)
+					} else {
+						val = (row as any)?.[f.key] ?? ''
+					}
+					return `"${String(val).replace(/"/g, '""')}"`
+				})
+				.join(',')
+		})
+		const csv = [header, ...csvRows].join('\n')
+		const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+		const url = URL.createObjectURL(blob)
+		const a = document.createElement('a')
+		a.href = url
+		a.download = `${csvFilename}-${csvScope}.csv`
+		a.click()
+		URL.revokeObjectURL(url)
+		closeCsvModal()
+	}
 
 	let globalFilter = ''
 
@@ -155,45 +197,32 @@
 {:else}
 	<div class="mt-4 overflow-hidden rounded-2xl border border-b-2 border-stone-100">
 		<div class="columns">
-			<!-- <div class="column is-one-fifth">
-        <h2 class="is-size-3 mb-3">Filters</h2>
-  
-        {#each headerGroups as headerGroup}
-          {#each headerGroup.headers as header}
-            {#if header.column.id === 'country'}
-              <details open>
-                <summary>
-                  <h3 class="has-text-weight-semibold is-inline-block">Countries</h3></summary
-                >
-  
-                <FacetCheckboxes table={$table} column={header.column} />
-              </details>
-            {:else if header.column.id === 'state'}
-              <details open>
-                <summary> <h3 class="has-text-weight-semibold is-inline-block">State</h3></summary>
-  
-                <FacetCheckboxes table={$table} column={header.column} />
-              </details>
-            {:else if header.column.id === 'total'}
-              <details open>
-                <summary> <h3 class="has-text-weight-semibold is-inline-block">Total</h3></summary>
-  
-                <FacetMinMax table={$table} column={header.column} />
-              </details>
-            {/if}
-          {/each}
-        {/each}
-      </div> -->
 			<div class="column">
-				<div class="mb-4 flex justify-end border-b border-stone-200/30 bg-stone-100/40 p-1">
-					<input
-						{...noTypeCheck(null)}
-						type="search"
-						class="input w-96 border border-stone-100 px-3 py-2"
-						on:keyup={handleSearch}
-						on:search={handleSearch}
-						placeholder="Search..."
-					/>
+				<div
+					class="mb-4 flex items-center justify-between border-b border-stone-200/30 bg-stone-100/40 p-1"
+				>
+					<div class="flex items-center gap-2">
+						<slot name="filters" />
+					</div>
+					<div class="flex items-center gap-2">
+						{#if csvFields.length}
+							<button
+								on:click={openCsvModal}
+								class="flex items-center gap-1.5 rounded-lg border border-stone-200 bg-white px-3 py-2 text-xs font-medium text-stone-600 transition-colors hover:bg-stone-50"
+							>
+								<Download class="h-3.5 w-3.5" />
+								Export CSV
+							</button>
+						{/if}
+						<input
+							{...noTypeCheck(null)}
+							type="search"
+							class="input w-96 border border-stone-100 px-3 py-2"
+							on:keyup={handleSearch}
+							on:search={handleSearch}
+							placeholder="Search..."
+						/>
+					</div>
 				</div>
 				<div class="overflow-hidden rounded-2xl">
 					<table class="table w-full">
@@ -203,23 +232,31 @@
 									{#each headerGroup.headers as header, i}
 										<th
 											colSpan={header.colSpan}
-											class="px-2 py-1 text-sm font-semibold text-gray-900/50 {i === 0
-												? 'text-left'
-												: 'text-left'}"
+											class="px-2 py-1 text-sm font-semibold text-gray-900/50 text-left"
 										>
 											{#if !header.isPlaceholder}
 												<button
-													class="button bg-white"
-													class:is-disabled={!header.column.getCanSort()}
+													class="flex items-center gap-1 rounded px-1 py-0.5 text-left transition-colors hover:bg-stone-100 {header.column.getCanSort()
+														? 'cursor-pointer select-none'
+														: ''}"
 													disabled={!header.column.getCanSort()}
 													on:click={header.column.getToggleSortingHandler()}
 												>
 													<svelte:component
-														this={flexRender(header.column.columnDef.header, header.getContext())}
+														this={flexRender(
+															header.column.columnDef.header,
+															header.getContext(),
+														)}
 													/>
-													<span class="pl-1">
-														{getSortSymbol(header.column.getIsSorted())}
-													</span>
+													{#if header.column.getCanSort()}
+														{#if header.column.getIsSorted() === 'asc'}
+															<ArrowUp class="h-3.5 w-3.5 text-stone-700" />
+														{:else if header.column.getIsSorted() === 'desc'}
+															<ArrowDown class="h-3.5 w-3.5 text-stone-700" />
+														{:else}
+															<ArrowUpDown class="h-3.5 w-3.5 text-stone-300" />
+														{/if}
+													{/if}
 												</button>
 											{/if}
 										</th>
@@ -230,7 +267,7 @@
 						<tbody>
 							{#each $table.getRowModel().rows as row}
 								<tr
-									class="bg-stone-100/20 font-medium text-gray-800/80 odd:bg-stone-100"
+									class="bg-stone-100/20 font-medium text-gray-800/80 odd:bg-stone-100 cursor-pointer transition-colors hover:bg-sky-50"
 									on:click={() => onRowClick(row)}
 								>
 									{#each row.getVisibleCells() as cell}
@@ -250,13 +287,19 @@
 														on:click={(e) =>
 															cell
 																.getContext()
-																.column.columnDef.handleClick(e, cell.getContext().row.original)}
+																.column.columnDef.handleClick(
+																	e,
+																	cell.getContext().row.original,
+																)}
 													>
 														{cell.getValue().replace('button:', '').trim()}
 													</ChicletButton>
 												{:else}
 													<svelte:component
-														this={flexRender(cell.column.columnDef.cell, cell.getContext())}
+														this={flexRender(
+															cell.column.columnDef.cell,
+															cell.getContext(),
+														)}
 													/>
 												{/if}
 											</svelte:element>
@@ -277,7 +320,8 @@
 						</button>
 						<button
 							class="button is-white"
-							on:click={() => setCurrentPage($table.getState().pagination.pageIndex - 1)}
+							on:click={() =>
+								setCurrentPage($table.getState().pagination.pageIndex - 1)}
 							class:is-disabled={!$table.getCanPreviousPage()}
 							disabled={!$table.getCanPreviousPage()}
 						>
@@ -298,7 +342,8 @@
 						</span>
 						<button
 							class="button is-white"
-							on:click={() => setCurrentPage($table.getState().pagination.pageIndex + 1)}
+							on:click={() =>
+								setCurrentPage($table.getState().pagination.pageIndex + 1)}
 							class:is-disabled={!$table.getCanNextPage()}
 							disabled={!$table.getCanNextPage()}
 						>
@@ -328,6 +373,59 @@
 						<span>{$table.getPrePaginationRowModel().rows.length} total rows</span>
 					</div>
 				</div>
+			</div>
+		</div>
+	</div>
+{/if}
+
+{#if csvModalOpen}
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
+	<!-- svelte-ignore a11y-no-static-element-interactions -->
+	<div class="fixed inset-0 z-50 flex items-center justify-center">
+		<div class="absolute inset-0 bg-black/50" on:click={closeCsvModal} />
+		<div class="relative z-10 w-full max-w-md rounded-lg border bg-white p-6 shadow-lg">
+			<h3 class="mb-4 text-lg font-semibold">Export CSV</h3>
+			<div class="mb-4">
+				<label class="mb-2 block text-sm font-medium text-stone-700">Scope</label>
+				<div class="flex gap-3">
+					<label class="flex items-center gap-2 text-sm">
+						<input type="radio" bind:group={csvScope} value="all" class="accent-sky-600" />
+						All rows ({$table.getPrePaginationRowModel().rows.length})
+					</label>
+					<label class="flex items-center gap-2 text-sm">
+						<input type="radio" bind:group={csvScope} value="page" class="accent-sky-600" />
+						Current page ({$table.getRowModel().rows.length})
+					</label>
+				</div>
+			</div>
+			<div class="mb-4">
+				<label class="mb-2 block text-sm font-medium text-stone-700">Fields</label>
+				<div class="max-h-60 space-y-1.5 overflow-y-auto rounded-md border border-stone-200 p-3">
+					{#each csvFields as field}
+						<label class="flex items-center gap-2 text-sm">
+							<input
+								type="checkbox"
+								bind:checked={csvSelectedFields[field.key]}
+								class="accent-sky-600"
+							/>
+							{field.label}
+						</label>
+					{/each}
+				</div>
+			</div>
+			<div class="flex justify-end gap-2">
+				<button
+					on:click={closeCsvModal}
+					class="rounded-md border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50"
+				>
+					Cancel
+				</button>
+				<button
+					on:click={downloadCsv}
+					class="rounded-md bg-sky-600 px-4 py-2 text-sm font-medium text-white hover:bg-sky-700"
+				>
+					Download CSV
+				</button>
 			</div>
 		</div>
 	</div>
