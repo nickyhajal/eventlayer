@@ -10,6 +10,10 @@
 	import FilePond, { registerPlugin, supported } from 'svelte-filepond'
 
 	import type { Media } from '@matterloop/db'
+	type RemoveFilesOptions = { remove?: boolean; revert?: boolean }
+	type PondHandle = {
+		removeFiles?: (options?: RemoveFilesOptions) => void
+	}
 
 	export let parentId = ''
 	export let path = ''
@@ -17,14 +21,15 @@
 	export let defaultMessage =
 		'Drag & Drop your file or <span class="filepond--label-action"> Browse </span>'
 	export let existingMedia: Media[] = []
-	export let onSuccess: (mediaId: string) => void
+	export let onSuccess: (mediaId: string) => void = () => {}
+	export let allowMultipleUploads = false
 
 	// Register the plugins
 	registerPlugin(FilePondPluginImageExifOrientation)
 	// registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview)
 
 	// a reference to the component, used to call FilePond methods
-	let pond
+	let pond: PondHandle | null = null
 
 	// pond.getFiles() will return the active files
 
@@ -75,12 +80,13 @@
 			// fieldName is the name of the input field
 			// file is the actual file object to send
 
-			const res = await trpc().media.getUploadUrl.mutate({
-				parentId,
-				parentType,
-				path,
-				mimetype: file.type,
-			})
+				const res = await trpc().media.getUploadUrl.mutate({
+					parentId,
+					parentType,
+					path,
+					mimetype: file.type,
+					allowMultiple: allowMultipleUploads,
+				})
 			let width = 0
 			let height = 0
 			const img = new Image()
@@ -113,7 +119,8 @@
 						height,
 						status: 'uploaded',
 					})
-					onSuccess(res.media.id)
+					onSuccess?.(res.media.id)
+					pond?.removeFiles?.({ revert: false })
 					load(request.responseText)
 				} else {
 					// Can call the error method if something is wrong, should exit after
