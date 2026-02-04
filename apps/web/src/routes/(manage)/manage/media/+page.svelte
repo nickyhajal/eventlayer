@@ -346,7 +346,7 @@
         {:else if !items.length}
           <div>No media yet.</div>
         {:else if !nextCursor}
-          <div>End of gallery.</div>
+          <div>-</div>
         {/if}
         <div bind:this={sentinel}></div>
       </div>
