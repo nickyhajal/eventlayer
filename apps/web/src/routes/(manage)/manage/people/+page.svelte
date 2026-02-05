@@ -2,9 +2,9 @@
 	import { Button } from '$lib/components/ui/button'
 	import * as Dialog from '$lib/components/ui/dialog'
 	import Plus from 'lucide-svelte/icons/plus'
-	import { set } from 'zod'
+	import { tick } from 'svelte'
 
-	import type { Snapshot } from '../$types'
+	import type { Snapshot } from './$types'
 	import AdminScreen from '../AdminScreen.svelte'
 	import UserForm from './UserForm.svelte'
 	import UserTable from './UserTable.svelte'
@@ -24,14 +24,15 @@
 				page: $table.getState().pagination.pageIndex,
 			}
 		},
-		restore: ({ scrollY, page, query }) => {
-			window.scrollTo(0, scrollY)
+		restore: async ({ scrollY, page, query }) => {
 			if (page) {
 				setCurrentPage(page)
 			}
 			if (query) {
 				setGlobalFilter(query)
 			}
+			await tick()
+			window.scrollTo(0, scrollY)
 		},
 	}
 </script>
