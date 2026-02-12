@@ -64,9 +64,9 @@ export const GET: RequestHandler = async ({ request, url }) => {
 		orderBy: [asc(eventUserFieldTable.ord)],
 	})
 
-	// Fetch user info for all users if there are custom fields
+	// Fetch user info for all users
 	let userInfoByUserId: Record<string, Record<string, string>> = {}
-	if (customFieldDefs.length > 0 && users.length > 0) {
+	if (users.length > 0) {
 		const userIds = users.map((u) => u.userId).filter(Boolean) as string[]
 		if (userIds.length > 0) {
 			const userInfo = await db.query.eventUserInfoTable.findMany({

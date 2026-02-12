@@ -2,9 +2,9 @@ import { error, json } from '@sveltejs/kit'
 import { getCorsHeaders, validateApiKey } from '$lib/server/rest/auth'
 
 import { EventFns } from '@matterloop/api'
+import { uuid } from '@matterloop/util'
 
 import type { RequestHandler } from './$types'
-import { uuid } from '@matterloop/util'
 
 // Handle CORS preflight
 export const OPTIONS: RequestHandler = async () => {
