@@ -306,3 +306,42 @@ STRIPE_WEBHOOK_SECRET=...
 - PWA functionality via `@vite-pwa/sveltekit`
 - Redis caching should be invalidated after database mutations
 - Event context is resolved from subdomain/domain in hooks
+
+## REST API Documentation (llms.txt)
+
+The project includes an `llms.txt` file in the root directory that documents the public REST API. This file is designed to be readable by both humans and LLMs.
+
+### IMPORTANT: Maintaining llms.txt
+
+**When making changes to the REST API, you MUST update `llms.txt` to reflect those changes.**
+
+This includes:
+- Adding new endpoints → Add full documentation with request/response examples
+- Modifying existing endpoints → Update the documentation accordingly
+- Changing authentication → Update the authentication section
+- Adding query parameters → Document the new parameters
+- Changing response formats → Update the example responses
+
+### REST API Structure
+
+```
+apps/web/src/routes/(api)/rest/
+├── pages/
+│   ├── +server.ts              # GET /rest/pages
+│   └── [pageId]/
+│       └── +server.ts          # GET /rest/pages/:pageId
+└── users/
+    └── +server.ts              # GET /rest/users
+
+apps/web/src/lib/server/rest/
+└── auth.ts                     # validateApiKey(), getCorsHeaders()
+```
+
+### Adding a New REST Endpoint
+
+1. Create directory under `apps/web/src/routes/(api)/rest/`
+2. Add `+server.ts` with handlers (GET, POST, etc.)
+3. Use `validateApiKey(request)` for authentication
+4. Use `getCorsHeaders(origin)` for CORS
+5. **Update `llms.txt` with complete endpoint documentation**
+6. Add changelog entry at the bottom of `llms.txt`
