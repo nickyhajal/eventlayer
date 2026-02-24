@@ -95,19 +95,19 @@
 </script>
 
 <form on:submit={(e) => submit(e)} class="lg:pt- pb-80 pt-safe-offset-8">
-	<!-- <div
+	<div
     class="wrap mx-auto font-bold py-2.5 text-center fixed top-0 bg-white/60 backdrop-blur-md z-10 border-b-2 border-slate-200/50 text-sm uppercase text-slate-600 tracking-wide w-full"
   >
     Create Your Account
-  </div> -->
-	<!-- <NdBase /> -->
+  </div>
+	<NdBase />
 	<div
 		class="relative z-20 mx-auto mt-10 max-w-lg overflow-hidden px-6 lg:h-[80vh]"
 		bind:this={scrollElm}
 		style="height: {pageHeight}"
 	>
 		{#each Object.values(elementsByPage) as page, i}
-			<!-- <div id="page-{i}" class="h-16 w-full"></div> -->
+			<div id="page-{i}" class="h-16 w-full"></div>
 			{@const lastPage = i === elementsListedByPage.length - 1}
 			<div
 				id="page-{i}"
@@ -129,9 +129,9 @@
 							>
 						{/if}
 					</div>
-					<!-- class="rounded-full bg-[#060C3A] text-white px-12 py-4 h-14 text-base tracking-wide" -->
+						<!-- class="flex w-52 items-center border border-b-2 border-a-accent/10 border-b-a-accent/10 bg-a-accent/5 py-5 font-semibold text-a-accent  shadow-none brightness-90 hover:bg-a-accent/10" -->
 					<Button
-						class="flex w-52 items-center border border-b-2 border-a-accent/10 border-b-a-accent/10 bg-a-accent/5 py-5 font-semibold text-a-accent  shadow-none brightness-90 hover:bg-a-accent/10"
+					class="rounded-full bg-[#060C3A] text-white px-12 py-4 h-14 text-base tracking-wide"
 						type="button"
 						on:click={next}>{lastPage ? 'Done' : 'Continue'}</Button
 					>
