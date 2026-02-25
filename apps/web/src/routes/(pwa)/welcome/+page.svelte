@@ -131,7 +131,7 @@
 					</div>
 						<!-- class="flex w-52 items-center border border-b-2 border-a-accent/10 border-b-a-accent/10 bg-a-accent/5 py-5 font-semibold text-a-accent  shadow-none brightness-90 hover:bg-a-accent/10" -->
 					<Button
-					class="rounded-full bg-[#060C3A] text-white px-12 py-4 h-14 text-base tracking-wide"
+					class="flex w-52 items-center border border-b-2 border-a-accent/10 border-b-a-accent/10 bg-a-accent/5  font-semibold   shadow-none brightness-90 hover:bg-a-accent/10 rounded-full bg-[#060C3A] text-white px-12 py-4 h-14 text-base tracking-wide"
 						type="button"
 						on:click={next}>{lastPage ? 'Done' : 'Continue'}</Button
 					>
