@@ -152,9 +152,6 @@ importers:
       postgres:
         specifier: ^3.4.4
         version: 3.4.4
-      prettier-plugin-svelte:
-        specifier: ^3.2.2
-        version: 3.2.7(prettier@3.3.3)(svelte@4.2.19)
       qrcode:
         specifier: ^1.5.3
         version: 1.5.4
@@ -261,6 +258,9 @@ importers:
       prettier:
         specifier: ^3.2.5
         version: 3.3.3
+      prettier-plugin-svelte:
+        specifier: ^3.2.2
+        version: 3.2.7(prettier@3.3.3)(svelte@4.2.19)
       prettier-plugin-tailwindcss:
         specifier: ^0.5.13
         version: 0.5.14(@ianvs/prettier-plugin-sort-imports@4.3.1(prettier@3.3.3))(prettier-plugin-svelte@3.2.7(prettier@3.3.3)(svelte@4.2.19))(prettier@3.3.3)
@@ -587,7 +587,7 @@ importers:
         specifier: ^3.6.2
         version: 3.6.2
       prettier-plugin-svelte:
-        specifier: ^3.2.2
+        specifier: ^3.2.7
         version: 3.2.7(prettier@3.6.2)(svelte@4.2.19)
       prettier-plugin-tailwindcss:
         specifier: ^0.5.4
