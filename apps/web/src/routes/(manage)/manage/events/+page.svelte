@@ -5,14 +5,46 @@
 	import { trpc } from '$lib/trpc/client.js'
 	import Plus from 'lucide-svelte/icons/plus'
 
+	import type { Snapshot } from '../$types'
 	import AdminScreen from '../AdminScreen.svelte'
 	import EventForm from './[eventId]/EventForm.svelte'
 	import EventTable from './EventTable.svelte'
 
 	export let data
+	let table
+	let setCurrentPage
+	let setGlobalFilter
 
 	let addOpen = false
 	let loading = false
+	export const snapshot: Snapshot = {
+		capture: () => {
+			return {
+				query: $table.getState().globalFilter,
+				scrollY: window.scrollY,
+				page: $table.getState().pagination.pageIndex,
+				pageSize: $table.getState().pagination.pageSize,
+				sorting: $table.getState().sorting,
+			}
+		},
+		restore: ({ scrollY, page, pageSize, query, sorting }) => {
+			if (Array.isArray(sorting)) {
+				$table.setSorting(sorting)
+			}
+			if (typeof pageSize === 'number') {
+				$table.setPageSize(pageSize)
+			}
+			if (typeof page === 'number') {
+				setCurrentPage(page)
+			}
+			if (typeof query === 'string') {
+				setGlobalFilter(query)
+			}
+			window.requestAnimationFrame(() => {
+				window.scrollTo(0, scrollY || 0)
+			})
+		},
+	}
 
 	let event = {
 		name: '',
@@ -42,7 +74,7 @@
 			Add Event</Button
 		>
 	</div>
-	<EventTable events={data.events} />
+	<EventTable events={data.events} bind:table bind:setCurrentPage bind:setGlobalFilter />
 </AdminScreen>
 
 <Dialog.Root bind:open={addOpen}>
