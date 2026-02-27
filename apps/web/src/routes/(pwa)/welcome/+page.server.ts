@@ -16,12 +16,12 @@ export const load = async (req) => {
         ),
       })
       if (tickets.length > 0) {
-        redirect(301, `/welcome/${tickets[0].assignKey}`)
+        redirect(302, `/welcome/${tickets[0].assignKey}`)
       } else {
-        redirect(301, '/')
+        redirect(302, '/')
       }
     } else {
-      redirect(301, '/')
+      redirect(302, '/')
     }
   }
   const formId = locals?.me?.onboardFormId
