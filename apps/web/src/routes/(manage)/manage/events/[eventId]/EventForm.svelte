@@ -66,12 +66,25 @@
 	let eventFor = eventForOptions.find((t) => t.value === (event.eventFor || ''))
 	$: event.type = type.value
 	$: event.eventFor = eventFor?.value
+
+	function normalizeDateTime(value?: string | null) {
+		if (!value) return undefined
+		const normalized = value.trim()
+		if (!normalized) return undefined
+		if (!/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}$/.test(normalized)) return undefined
+		return normalized
+	}
+
 	async function createEvent() {
 		const ord = event?.ord || 0
+		const startsAt = normalizeDateTime(event.startsAt)
+		const endsAt = normalizeDateTime(event.endsAt)
 		const res = await trpc().event.upsert.mutate({
 			...event,
 			ord: +ord,
 			maxAttendees: +(event?.maxAttendees || 0),
+			startsAt,
+			endsAt,
 		})
 		goto(`/manage/events/${res.id}`)
 		toast.success('Saved')
@@ -170,7 +183,8 @@
 						</Select.Root>
 					</div>
 				</div>
-				<DatetimePicker bind:value={event.startsAt} />
+				<DatetimePicker bind:value={event.startsAt} label="Start" />
+				<DatetimePicker bind:value={event.endsAt} label="End" />
 				{#if !simplified}
 					<div class="flex flex-col items-start justify-center gap-1">
 						<Label for="description" class="text-right">Description</Label>

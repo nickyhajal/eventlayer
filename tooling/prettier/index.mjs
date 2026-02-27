@@ -14,7 +14,7 @@ const config = {
 	],
 	// tailwindConfig: fileURLToPath(new URL('./tooling/tailwind/index.ts', import.meta.url)),
 	semi: false,
-	useTabs: true,
+	useTabs: false,
 	singleQuote: true,
 	trailingComma: 'all',
 	printWidth: 100,
