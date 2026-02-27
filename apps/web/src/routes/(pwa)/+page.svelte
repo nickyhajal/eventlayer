@@ -255,7 +255,7 @@
 							>
 								<img
 									alt="{event.name} photo"
-									src={getMediaUrl(event.photo)}
+									src={getMediaUrl(event.photo || event.venue?.photo)}
 									class="h-32 w-full rounded-md bg-cover object-cover"
 								/>
 								<div class="px-2">
