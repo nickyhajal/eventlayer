@@ -7,16 +7,18 @@ import { onMount } from 'svelte'
 
 import { dayjs } from '@matterloop/util'
 
-export let date = ''
-export let time = '09:00'
-export let value = `${date} ${time}`
+export let defaultDate = ''
+export let defaultTime = '09:00'
+export let date = defaultDate
+export let time = defaultTime
+export let value: string | null | undefined = null
 export let label = 'Start'
 if (value) {
 	const bits = value.split(' ')
 	date = bits[0]
 	time = bits[1]
 }
-$: value = `${date} ${time}`
+$: value = date && time ? `${date} ${time}` : null
 </script>
 
 <div class="flex gap-4">

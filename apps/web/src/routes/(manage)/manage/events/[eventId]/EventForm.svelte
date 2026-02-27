@@ -17,7 +17,7 @@
 
 	import type { Event, FullEventUser } from '@matterloop/db'
 	import { tw } from '@matterloop/ui'
-	import { capitalize, debounce, getMediaUrl } from '@matterloop/util'
+	import { capitalize, dayjs, debounce, getMediaUrl } from '@matterloop/util'
 
 	export let simplified = false
 	export let inDialog = false
@@ -46,6 +46,7 @@
 	]
 	let eventTypes = [
 		{ value: 'program', label: 'Program Event' },
+		{ value: 'session', label: 'Session' },
 		{ value: 'panel', label: 'Panel' },
 		{ value: 'meetup', label: 'Meetup' },
 		{ value: 'meal', label: 'Group Meal' },
@@ -184,7 +185,7 @@
 					</div>
 				</div>
 				<DatetimePicker bind:value={event.startsAt} label="Start" />
-				<DatetimePicker bind:value={event.endsAt} label="End" />
+				<DatetimePicker bind:value={event.endsAt} label="End" defaultDate={event.startsAt?.split(' ')[0] ?? ''} defaultTime="" />
 				{#if !simplified}
 					<div class="flex flex-col items-start justify-center gap-1">
 						<Label for="description" class="text-right">Description</Label>
