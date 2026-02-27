@@ -244,6 +244,7 @@ export const eventProcedures = t.router({
               'type',
               'eventId',
               'startsAt',
+              'endsAt',
               'eventFor',
               'colors',
               'ord',
@@ -262,6 +263,7 @@ export const eventProcedures = t.router({
           .where(eq(eventTable.id, input.id))
           .returning()
         const updated = await db.select().from(eventTable).where(eq(eventTable.id, input.id))
+        console.log(`update event_heavy:${input.id}`)
         if (input.type === 'meal' && input.eventId) {
           redis.del(`event_meals:${input.eventId}`)
         }
@@ -281,6 +283,7 @@ export const eventProcedures = t.router({
               'type',
               'eventId',
               'startsAt',
+              'endsAt',
               'venueId',
             ]),
           )
