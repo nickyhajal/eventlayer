@@ -10,6 +10,7 @@ export interface ColumnMapping {
   lastName: string | null
   email: string | null
   type: string | null
+  internalNotes: string | null
 }
 
 export interface ExtraColumnConfig {
@@ -25,6 +26,7 @@ export interface PreviewRow {
   lastName: string
   email: string
   type: string
+  internalNotes: string
   alreadyAttending: boolean
   info: Record<string, string>
   valid: boolean
@@ -42,6 +44,7 @@ export interface ImportRowPayload {
   firstName?: string
   lastName?: string
   type?: string
+  internalNotes?: string
   info?: Record<string, string>
 }
 
@@ -100,6 +103,16 @@ const TYPE_ALIASES = new Set([
   'role',
   'category',
   'persona',
+])
+
+const INTERNAL_NOTES_ALIASES = new Set([
+  'internal_notes',
+  'internal_note',
+  'notes_internal',
+  'admin_notes',
+  'notes',
+  'note',
+  'comments',
 ])
 
 function slugifyHeader(input: string): string {
@@ -228,8 +241,16 @@ export function suggestRequiredMappings(headers: string[]): ColumnMapping {
     ['type', 'role', 'category', 'persona'],
     used,
   )
+  if (type) used.add(type)
 
-  return { firstName, lastName, email, type }
+  const internalNotes = findHeader(
+    headers,
+    INTERNAL_NOTES_ALIASES,
+    ['internal', 'note', 'notes', 'comment', 'memo'],
+    used,
+  )
+
+  return { firstName, lastName, email, type, internalNotes }
 }
 
 function findExistingKey(existingKeys: string[], candidates: string[]): string | undefined {
@@ -342,6 +363,7 @@ export function buildPreviewRows(
     const emailRaw = mapping.email ? (row[mapping.email] || '').trim() : ''
     const email = emailRaw.toLowerCase()
     const alreadyAttending = Boolean(email && existingEmailSet.has(email))
+    const internalNotes = mapping.internalNotes ? (row[mapping.internalNotes] || '').trim() : ''
     let type = defaultType
     if (typeConfig.sourceHeader) {
       const sourceValue = (row[typeConfig.sourceHeader] || '').trim()
@@ -384,6 +406,7 @@ export function buildPreviewRows(
       lastName,
       email,
       type,
+      internalNotes,
       alreadyAttending,
       info,
       valid: errors.length === 0,

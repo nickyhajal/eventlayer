@@ -39,12 +39,13 @@ describe('importUtils', () => {
   })
 
   it('suggests required mappings from aliases', () => {
-    const headers = ['First Name', 'Surname', 'Email Address', 'Role', 'Company']
+    const headers = ['First Name', 'Surname', 'Email Address', 'Role', 'Internal Notes', 'Company']
     const suggested = suggestRequiredMappings(headers)
     expect(suggested.firstName).toBe('First Name')
     expect(suggested.lastName).toBe('Surname')
     expect(suggested.email).toBe('Email Address')
     expect(suggested.type).toBe('Role')
+    expect(suggested.internalNotes).toBe('Internal Notes')
   })
 
   it('prefers existing key patterns for info key suggestions', () => {
@@ -63,6 +64,7 @@ describe('importUtils', () => {
         lastName: 'Last Name',
         email: 'Email',
         type: null,
+        internalNotes: null,
       },
       [
         {
@@ -90,6 +92,7 @@ describe('importUtils', () => {
         lastName: null,
         email: 'Email',
         type: null,
+        internalNotes: null,
       },
       [],
       { enabled: true, nameHeader: 'Name' },
@@ -129,6 +132,7 @@ describe('importUtils', () => {
         lastName: null,
         email: 'Email',
         type: 'Type',
+        internalNotes: null,
       },
       [],
       { enabled: false, nameHeader: null },
@@ -158,6 +162,7 @@ describe('importUtils', () => {
         lastName: 'Last Name',
         email: 'Email',
         type: null,
+        internalNotes: null,
       },
       [],
       { enabled: false, nameHeader: null },
@@ -168,5 +173,24 @@ describe('importUtils', () => {
     expect(preview[0].alreadyAttending).toBe(true)
     expect(preview[0].valid).toBe(true)
     expect(preview[1].alreadyAttending).toBe(false)
+  })
+
+  it('maps notes column to internal notes preview field', () => {
+    const parsed = parseTabularText(
+      'First Name,Last Name,Email,Notes\nA,One,a@example.com,VIP guest',
+    )
+    const preview = buildPreviewRows(
+      parsed,
+      {
+        firstName: 'First Name',
+        lastName: 'Last Name',
+        email: 'Email',
+        type: null,
+        internalNotes: 'Notes',
+      },
+      [],
+    )
+
+    expect(preview[0].internalNotes).toBe('VIP guest')
   })
 })

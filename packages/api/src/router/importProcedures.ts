@@ -27,6 +27,7 @@ const importRowSchema = z.object({
   firstName: z.string().optional(),
   lastName: z.string().optional(),
   type: z.string().optional(),
+  internalNotes: z.string().optional(),
   info: z.record(z.string(), z.string()).optional(),
 })
 
@@ -117,6 +118,7 @@ export const importProcedures = t.router({
         const firstName = row.firstName?.trim() || undefined
         const lastName = row.lastName?.trim() || undefined
         const type = normalizeTypeValue(row.type)
+        const internalNotes = row.internalNotes?.trim() || undefined
 
         if (!email || !emailSchema.safeParse(email).success) {
           totals.skipped += 1
@@ -180,16 +182,21 @@ export const importProcedures = t.router({
             type,
             status: 'active',
             importId: input.importId,
+            internalNotes,
           })
           status = 'created'
         } else {
+          const eventUserUpdates: Record<string, string> = {
+            type,
+            importId: input.importId,
+            updatedAt: now,
+          }
+          if (internalNotes) {
+            eventUserUpdates.internalNotes = internalNotes
+          }
           await db
             .update(eventUserTable)
-            .set({
-              type,
-              importId: input.importId,
-              updatedAt: now,
-            })
+            .set(eventUserUpdates)
             .where(eq(eventUserTable.id, existingEventUser.id))
         }
 

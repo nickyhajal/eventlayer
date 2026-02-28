@@ -500,6 +500,7 @@ export const userProcedures = t.router({
             .insert(eventUserTable)
             .values({
               type: eventUserData.type,
+              internalNotes: eventUserData.internalNotes,
               userId: user.id,
               eventId: eventId,
               onboardFormId: onboardingFormId,

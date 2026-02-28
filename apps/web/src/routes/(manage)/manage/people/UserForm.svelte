@@ -301,6 +301,16 @@
 						class="col-span-3"
 					/>
 				</div>
+				<div class="flex flex-col items-start justify-center gap-1">
+					<Label for="user_internalNotes" class="text-right">Internal Notes</Label>
+					<Textarea
+						id="user_internalNotes"
+						bind:value={user.internalNotes}
+						class="w-full"
+						rows="4"
+						placeholder="Add internal notes about this attendee..."
+					/>
+				</div>
 				<!--{#if user.type.includes('speaker')}
 					<div class="flex flex-col items-start justify-center gap-1">
 						<Label for="speechTitle" class="text-right">Talk Title</Label>

@@ -32,6 +32,7 @@
 
 	const IMPORT_PRESETS_STORAGE_KEY = 'manage_import_users_presets_v1'
 	const TYPE_DEFAULT_SELECT_VALUE = '__default_type__'
+	const NOTES_NONE_SELECT_VALUE = '__notes_none__'
 
 	interface StoredExtraColumnPreset {
 		include: boolean
@@ -54,6 +55,7 @@
 		lastName: null,
 		email: null,
 		type: null,
+		internalNotes: null,
 	}
 	let extraColumns: ExtraColumnConfig[] = []
 	let previewRows: PreviewRow[] = []
@@ -85,6 +87,7 @@
 		lastName: null,
 		email: null,
 		type: null,
+		internalNotes: null,
 	}
 	let presetSplitNameEnabled = false
 	let presetNameSourceHeader: string | null = null
@@ -98,6 +101,7 @@
 			splitNameEnabled ? nameSourceHeader : mapping.firstName,
 			splitNameEnabled ? null : mapping.lastName,
 			mapping.type,
+			mapping.internalNotes,
 		].filter(Boolean),
 	)
 	$: activeExtraColumns = extraColumns.filter((column) => !selectedRequiredHeaders.has(column.sourceHeader))
@@ -135,6 +139,7 @@
 			lastName: partial?.lastName ?? null,
 			email: partial?.email ?? null,
 			type: partial?.type ?? null,
+			internalNotes: partial?.internalNotes ?? null,
 		}
 	}
 
@@ -310,7 +315,13 @@
 		})
 
 		const requiredHeaders = new Set(
-			[required.firstName, required.lastName, required.email, required.type].filter(Boolean),
+			[
+				required.firstName,
+				required.lastName,
+				required.email,
+				required.type,
+				required.internalNotes,
+			].filter(Boolean),
 		)
 		extraColumns = extraColumns.map((column) =>
 			requiredHeaders.has(column.sourceHeader) ? { ...column, include: false } : column,
@@ -348,6 +359,9 @@
 				type: headerExists(parsed.headers, presetMapping.type)
 					? presetMapping.type
 					: suggestedMapping.type,
+				internalNotes: headerExists(parsed.headers, presetMapping.internalNotes)
+					? presetMapping.internalNotes
+					: suggestedMapping.internalNotes,
 			}
 			defaultType = presetDefaultType
 			splitNameEnabled = presetSplitNameEnabled
@@ -443,7 +457,7 @@
 				toast.error('Map email and name column before continuing')
 				return
 			}
-			const selectedValues = [...requiredValues, mapping.type].filter(Boolean)
+			const selectedValues = [...requiredValues, mapping.type, mapping.internalNotes].filter(Boolean)
 			const uniqueValues = new Set(selectedValues)
 			if (uniqueValues.size !== selectedValues.length) {
 				toast.error('Each required field must map to a different column')
@@ -455,7 +469,7 @@
 				toast.error('Map first name, last name, and email before continuing')
 				return
 			}
-			const selectedValues = [...requiredValues, mapping.type].filter(Boolean)
+			const selectedValues = [...requiredValues, mapping.type, mapping.internalNotes].filter(Boolean)
 			const uniqueValues = new Set(selectedValues)
 			if (uniqueValues.size !== selectedValues.length) {
 				toast.error('Each required field must map to a different column')
@@ -509,6 +523,7 @@
 			firstName: row.firstName || undefined,
 			lastName: row.lastName || undefined,
 			type: row.type || defaultType,
+			internalNotes: row.internalNotes || undefined,
 			info: Object.keys(row.info).length ? row.info : undefined,
 		}))
 
@@ -631,6 +646,9 @@
 									<th class="px-3 py-2">Last</th>
 									<th class="px-3 py-2">Email</th>
 									<th class="px-3 py-2">Type</th>
+									{#if mapping.internalNotes}
+										<th class="px-3 py-2">Notes</th>
+									{/if}
 									{#each previewKeys as key}
 										<th class="px-3 py-2">{key}</th>
 									{/each}
@@ -647,6 +665,9 @@
 										<td class="border-t border-stone-200 px-3 py-2">{row.lastName}</td>
 										<td class="border-t border-stone-200 px-3 py-2">{row.email}</td>
 										<td class="border-t border-stone-200 px-3 py-2">{row.type}</td>
+										{#if mapping.internalNotes}
+											<td class="border-t border-stone-200 px-3 py-2">{row.internalNotes}</td>
+										{/if}
 										{#each previewKeys as key}
 											<td class="border-t border-stone-200 px-3 py-2">{row.info[key] || ''}</td>
 										{/each}
@@ -701,7 +722,7 @@
 
 		{#if parsedTable}
 			<div class="space-y-5 py-3">
-				<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+				<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
 					<div class="space-y-2">
 						<Label>Email</Label>
 						<Select.Root
@@ -808,6 +829,29 @@
 							placeholder="attendee"
 							on:input={(event) => setDefaultType(event.currentTarget.value)}
 						/>
+					</div>
+					<div class="space-y-2">
+						<Label>Notes Column</Label>
+						<Select.Root
+							selected={mapping.internalNotes
+								? { value: mapping.internalNotes, label: mapping.internalNotes }
+								: { value: NOTES_NONE_SELECT_VALUE, label: 'None' }}
+							onSelectedChange={(v) =>
+								setMappingField(
+									'internalNotes',
+									v?.value === NOTES_NONE_SELECT_VALUE ? null : (v?.value ?? null),
+								)}
+						>
+							<Select.Trigger class="w-full">
+								<Select.Value placeholder="None" />
+							</Select.Trigger>
+							<Select.Content>
+								<Select.Item value={NOTES_NONE_SELECT_VALUE} label="None">None</Select.Item>
+								{#each parsedTable.headers as header}
+									<Select.Item value={header} label={header}>{header}</Select.Item>
+								{/each}
+							</Select.Content>
+						</Select.Root>
 					</div>
 				</div>
 				<div class="flex items-start gap-2 rounded-md border border-stone-200 bg-stone-50 p-3">
