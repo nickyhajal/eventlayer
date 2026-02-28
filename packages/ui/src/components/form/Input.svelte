@@ -1,9 +1,12 @@
 <script lang="ts">
 	import { createEventDispatcher, onMount, type ComponentProps } from 'svelte'
-	import Switch from './Switch.svelte'
-	import Select from './Select.svelte'
 	import type { Action } from 'svelte/action'
+
 	import { tw } from '@matterloop/util'
+
+	import Select from './Select.svelte'
+	import Switch from './Switch.svelte'
+
 	let className = ''
 
 	interface Options {

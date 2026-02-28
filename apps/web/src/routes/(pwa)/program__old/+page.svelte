@@ -1,12 +1,12 @@
 <script lang="ts">
-import Screen from '$lib/components/Screen.svelte'
-import Button from '$lib/components/ui/button/button.svelte'
-import { getEventContext, getMeContext } from '$lib/state/getContexts'
+	import Screen from '$lib/components/Screen.svelte'
+	import Button from '$lib/components/ui/button/button.svelte'
+	import { getEventContext, getMeContext } from '$lib/state/getContexts'
 
-import { getMediaUrl } from '@matterloop/util'
+	import { getMediaUrl } from '@matterloop/util'
 
-const me = getMeContext()
-const event = getEventContext()
+	const me = getMeContext()
+	const event = getEventContext()
 </script>
 
 <Screen title="Program" bigTitle="Program">
@@ -39,7 +39,7 @@ const event = getEventContext()
 				series that explores this exact question:
 			</p>
 			<Button
-				class="bg-a-accent mb-16 mt-6 w-full text-white"
+				class="mb-16 mt-6 w-full bg-a-accent text-white"
 				href="https://saveoursites.com/webinars"
 				target="_blank"
 			>

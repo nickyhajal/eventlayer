@@ -25,21 +25,21 @@
 	}
 </script>
 
-<div class={tw(`h-4 overflow-hidden relative rounded-full`, className)}>
+<div class={tw(`relative h-4 overflow-hidden rounded-full`, className)}>
 	<div
-		class={tw(`h-full w-full bg-gradient-to-r relative rounded-full from-slate-600 to-slate-700 `)}
+		class={tw(`relative h-full w-full rounded-full bg-gradient-to-r from-slate-600 to-slate-700 `)}
 	>
 		<div
 			bind:clientWidth={progressWidth}
 			class={tw(
-				`absolute left-0 top-0 bg-gradient-to-r from-emerald-500 to-brightgreen-700 rounded-full h-full transition-all duration-200  ${progressClass}`
+				`to-brightgreen-700 absolute left-0 top-0 h-full rounded-full bg-gradient-to-r from-emerald-500 transition-all duration-200  ${progressClass}`,
 			)}
 			style={`width: ${Math.min(100, percent)}%`}
 		/>
 		<div
 			bind:clientWidth={labelWidth}
 			class={tw(
-				`${labelClassBasedOnPosition} font-semibold italic whitespace-nowrap absolute top-0 bottom-0 my-auto h-4.5 ${labelClass} text-${labelTextSize}`
+				`${labelClassBasedOnPosition} h-4.5 absolute bottom-0 top-0 my-auto whitespace-nowrap font-semibold italic ${labelClass} text-${labelTextSize}`,
 			)}
 			style={`left: ${labelX}px; transform: translateY(1px)`}
 		>
@@ -48,7 +48,7 @@
 		{#if striped}
 			<div
 				class={tw(
-					`absolute left-0 top-0 bg-striped rounded-full h-full transition-all duration-200  ${progressClass}`
+					`bg-striped absolute left-0 top-0 h-full rounded-full transition-all duration-200  ${progressClass}`,
 				)}
 				style={`width: ${percent}%`}
 			/>

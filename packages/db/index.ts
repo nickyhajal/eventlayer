@@ -2,6 +2,7 @@ import { DB_URL } from '$env/static/private'
 import { drizzle } from 'drizzle-orm/node-postgres'
 import postgres from 'pg'
 
+import * as apiKeySchema from './schema/api_key'
 import * as contentSchema from './schema/content'
 import * as eventSchema from './schema/event'
 import * as organizationSchema from './schema/event'
@@ -9,6 +10,7 @@ import * as eventTicketSchema from './schema/event_ticket'
 import * as eventUserSchema from './schema/event_user'
 import * as eventUserCheckinSchema from './schema/event_user_checkin'
 import * as eventUserConnectionSchema from './schema/event_user_connection'
+import * as eventUserFieldSchema from './schema/event_user_field'
 import * as eventUserInfoSchema from './schema/event_user_info'
 import * as formSchema from './schema/form'
 import * as loginLinkSchema from './schema/login_link'
@@ -19,12 +21,14 @@ import * as sponsorSchema from './schema/sponsor'
 import * as userSchema from './schema/user'
 import * as venueSchema from './schema/venue'
 
+export * from './schema/api_key'
 export * from './schema/event'
 export * from './schema/content'
 export * from './schema/organization'
 export * from './schema/page'
 export * from './schema/menu'
 export * from './schema/event_user'
+export * from './schema/event_user_field'
 export * from './schema/event_user_info'
 export * from './schema/user'
 export * from './schema/venue'
@@ -38,28 +42,30 @@ export * from './schema/event_user_connection'
 export * from './types'
 
 export const connection = new postgres.Pool({
-	connectionString: DB_URL,
+  connectionString: DB_URL,
 })
 export const db = drizzle(connection, {
-	logger: false,
-	schema: {
-		...userSchema,
-		...eventSchema,
-		...eventUserInfoSchema,
-		...eventUserCheckinSchema,
-		...eventUserConnectionSchema,
-		...organizationSchema,
-		...eventUserSchema,
-		...eventTicketSchema,
-		...mediaSchema,
-		...venueSchema,
-		...contentSchema,
-		...pageSchema,
-		...menuSchema,
-		...sponsorSchema,
-		...loginLinkSchema,
-		...formSchema,
-	},
+  logger: false,
+  schema: {
+    ...apiKeySchema,
+    ...userSchema,
+    ...eventSchema,
+    ...eventUserFieldSchema,
+    ...eventUserInfoSchema,
+    ...eventUserCheckinSchema,
+    ...eventUserConnectionSchema,
+    ...organizationSchema,
+    ...eventUserSchema,
+    ...eventTicketSchema,
+    ...mediaSchema,
+    ...venueSchema,
+    ...contentSchema,
+    ...pageSchema,
+    ...menuSchema,
+    ...sponsorSchema,
+    ...loginLinkSchema,
+    ...formSchema,
+  },
 })
 
 export { alias } from 'drizzle-orm/pg-core'

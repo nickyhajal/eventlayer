@@ -101,7 +101,7 @@
 					<div class="flex w-full justify-center">
 						<button
 							on:click={() => (showPrevious = !showPrevious)}
-							class="bg-slate-100/80 p-2 text-slate-500 text-sm font-medium mt-6 mb-2 rounded-full w-1/2 mx-auto"
+							class="mx-auto mb-2 mt-6 w-1/2 rounded-full bg-slate-100/80 p-2 text-sm font-medium text-slate-500"
 							>{#if showPrevious}Hide Previous Events{:else}
 								Show Previous Events{/if}</button
 						>

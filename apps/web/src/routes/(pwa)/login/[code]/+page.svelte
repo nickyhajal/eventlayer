@@ -1,22 +1,22 @@
 <script lang="ts">
-import { browser } from '$app/environment'
-import LoginForm from '$lib/components/LoginForm.svelte'
-import Screen from '$lib/components/Screen.svelte'
-import { getEventContext } from '$lib/state/getContexts'
+	import { browser } from '$app/environment'
+	import LoginForm from '$lib/components/LoginForm.svelte'
+	import Screen from '$lib/components/Screen.svelte'
+	import { getEventContext } from '$lib/state/getContexts'
 
-export let data
-console.log('data', data, browser)
-if (browser && data.success) {
-	console.log('unregister')
-	navigator?.serviceWorker?.getRegistrations()?.then((registrations) => {
-		for (const registration of registrations) {
-			registration.unregister()
-		}
-	})
-	setTimeout(() => {
-		location.href = '/'
-	}, 10)
-}
+	export let data
+	console.log('data', data, browser)
+	if (browser && data.success) {
+		console.log('unregister')
+		navigator?.serviceWorker?.getRegistrations()?.then((registrations) => {
+			for (const registration of registrations) {
+				registration.unregister()
+			}
+		})
+		setTimeout(() => {
+			location.href = '/'
+		}, 10)
+	}
 </script>
 
 {#if data.error}

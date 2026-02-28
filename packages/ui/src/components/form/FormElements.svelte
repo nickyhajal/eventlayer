@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { SvelteComponent, createEventDispatcher } from 'svelte'
+	import { tw } from 'src/lib/tw'
+	import { createEventDispatcher, SvelteComponent } from 'svelte'
+
+	import Element from './Element.svelte'
 	import FormRow from './FormRow.svelte'
 	import IconButton from './IconButton.svelte'
-	import Element from './Element.svelte'
-	import { tw } from 'src/lib/tw'
 
 	interface Option {
 		label: string

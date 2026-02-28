@@ -1,88 +1,88 @@
 <script lang="ts">
-import { Plus } from '@steeze-ui/heroicons'
-import ElementFormRow from '$lib/components/form/ElementFormRow.svelte'
-import FormElements from '$lib/components/form/FormElements.svelte'
-import Input from '$lib/components/ui/input/input.svelte'
-import { trpc } from '$lib/trpc/client'
-import { dndzone } from 'svelte-dnd-action'
-import { flip } from 'svelte/animate'
-import { writable } from 'svelte/store'
+	import { Plus } from '@steeze-ui/heroicons'
+	import ElementFormRow from '$lib/components/form/ElementFormRow.svelte'
+	import FormElements from '$lib/components/form/FormElements.svelte'
+	import Input from '$lib/components/ui/input/input.svelte'
+	import { trpc } from '$lib/trpc/client'
+	import { dndzone } from 'svelte-dnd-action'
+	import { flip } from 'svelte/animate'
+	import { writable } from 'svelte/store'
 
-import type { FormWithElements } from '@matterloop/db'
-import { HeroIcon, IconPopupMenu } from '@matterloop/ui'
-import { debounce, getId, keyBy } from '@matterloop/util'
+	import type { FormWithElements } from '@matterloop/db'
+	import { HeroIcon, IconPopupMenu } from '@matterloop/ui'
+	import { debounce, getId, keyBy } from '@matterloop/util'
 
-let formInput: FormWithElements
-export { formInput as form }
+	let formInput: FormWithElements
+	export { formInput as form }
 
-let form = writable<FormWithElements>(formInput)
-let opens: { [key: string]: boolean } = {}
-let selectedElement = $form?.elements?.[0] || null
-let lastElement = ''
-$: selectedIndex = $form.elements?.findIndex((el) => el.id === selectedElement?.id)
-$: selectedId = selectedElement?.id
-$: {
-	if (lastElement !== JSON.stringify(selectedElement)) {
-		const index = $form.elements.findIndex((el) => el.id === selectedElement?.id)
-		$form.elements[index] = selectedElement
-		lastElement = JSON.stringify(selectedElement)
-	}
-}
-function saveRaw() {
-	// console.log(getChanges())
-	// if (formElm && initialForm) {
-	// 	formElm.requestSubmit()
-	// } else {
-	// 	initialForm = data.form
-	// }
-}
-const save = debounce(saveRaw, 1000)
-function addElement(index?: number) {
-	if (!$form.elements) $form.elements = []
-	if (index === undefined) {
-		index = $form.elements.length
-	}
-	$form.elements.splice(index, 0, {
-		id: getId(),
-		type: 'text',
-		label: 'New Element Label',
-		formId: $form.id,
-	})
-	selectedElement = $form.elements[index]
-	$form.elements = $form.elements
-}
-async function removeElement(index: number) {
-	if (!$form.elements) return
-
-	const element = $form.elements[index]
-	if (!element?.id) return
-
-	selectedElement = $form.elements[index - 1]
-	$form.elements.splice(index, 1)
-	$form.elements = $form.elements
-	await trpc().formElement.delete.mutate({ id: element.id })
-	handleChangedElements()
-}
-function handleChangedElements() {
-	const orderChanges: { id: string; ord: number }[] = []
-	$form.elements.map((elm, i) => {
-		if (elm.ord !== i) {
-			orderChanges.push({ id: elm.id, ord: i })
-			$form.elements[i].ord = i
+	let form = writable<FormWithElements>(formInput)
+	let opens: { [key: string]: boolean } = {}
+	let selectedElement = $form?.elements?.[0] || null
+	let lastElement = ''
+	$: selectedIndex = $form.elements?.findIndex((el) => el.id === selectedElement?.id)
+	$: selectedId = selectedElement?.id
+	$: {
+		if (lastElement !== JSON.stringify(selectedElement)) {
+			const index = $form.elements.findIndex((el) => el.id === selectedElement?.id)
+			$form.elements[index] = selectedElement
+			lastElement = JSON.stringify(selectedElement)
 		}
-	})
-	if (orderChanges.length && $form?.id) {
-		trpc().formElement.order.mutate({ id: $form.id, changes: orderChanges })
 	}
-}
-const flipDurationMs = 300
-function handleDndConsider(e) {
-	$form.elements = e.detail.items
-}
-function handleDndFinalize(e) {
-	$form.elements = e.detail.items
-	handleChangedElements()
-}
+	function saveRaw() {
+		// console.log(getChanges())
+		// if (formElm && initialForm) {
+		// 	formElm.requestSubmit()
+		// } else {
+		// 	initialForm = data.form
+		// }
+	}
+	const save = debounce(saveRaw, 1000)
+	function addElement(index?: number) {
+		if (!$form.elements) $form.elements = []
+		if (index === undefined) {
+			index = $form.elements.length
+		}
+		$form.elements.splice(index, 0, {
+			id: getId(),
+			type: 'text',
+			label: 'New Element Label',
+			formId: $form.id,
+		})
+		selectedElement = $form.elements[index]
+		$form.elements = $form.elements
+	}
+	async function removeElement(index: number) {
+		if (!$form.elements) return
+
+		const element = $form.elements[index]
+		if (!element?.id) return
+
+		selectedElement = $form.elements[index - 1]
+		$form.elements.splice(index, 1)
+		$form.elements = $form.elements
+		await trpc().formElement.delete.mutate({ id: element.id })
+		handleChangedElements()
+	}
+	function handleChangedElements() {
+		const orderChanges: { id: string; ord: number }[] = []
+		$form.elements.map((elm, i) => {
+			if (elm.ord !== i) {
+				orderChanges.push({ id: elm.id, ord: i })
+				$form.elements[i].ord = i
+			}
+		})
+		if (orderChanges.length && $form?.id) {
+			trpc().formElement.order.mutate({ id: $form.id, changes: orderChanges })
+		}
+	}
+	const flipDurationMs = 300
+	function handleDndConsider(e) {
+		$form.elements = e.detail.items
+	}
+	function handleDndFinalize(e) {
+		$form.elements = e.detail.items
+		handleChangedElements()
+	}
 </script>
 
 <div class="grid h-full w-full grid-rows-[5rem_1fr]">
@@ -98,11 +98,11 @@ function handleDndFinalize(e) {
 		<div
 			class="flex h-full flex-col gap-1 bg-stone-50/80 px-2 pb-2 pt-2"
 			use:dndzone={{
-			items: $form.elements,
-			flipDurationMs,
-			dropTargetStyle: {},
-			dropTargetClasses: ['outline-blue-200', 'outline-dashed', 'outline-2'],
-		}}
+				items: $form.elements,
+				flipDurationMs,
+				dropTargetStyle: {},
+				dropTargetClasses: ['outline-blue-200', 'outline-dashed', 'outline-2'],
+			}}
 			on:consider={handleDndConsider}
 			on:finalize={handleDndFinalize}
 		>
@@ -111,8 +111,11 @@ function handleDndFinalize(e) {
 					<div class="w-full">
 						<!-- animate:flip={{ durtion: flipDurationMs }} -->
 						<button
-							on:click={() => selectedElement = element}
-							class="mb-1 flex w-full flex-col rounded-lg px-2 pb-2 pr-8 pt-1 text-left text-[0.85rem] font-medium text-stone-600 {selectedElement.id === element.id ? 'bg-stone-200/50' : 'bg-transparent'}"
+							on:click={() => (selectedElement = element)}
+							class="mb-1 flex w-full flex-col rounded-lg px-2 pb-2 pr-8 pt-1 text-left text-[0.85rem] font-medium text-stone-600 {selectedElement.id ===
+							element.id
+								? 'bg-stone-200/50'
+								: 'bg-transparent'}"
 						>
 							<div class="mt-[1px] line-clamp-2">{element.content || element.label}</div>
 							<div
@@ -151,7 +154,7 @@ function handleDndFinalize(e) {
 						elements={$form.elements}
 						selectedId={selectedElement.id}
 						rowClass="rounded-lg px-6 py-3 w-full"
-						handleRowClick={(el) => selectedElement = el}
+						handleRowClick={(el) => (selectedElement = el)}
 					/>
 				</div>
 			{/if}

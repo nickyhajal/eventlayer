@@ -1,46 +1,47 @@
 <script lang="ts">
-import { Button, HeroIcon, Input, Select } from '@matterloop/ui'
-import { dispatch } from '@matterloop/util'
-import { onMount } from 'svelte'
-import { api } from 'sveltekit-api-fetch'
+	import { onMount } from 'svelte'
+	import { api } from 'sveltekit-api-fetch'
 
-export let value = ''
-export let allowCreate = false
-export let placeholder = 'Search Users'
-export let name = ''
-export let query = {}
-export let filterValues: string[] = []
-export let useItems = false
-let filterText = ''
-let options: { label: string; value: string }[] | undefined
+	import { Button, HeroIcon, Input, Select } from '@matterloop/ui'
+	import { dispatch } from '@matterloop/util'
 
-onMount(async () => {
-	if (useItems) {
-		options = await search('')
+	export let value = ''
+	export let allowCreate = false
+	export let placeholder = 'Search Users'
+	export let name = ''
+	export let query = {}
+	export let filterValues: string[] = []
+	export let useItems = false
+	let filterText = ''
+	let options: { label: string; value: string }[] | undefined
+
+	onMount(async () => {
+		if (useItems) {
+			options = await search('')
+		}
+	})
+	$: options =
+		useItems && options ? options.filter(({ value }) => !filterValues.includes(value)) : undefined
+	async function search(q: string) {
+		const rsp = await api.POST('/api/users', { body: { q, ...query } })
+		const json = await rsp.json()
+		const final = json.map(({ firstName, lastName, id }) => ({
+			label: `${firstName} ${lastName}`,
+			value: id,
+		}))
+		return final
 	}
-})
-$: options =
-	useItems && options ? options.filter(({ value }) => !filterValues.includes(value)) : undefined
-async function search(q: string) {
-	const rsp = await api.POST('/api/users', { body: { q, ...query } })
-	const json = await rsp.json()
-	const final = json.map(({ firstName, lastName, id }) => ({
-		label: `${firstName} ${lastName}`,
-		value: id,
-	}))
-	return final
-}
 </script>
 
 <Input
-	name={name}
+	{name}
 	type="select"
 	selectProps={!useItems ? { loadOptions: search } : {}}
-	bind:value={value}
-	options={options}
-	placeholder={placeholder}
+	bind:value
+	{options}
+	{placeholder}
 	on:select
-	bind:filterText={filterText}
+	bind:filterText
 >
 	<div slot="empty">
 		{#if filterText?.length > 2 && allowCreate}

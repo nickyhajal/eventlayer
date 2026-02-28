@@ -46,6 +46,27 @@
 		await invalidateAll()
 		loading = false
 	}
+	function getUserTitle(type) {
+		if (type === 'staff') return 'Team'
+		const title = startCase(type)
+		return title
+	}
+
+	function formatEventDateTime(startsAt?: string | null, endsAt?: string | null) {
+		if (!startsAt) return ''
+		const start = dayjs(startsAt)
+		if (!endsAt) return start.format('dddd MMMM Do [at] h:mma')
+		const end = dayjs(endsAt)
+		if (!end.isValid()) return start.format('dddd MMMM Do [at] h:mma')
+
+		if (start.format('YYYY-MM-DD') === end.format('YYYY-MM-DD')) {
+			return `${start.format('dddd MMMM Do [at] h:mma')} - ${end.format('h:mma')}`
+		}
+
+		return `${start.format('dddd MMMM Do [at] h:mma')} - ${end.format('dddd MMMM Do [at] h:mma')}`
+	}
+
+	$: eventDateTime = formatEventDateTime(data.event.startsAt, data.event.endsAt)
 </script>
 
 <Screen
@@ -54,9 +75,9 @@
 	back="/schedule"
 	photo={event.photo}
 >
-	<div class="shell mx-auto max-w-7xl pt-safe-offset-3 pb-20">
-		<div class="text-a-accent text-base font-semibold">
-			{dayjs(data.event.startsAt).format('dddd MMMM Do [at] h:mma')}
+	<div class="shell mx-auto max-w-7xl pb-20 pt-safe-offset-3">
+		<div class="text-base font-semibold text-a-accent">
+			{eventDateTime}
 		</div>
 		<div class="pb-3 text-3xl font-bold">{event.name}</div>
 		{#if event.subtitle}
@@ -72,7 +93,7 @@
 						? '!bg-emerald-500'
 						: canRsvp && $me?.id && !rsvpd
 							? 'bg-a-accent !text-white/100'
-							: '!bg-slate-100/60 !text-slate-400 border border-slate-400/10 border-b-slate-700/10 cursor-not-allowed'}"
+							: 'cursor-not-allowed border border-slate-400/10 border-b-slate-700/10 !bg-slate-100/60 !text-slate-400'}"
 				>
 					{#if loading}
 						Loading...
@@ -108,20 +129,15 @@
 		{#if users?.length > 0 && event?.showAttendeeList}
 			<div class="mt-3 flex flex-col gap-2">
 				{#if !shouldGroup}
-					<div class="text-a-accent mb-0 mt-2 text-lg font-semibold brightness-95">
+					<div class="mb-0 mt-2 text-lg font-semibold text-a-accent brightness-95">
 						Attending this Event
 					</div>
 				{/if}
 				{#each users as user}
 					{#if shouldGroup}
 						{#if getLastType(user)}
-							<div class="text-a-accent mb-0 mt-2 text-lg font-semibold brightness-95">
-								{startCase(
-									// event?.name?.includes('Dive Session') && user.type === 'attendee'
-									// ? 'facilitator'
-									// : user.type,
-									user.type,
-								)}s
+							<div class="mb-0 mt-2 text-lg font-semibold text-a-accent brightness-95">
+								{getUserTitle(user.type)}
 							</div>
 						{/if}
 					{/if}

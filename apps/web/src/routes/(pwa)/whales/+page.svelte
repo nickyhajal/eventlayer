@@ -110,16 +110,14 @@
 		/>
 	</div>
 	<div class="relative mx-auto -mt-2 max-w-7xl bg-slate-100">
-		<div class="mb-8 max-w-2xl mt-16 px-4 sm:px-0">
-			<p class="text-lg mb-4">
-				A pitch contest <b>for</b> innovators, <b>by</b> innovators. We’re not doing “Innovation Theater”
-				here. We’re making game-changing connections between startups/tech companies, investors and startups.
-				Where innovation meets acceleration, connecting startups directly with customers and investors
-				to fast-track clinical breakthroughs.
+		<div class="mb-8 mt-16 max-w-2xl px-4 sm:px-0">
+			<p class="mb-4 text-lg">
+				The Whale Tank is more than just a competition—it's a festival and a problem-solving session
+				to address real-world challenges in clinical trials and health innovation.
 			</p>
 			<p class="text-lg">
-				In our “pilot” year we had 24 applications and here are the 6 finalists who will be
-				presenting at this year’s Gathering.”
+				Built to go beyond networking and pitches, Whale Tank equips startups with practical,
+				hands-on support and direct feedback from customers, investors, and industry leaders.
 			</p>
 		</div>
 		<div class="mt-2 grid grid-cols-1 gap-4 py-2 lg:grid-cols-2">
@@ -132,7 +130,7 @@
 						>
 							<div
 								class="h-full w-full bg-contain bg-center bg-no-repeat"
-								style="background-image: url({getMediaUrl(photo, 'trim=1&w=780')})"
+								style="background-image: url({getMediaUrl(photo, 'w-780')})"
 							></div>
 						</div>
 					</a>
@@ -163,7 +161,7 @@
 						{/if}
 					</div>
 					<div
-						class="text-a-accent mt-2 flex h-12 w-full items-center justify-around border-t border-slate-100 font-semibold"
+						class="mt-2 flex h-12 w-full items-center justify-around border-t border-slate-100 font-semibold text-a-accent"
 					>
 						{#if id}
 							<a

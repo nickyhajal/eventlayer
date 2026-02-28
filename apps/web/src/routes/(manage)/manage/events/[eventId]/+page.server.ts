@@ -6,18 +6,18 @@ import { z } from 'zod'
 import { EventFns } from '@matterloop/api'
 
 const schema = z.object({
-	email: z.string().email(),
-	password: z.string(),
+  email: z.string().email(),
+  password: z.string(),
 })
 
 export const load = async ({ locals, params }) => {
-	if (!params.eventId) {
-		return error(404, 'No event id')
-	}
-	const eventFns = await EventFns(params.eventId)
-	const event = await eventFns.get()
-	if (!event) {
-		return error(404, 'Event not found')
-	}
-	return { event, users: await eventFns.getUsers() }
+  if (!params.eventId) {
+    return error(404, 'No event id')
+  }
+  const eventFns = await EventFns(params.eventId)
+  const event = await eventFns.get()
+  if (!event) {
+    return error(404, 'Event not found')
+  }
+  return { event, users: await eventFns.getUsers() }
 }

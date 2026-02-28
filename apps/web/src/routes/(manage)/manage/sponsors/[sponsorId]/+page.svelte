@@ -1,10 +1,10 @@
 <script lang="ts">
-import AdminScreen from '../../AdminScreen.svelte'
-import SponsorForm from '../SponsorForm.svelte'
+	import AdminScreen from '../../AdminScreen.svelte'
+	import SponsorForm from '../SponsorForm.svelte'
 
-export let data
+	export let data
 
-let loading = false
+	let loading = false
 </script>
 
 <AdminScreen>

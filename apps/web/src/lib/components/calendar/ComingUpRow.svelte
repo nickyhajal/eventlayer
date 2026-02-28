@@ -1,14 +1,15 @@
 <script lang="ts">
-import { Avatars, HeroIcon } from '@matterloop/ui'
-import { dayjs } from '@matterloop/util'
-import { ChevronRight } from '@steeze-ui/heroicons'
-import type { CalendarEventClient } from '$lib/server/procedures/event'
-import { createEventDispatcher } from 'svelte'
+	import { ChevronRight } from '@steeze-ui/heroicons'
+	import type { CalendarEventClient } from '$lib/server/procedures/event'
+	import { createEventDispatcher } from 'svelte'
 
-export let event: CalendarEventClient
+	import { Avatars, HeroIcon } from '@matterloop/ui'
+	import { dayjs } from '@matterloop/util'
 
-const dispatch = createEventDispatcher()
-const handleClick = () => dispatch('itemClick', event)
+	export let event: CalendarEventClient
+
+	const dispatch = createEventDispatcher()
+	const handleClick = () => dispatch('itemClick', event)
 </script>
 
 <div class="hover:bg-slate rounded-xl px-3">

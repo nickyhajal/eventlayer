@@ -1,27 +1,27 @@
 <script lang="ts">
-import Screen from '$lib/components/Screen.svelte'
-import BiggerPicture from 'bigger-picture/svelte'
+	import Screen from '$lib/components/Screen.svelte'
+	import BiggerPicture from 'bigger-picture/svelte'
 
-import '$lib/bigger-picture.css'
+	import '$lib/bigger-picture.css'
 
-import { onMount } from 'svelte'
+	import { onMount } from 'svelte'
 
-let bp
-onMount(() => {
-	if (typeof window !== 'undefined') {
-		bp = BiggerPicture({
-			target: document.body,
+	let bp
+	onMount(() => {
+		if (typeof window !== 'undefined') {
+			bp = BiggerPicture({
+				target: document.body,
+			})
+		}
+	})
+	function open() {
+		bp.open({
+			items: document.querySelectorAll('#bp > div'),
+			scale: 1,
+			intro: 'fadeup',
+			maxZoom: 3,
 		})
 	}
-})
-function open() {
-	bp.open({
-		items: document.querySelectorAll('#bp > div'),
-		scale: 1,
-		intro: 'fadeup',
-		maxZoom: 3,
-	})
-}
 </script>
 
 <Screen title="Venue Map" back="/menu">

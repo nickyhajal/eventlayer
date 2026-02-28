@@ -69,7 +69,7 @@
 					href={link}
 					variant="ghost"
 					class={tw(
-						`flex h-full w-20 flex-none flex-col items-center gap-0.5 py-1 text-[0.7rem] transition-none hover:bg-transparent focus:bg-transparent lg:w-full lg:flex-row lg:items-center lg:justify-start lg:gap-3 lg:rounded-lg lg:bg-slate-800 lg:px-2.5 lg:py-2 lg:text-sm lg:text-white  lg:hover:text-white ${bits[1] === currBits[1] ? 'text-a-accent hover:text-a-accent brightness-90 lg:bg-slate-900 lg:hover:bg-slate-900' : 'text-slate-600 hover:lg:bg-slate-700'} ${classes}`,
+						`flex h-full w-20 flex-none flex-col items-center gap-0.5 py-1 text-[0.7rem] transition-none hover:bg-transparent focus:bg-transparent lg:w-full lg:flex-row lg:items-center lg:justify-start lg:gap-3 lg:rounded-lg lg:bg-slate-800 lg:px-2.5 lg:py-2 lg:text-sm lg:text-white  lg:hover:text-white ${bits[1] === currBits[1] ? 'text-a-accent brightness-90 hover:text-a-accent lg:bg-slate-900 lg:hover:bg-slate-900' : 'text-slate-600 hover:lg:bg-slate-700'} ${classes}`,
 					)}
 				>
 					<div class="icon {bits[1] === currBits[1] ? 'selected' : ''}">{@html icon}</div>
@@ -88,7 +88,7 @@
 					href={link}
 					variant="ghost"
 					class={tw(
-						`flex h-full w-20 flex-none flex-col items-center gap-0.5 py-1 text-[0.7rem] transition-none hover:bg-transparent focus:bg-transparent lg:w-full lg:flex-row lg:items-center lg:justify-start lg:gap-3 lg:rounded-lg lg:bg-slate-800 lg:px-2.5 lg:py-2 lg:text-sm lg:text-white  lg:hover:text-white ${bits[1] === currBits[1] ? 'text-a-accent hover:text-a-accent brightness-90 lg:bg-slate-900 lg:hover:bg-slate-900' : 'text-slate-600 hover:lg:bg-slate-700'} ${classes}`,
+						`flex h-full w-20 flex-none flex-col items-center gap-0.5 py-1 text-[0.7rem] transition-none hover:bg-transparent focus:bg-transparent lg:w-full lg:flex-row lg:items-center lg:justify-start lg:gap-3 lg:rounded-lg lg:bg-slate-800 lg:px-2.5 lg:py-2 lg:text-sm lg:text-white  lg:hover:text-white ${bits[1] === currBits[1] ? 'text-a-accent brightness-90 hover:text-a-accent lg:bg-slate-900 lg:hover:bg-slate-900' : 'text-slate-600 hover:lg:bg-slate-700'} ${classes}`,
 					)}
 				>
 					<div class="icon {bits[1] === currBits[1] ? 'selected' : ''}">{@html icon}</div>
@@ -128,7 +128,7 @@
 						)}
 					>
 						<div class="icon {bits[1] === '/settings' ? 'selected' : ''}">
-							<Cog class="h-5 w-5 -mr-1.5" />
+							<Cog class="-mr-1.5 h-5 w-5" />
 						</div>
 						<div>Your Profile</div>
 					</Button>
@@ -140,7 +140,7 @@
 						)}
 					>
 						<div class="icon {bits[1] === '/settings' ? 'selected' : ''}">
-							<Door class="h-5 w-5 -mr-1.5" />
+							<Door class="-mr-1.5 h-5 w-5" />
 						</div>
 						<div>Logout</div>
 					</Button>

@@ -17,7 +17,7 @@
 
 	import type { Event, FullEventUser } from '@matterloop/db'
 	import { tw } from '@matterloop/ui'
-	import { capitalize, debounce, getMediaUrl } from '@matterloop/util'
+	import { capitalize, dayjs, debounce, getMediaUrl } from '@matterloop/util'
 
 	export let simplified = false
 	export let inDialog = false
@@ -30,6 +30,7 @@
 
 	let loading = false
 	let userSearchQuery = ''
+	let deleteDialogOpen = false
 	let eventUserType = { value: 'attendee', label: 'Attendee' }
 	let eventUserTypes = [
 		{ value: 'attendee', label: 'Attendee' },
@@ -45,6 +46,7 @@
 	]
 	let eventTypes = [
 		{ value: 'program', label: 'Program Event' },
+		{ value: 'session', label: 'Session' },
 		{ value: 'panel', label: 'Panel' },
 		{ value: 'meetup', label: 'Meetup' },
 		{ value: 'meal', label: 'Group Meal' },
@@ -65,12 +67,25 @@
 	let eventFor = eventForOptions.find((t) => t.value === (event.eventFor || ''))
 	$: event.type = type.value
 	$: event.eventFor = eventFor?.value
+
+	function normalizeDateTime(value?: string | null) {
+		if (!value) return undefined
+		const normalized = value.trim()
+		if (!normalized) return undefined
+		if (!/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}$/.test(normalized)) return undefined
+		return normalized
+	}
+
 	async function createEvent() {
 		const ord = event?.ord || 0
+		const startsAt = normalizeDateTime(event.startsAt)
+		const endsAt = normalizeDateTime(event.endsAt)
 		const res = await trpc().event.upsert.mutate({
 			...event,
 			ord: +ord,
 			maxAttendees: +(event?.maxAttendees || 0),
+			startsAt,
+			endsAt,
 		})
 		goto(`/manage/events/${res.id}`)
 		toast.success('Saved')
@@ -89,6 +104,12 @@
 			invalidateAll()
 		}
 	}
+	async function deleteEvent() {
+		if (!event.id) return
+		await trpc().event.delete.mutate({ id: event.id })
+		toast.success('Event deleted')
+		goto('/manage/events')
+	}
 </script>
 
 <form on:submit={createEvent}>
@@ -99,7 +120,9 @@
 					<Dialog.Title>{title}</Dialog.Title>
 				</Dialog.Header>
 			{:else}
-				<div class={tw(`mb-2 mt-0 text-lg font-semibold ${titleClass}`)}>{title}</div>
+				<div class={tw(`mb-2 mt-0 text-lg font-semibold ${titleClass}`)}>
+					{title}
+				</div>
 			{/if}
 			<div class="grid gap-4 py-4">
 				{#if !simplified && event?.id}
@@ -161,7 +184,8 @@
 						</Select.Root>
 					</div>
 				</div>
-				<DatetimePicker bind:value={event.startsAt} />
+				<DatetimePicker bind:value={event.startsAt} label="Start" />
+				<DatetimePicker bind:value={event.endsAt} label="End" defaultDate={event.startsAt?.split(' ')[0] ?? ''} defaultTime="" />
 				{#if !simplified}
 					<div class="flex flex-col items-start justify-center gap-1">
 						<Label for="description" class="text-right">Description</Label>
@@ -199,7 +223,14 @@
 					</div>
 				{/if}
 			</div>
-			<Button type="submit">{buttonMsg}</Button>
+			<div class="flex gap-2">
+				<Button type="submit">{buttonMsg}</Button>
+				{#if editing}
+					<Button type="button" variant="destructive" on:click={() => (deleteDialogOpen = true)}>
+						Delete Event
+					</Button>
+				{/if}
+			</div>
 		</div>
 		{#if !simplified}
 			<div class="grip mt-9 gap-4 px-4 py-4">
@@ -211,7 +242,10 @@
 						{@const { firstName, lastName, type, id } = user}
 						<div class="group relative flex items-center justify-between gap-2 px-2.5 py-2">
 							<div class="flex w-full items-center justify-between">
-								<div class="text-sm font-medium text-stone-600">{firstName} {lastName}</div>
+								<div class="text-sm font-medium text-stone-600">
+									{firstName}
+									{lastName}
+								</div>
 								<div
 									class="absolute right-3 text-xs text-stone-500 transition-all group-hover:right-10"
 								>
@@ -222,7 +256,10 @@
 								variant="ghost"
 								class="my-0 h-6 px-1 py-2 opacity-0 transition-all group-hover:opacity-100"
 								on:click={() => {
-									trpc().event.removeUser.mutate({ eventId: event.id, userId: user.userId })
+									trpc().event.removeUser.mutate({
+										eventId: event.id,
+										userId: user.userId,
+									})
 									invalidateAll()
 								}}
 							>
@@ -267,3 +304,18 @@
 		{/if}
 	</div>
 </form>
+
+<Dialog.Root bind:open={deleteDialogOpen}>
+	<Dialog.Content>
+		<Dialog.Header>
+			<Dialog.Title>Delete Event</Dialog.Title>
+			<Dialog.Description>
+				Are you sure you want to delete {event.name}? This can't be undone.
+			</Dialog.Description>
+		</Dialog.Header>
+		<Dialog.Footer>
+			<Button variant="outline" on:click={() => (deleteDialogOpen = false)}>Cancel</Button>
+			<Button variant="destructive" on:click={deleteEvent}>Delete</Button>
+		</Dialog.Footer>
+	</Dialog.Content>
+</Dialog.Root>

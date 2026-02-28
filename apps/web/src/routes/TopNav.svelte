@@ -1,10 +1,10 @@
 <script lang="ts">
-import { page } from '$app/stores'
-import { getMeContext } from '$lib/state/getContexts'
+	import { page } from '$app/stores'
+	import { getMeContext } from '$lib/state/getContexts'
 
-const me = getMeContext()
-$: path = $page.url.pathname
-$: simple = path.startsWith('/report/')
+	const me = getMeContext()
+	$: path = $page.url.pathname
+	$: simple = path.startsWith('/report/')
 </script>
 
 {#if simple}

@@ -6,6 +6,7 @@
 	import Input from '$lib/components/ui/input/input.svelte'
 	import Label from '$lib/components/ui/label/label.svelte'
 	import * as Select from '$lib/components/ui/select'
+	import Switch from '$lib/components/ui/switch/switch.svelte'
 	import Textarea from '$lib/components/ui/textarea/textarea.svelte'
 	import Uploader from '$lib/components/ui/Uploader.svelte'
 	import { trpc } from '$lib/trpc/client.js'
@@ -13,7 +14,7 @@
 	import Check from 'lucide-svelte/icons/check'
 	import { toast } from 'svelte-sonner'
 
-	import type { FullEventUser, User } from '@matterloop/db'
+	import type { EventUserField, FullEventUser, User } from '@matterloop/db'
 	import { merge, tw } from '@matterloop/util'
 
 	export let user: Partial<FullEventUser> = {
@@ -26,11 +27,15 @@
 	export let inDialog = false
 	export let titleClass = ''
 	export let showTitle = true
+	// Custom fields passed from the page
+	export let customFields: EventUserField[] = []
 	let error = ''
 	let userInEvent = false
 	let emailConfirmed: string = user?.id ? 'existing-user' : ''
-	user.info = merge(
-		{
+
+	// Build default info object including custom fields
+	function buildDefaultInfo() {
+		const defaultInfo: Record<string, { value: string }> = {
 			company: { value: '' },
 			title: { value: '' },
 			linkedin_url: { value: '' },
@@ -38,9 +43,27 @@
 			diveTeam: { value: '' },
 			dinnerTable: { value: '' },
 			bio: { value: '' },
-		},
-		user?.info || {},
-	)
+		}
+		// Add custom fields to default info
+		customFields.forEach((field) => {
+			defaultInfo[field.key] = { value: '' }
+		})
+		return defaultInfo
+	}
+
+	user.info = merge(buildDefaultInfo(), user?.info || {})
+
+	// Helper to get custom field value with proper type handling
+	function getCustomFieldValue(key: string): string {
+		return user.info?.[key]?.value ?? ''
+	}
+
+	// Helper to set custom field value
+	function setCustomFieldValue(key: string, value: string) {
+		if (!user.info) user.info = {}
+		if (!user.info[key]) user.info[key] = { value: '' }
+		user.info[key].value = value
+	}
 	$: buttonMsg = emailConfirmed ? (user?.id ? 'Save User' : 'Add User') : 'Check Email'
 	$: editing = user?.id ? true : false
 	$: title = editing ? `${user?.firstName} ${user?.lastName}` : 'Add a User'
@@ -81,7 +104,10 @@
 		invalidateAll()
 	}
 	async function deactivateUser() {
-		await trpc().user.upsert.mutate({ userId: user.userId, status: 'inactive' })
+		await trpc().user.upsert.mutate({
+			userId: user.userId,
+			status: 'inactive',
+		})
 		invalidateAll()
 	}
 	async function activateUser() {
@@ -125,15 +151,18 @@
 			</Dialog.Header>
 		{:else}
 			<div class="flex gap-4">
-				<div class={tw(`mb-2 mt-0 text-lg font-semibold ${titleClass}`)}>{title}</div>
+				<div class={tw(`mb-2 mt-0 text-lg font-semibold ${titleClass}`)}>
+					{title}
+				</div>
 			</div>
 		{/if}
 	{/if}
-	<div class="grid gap-4 py-4">
-		{#if error}
-			<div class="text-base">{error}</div>
-		{/if}
-		{#if emailConfirmed}
+	<div class={simplified ? '' : 'grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]'}>
+		<div class="grid gap-4 py-4">
+			{#if error}
+				<div class="text-base">{error}</div>
+			{/if}
+			{#if emailConfirmed}
 			{#if !simplified && user?.id}
 				<div class="flex flex-col items-start justify-center gap-1">
 					<Label for="image" class="text-right">User Image</Label>
@@ -247,15 +276,15 @@
 						{user.info.linkedin_url.value}
 					</a>
 				</div>
-				<!-- <div class="flex flex-col items-start justify-center gap-1">
+				<div class="flex flex-col items-start justify-center gap-1">
 					<Label for="proBio" class="text-right">Professional Bio</Label>
 					<Textarea id="proBio" bind:value={user.proBio} class="col-span-3" />
-				</div> -->
+				</div>
 				<div class="flex flex-col items-start justify-center gap-1">
 					<Label for="bio" class="text-right">User Bio</Label>
 					<Textarea id="bio" bind:value={user.info.bio.value} class="col-span-3" />
 				</div>
-				<!-- <div class="flex flex-col items-start justify-center gap-1">
+				<div class="flex flex-col items-start justify-center gap-1">
 					<Label for="dinnerTable" class="text-right">Dinner Table</Label>
 					<Input
 						id="dinnerTable"
@@ -273,7 +302,7 @@
 						class="col-span-3"
 					/>
 				</div>
-				{#if user.type.includes('speaker')}
+				<!--{#if user.type.includes('speaker')}
 					<div class="flex flex-col items-start justify-center gap-1">
 						<Label for="speechTitle" class="text-right">Talk Title</Label>
 						<Input
@@ -284,7 +313,78 @@
 						/>
 					</div>
 				{/if} -->
+
+				<!-- Custom Fields Section -->
+				<!-- TODO: Implement attendee-editable fields in PWA profile edit -->
+				{#if customFields.length > 0}
+					<div class="mt-4 border-t border-stone-200 pt-4">
+						<Label class="mb-3 block text-sm font-semibold text-stone-700">Custom Fields</Label>
+						{#each customFields as field (field.id)}
+							<div class="mb-3 flex flex-col items-start justify-center gap-1">
+								<Label for={`custom-${field.key}`} class="text-right">{field.label}</Label>
+								{#if field.fieldType === 'text'}
+									<Input
+										id={`custom-${field.key}`}
+										type="text"
+										value={getCustomFieldValue(field.key)}
+										on:input={(e) => setCustomFieldValue(field.key, e.currentTarget.value)}
+										class="col-span-3"
+									/>
+								{:else if field.fieldType === 'textarea'}
+									<Textarea
+										id={`custom-${field.key}`}
+										value={getCustomFieldValue(field.key)}
+										on:input={(e) => setCustomFieldValue(field.key, e.currentTarget.value)}
+										class="col-span-3"
+									/>
+								{:else if field.fieldType === 'boolean'}
+									<Switch
+										id={`custom-${field.key}`}
+										checked={getCustomFieldValue(field.key) === 'true'}
+										onCheckedChange={(checked) =>
+											setCustomFieldValue(field.key, checked ? 'true' : 'false')}
+									/>
+								{:else if field.fieldType === 'options'}
+									{@const options = field.options?.split(',').map((o) => o.trim()) || []}
+									<Select.Root
+										selected={options.includes(getCustomFieldValue(field.key))
+											? {
+													value: getCustomFieldValue(field.key),
+													label: getCustomFieldValue(field.key),
+												}
+											: undefined}
+										onSelectedChange={(v) => setCustomFieldValue(field.key, v?.value || '')}
+									>
+										<Select.Trigger class="w-full">
+											<Select.Value placeholder="Select an option" />
+										</Select.Trigger>
+										<Select.Content>
+											{#each options as option}
+												<Select.Item value={option} label={option}>{option}</Select.Item>
+											{/each}
+										</Select.Content>
+									</Select.Root>
+								{/if}
+							</div>
+						{/each}
+					</div>
+				{/if}
 			{/if}
+			{/if}
+		</div>
+		{#if !simplified && emailConfirmed}
+			<div class="grip mt-0 gap-4 py-4">
+				<div class="rounded-lg border border-stone-200 bg-stone-50 p-3">
+					<Label for="user_internalNotes" class="text-right">Internal Notes</Label>
+					<Textarea
+						id="user_internalNotes"
+						bind:value={user.internalNotes}
+						class="mt-2 w-full bg-white"
+						rows={4}
+						placeholder="Add internal notes about this attendee..."
+					/>
+				</div>
+			</div>
 		{/if}
 	</div>
 	<div class="flex w-full justify-between">
@@ -301,6 +401,8 @@
 				on:click={() => activateUser()}>Add to Event</Button
 			>
 		{/if}
-		<div class="flex justify-end"><Button type="submit">{buttonMsg}</Button></div>
+		<div class="flex justify-end">
+			<Button type="submit">{buttonMsg}</Button>
+		</div>
 	</div>
 </form>

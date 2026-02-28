@@ -72,7 +72,7 @@
 				<a
 					href={$event.getContent('alert-link')}
 					target={$event.getContent('alert-link').includes('eventlayer') ? '' : '_blank'}
-					class="bg-amber-100/30 block hover:bg-amber-100/60 transition-all rounded-xl p-4 text-sm text-center -mt-8 lg:-mt-16 lg:mb-36 mb-16 text-slate-700"
+					class="-mt-8 mb-16 block rounded-xl bg-amber-100/30 p-4 text-center text-sm text-slate-700 transition-all hover:bg-amber-100/60 lg:-mt-16 lg:mb-36"
 				>
 					<div class="text-sm font-semibold">
 						{$event.getContent('alert')}
@@ -80,7 +80,7 @@
 				</a>
 			{:else}
 				<div
-					class="bg-amber-100/30 rounded-xl p-4 text-sm text-center -mt-8 lg:-mt-16 lg:mb-36 mb-16 text-slate-700"
+					class="-mt-8 mb-16 rounded-xl bg-amber-100/30 p-4 text-center text-sm text-slate-700 lg:-mt-16 lg:mb-36"
 				>
 					<div class="text-sm font-semibold">
 						{$event.getContent('alert')}
@@ -92,30 +92,32 @@
 			<a
 				href={`${$event.getContent('preorder')}?prefilled_email=${data.me?.email ?? ''}`}
 				target="_blank"
-				class="w-full overflow-hidden block hover:saturate-[140%] transition-all max-w-xl mx-auto relative border border-[#dae7e6] bg-[#F9FFFF] rounded-xl pt-4 text-center -mt-8 lg:-mt-20 lg:mb-16 mb-2 text-slate-700"
+				class="relative mx-auto -mt-8 mb-2 block w-full max-w-xl overflow-hidden rounded-xl border border-[#dae7e6] bg-[#F9FFFF] pt-4 text-center text-slate-700 transition-all hover:saturate-[140%] lg:-mt-20 lg:mb-16"
 			>
 				<button
-					class="absolute bg-white/80 p-1 group hover:text-accent rounded-full border border-slate-200/40 right-2.5 top-3.5"
+					class="group absolute right-2.5 top-3.5 rounded-full border border-slate-200/40 bg-white/80 p-1 hover:text-accent"
 					on:click={handleIgnorePreorder}
 				>
 					<X class=" h-5 w-5 text-slate-800 group-hover:text-orange-800/60" />
 				</button>
-				<div class="text-2xl font-h font-semibold mb-6 mt-10 px-2">
+				<div class="font-h mb-6 mt-10 px-2 text-2xl font-semibold">
 					Join us as we continue the adventure!
 				</div>
-				<div class="px-2"><img src="/banner.png" class="w-72 mx-auto" alt="" /></div>
+				<div class="px-2">
+					<img src="/banner.png" class="mx-auto w-72" alt="" />
+				</div>
 				<div
-					class="bg-[#E2FFFE] border-t border-[#dae7e6] items-center mt-10 font-semibold text-lg font-h py-4 pl-3 pr-2 flex justify-between"
+					class="font-h mt-10 flex items-center justify-between border-t border-[#dae7e6] bg-[#E2FFFE] py-4 pl-3 pr-2 text-lg font-semibold"
 				>
 					<div>Pre-order for ND26</div>
-					<ArrowRight class="w-6 h-6 text-slate-800" />
+					<ArrowRight class="h-6 w-6 text-slate-800" />
 				</div>
 			</a>
 		{:else}
 			<img
 				src={getMediaUrl($event.largeLogo)}
 				alt="An alt text"
-				class="mx-auto mb-12 -mt-8 w-3/12 pb-2 md:w-3/12 md:-mt-24"
+				class="mx-auto -mt-8 mb-12 w-6/12 pb-2 md:-mt-24 md:w-6/12"
 			/>
 		{/if}
 		<div class="rounded-t-xl bg-slate-200/70 p-3 text-center font-medium">
@@ -187,9 +189,9 @@
 						href={`${$event.getContent('preorder')}?prefilled_email=${data.me?.email ?? ''}`}
 						target="_blank"
 						variant="secondary"
-						class="bg-a-accent col-span-2 border-a-accent hover:bg-a-accent border-b-main/10 text-a-accent flex w-full flex-none flex-col items-start justify-center gap-0.5 border border-b border-opacity-[0.07] bg-opacity-[0.02] py-9 text-left text-sm font-semibold hover:bg-opacity-[0.07]"
+						class="col-span-2 flex w-full flex-none flex-col items-start justify-center gap-0.5 border border-b border-a-accent border-b-main/10 border-opacity-[0.07] bg-a-accent bg-opacity-[0.02] py-9 text-left text-sm font-semibold text-a-accent hover:bg-a-accent hover:bg-opacity-[0.07]"
 					>
-						<div class="border-main/20 mb-0.5 rounded-full border bg-white/40 p-1.5 opacity-80">
+						<div class="mb-0.5 rounded-full border border-main/20 bg-white/40 p-1.5 opacity-80">
 							<div class="icon"><Ticket /></div>
 							<!-- <svelte:component this={icon} class="text-main/70  h-[1rem] w-[1rem] flex-none" /> -->
 						</div>
@@ -201,11 +203,11 @@
 						href={link}
 						variant="secondary"
 						class={tw(
-							`bg-a-accent border-a-accent hover:bg-a-accent border-b-main/10 text-a-accent flex w-full flex-none flex-col items-start justify-center gap-0.5 border border-b border-opacity-[0.07] bg-opacity-[0.02] py-9 text-left text-sm font-semibold hover:bg-opacity-[0.07] ${className}`,
+							`flex w-full flex-none flex-col items-start justify-center gap-0.5 border border-b border-a-accent border-b-main/10 border-opacity-[0.07] bg-a-accent bg-opacity-[0.02] py-9 text-left text-sm font-semibold text-a-accent hover:bg-a-accent hover:bg-opacity-[0.07] ${className}`,
 						)}
 					>
 						{#if icon}
-							<div class="border-main/20 mb-0.5 rounded-full border bg-white/40 p-1.5 opacity-80">
+							<div class="mb-0.5 rounded-full border border-main/20 bg-white/40 p-1.5 opacity-80">
 								<div class="icon">{@html icon}</div>
 								<!-- <svelte:component this={icon} class="text-main/70  h-[1rem] w-[1rem] flex-none" /> -->
 							</div>
@@ -237,10 +239,10 @@
 					<Button
 						href="/schedule"
 						variant="outline"
-						class="text-a-accent flex h-8 items-center gap-1.5 px-2.5 py-1 text-sm font-medium"
+						class="flex h-8 items-center gap-1.5 px-2.5 py-1 text-sm font-medium text-a-accent"
 					>
 						View All
-						<ChevronRight class="text-a-accent h-4 w-4" />
+						<ChevronRight class="h-4 w-4 text-a-accent" />
 					</Button>
 				</div>
 				<div class="mb-6 w-[calc(100dvw-0.9rem)] overflow-x-auto lg:w-[calc(100%)] lg:pb-8">
@@ -253,7 +255,7 @@
 							>
 								<img
 									alt="{event.name} photo"
-									src={getMediaUrl(event.photo)}
+									src={getMediaUrl(event.photo || event.venue?.photo)}
 									class="h-32 w-full rounded-md bg-cover object-cover"
 								/>
 								<div class="px-2">
@@ -283,6 +285,6 @@
 		top: calc(env(safe-area-inset-top) - 0.5rem);
 	}
 	.icon :global(svg) {
-		@apply text-a-accent/70 h-[1rem]  w-[1rem] flex-none brightness-90;
+		@apply h-[1rem] w-[1rem]  flex-none text-a-accent/70 brightness-90;
 	}
 </style>

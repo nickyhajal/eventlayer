@@ -1,22 +1,22 @@
 <script lang="ts">
-  let className = ''
-  export { className as class }
+	let className = ''
+	export { className as class }
 </script>
 
 <div class={`shell formRow flex ${className}`}>
-  <slot />
+	<slot />
 </div>
 
 <style lang="postcss">
-  .shell {
-    &:empty {
-      display: none;
-    }
-    margin-bottom: 1rem;
-    width: 100%;
-    gap: 0.6rem;
-    &:last-of-type {
-      margin-bottom: 0;
-    }
-  }
+	.shell {
+		&:empty {
+			display: none;
+		}
+		margin-bottom: 1rem;
+		width: 100%;
+		gap: 0.6rem;
+		&:last-of-type {
+			margin-bottom: 0;
+		}
+	}
 </style>

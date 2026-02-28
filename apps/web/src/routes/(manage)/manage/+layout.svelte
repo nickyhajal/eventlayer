@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/stores'
-	import Calendar from 'lucide-svelte/icons/calendar'
-	import FileQuestion from 'lucide-svelte/icons/file-question'
-	import FileText from 'lucide-svelte/icons/file-text'
+import Calendar from 'lucide-svelte/icons/calendar'
+import FileQuestion from 'lucide-svelte/icons/file-question'
+import FileText from 'lucide-svelte/icons/file-text'
+import ImageIcon from 'lucide-svelte/icons/image'
 	import Handshake from 'lucide-svelte/icons/handshake'
 	import HelpCircle from 'lucide-svelte/icons/help-circle'
 	import Home from 'lucide-svelte/icons/home'
+	import KeyRound from 'lucide-svelte/icons/key-round'
 	import Mail from 'lucide-svelte/icons/mail'
 	import Pin from 'lucide-svelte/icons/map-pinned'
 	import SquareMenu from 'lucide-svelte/icons/menu-square'
@@ -74,12 +76,17 @@
 			label: 'Pages',
 			icon: FileText,
 		},
-		{
-			path: '/content',
-			label: 'Strings',
-			icon: TextCursor,
-		},
-		{
+	{
+		path: '/content',
+		label: 'Strings',
+		icon: TextCursor,
+	},
+	{
+		path: '/media',
+		label: 'Media',
+		icon: ImageIcon,
+	},
+	{
 			path: '/faqs',
 			label: 'FAQs',
 			icon: FileQuestion,
@@ -102,6 +109,11 @@
 			path: '/settings',
 			label: 'Appearance',
 			icon: Paintbrush,
+		},
+		{
+			path: '/advanced',
+			label: 'Advanced',
+			icon: KeyRound,
 		},
 		// {
 		// 	path: '/notifications',

@@ -12,6 +12,9 @@ apps/desktop/build
 !.env.example
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+*.tsbuildinfo
+push-db-live.sh
+loadUserDataIng25.ts
 
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 

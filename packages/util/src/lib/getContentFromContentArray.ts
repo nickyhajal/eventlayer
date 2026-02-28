@@ -4,10 +4,8 @@ const isURL = (str) => {
 }
 
 const linkify = (link, str, dataId, className) => {
-  if (dataId)
-    return `<a href="${link}" class="${className}" data-id="${dataId}">${str}</a>`
-  else
-    return `<a href="${link}" class="${className}" target="_blank">${str}</a>`
+  if (dataId) return `<a href="${link}" class="${className}" data-id="${dataId}">${str}</a>`
+  else return `<a href="${link}" class="${className}" target="_blank">${str}</a>`
 }
 
 const makeLinkOrStr = (str: string, count?: number) => {
@@ -18,10 +16,7 @@ const makeLinkOrStr = (str: string, count?: number) => {
   return str
 }
 
-export const getContentFromContentArray = (
-  value: string,
-  contentLimit: number
-) => {
+export const getContentFromContentArray = (value: string, contentLimit: number) => {
   let fullContent = ''
   let limitedContent = '' // this value contains span element, this.text() should be the same as @limitedText
   let limitedText = '' // this value only contains string.
@@ -30,10 +25,7 @@ export const getContentFromContentArray = (
     'special-interactor bg-[#edf7ff] bg-opacity-50 px-1  py-0.5 rounded-sm text-[#0093ff] no-underline'
   try {
     const parts = JSON.parse(value).reduce((out, curr, i) => {
-      if (
-        typeof out?.[out.length - 1] === 'string' &&
-        typeof curr === 'string'
-      ) {
+      if (typeof out?.[out.length - 1] === 'string' && typeof curr === 'string') {
         out[out.length - 1] = `${out[out.length - 1]}\n\n${curr}`
       } else {
         out.push(curr)
@@ -56,10 +48,7 @@ export const getContentFromContentArray = (
                 limitedContent += makeLinkOrStr(_text)
                 limitedText += _text
               } else {
-                limitedContent += makeLinkOrStr(
-                  _text,
-                  contentLimit - _prevLength
-                )
+                limitedContent += makeLinkOrStr(_text, contentLimit - _prevLength)
                 limitedText += _text.substring(0, contentLimit - _prevLength)
                 isReachedToLimit = true
               }
@@ -76,24 +65,16 @@ export const getContentFromContentArray = (
             nextLength = (limitedText + el.content).length
             if (contentLimit > prevLength) {
               if (contentLimit > nextLength) {
-                limitedContent += linkify(
-                  userIdLink,
-                  el.content,
-                  el.id,
-                  linkStyle
-                )
+                limitedContent += linkify(userIdLink, el.content, el.id, linkStyle)
                 limitedText += el.content
               } else {
                 limitedContent += linkify(
                   userIdLink,
                   el.content.substring(0, contentLimit - prevLength),
                   el.id,
-                  linkStyle
+                  linkStyle,
                 )
-                limitedText += el.content.substring(
-                  0,
-                  contentLimit - prevLength
-                )
+                limitedText += el.content.substring(0, contentLimit - prevLength)
                 isReachedToLimit = true
               }
             }

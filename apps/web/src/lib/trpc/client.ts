@@ -9,31 +9,31 @@ import type { Router } from '@matterloop/api/src/root'
 // }
 
 export function trpc(init?: TRPCClientInit) {
-	return createTRPCProxyClient<Router>({
-		transformer: superjson,
-		links: [
-			httpBatchLink({
-				url: `/trpc`,
-				fetch(url, options) {
-					return fetch(url, {
-						...options,
-						credentials: 'include',
-					})
-				},
-			}),
-		],
-	})
+  return createTRPCProxyClient<Router>({
+    transformer: superjson,
+    links: [
+      httpBatchLink({
+        url: `/trpc`,
+        fetch(url, options) {
+          return fetch(url, {
+            ...options,
+            credentials: 'include',
+          })
+        },
+      }),
+    ],
+  })
 }
 
 export const get = (path: string) => {
-	return fetch(`/${path}`, {
-		credentials: 'include',
-	})
+  return fetch(`/${path}`, {
+    credentials: 'include',
+  })
 }
 export const post = (path: string, body: any) => {
-	return fetch(`/${path}`, {
-		method: 'POST',
-		body: JSON.stringify(body),
-		credentials: 'include',
-	})
+  return fetch(`/${path}`, {
+    method: 'POST',
+    body: JSON.stringify(body),
+    credentials: 'include',
+  })
 }

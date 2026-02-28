@@ -57,7 +57,7 @@
 
 <div
 	class="grid min-h-full w-screen overflow-x-hidden {showSidebar
-		? 'lg:grid-cols-[15rem_1fr] bg-slate-800'
+		? 'bg-slate-800 lg:grid-cols-[15rem_1fr]'
 		: 'lg:grid-cols-[1fr]'} lg:bg-white"
 	style={cssVars}
 >
@@ -69,20 +69,20 @@
 			class="tabbar lg:order-0 fixed bottom-0 z-50 w-full bg-slate-800 lg:relative lg:px-2 lg:py-3"
 		>
 			{#if suggestedInstall}
-				<div class="bg-white lg:hidden w-full flex items-center border-t-4 border-yellow-900/5">
+				<div class="flex w-full items-center border-t-4 border-yellow-900/5 bg-white lg:hidden">
 					<div
-						class="bg-yellow-50/60 justify-between text-sm pl-6 pr-2 pt-1.5 pb-1.5 font-semibold tracking-[0.3px] text-slate-900/70 w-full flex items-center border-t border-yellow-800/10"
+						class="flex w-full items-center justify-between border-t border-yellow-800/10 bg-yellow-50/60 pb-1.5 pl-6 pr-2 pt-1.5 text-sm font-semibold tracking-[0.3px] text-slate-900/70"
 					>
 						<div>Install on Your Home Screen</div>
-						<div class="flex gap-8 items-center">
+						<div class="flex items-center gap-8">
 							<ChicletButton
 								class="flex gap-1.5 pl-[9px]"
 								on:click={() => (installModalOpen = true)}
 							>
-								<Download class="w-4 -mt-[1px] text-orange-800/40" />
+								<Download class="-mt-[1px] w-4 text-orange-800/40" />
 								<span class="text-orange-700">Install</span>
 							</ChicletButton>
-							<button class="p-2 relative z-10" on:click={() => denyInstall()}>
+							<button class="relative z-10 p-2" on:click={() => denyInstall()}>
 								<X class="w-4 text-slate-900/70" />
 							</button>
 						</div>
@@ -98,25 +98,25 @@
 	{/if}
 </div>
 <Modal bind:open={installModalOpen} on:close={() => (installModalOpen = false)}>
-	<div class="p-8 h-full">
-		<h2 class="text-xl font-bold pb-3">Install on Your Home Screen</h2>
+	<div class="h-full p-8">
+		<h2 class="pb-3 text-xl font-bold">Install on Your Home Screen</h2>
 		<p class="text-sm text-slate-500">
 			Install the app on your home screen for a better experience.
 		</p>
 		<div class="pt-4">
 			First, tap this icon
 			{#if isIos()}
-				<ShareIcon class="w-6 inline-block -mt-[6px] text-blue-700" /> below. Then, select
+				<ShareIcon class="-mt-[6px] inline-block w-6 text-blue-700" /> below. Then, select
 			{:else}
-				<EllipsisVertical class="w-6 inline-block -mt-[6px] text-blue-700" /> in your browser above.
+				<EllipsisVertical class="-mt-[6px] inline-block w-6 text-blue-700" /> in your browser above.
 				Then, select
 			{/if}
 			Add to Home Screen.
 		</div>
-		<div class="flex gap-2 pt-10 justify-end">
+		<div class="flex justify-end gap-2 pt-10">
 			<button
 				type="button"
-				class="text-sm text-blue-600 font-semibold cursor-pointer relative z-30"
+				class="relative z-30 cursor-pointer text-sm font-semibold text-blue-600"
 				on:click={() => (installModalOpen = false)}>Cancel</button
 			>
 		</div>

@@ -61,20 +61,26 @@
 <Screen title="Menu">
 	<div class="mx-auto min-h-[calc(100vh-5rem)] max-w-7xl">
 		<div class="flex flex-col justify-end gap-2 pt-2">
-			<div class="login">
+			<div class="login flex gap-2">
 				{#if !$me?.id}
 					<Button
 						href="/login"
 						variant="ghost"
-						class="login border-a-accent/30 bg-a-accent/5 text-a-accent  w-full border border-b-2 font-semibold brightness-90"
+						class="login w-full border border-b-2  border-a-accent/30 bg-a-accent/5 font-semibold text-a-accent brightness-90"
 						>Login to your account</Button
 					>
 				{:else}
 					<Button
 						href="/settings"
 						variant="ghost"
-						class="login bg-a-accent/5  text-a-accent w-full font-semibold brightness-90"
+						class="login w-full  bg-a-accent/5 font-semibold text-a-accent brightness-90"
 						>Your Profile</Button
+					>
+					<Button
+						href="/logout"
+						variant="ghost"
+						class="login w-full  bg-a-accent/5 font-semibold text-a-accent brightness-90"
+						>Logout</Button
 					>
 				{/if}
 			</div>
@@ -85,11 +91,13 @@
 					<Button
 						href={link}
 						variant="secondary"
-						class="bg-a-accent border-a-accent hover:bg-a-accent border-b-main/10 text-a-accent flex w-full flex-none flex-col items-start justify-center gap-0.5 border border-b border-opacity-[0.07] bg-opacity-[0.02] py-9 text-left text-sm font-semibold hover:bg-opacity-[0.07] {classes} "
+						class="flex w-full flex-none flex-col items-start justify-center gap-0.5 border border-b border-a-accent border-b-main/10 border-opacity-[0.07] bg-a-accent bg-opacity-[0.02] py-9 text-left text-sm font-semibold text-a-accent hover:bg-a-accent hover:bg-opacity-[0.07] {classes} "
 					>
 						{#if icon}
-							<div class="border-main/20 mb-0.5 rounded-full border bg-white/40 p-1.5 opacity-80">
-								<div class="icon {bits[1] === currBits[1] ? 'selected' : ''}">{@html icon}</div>
+							<div class="mb-0.5 rounded-full border border-main/20 bg-white/40 p-1.5 opacity-80">
+								<div class="icon {bits[1] === currBits[1] ? 'selected' : ''}">
+									{@html icon}
+								</div>
 								<!-- <svelte:component this={icon} class="text-main/70  h-[1rem] w-[1rem] flex-none" /> -->
 							</div>
 						{/if}
@@ -113,6 +121,6 @@
 		height: calc(100vh - 8rem - env(safe-area-inset-bottom));
 	}
 	.icon :global(svg) {
-		@apply text-a-accent/70 h-[1rem]  w-[1rem] flex-none brightness-90;
+		@apply h-[1rem] w-[1rem]  flex-none text-a-accent/70 brightness-90;
 	}
 </style>

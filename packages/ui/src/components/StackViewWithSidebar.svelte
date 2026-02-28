@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { page } from '$app/stores'
-	import { HeroIcon } from '@matterloop/ui'
-	import { tw } from '$lib/tw'
 	import { ChevronLeft } from '@steeze-ui/heroicons'
+	import { page } from '$app/stores'
 	import { isDesktop } from '$lib/core/stores'
+	import { tw } from '$lib/tw'
+
+	import { HeroIcon } from '@matterloop/ui'
 
 	interface Section {
 		title: string

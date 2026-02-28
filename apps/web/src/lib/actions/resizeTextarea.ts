@@ -23,8 +23,12 @@ export default (el: HTMLTextAreaElement) => {
       resize({ target: el })
     },
     destroy: () => {
-      el.removeEventListener('input', (ev: Event) => resize({ target: ev.target as HTMLTextAreaElement }))
-      el.addEventListener('change', (ev: Event) => resize({ target: ev.target as HTMLTextAreaElement }))
+      el.removeEventListener('input', (ev: Event) =>
+        resize({ target: ev.target as HTMLTextAreaElement }),
+      )
+      el.addEventListener('change', (ev: Event) =>
+        resize({ target: ev.target as HTMLTextAreaElement }),
+      )
     },
   }
 }

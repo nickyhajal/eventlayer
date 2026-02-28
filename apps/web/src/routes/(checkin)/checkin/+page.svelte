@@ -137,7 +137,7 @@
 					query = ''
 					searchInput?.focus()
 				}}
-				class="w-full mt-8 flex h-full items-center justify-center rounded-lg border border-b-2 border-stone-300/10 bg-stone-300/20 px-3 py-2 text-center text-sm font-medium text-stone-800/80"
+				class="mt-8 flex h-full w-full items-center justify-center rounded-lg border border-b-2 border-stone-300/10 bg-stone-300/20 px-3 py-2 text-center text-sm font-medium text-stone-800/80"
 				>Clear Search</button
 			>
 		{/if}

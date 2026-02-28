@@ -56,7 +56,7 @@
 	$: if (lastMenu !== JSON.stringify($menu)) {
 		lastMenu = JSON.stringify($menu)
 	}
-	$: save(), $menu
+	$: (save(), $menu)
 </script>
 
 <div

@@ -95,7 +95,7 @@
 		</div>
 	{:else if type === 'avatar'}
 		{#if user?.id}
-			<div class="flex flex-col items-start justify-center gap-1 mb-2">
+			<div class="mb-2 flex flex-col items-start justify-center gap-1">
 				<Label for="image" class="text-right">{label}</Label>
 			</div>
 			<div
@@ -104,7 +104,7 @@
 				{#if user.photo}
 					<UserAvatar {user} />
 				{/if}
-				<div class="w-full bg-stone-100 h-full">
+				<div class="h-full w-full bg-stone-100">
 					<Uploader
 						parentId={user.id}
 						parentType="user"

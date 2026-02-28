@@ -52,7 +52,7 @@
 			</div>
 		{/if}
 		{#if venue.children?.length}
-			<div class="text-xl font-semibold mb-1 mt-8 text-a-accent">At this Venue</div>
+			<div class="mb-1 mt-8 text-xl font-semibold text-a-accent">At this Venue</div>
 			{#each venue.children as child}
 				<div class="flex flex-col gap-4">
 					<div class="mb-2">

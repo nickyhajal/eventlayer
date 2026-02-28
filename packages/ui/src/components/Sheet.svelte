@@ -1,14 +1,15 @@
 <script lang="ts">
-	import Portal from 'svelte-portal'
-	import { expoOut, expoIn } from 'svelte/easing'
 	import { XMark } from '@steeze-ui/heroicons'
-	import { disableBodyScroll, clearAllBodyScrollLocks } from 'body-scroll-lock'
-	import { fade, fly } from 'svelte/transition'
-	import { reverse } from '@matterloop/util'
-	import { v4 } from '@matterloop/util'
-	import { isIos } from '@matterloop/util'
-	import HeroIcon from './HeroIcon.svelte'
+	import { clearAllBodyScrollLocks, disableBodyScroll } from 'body-scroll-lock'
 	import { createEventDispatcher, onMount } from 'svelte'
+	import Portal from 'svelte-portal'
+	import { expoIn, expoOut } from 'svelte/easing'
+	import { fade, fly } from 'svelte/transition'
+
+	import { isIos, reverse, v4 } from '@matterloop/util'
+
+	import HeroIcon from './HeroIcon.svelte'
+
 	export let open = false
 	export let size = 'lg'
 	export let showFooterOnScroll = false
@@ -32,7 +33,7 @@
 		green: ['from-emerald-200 opacity-70'],
 		bluegray: ['from-slate-700 opacity-60'],
 		blue: ['from-blue-100 opacity-30'],
-		orange: ['from-orange-100 opacity-70']
+		orange: ['from-orange-100 opacity-70'],
 	}
 
 	onMount(() => {
@@ -71,7 +72,7 @@
 		return {
 			destroy() {
 				processStack()
-			}
+			},
 		}
 	}
 
@@ -119,7 +120,7 @@
 	<Portal target=".sheets">
 		<div
 			use:stackable
-			class={`fixed top-0 left-0 w-screen modal-shell h-screen overflow-hidden overlay bg-opacity-60 ${
+			class={`modal-shell overlay fixed left-0 top-0 h-screen w-screen overflow-hidden bg-opacity-60 ${
 				stacked ? 'bg-transparent' : 'bg-black'
 			}`}
 			bind:this={overlay}
@@ -136,45 +137,45 @@
 					duration: 300,
 					delay: 50,
 					y: window.innerHeight,
-					easing: expoOut
+					easing: expoOut,
 				}}
 				out:fly|local={{ duration: 150, y: window.innerHeight, easing: expoIn }}
 				class={`
           ${open ? 'open' : 'closed'} 
           ${size === 'lg' ? 'w-full' : size === 'md' ? 'md:w-10/12 md:max-w-7xl' : ''} 
-          h-full fixed bottom-0 left-0 right-0 transition-all duration-200 mx-auto bg-white modal rounded-t-4xl overflow-y-auto overflow-x-hidden
+          modal rounded-t-4xl fixed bottom-0 left-0 right-0 mx-auto h-full overflow-y-auto overflow-x-hidden bg-white transition-all duration-200
         `}
 			>
 				{#if color}
 					<div
-						class={`absolute top-0 left-0 bg-gradient-to-b pointer-events-none ${colors[color].join(
-							' '
-						)} h-44 w-full z-10`}
+						class={`pointer-events-none absolute left-0 top-0 bg-gradient-to-b ${colors[color].join(
+							' ',
+						)} z-10 h-44 w-full`}
 					/>
 				{/if}
 				<div
-					class={`absolute top-0 left-0 right-0 z-30 w-full mx-auto transition-all duration-150 ${
+					class={`absolute left-0 right-0 top-0 z-30 mx-auto w-full transition-all duration-150 ${
 						scrolled
-							? `${title ? 'pt-4 bg-white' : 'pt-0 bg-transparent'}  scrolled bg-opacity-95 `
-							: 'pt-16 bg-transparent bg-opacity-0'
+							? `${title ? 'bg-white pt-4' : 'bg-transparent pt-0'}  scrolled bg-opacity-95 `
+							: 'bg-transparent bg-opacity-0 pt-16'
 					}`}
 					bind:this={headerElm}
 				>
 					<button
 						on:click={toggle}
-						class={`absolute transition-all duration-150 top-0  w-11 h-11  p-1 rounded-full lg:p-0 bg-white bg-opacity-80 lg:w-10 lg:h-10  text-slate-800 ${
+						class={`absolute top-0 h-11 w-11  rounded-full bg-white  bg-opacity-80 p-1 text-slate-800 transition-all duration-150 lg:h-10 lg:w-10  lg:p-0 ${
 							closePosition === 'right'
 								? `right-0 mr-6 lg:mr-16 ${scrolled ? 'mt-4 lg:mt-5' : 'mt-4 lg:mt-16'}`
-								: 'left-0 ml-4 lg:ml-5 mt-4'
+								: 'left-0 ml-4 mt-4 lg:ml-5'
 						}`}><HeroIcon src={XMark} /></button
 					>
 					{#if context}<h4
-							class="mx-auto mb-0 w-4/5 text-center font-body text-base font-normal text-gray-600"
+							class="font-body mx-auto mb-0 w-4/5 text-center text-base font-normal text-gray-600"
 						>
 							{context}
 						</h4>{/if}
 					{#if title}<h3
-							class={`mx-auto transition-all duration-150 font-semibold text-center text-black w-4/5 font-display ${
+							class={`font-display mx-auto w-4/5 text-center font-semibold text-black transition-all duration-150 ${
 								scrolled ? 'text-xl' : 'text-[1.7rem]'
 							}`}
 						>
@@ -186,7 +187,7 @@
 						scrolled = e.target.scrollTop > 22 ? true : false
 					}}
 					bind:this={content}
-					class={`content relative grid z-20 h-full ${
+					class={`content relative z-20 grid h-full ${
 						shouldPad && 'pb-10'
 					} overflow-y-auto overflow-x-hidden`}
 					style={`grid-template-rows: 1fr auto; padding-top: ${
@@ -224,7 +225,9 @@
 	.modal {
 		height: calc(100vh - 5rem);
 		height: calc((var(--vh, 1vh) * 100) - 5rem);
-		box-shadow: 0px -12px 80px rgba(0, 0, 0, 0.28), 0px -2.68036px 17.869px rgba(0, 0, 0, 0.16691),
+		box-shadow:
+			0px -12px 80px rgba(0, 0, 0, 0.28),
+			0px -2.68036px 17.869px rgba(0, 0, 0, 0.16691),
 			0px -0.798012px 5.32008px rgba(0, 0, 0, 0.11309);
 	}
 	.stackedBack {

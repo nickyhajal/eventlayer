@@ -1,7 +1,9 @@
 <script>
-	import { dispatch } from '@matterloop/util'
-	import Fields from './form/Fields.svelte'
 	import { onMount } from 'svelte'
+
+	import { dispatch } from '@matterloop/util'
+
+	import Fields from './form/Fields.svelte'
 
 	export let fields
 	export let values

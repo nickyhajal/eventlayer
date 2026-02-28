@@ -5,9 +5,9 @@ import { z } from 'zod'
 import { EventFns } from '@matterloop/api'
 
 export const load = async ({ locals }) => {
-	if (!locals.event.id) {
-		error(404, 'Event not found')
-	}
-	const eventFns = EventFns(locals.event.id)
-	return { venues: await eventFns.getVenues() }
+  if (!locals.event.id) {
+    error(404, 'Event not found')
+  }
+  const eventFns = EventFns(locals.event.id)
+  return { venues: await eventFns.getVenues() }
 }

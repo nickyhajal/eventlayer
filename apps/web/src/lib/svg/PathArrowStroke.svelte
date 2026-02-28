@@ -1,19 +1,19 @@
 <script>
-  let className = ''
-  export { className as class }
-  export let strokeWidth = 3
+	let className = ''
+	export { className as class }
+	export let strokeWidth = 3
 </script>
 
 <svg
-  class={className}
-  width="56"
-  height="32"
-  viewBox="0 0 56 32"
-  fill="none"
-  xmlns="http://www.w3.org/2000/svg"
+	class={className}
+	width="56"
+	height="32"
+	viewBox="0 0 56 32"
+	fill="none"
+	xmlns="http://www.w3.org/2000/svg"
 >
-  <path
-    d="
+	<path
+		d="
     M1.6315 4.09597C1.16563
     2.92171 2.03917
     1.5 3.57395 1.5
@@ -32,6 +32,6 @@
     6.10344 15.3677 
     5.65058 14.2263
     L1.6315 4.09597Z"
-    stroke-width={strokeWidth}
-  />
+		stroke-width={strokeWidth}
+	/>
 </svg>

@@ -1,9 +1,10 @@
 <script lang="ts">
-import { Avatars } from '@matterloop/ui'
-import { dayjs } from '@matterloop/util'
-import type { CalendarEventClient } from '$lib/server/procedures/event'
+	import type { CalendarEventClient } from '$lib/server/procedures/event'
 
-export let event: CalendarEventClient
+	import { Avatars } from '@matterloop/ui'
+	import { dayjs } from '@matterloop/util'
+
+	export let event: CalendarEventClient
 </script>
 
 <div class="flex w-full flex-col border-l-2 border-emerald-500 bg-white px-2 py-1">

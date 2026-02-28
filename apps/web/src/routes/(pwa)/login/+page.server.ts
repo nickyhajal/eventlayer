@@ -4,11 +4,11 @@ import { message, setError, superValidate } from 'sveltekit-superforms/server'
 import { z } from 'zod'
 
 const schema = z.object({
-	email: z.string().email(),
-	password: z.string(),
+  email: z.string().email(),
+  password: z.string(),
 })
 
 export const load = async ({ locals }) => {
-	const form = await superValidate(schema)
-	return { form }
+  const form = await superValidate(schema)
+  return { form }
 }

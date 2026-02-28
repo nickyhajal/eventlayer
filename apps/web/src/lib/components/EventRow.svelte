@@ -1,10 +1,10 @@
 <script lang="ts">
-import ChevronRight from 'lucide-svelte/icons/chevron-right'
+	import ChevronRight from 'lucide-svelte/icons/chevron-right'
 
-import type { Event } from '@matterloop/db'
-import { getMediaUrl } from '@matterloop/util'
+	import type { Event } from '@matterloop/db'
+	import { getMediaUrl } from '@matterloop/util'
 
-export let event: Event
+	export let event: Event
 </script>
 
 <a
@@ -13,7 +13,7 @@ export let event: Event
 >
 	{#if event.photo || event?.venue?.photo}
 		<img
-			src={getMediaUrl(event.photo || event?.venue?.photo, 'w=180')}
+			src={getMediaUrl(event.photo || event?.venue?.photo, 'w-180')}
 			class="h-12 w-20 flex-none rounded-md bg-cover object-cover"
 		/>
 	{:else}

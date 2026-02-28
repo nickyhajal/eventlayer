@@ -13,7 +13,7 @@
 	<div class={tw(`progressShell h-2.5 w-full rounded-full bg-slate-700/70 ${progressBaseClass}`)}>
 		<div
 			class={tw(
-				`progress h-full rounded-full bg-brightgreen-800 transition-all duration-200 ${progressClass}`
+				`progress bg-brightgreen-800 h-full rounded-full transition-all duration-200 ${progressClass}`,
 			)}
 			style={`width: ${Math.min(100, percent)}%`}
 		/>

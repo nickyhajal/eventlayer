@@ -34,7 +34,7 @@ class Confirmations {
       cancelButtonClass: '',
       cancelLabel: 'Delete',
       handleConfirm: () => {},
-    }
+    },
   ) {
     this.stack.push(confirmation)
     this.update()

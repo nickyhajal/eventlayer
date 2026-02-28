@@ -20,13 +20,13 @@
 				class="mb-16 flex items-center justify-center rounded-lg border border-slate-100 bg-slate-50 p-8"
 			>
 				<img
-					src={getMediaUrl(sponsor.photo, 'trim=1&w=780')}
+					src={getMediaUrl(sponsor.photo, 'w-780')}
 					class=" w-80"
 					alt={`Photo of ${sponsor.title}`}
 				/>
 			</div>
 			<div class="flex flex-grow flex-col items-start">
-				<div class="xs:text-3xl w-fell flex-grow pb-0 text-left text-2xl font-bold">
+				<div class="w-fell flex-grow pb-0 text-left text-2xl font-bold xs:text-3xl">
 					{sponsor.title}
 				</div>
 			</div>

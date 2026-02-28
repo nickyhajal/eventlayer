@@ -1,14 +1,14 @@
 import { parse } from 'csv-parse/sync'
 
 import {
-	and,
-	db,
-	eq,
-	eventUserInfoTable,
-	eventUserTable,
-	formResponseTable,
-	formSessionTable,
-	userTable,
+  and,
+  db,
+  eq,
+  eventUserInfoTable,
+  eventUserTable,
+  formResponseTable,
+  formSessionTable,
+  userTable,
 } from '@matterloop/db'
 import { dayjs } from '@matterloop/util'
 
@@ -16,266 +16,266 @@ let eventId = '3b41ad8e-649e-42be-b9a4-e7b94dd98e74'
 let formId = '206c5453-6369-46c6-bf59-6504b9eb44cc'
 
 export async function loadUsers() {
-	let input = Object.entries(cols).reduce((out, [col, val]) => {
-		if (val) {
-			out = out.replace(col, val)
-		}
-		return out
-	}, csv)
-	const eusers = await db.query.eventUserTable.findMany({
-		where: and(eq(eventUserTable.eventId, eventId)),
-	})
-	// if (eusers.length > 100) return
-	// const us = users.split('\n')
-	const records = parse(input, {
-		columns: true,
-		delimiter: ';',
-		trim: true,
-		skip_empty_lines: true,
-	})
-	return await Promise.all(records.map((u) => loadUser(u)))
+  let input = Object.entries(cols).reduce((out, [col, val]) => {
+    if (val) {
+      out = out.replace(col, val)
+    }
+    return out
+  }, csv)
+  const eusers = await db.query.eventUserTable.findMany({
+    where: and(eq(eventUserTable.eventId, eventId)),
+  })
+  // if (eusers.length > 100) return
+  // const us = users.split('\n')
+  const records = parse(input, {
+    columns: true,
+    delimiter: ';',
+    trim: true,
+    skip_empty_lines: true,
+  })
+  return await Promise.all(records.map((u) => loadUser(u)))
 }
 
 interface Row {
-	type: string
-	name: string
-	email: string
-	company: string
-	title: string
-	linkedin_url: string
-	hearabout: string
-	why: string
-	topics: string
-	feedback: string
-	traveling: string
-	dietary: string
-	accessibility: string
-	sayhi: string
+  type: string
+  name: string
+  email: string
+  company: string
+  title: string
+  linkedin_url: string
+  hearabout: string
+  why: string
+  topics: string
+  feedback: string
+  traveling: string
+  dietary: string
+  accessibility: string
+  sayhi: string
 }
 export async function loadUser(line: Row) {
-	function replaceBlanks(str: string) {
-		if (['.', 'self', 'N/A', 'NONE', 'n/a', 'None', 'none', 'Na', 'na'].includes(str)) return ''
-		return str
-	}
-	function getLIUrl(str: string) {
-		let clean = replaceBlanks(line.linkedin_url)
-			.replaceAll(' ', '')
-			.split('?')[0]
-			.toLowerCase()
-			.replace('https://www.linkedin.com', '')
-			.replace('https://linkedin.com', '')
-			.replace('http://www.linkedin.com', '')
-			.replace('http://linkedin.com', '')
-			.replace('www.linkedin.com', '')
-			.replace('@linkedin.com', '')
-			.replace('linkedin.com', '')
-			.replace(/\/$/, '')
-			.replace(/^\//, '')
-		if (clean && !clean.includes('/')) {
-			clean = `in/${clean}`
-		}
-		return `https://www.linkedin.com/${clean}`
-	}
-	line.company = replaceBlanks(line.company)
-	line.title = replaceBlanks(line.title)
-	line.linkedin_url = getLIUrl(line.linkedin_url)
-	const { type, name, email } = line
-	let user = await db.query.userTable.findFirst({
-		where: eq(userTable.email, email),
-	})
-	if (user?.id) return
-	// console.log(line, name)
-	const firstName = name.substring(0, name.indexOf(' ')).replace('&comma;', ',')
-	const lastName = name.substring(name.indexOf(' ') + 1).replace('&comma;', ',')
-	const types = {
-		Team: 'staff',
-		Attendee: 'attendee',
-		'Impact Partner': 'impact-partner',
-		Speaker: 'speaker',
-		Sponsor: 'sponsor',
-	}
-	const elementMap = {
-		company: '425bd460-e65c-41f3-a784-6de624a05c97',
-		title: 'cb47d60a-6988-4adb-b12b-601ff4763bae',
-		linkedin_url: '1f95c2ec-fda6-43d4-8bf4-ce7baa2c958d',
-		hearabout: '51aefb0b-022f-4963-849e-8f8b8cfd2f27',
-		why: 'fab5b1f3-42bc-43ed-b9ed-e0bcef47101b',
-		topics: 'b18f27f6-7a95-4f8c-9c69-b7f54f9e2019',
-		feedback: '66f9fcae-3b9c-4f74-8a8e-3c66f9fc36db',
-		traveling: '6abc2861-8316-4d4e-9556-76b7e0e5a05a',
-		dietary: '33fc341a-08eb-4074-b76c-de8800a80216',
-		accessibility: '2a6f52c6-4c20-4011-bc58-df54a4814c1d',
-		sayhi: '8c66cf9a-5029-4533-afd3-967da51b20de',
-		firstName: '238f370d-8345-48f0-aa98-a333270e9859',
-		lastName: 'f8c62cdd-14c7-4b1c-ac1c-7aceb4c2fe81',
-	}
-	const infoMap = {
-		company: 'company',
-		title: 'title',
-		linkedin_url: 'linkedin_url',
-		why: 'why-attending',
-		topics: 'interests',
-		traveling: 'traveling-from',
-		bio: 'bio',
-		proBio: 'proBio',
-		firstName: 'firstName',
-		lastName: 'lastName',
-	}
-	const whyAttendingMap = {
-		minded: 'community',
-		technology: 'learn',
-		knowledge: 'connect',
-		policy: 'contribute',
-		support: 'understand',
-		justice: 'justice',
-		message: 'other',
-	}
-	const topicsMap = {
-		behavior: 'behavior',
-		future: 'future',
-		health: 'health',
-		workforce: 'workforce',
-		energy: 'energy',
-		buildings: 'buildings',
-		vehicles: 'vehicles',
-	}
-	line.why = JSON.stringify(
-		Object.entries(whyAttendingMap).reduce((out, [key, val]) => {
-			if (line.why.toLowerCase().includes(key)) {
-				out.push(val)
-			}
-			return out
-		}, []),
-	)
-	line.topics = JSON.stringify(
-		Object.entries(topicsMap).reduce((out, [key, val]) => {
-			if (line.topics.toLowerCase().includes(key)) {
-				out.push(val)
-			}
-			return out
-		}, []),
-	)
-	if (!user) {
-		const inserted = await db
-			.insert(userTable)
-			.values({
-				email,
-				firstName,
-				lastName,
-			})
-			.returning()
-		if (inserted) {
-			user = inserted[0]
-		}
-	}
-	if (user) {
-		let eventUser = await db.query.eventUserTable.findFirst({
-			where: and(eq(eventUserTable.eventId, eventId), eq(eventUserTable.userId, user.id)),
-		})
-		if (!eventUser) {
-			const inserted = await db
-				.insert(eventUserTable)
-				.values({
-					type: types[type] || 'attendee',
-					userId: user.id,
-					eventId,
-					// title,
-					// url,
-					// company,
-				})
-				.returning()
-			if (inserted) {
-				eventUser = inserted[0]
-			}
-		}
-		await db
-			.update(eventUserTable)
-			.set({
-				onboardStatus: 'not-sent',
-				onboardFormId: '206c5453-6369-46c6-bf59-6504b9eb44cc',
-			})
-			.where(eq(eventUserTable.id, eventUser.id))
-		line.firstName = user.firstName
-		line.lastName = user.lastName
-		line.bio = eventUser.bio
-		line.proBio = eventUser.proBio
+  function replaceBlanks(str: string) {
+    if (['.', 'self', 'N/A', 'NONE', 'n/a', 'None', 'none', 'Na', 'na'].includes(str)) return ''
+    return str
+  }
+  function getLIUrl(str: string) {
+    let clean = replaceBlanks(line.linkedin_url)
+      .replaceAll(' ', '')
+      .split('?')[0]
+      .toLowerCase()
+      .replace('https://www.linkedin.com', '')
+      .replace('https://linkedin.com', '')
+      .replace('http://www.linkedin.com', '')
+      .replace('http://linkedin.com', '')
+      .replace('www.linkedin.com', '')
+      .replace('@linkedin.com', '')
+      .replace('linkedin.com', '')
+      .replace(/\/$/, '')
+      .replace(/^\//, '')
+    if (clean && !clean.includes('/')) {
+      clean = `in/${clean}`
+    }
+    return `https://www.linkedin.com/${clean}`
+  }
+  line.company = replaceBlanks(line.company)
+  line.title = replaceBlanks(line.title)
+  line.linkedin_url = getLIUrl(line.linkedin_url)
+  const { type, name, email } = line
+  let user = await db.query.userTable.findFirst({
+    where: eq(userTable.email, email),
+  })
+  if (user?.id) return
+  // console.log(line, name)
+  const firstName = name.substring(0, name.indexOf(' ')).replace('&comma;', ',')
+  const lastName = name.substring(name.indexOf(' ') + 1).replace('&comma;', ',')
+  const types = {
+    Team: 'staff',
+    Attendee: 'attendee',
+    'Impact Partner': 'impact-partner',
+    Speaker: 'speaker',
+    Sponsor: 'sponsor',
+  }
+  const elementMap = {
+    company: '425bd460-e65c-41f3-a784-6de624a05c97',
+    title: 'cb47d60a-6988-4adb-b12b-601ff4763bae',
+    linkedin_url: '1f95c2ec-fda6-43d4-8bf4-ce7baa2c958d',
+    hearabout: '51aefb0b-022f-4963-849e-8f8b8cfd2f27',
+    why: 'fab5b1f3-42bc-43ed-b9ed-e0bcef47101b',
+    topics: 'b18f27f6-7a95-4f8c-9c69-b7f54f9e2019',
+    feedback: '66f9fcae-3b9c-4f74-8a8e-3c66f9fc36db',
+    traveling: '6abc2861-8316-4d4e-9556-76b7e0e5a05a',
+    dietary: '33fc341a-08eb-4074-b76c-de8800a80216',
+    accessibility: '2a6f52c6-4c20-4011-bc58-df54a4814c1d',
+    sayhi: '8c66cf9a-5029-4533-afd3-967da51b20de',
+    firstName: '238f370d-8345-48f0-aa98-a333270e9859',
+    lastName: 'f8c62cdd-14c7-4b1c-ac1c-7aceb4c2fe81',
+  }
+  const infoMap = {
+    company: 'company',
+    title: 'title',
+    linkedin_url: 'linkedin_url',
+    why: 'why-attending',
+    topics: 'interests',
+    traveling: 'traveling-from',
+    bio: 'bio',
+    proBio: 'proBio',
+    firstName: 'firstName',
+    lastName: 'lastName',
+  }
+  const whyAttendingMap = {
+    minded: 'community',
+    technology: 'learn',
+    knowledge: 'connect',
+    policy: 'contribute',
+    support: 'understand',
+    justice: 'justice',
+    message: 'other',
+  }
+  const topicsMap = {
+    behavior: 'behavior',
+    future: 'future',
+    health: 'health',
+    workforce: 'workforce',
+    energy: 'energy',
+    buildings: 'buildings',
+    vehicles: 'vehicles',
+  }
+  line.why = JSON.stringify(
+    Object.entries(whyAttendingMap).reduce((out, [key, val]) => {
+      if (line.why.toLowerCase().includes(key)) {
+        out.push(val)
+      }
+      return out
+    }, []),
+  )
+  line.topics = JSON.stringify(
+    Object.entries(topicsMap).reduce((out, [key, val]) => {
+      if (line.topics.toLowerCase().includes(key)) {
+        out.push(val)
+      }
+      return out
+    }, []),
+  )
+  if (!user) {
+    const inserted = await db
+      .insert(userTable)
+      .values({
+        email,
+        firstName,
+        lastName,
+      })
+      .returning()
+    if (inserted) {
+      user = inserted[0]
+    }
+  }
+  if (user) {
+    let eventUser = await db.query.eventUserTable.findFirst({
+      where: and(eq(eventUserTable.eventId, eventId), eq(eventUserTable.userId, user.id)),
+    })
+    if (!eventUser) {
+      const inserted = await db
+        .insert(eventUserTable)
+        .values({
+          type: types[type] || 'attendee',
+          userId: user.id,
+          eventId,
+          // title,
+          // url,
+          // company,
+        })
+        .returning()
+      if (inserted) {
+        eventUser = inserted[0]
+      }
+    }
+    await db
+      .update(eventUserTable)
+      .set({
+        onboardStatus: 'not-sent',
+        onboardFormId: '206c5453-6369-46c6-bf59-6504b9eb44cc',
+      })
+      .where(eq(eventUserTable.id, eventUser.id))
+    line.firstName = user.firstName
+    line.lastName = user.lastName
+    line.bio = eventUser.bio
+    line.proBio = eventUser.proBio
 
-		// Clear user info, form sessions and responses
-		await db
-			.delete(eventUserInfoTable)
-			.where(and(eq(eventUserInfoTable.eventId, eventId), eq(eventUserInfoTable.userId, user.id)))
-		await db
-			.delete(formSessionTable)
-			.where(and(eq(formSessionTable.formId, formId), eq(formSessionTable.userId, user.id)))
-		await db
-			.delete(formResponseTable)
-			.where(and(eq(formResponseTable.formId, formId), eq(formResponseTable.userId, user.id)))
-		const infoRows = Object.entries(infoMap)
-			.map(([key, infoKey]) => ({
-				userId: user?.id,
-				eventId: eventId,
-				public: true,
-				key: infoKey,
-				value: line[key] || '',
-			}))
-			.filter(({ value }) => value)
-		if (infoRows.length) {
-			await db.insert(eventUserInfoTable).values(infoRows)
-		}
-		if (infoRows.length) {
-			const sessionRes = await db
-				.insert(formSessionTable)
-				.values({
-					userId: user?.id,
-					eventId: eventId,
-					formId: formId,
-					status: 'submitted',
-					submissionDate: dayjs().format('YYYY-MM-DD'),
-				})
-				.returning()
-			const session = sessionRes[0]
-			if (session) {
-				const elementRows = Object.entries(elementMap)
-					.map(([key, rowKey]) => ({
-						userId: user?.id,
-						formId: formId,
-						eventId: eventId,
-						type: 'text',
-						sessionId: session.id,
-						elementId: rowKey,
-						value: line[key] || '',
-					}))
-					.filter(({ value }) => value)
-				if (elementRows.length) {
-					await db.insert(formResponseTable).values(elementRows)
-				}
-			}
-		}
-	}
+    // Clear user info, form sessions and responses
+    await db
+      .delete(eventUserInfoTable)
+      .where(and(eq(eventUserInfoTable.eventId, eventId), eq(eventUserInfoTable.userId, user.id)))
+    await db
+      .delete(formSessionTable)
+      .where(and(eq(formSessionTable.formId, formId), eq(formSessionTable.userId, user.id)))
+    await db
+      .delete(formResponseTable)
+      .where(and(eq(formResponseTable.formId, formId), eq(formResponseTable.userId, user.id)))
+    const infoRows = Object.entries(infoMap)
+      .map(([key, infoKey]) => ({
+        userId: user?.id,
+        eventId: eventId,
+        public: true,
+        key: infoKey,
+        value: line[key] || '',
+      }))
+      .filter(({ value }) => value)
+    if (infoRows.length) {
+      await db.insert(eventUserInfoTable).values(infoRows)
+    }
+    if (infoRows.length) {
+      const sessionRes = await db
+        .insert(formSessionTable)
+        .values({
+          userId: user?.id,
+          eventId: eventId,
+          formId: formId,
+          status: 'submitted',
+          submissionDate: dayjs().format('YYYY-MM-DD'),
+        })
+        .returning()
+      const session = sessionRes[0]
+      if (session) {
+        const elementRows = Object.entries(elementMap)
+          .map(([key, rowKey]) => ({
+            userId: user?.id,
+            formId: formId,
+            eventId: eventId,
+            type: 'text',
+            sessionId: session.id,
+            elementId: rowKey,
+            value: line[key] || '',
+          }))
+          .filter(({ value }) => value)
+        if (elementRows.length) {
+          await db.insert(formResponseTable).values(elementRows)
+        }
+      }
+    }
+  }
 }
 
 const cols = {
-	'attendee BADGE type': 'type',
-	name: false,
-	email: false,
-	'Company or Organization you are representing': 'company',
-	'Position Title': 'title',
-	'Your Linkedin Profile URL (If you do not have one, please write NONE)': 'linkedin_url',
-	'How did you hear about the WINGS conference?': 'hearabout',
-	'Why are you attending the Wings conference? What do you hope to get out of it? (Please choose your top 1-3 statements that best match you)':
-		'why',
-	'Which of the following topics interest you the most that we’ll be addressing at the Wings conference? (Please choose your top 3 preferences)':
-		'topics',
-	'Do you have any initial feedback or recommendations about the topics we will be discussing at Wings?':
-		'feedback',
-	'Where are you traveling from to attend the Wings conference? (City and State). If you are coming from Portland, please indicate the specific part of the city.':
-		'traveling',
-	'Do you have any dietary restrictions we should be aware of? (Please be as specific as possible)':
-		'dietary',
-	'Do you have any accessibility needs we should be aware of? (We are committed to providing equal access and attendee experience for all)':
-		'accessibility',
-	'Anything else you’d like to share with us? Did we miss anything? Just wanted to say hi? Let us know here.':
-		'sayhi',
+  'attendee BADGE type': 'type',
+  name: false,
+  email: false,
+  'Company or Organization you are representing': 'company',
+  'Position Title': 'title',
+  'Your Linkedin Profile URL (If you do not have one, please write NONE)': 'linkedin_url',
+  'How did you hear about the WINGS conference?': 'hearabout',
+  'Why are you attending the Wings conference? What do you hope to get out of it? (Please choose your top 1-3 statements that best match you)':
+    'why',
+  'Which of the following topics interest you the most that we’ll be addressing at the Wings conference? (Please choose your top 3 preferences)':
+    'topics',
+  'Do you have any initial feedback or recommendations about the topics we will be discussing at Wings?':
+    'feedback',
+  'Where are you traveling from to attend the Wings conference? (City and State). If you are coming from Portland, please indicate the specific part of the city.':
+    'traveling',
+  'Do you have any dietary restrictions we should be aware of? (Please be as specific as possible)':
+    'dietary',
+  'Do you have any accessibility needs we should be aware of? (We are committed to providing equal access and attendee experience for all)':
+    'accessibility',
+  'Anything else you’d like to share with us? Did we miss anything? Just wanted to say hi? Let us know here.':
+    'sayhi',
 }
 
 const csv = `attendee BADGE type;name;email;phone_number;created_at;coupon_code;Company or Organization you are representing;Position Title;Your Linkedin Profile URL (If you do not have one, please write NONE);How did you hear about the WINGS conference?;Why are you attending the Wings conference? What do you hope to get out of it? (Please choose your top 1-3 statements that best match you);Which of the following topics interest you the most that we’ll be addressing at the Wings conference? (Please choose your top 3 preferences);Do you have any initial feedback or recommendations about the topics we will be discussing at Wings?;Where are you traveling from to attend the Wings conference? (City and State). If you are coming from Portland, please indicate the specific part of the city.;Do you have any dietary restrictions we should be aware of? (Please be as specific as possible);Do you have any accessibility needs we should be aware of? (We are committed to providing equal access and attendee experience for all);Anything else you’d like to share with us? Did we miss anything? Just wanted to say hi? Let us know here.;JEDD NOTES

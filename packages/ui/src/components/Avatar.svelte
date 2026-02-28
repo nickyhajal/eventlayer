@@ -1,7 +1,9 @@
 <script lang="ts">
-	import Image from './Image.svelte'
-	import { dayjs, ordinal, getMediaUrl, IMedia } from '@matterloop/util'
 	import { createEventDispatcher } from 'svelte'
+
+	import { dayjs, getMediaUrl, IMedia, ordinal } from '@matterloop/util'
+
+	import Image from './Image.svelte'
 
 	// import { getCommunityContext } from '$lib/state/getContexts'
 	interface User {
@@ -61,9 +63,7 @@
 					class="object-cover"
 					src={`${url}${
 						url.includes('resultjam')
-							? `?w=${sizeNum * 16}&h=${
-									sizeNum * 16
-							  }&crop=faces,center&fit=crop&ar=1:1&version=${version}`
+							? `?w-${sizeNum * 16},h-${sizeNum * 16},fo-face,z-0.8,ar=1:1&version=${version}`
 							: ''
 					}`}
 					base="/images/default-avatar.png"

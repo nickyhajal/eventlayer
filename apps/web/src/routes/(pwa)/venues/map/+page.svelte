@@ -37,7 +37,7 @@
 			{#each maps as map}
 				<a
 					href="/venues/map/{map.id}"
-					class="bg-a-accent/5 border-a-accent/10 flex items-center justify-between rounded-lg border border-b-2 p-4 font-semibold text-stone-700/80"
+					class="flex items-center justify-between rounded-lg border border-b-2 border-a-accent/10 bg-a-accent/5 p-4 font-semibold text-stone-700/80"
 				>
 					<div>{map.title}</div>
 					<ChevronRight class="h-5 w-5 flex-none self-center text-stone-700/50" />

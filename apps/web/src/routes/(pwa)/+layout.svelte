@@ -64,7 +64,7 @@
 		}
 	}
 
-	$: setMe(), $page.data.me
+	$: (setMe(), $page.data.me)
 	let nprogressReady = false
 	const tabbar = typeof document !== 'undefined' ? document?.getElementById('tabbar') : null
 	if (tabbar) {

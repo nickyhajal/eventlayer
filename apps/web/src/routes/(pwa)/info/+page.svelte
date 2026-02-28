@@ -1,8 +1,8 @@
 <script lang="ts">
-import Screen from '$lib/components/Screen.svelte'
-import { getMeContext } from '$lib/state/getContexts'
+	import Screen from '$lib/components/Screen.svelte'
+	import { getMeContext } from '$lib/state/getContexts'
 
-const me = getMeContext()
+	const me = getMeContext()
 </script>
 
 <Screen title="Info">

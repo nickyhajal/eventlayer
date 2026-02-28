@@ -1,7 +1,40 @@
+import dayjs from 'dayjs'
 import _ from 'lodash'
-import { formatMoney } from './src/lib/formatMoney'
+import capitalize from 'lodash/capitalize'
+import clamp from 'lodash/clamp'
+import debounce from 'lodash/debounce'
+import get from 'lodash/get'
+import groupBy from 'lodash/groupBy'
+import clone from 'lodash/groupBy'
+import isArray from 'lodash/isArray'
+import isFunction from 'lodash/isFunction'
+import isNaN from 'lodash/isNaN'
+import isNull from 'lodash/isNull'
+import isNumber from 'lodash/isNumber'
+import isObject from 'lodash/isObject'
+import isString from 'lodash/isString'
+import isUndefined from 'lodash/isUndefined'
+import kebabCase from 'lodash/kebabCase'
+import keyBy from 'lodash/keyBy'
+import merge from 'lodash/merge'
+import omit from 'lodash/omit'
+import omitBy from 'lodash/omitBy'
+import orderBy from 'lodash/orderBy'
+import pick from 'lodash/pick'
+import reverse from 'lodash/reverse'
+import set from 'lodash/set'
+import shuffle from 'lodash/shuffle'
+import some from 'lodash/some'
+import sortBy from 'lodash/sortBy'
+import startCase from 'lodash/startCase'
+import uniq from 'lodash/uniq'
+import uniqBy from 'lodash/uniqBy'
+import without from 'lodash/without'
+
 import { byKey } from './src/lib/byKey'
-import { generateSha256, generateSha1 } from './src/lib/generateSha256'
+import { formatMoney } from './src/lib/formatMoney'
+import { generateSha1, generateSha256 } from './src/lib/generateSha256'
+
 export * from './src/lib/getMediaUrl'
 export * from './src/lib/getContentFromContentArray'
 export * from './src/lib/joinWithCommasUntilAnd'
@@ -26,37 +59,7 @@ export {
   relativeTimeShort,
   type DayjsConfigType,
 } from './src/lib/dayjs'
-import sortBy from 'lodash/sortBy'
-import orderBy from 'lodash/orderBy'
-import reverse from 'lodash/reverse'
-import omitBy from 'lodash/omitBy'
-import shuffle from 'lodash/shuffle'
-import kebabCase from 'lodash/kebabCase'
-import startCase from 'lodash/startCase'
-import isArray from 'lodash/isArray'
-import isString from 'lodash/isString'
-import isNumber from 'lodash/isNumber'
-import isNaN from 'lodash/isNaN'
-import isNull from 'lodash/isNull'
-import isObject from 'lodash/isObject'
-import isFunction from 'lodash/isFunction'
-import isUndefined from 'lodash/isUndefined'
-import uniq from 'lodash/uniq'
-import without from 'lodash/without'
-import uniqBy from 'lodash/uniqBy'
-import groupBy from 'lodash/groupBy'
-import clone from 'lodash/groupBy'
-import keyBy from 'lodash/keyBy'
-import capitalize from 'lodash/capitalize'
-import set from 'lodash/set'
-import some from 'lodash/some'
-import merge from 'lodash/merge'
-import omit from 'lodash/omit'
-import clamp from 'lodash/clamp'
-import get from 'lodash/get'
-import pick from 'lodash/pick'
-import debounce from 'lodash/debounce'
-import dayjs from 'dayjs'
+
 export {
   byKey,
   keyBy,
@@ -95,8 +98,7 @@ export {
 }
 export const w = typeof window !== 'undefined' ? window.innerWidth : 0
 const h = typeof window !== 'undefined' ? window.innerHeight : 0
-export const sizeFactor =
-  w <= 1280 ? 14 / 16 : w <= 1440 || h < 798 ? 15 / 16 : 1
+export const sizeFactor = w <= 1280 ? 14 / 16 : w <= 1440 || h < 798 ? 15 / 16 : 1
 
 interface IParam {
   pre?: Function
@@ -106,7 +108,7 @@ interface IParam {
 export const arrangeByKey = (
   collection: any,
   key: string,
-  { pre, post, flat = false }: IParam = {}
+  { pre, post, flat = false }: IParam = {},
 ) => {
   return (collection || []).reduce((out: any, curr: any) => {
     if (pre) {
@@ -149,7 +151,7 @@ export const unflatten = function (data: any) {
     last: number,
     temp: string
   for (var p in data) {
-    ;(cur = result), (prop = ''), (last = 0)
+    ;((cur = result), (prop = ''), (last = 0))
     do {
       idx = p.indexOf('.', last)
       temp = p.substring(last, idx !== -1 ? idx : undefined)
@@ -167,8 +169,7 @@ export const flatten = function (data: any, ignore: string[] = []) {
     if (Object(cur) !== cur || ignore.includes(prop)) {
       result[prop] = cur
     } else if (Array.isArray(cur)) {
-      for (var i = 0, l = cur.length; i < l; i++)
-        recurse(cur[i], prop ? prop + '.' + i : '' + i)
+      for (var i = 0, l = cur.length; i < l; i++) recurse(cur[i], prop ? prop + '.' + i : '' + i)
       if (l == 0) result[prop] = []
     } else {
       var isEmpty = true
@@ -204,12 +205,13 @@ export const formatDate = (date: DayjsConfigType) => {
 
 export const copyToClipboard = (text: string) => {
   if (typeof navigator !== 'undefined' && navigator.clipboard) {
-    navigator.clipboard.writeText(text)
+    navigator.clipboard
+      .writeText(text)
       .then(() => {
-        console.log('Text copied to clipboard');
-    })
-    .catch(err => {
-      console.error('Error copying text: ', err);
-    });
+        console.log('Text copied to clipboard')
+      })
+      .catch((err) => {
+        console.error('Error copying text: ', err)
+      })
   }
 }

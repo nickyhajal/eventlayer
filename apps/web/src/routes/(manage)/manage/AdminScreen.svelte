@@ -1,7 +1,7 @@
 <script lang="ts">
-import { tw } from '@matterloop/ui'
+	import { tw } from '@matterloop/ui'
 
-export let title = ''
+	export let title = ''
 </script>
 
 <div>

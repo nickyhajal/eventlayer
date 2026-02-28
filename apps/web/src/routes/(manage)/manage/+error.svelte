@@ -1,7 +1,8 @@
 <script>
-import { HeroIcon } from '@matterloop/ui'
-import { ExclamationTriangle } from '@steeze-ui/heroicons'
-import { page } from '$app/stores'
+	import { ExclamationTriangle } from '@steeze-ui/heroicons'
+	import { page } from '$app/stores'
+
+	import { HeroIcon } from '@matterloop/ui'
 </script>
 
 {#if $page.error}
@@ -17,7 +18,7 @@ import { page } from '$app/stores'
 				{$page.error.message}
 			</div>
 			<div class="w-9/12 pt-1 text-sm font-medium text-slate-500">
-				Our team has been notified of this error. Contact support@reportnorth.com if you need
+				Our team has been notified of this error. Contact support@eventlayer.co if you need
 				assistance.
 			</div>
 		</div>

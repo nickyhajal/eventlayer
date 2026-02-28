@@ -11,35 +11,36 @@
 	export let data
 	const me = getMeContext()
 	$: events = data.events || []
+
 	$: mine = data.myLunch?.eventId ? events.find((event) => event.id === data.myLunch.eventId) : null
 </script>
 
 <Screen title="Day 1: Lunch Options" bigTitle="Day 1: Lunch Options">
-	<div class="mb-8 max-w-2xl mt-16 px-4 md:px-0">
-		<p class="text-lg mb-4">
+	<div class="mb-8 mt-16 max-w-2xl px-4 md:px-0">
+		<p class="mb-4 text-lg">
 			Select from the following lunch options to learn more and make sure to RSVP for one of them to
 			add it to your schedule.
 		</p>
 	</div>
 	{#if mine}
-		<div class="bg-emerald-50 p-4 text-emerald-700 font-semibold rounded-xl mb-3">
+		<div class="mb-3 rounded-xl bg-emerald-50 p-4 font-semibold text-emerald-700">
 			You're signed up for {mine.name}
 		</div>
 	{:else}
-		<div class="bg-amber-50 p-4 text-amber-800/70 font-semibold rounded-xl mb-3">
+		<div class="mb-3 rounded-xl bg-amber-50 p-4 font-semibold text-amber-800/70">
 			You haven't signed up for lunch yet
 		</div>
 	{/if}
-	<div class="pb-24 mb-6 w-[calc(100dvw-0.9rem)] overflow-x-auto lg:w-[calc(100%)] lg:pb-8">
+	<div class="mb-6 w-[calc(100dvw-0.9rem)] overflow-x-auto pb-24 lg:w-[calc(100%)] lg:pb-8">
 		<div
-			class="grid sm:grid-cols-2 grid-cols-1 md:grid-cols-[1fr_1fr_1fr] gap-4 pb-4 pr-6 lg:w-[calc(100%)] lg:pr-0"
+			class="grid grid-cols-1 gap-4 pb-4 pr-6 sm:grid-cols-2 md:grid-cols-[1fr_1fr_1fr] lg:w-[calc(100%)] lg:pr-0"
 		>
 			{#each events as event, i}
 				{@const spotsLeft = event.maxAttendees - event.users.length}
 				<Button
 					variant="outline"
 					href={`/schedule/${event.id}`}
-					class="h-54 relative mt-2 flex w-[15rem] mx-auto flex-col items-start justify-start rounded-xl p-1 text-left lg:w-full"
+					class="h-54 relative mx-auto mt-2 flex w-[15rem] flex-col items-start justify-start rounded-xl p-1 text-left lg:w-full"
 				>
 					<img
 						alt="{event.name} photo"
@@ -48,7 +49,7 @@
 					/>
 					<div class="px-2">
 						<div
-							class="w-full line-clamp-1 truncate whitespace-normal pb-1 pt-2 text-base font-semibold leading-tight text-slate-700"
+							class="line-clamp-1 w-full truncate whitespace-normal pb-1 pt-2 text-base font-semibold leading-tight text-slate-700"
 						>
 							{event.name}
 						</div>
@@ -57,7 +58,7 @@
 							<!-- {data?.myLunch?.eventId} hey -->
 							<!-- {event.id} -->
 							{#if data.myLunch?.eventId === event.id}
-								<span class="text-green-500 font-semibold">You're signed up!</span>
+								<span class="font-semibold text-green-500">You're signed up!</span>
 							{:else}
 								{spotsLeft} spots left
 							{/if}

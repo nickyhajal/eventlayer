@@ -1,42 +1,42 @@
 <script lang="ts">
-import { invalidateAll } from '$app/navigation'
-import { Button } from '$lib/components/ui/button'
-import { Textarea } from '$lib/components/ui/textarea'
-import { trpc } from '$lib/trpc/client.js'
-import Plus from 'lucide-svelte/icons/plus'
-import X from 'lucide-svelte/icons/x'
-import { toast } from 'svelte-sonner'
+	import { invalidateAll } from '$app/navigation'
+	import { Button } from '$lib/components/ui/button'
+	import { Textarea } from '$lib/components/ui/textarea'
+	import { trpc } from '$lib/trpc/client.js'
+	import Plus from 'lucide-svelte/icons/plus'
+	import X from 'lucide-svelte/icons/x'
+	import { toast } from 'svelte-sonner'
 
-import type { Content } from '@matterloop/db'
-import { getId } from '@matterloop/util'
+	import type { Content } from '@matterloop/db'
+	import { getId } from '@matterloop/util'
 
-import AdminScreen from '../AdminScreen.svelte'
+	import AdminScreen from '../AdminScreen.svelte'
 
-export let data
+	export let data
 
-let content = data.content
-let lastContent = content.map((c) => JSON.stringify(c))
+	let content = data.content
+	let lastContent = content.map((c) => JSON.stringify(c))
 
-function addContent() {
-	content = [...content, { title: '', body: '', type: 'faq', ord: content.length }]
-}
-async function save() {
-	const toSave: Content[] = []
-	content.forEach((c, i) => {
-		if (JSON.stringify(c) !== lastContent[i]) {
-			if (!c.id) {
-				c.id = getId()
+	function addContent() {
+		content = [...content, { title: '', body: '', type: 'faq', ord: content.length }]
+	}
+	async function save() {
+		const toSave: Content[] = []
+		content.forEach((c, i) => {
+			if (JSON.stringify(c) !== lastContent[i]) {
+				if (!c.id) {
+					c.id = getId()
+				}
+				toSave.push(c)
 			}
-			toSave.push(c)
-		}
-	})
-	await Promise.all(toSave.map((c) => trpc().content.upsert.mutate(c)))
-	toast.success('Saved FAQs')
-}
-async function deleteContent(id: string) {
-	content = content.filter((c) => c.id !== id)
-	await trpc().content.delete.mutate({ id })
-}
+		})
+		await Promise.all(toSave.map((c) => trpc().content.upsert.mutate(c)))
+		toast.success('Saved FAQs')
+	}
+	async function deleteContent(id: string) {
+		content = content.filter((c) => c.id !== id)
+		await trpc().content.delete.mutate({ id })
+	}
 </script>
 
 <AdminScreen title={true}>
@@ -58,9 +58,9 @@ async function deleteContent(id: string) {
 						variant="ghost"
 						class="my-0 ml-1 h-6 w-6 bg-white/50 px-1 py-2 opacity-0 transition-all hover:bg-white/80 group-hover:opacity-100"
 						on:click={() => {
-									deleteContent(content[i].id)
-									invalidateAll()
-								}}
+							deleteContent(content[i].id)
+							invalidateAll()
+						}}
 					>
 						<X class="h-4 w-4 text-stone-500"></X>
 					</Button>

@@ -1,9 +1,9 @@
 <script lang="ts">
-import Screen from '$lib/components/Screen.svelte'
-import Button from '$lib/components/ui/button/button.svelte'
-import { getMeContext } from '$lib/state/getContexts'
+	import Screen from '$lib/components/Screen.svelte'
+	import Button from '$lib/components/ui/button/button.svelte'
+	import { getMeContext } from '$lib/state/getContexts'
 
-const me = getMeContext()
+	const me = getMeContext()
 </script>
 
 <Screen title="Meals" bigTitle="Meals">
@@ -68,10 +68,10 @@ const me = getMeContext()
 </Screen>
 
 <style lang="postcss">
-ul {
-	@apply ml-4 pl-0.5;
-}
-li {
-	@apply mb-1.5 list-disc;
-}
+	ul {
+		@apply ml-4 pl-0.5;
+	}
+	li {
+		@apply mb-1.5 list-disc;
+	}
 </style>

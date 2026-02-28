@@ -1,6 +1,7 @@
 <script lang="ts">
-	import HeroIcon from './HeroIcon.svelte'
 	import { EllipsisHorizontal } from '@steeze-ui/heroicons'
+
+	import HeroIcon from './HeroIcon.svelte'
 
 	export let icon = 'dots'
 	export let options = []

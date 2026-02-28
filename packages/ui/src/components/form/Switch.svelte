@@ -1,7 +1,9 @@
 <script lang="ts">
-	import { tw } from '../../lib/tw'
 	import { createEventDispatcher } from 'svelte'
+
 	import { uuid } from '@matterloop/util'
+
+	import { tw } from '../../lib/tw'
 
 	export let value = false
 	export let label = ''
@@ -78,7 +80,9 @@
 		content: '';
 		background-color: white;
 		transition: 0.4s;
-		box-shadow: 0px 1px 2px rgba(10, 20, 73, 0.08), 0px 2px 5px rgba(10, 20, 73, 0.1);
+		box-shadow:
+			0px 1px 2px rgba(10, 20, 73, 0.08),
+			0px 2px 5px rgba(10, 20, 73, 0.1);
 	}
 	input:checked + .slider {
 		@apply bg-emerald-500;

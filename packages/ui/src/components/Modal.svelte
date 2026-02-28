@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { dispatch, tw } from '@matterloop/util'
-	import Portal from 'svelte-portal'
 	import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock'
+	import Portal from 'svelte-portal'
+
+	import { dispatch, tw } from '@matterloop/util'
 
 	export let open = false
 	export let allowOverlayClose = true
@@ -71,7 +72,7 @@
 			<div
 				bind:this={modalElm}
 				class={tw(
-					`modal margin-0 absolute left-0 right-0 -mt-[10vh] w-full lg:max-w-lg rounded-2xl bg-white shadow-2xl transition-all delay-150 duration-200 opacity-${
+					`modal margin-0 absolute left-0 right-0 -mt-[10vh] w-full rounded-2xl bg-white shadow-2xl transition-all delay-150 duration-200 lg:max-w-lg opacity-${
 						visible ? '100' : '0'
 					}`,
 					modalClass,

@@ -59,7 +59,7 @@
 				/>
 				{#if maxlength}
 					<div
-						class="absolute top-0 right-0 mt-1 mr-2 text-xs text-gray-400 transition duration-300"
+						class="absolute right-0 top-0 mr-2 mt-1 text-xs text-gray-400 transition duration-300"
 						class:text-red={maxlength - currentValue.length < 3}
 					>
 						{currentValue.length}/{maxlength}
@@ -67,7 +67,7 @@
 				{/if}
 			</div>
 			<button
-				class="block h-full w-40 rounded-r bg-emerald-500 p-2 px-8 pt-2 pb-1 text-base text-white"
+				class="block h-full w-40 rounded-r bg-emerald-500 p-2 px-8 pb-1 pt-2 text-base text-white"
 				>{buttonMessage}</button
 			>
 		</form>
@@ -78,7 +78,7 @@
 				bind:data={values}
 				template={(
 					val,
-					i
+					i,
 				) => `<div class="flex justify-between w-full p-4 py-2 mb-2 rounded bg-emerald-75"><div class="flex items-center">${
 					showNumber
 						? `<div class="w-5 mr-4 text-xl font-semibold text-center text-gray">${i + 1}.</div>`
@@ -91,7 +91,7 @@
 				on:dragend={updateOrder}
 			/>
 			{#if !values.length}
-				<div class="mb-4 text-center font-semibold text-gray">Your steps will appear here</div>
+				<div class="text-gray mb-4 text-center font-semibold">Your steps will appear here</div>
 			{/if}
 			<slot />
 			{#if postComponent}

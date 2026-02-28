@@ -1,6 +1,6 @@
 interface IOption {
-  suffix: string;
-  override: string[];
+  suffix: string
+  override: string[]
 }
 export default (type: string, { suffix = '', override = [] }: IOption) => {
   const keys = ['ready', 'saving', 'success', 'error', 'confirm', 'update']
@@ -36,13 +36,7 @@ const statuses = {
     DEFAULT_ERROR,
     DEFAULT_CONFIRMATION,
   ],
-  add: [
-    'Add%suffix%',
-    'Add%suffix%...',
-    'Added%suffix%!',
-    DEFAULT_ERROR,
-    DEFAULT_CONFIRMATION,
-  ],
+  add: ['Add%suffix%', 'Add%suffix%...', 'Added%suffix%!', DEFAULT_ERROR, DEFAULT_CONFIRMATION],
   send: [
     'Send%suffix%',
     'Sending%suffix%...',

@@ -1,10 +1,10 @@
 import isArray from 'lodash/isArray'
-import isObject from 'lodash/isObject'
 import isFunction from 'lodash/isFunction'
+import isObject from 'lodash/isObject'
 
 export function transformDeep<T extends { [key: string]: any }>(
   obj: T,
-  transformer: (value: any, key: string | number | symbol) => any
+  transformer: (value: any, key: string | number | symbol) => any,
 ): T {
   const keys = Object.keys(obj) as (keyof T)[]
   keys.forEach((key) => {

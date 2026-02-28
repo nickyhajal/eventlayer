@@ -76,7 +76,7 @@
 		element = $form
 		lastForm = JSON.stringify($form)
 	}
-	$: save(), $form
+	$: (save(), $form)
 	$: {
 		if (elementOptions.length) {
 			$form.options = JSON.stringify(elementOptions)

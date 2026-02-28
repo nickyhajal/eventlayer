@@ -216,7 +216,7 @@
 	{/if}
 	{#if maxlength && showMaxLength}
 		<div
-			class="absolute right-0 -top-6 text-xs transition duration-300 px-2 h-fit rounded-full {maxlength -
+			class="absolute -top-6 right-0 h-fit rounded-full px-2 text-xs transition duration-300 {maxlength -
 				(value?.toString().length || 0) <
 			3
 				? 'text-red-700'

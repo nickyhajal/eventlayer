@@ -126,7 +126,7 @@
 						>
 							<div
 								class="h-full w-full bg-contain bg-center bg-no-repeat"
-								style="background-image: url({getMediaUrl(photo, 'trim=1&w=780')})"
+								style="background-image: url({getMediaUrl(photo, 'w-780')})"
 							></div>
 						</div>
 					</a>
@@ -157,7 +157,7 @@
 						{/if}
 					</div>
 					<div
-						class="text-a-accent mt-2 flex h-12 w-full items-center justify-around border-t border-slate-100 font-semibold"
+						class="mt-2 flex h-12 w-full items-center justify-around border-t border-slate-100 font-semibold text-a-accent"
 					>
 						{#if id}
 							<a

@@ -5,7 +5,7 @@ import { NODE_ENV } from '$env/static/private'
 import { PUBLIC_BASE_URL } from '$env/static/public'
 import type { RouteConfig } from '$lib/server/core/routeConfig'
 import { getConfigForRoute } from '$lib/server/core/routeHelper'
-import { loadUsers } from '$lib/server/loadUserData'
+// import { loadUsers } from '$lib/server/loadUserDataIng25'
 import { createTRPCHandle } from 'trpc-sveltekit'
 
 import { lucia } from '@matterloop/api'
@@ -71,9 +71,16 @@ const handleRouteRedirect = (defaultRedirect = '/', route: RouteConfig) => {
 export const handleCors: Handle = async ({ resolve, event }) => {
 	// Apply CORS header for API routes
 	const origin = event.request.headers.get('origin')
+
+	// Let /rest routes handle their own CORS (they need Authorization header)
+	if (event.url.pathname.startsWith('/rest')) {
+		return resolve(event)
+	}
+
 	if (
 		event.url.pathname.startsWith('/trpc') ||
 		event.url.pathname.startsWith('/signup') ||
+		event.url.pathname.startsWith('/add-a') ||
 		event.url.pathname.startsWith('/login')
 	) {
 		// Required for CORS to work
@@ -82,7 +89,7 @@ export const handleCors: Handle = async ({ resolve, event }) => {
 				headers: {
 					'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
 					'Access-Control-Allow-Origin': origin,
-					// 'Access-Control-Allow-Headers': origin,
+					'Access-Control-Allow-Headers': 'content-type',
 					'Access-Control-Allow-Credentials': true,
 				},
 			})
@@ -91,6 +98,7 @@ export const handleCors: Handle = async ({ resolve, event }) => {
 
 	const response = await resolve(event)
 	response.headers.append('Access-Control-Allow-Origin', origin)
+	response.headers.append('Access-Control-Allow-Headers', 'content-type')
 	response.headers.append('Access-Control-Allow-Credentials', true)
 	return response
 }
@@ -104,6 +112,7 @@ const handleInit: Handle = async ({ event, resolve }) => {
 	// }
 	// initRedis(REDIS_URL);
 	// initPush();
+	// loadUsers()
 	return resolve(event)
 }
 export const handleUserContext: Handle = async ({ event, resolve }) => {
@@ -228,8 +237,12 @@ const handleRouteConfig: Handle = async ({ event, resolve }) => {
 		if (
 			!event.url.pathname.includes('/login') &&
 			!event.url.pathname.includes('/trpc') &&
+			!event.url.pathname.includes('/stripe') &&
+			!event.url.pathname.includes('/add-a') &&
 			!event.url.pathname.includes('/welcome') &&
-			!event.url.pathname.includes('manifest')
+			!event.url.pathname.includes('/rest') &&
+			!event.url.pathname.includes('manifest') &&
+			!event.url.pathname.includes('llms.txt')
 		) {
 			return redirect(303, '/login')
 		}
