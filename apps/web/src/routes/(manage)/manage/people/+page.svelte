@@ -1,8 +1,9 @@
 <script lang="ts">
+	import { goto } from '$app/navigation'
 	import { Button } from '$lib/components/ui/button'
 	import * as Dialog from '$lib/components/ui/dialog'
 	import Plus from 'lucide-svelte/icons/plus'
-	import { set } from 'zod'
+	import Upload from 'lucide-svelte/icons/upload'
 
 	import type { Snapshot } from '../$types'
 	import AdminScreen from '../AdminScreen.svelte'
@@ -43,6 +44,14 @@
 			<Plus class="mr-1 w-[1rem] text-slate-700" />
 			Add User</Button
 		>
+		<Button
+			variant="outline"
+			class="h-7 py-[0.3rem] pl-1.5 pr-3"
+			on:click={() => goto('/manage/import')}
+		>
+			<Upload class="mr-1 w-[1rem] text-slate-700" />
+			Import Users
+		</Button>
 	</div>
 	<UserTable rows={data.users} bind:table bind:setCurrentPage bind:setGlobalFilter />
 </AdminScreen>
