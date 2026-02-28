@@ -157,11 +157,12 @@
 			</div>
 		{/if}
 	{/if}
-	<div class="grid gap-4 py-4">
-		{#if error}
-			<div class="text-base">{error}</div>
-		{/if}
-		{#if emailConfirmed}
+	<div class={simplified ? '' : 'grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]'}>
+		<div class="grid gap-4 py-4">
+			{#if error}
+				<div class="text-base">{error}</div>
+			{/if}
+			{#if emailConfirmed}
 			{#if !simplified && user?.id}
 				<div class="flex flex-col items-start justify-center gap-1">
 					<Label for="image" class="text-right">User Image</Label>
@@ -301,16 +302,6 @@
 						class="col-span-3"
 					/>
 				</div>
-				<div class="flex flex-col items-start justify-center gap-1">
-					<Label for="user_internalNotes" class="text-right">Internal Notes</Label>
-					<Textarea
-						id="user_internalNotes"
-						bind:value={user.internalNotes}
-						class="w-full"
-						rows="4"
-						placeholder="Add internal notes about this attendee..."
-					/>
-				</div>
 				<!--{#if user.type.includes('speaker')}
 					<div class="flex flex-col items-start justify-center gap-1">
 						<Label for="speechTitle" class="text-right">Talk Title</Label>
@@ -379,6 +370,21 @@
 					</div>
 				{/if}
 			{/if}
+			{/if}
+		</div>
+		{#if !simplified && emailConfirmed}
+			<div class="grip mt-0 gap-4 py-4">
+				<div class="rounded-lg border border-stone-200 bg-stone-50 p-3">
+					<Label for="user_internalNotes" class="text-right">Internal Notes</Label>
+					<Textarea
+						id="user_internalNotes"
+						bind:value={user.internalNotes}
+						class="mt-2 w-full bg-white"
+						rows={4}
+						placeholder="Add internal notes about this attendee..."
+					/>
+				</div>
+			</div>
 		{/if}
 	</div>
 	<div class="flex w-full justify-between">
