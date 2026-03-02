@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { invalidateAll } from '$app/navigation'
 	import ChicletButton from '$lib/components/ui/ChicletButton.svelte'
+	import Label from '$lib/components/ui/label/label.svelte'
+	import { Textarea } from '$lib/components/ui/textarea'
 	import { trpc } from '$lib/trpc/client'
 	import { onMount } from 'svelte'
 
@@ -62,13 +64,13 @@
 		<div class="grid grid-cols-[20rem_1fr] gap-8">
 			<div>
 				<UserForm
-					user={data.user}
+					bind:user={data.user}
 					titleClass="text-2xl font-semibold"
 					showTitle={false}
 					customFields={data.customFields}
 				/>
 			</div>
-			<div>
+			<div class="grip mt-9 gap-4 px-4 py-4">
 				<!-- <div
 					class="flex flex-col gap-2 text-sm font-medium text-stone-600 py-2.5 px-4 rounded-lg bg-stone-100 w-fit"
 				>
@@ -100,7 +102,17 @@
 						/>
 					</div>
 				{/if}
+				<div class="mt-4">
+					<Label for="user_internalNotes" class="text-right">Internal Notes</Label>
+					<Textarea
+						id="user_internalNotes"
+						bind:value={data.user.internalNotes}
+						class="w-full"
+						rows="4"
+						placeholder="Add internal notes about this attendee..."
+					/>
+				</div>
 			</div>
 		</div>
-	</div></AdminScreen
->
+	</div>
+</AdminScreen>
