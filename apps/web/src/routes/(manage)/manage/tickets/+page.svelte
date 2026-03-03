@@ -2,7 +2,7 @@
 	import { Button } from '$lib/components/ui/button'
 	import * as Dialog from '$lib/components/ui/dialog'
 	import Plus from 'lucide-svelte/icons/plus'
-	import { set } from 'zod'
+	import { tick } from 'svelte'
 
 	import type { Snapshot } from '../$types'
 	import AdminScreen from '../AdminScreen.svelte'
@@ -18,20 +18,34 @@
 	let loading = false
 	export const snapshot: Snapshot = {
 		capture: () => {
+			const state = table ? $table.getState() : undefined
 			return {
-				query: $table.getState().globalFilter,
+				query: state?.globalFilter ?? '',
 				scrollY: window.scrollY,
-				page: $table.getState().pagination.pageIndex,
+				page: state?.pagination?.pageIndex ?? 0,
+				pageSize: state?.pagination?.pageSize,
+				sorting: state?.sorting ?? [],
 			}
 		},
-		restore: ({ scrollY, page, query }) => {
-			window.scrollTo(0, scrollY)
-			if (page) {
-				setCurrentPage(page)
+		restore: async ({ scrollY, page, pageSize, query, sorting }) => {
+			await tick()
+			if (table) {
+				if (Array.isArray(sorting)) {
+					$table.setSorting(sorting)
+				}
+				if (typeof pageSize === 'number') {
+					$table.setPageSize(pageSize)
+				}
+				if (typeof query === 'string' && typeof setGlobalFilter === 'function') {
+					setGlobalFilter(query)
+				}
+				if (typeof page === 'number' && typeof setCurrentPage === 'function') {
+					setCurrentPage(page)
+				}
 			}
-			if (query) {
-				setGlobalFilter(query)
-			}
+			window.requestAnimationFrame(() => {
+				window.scrollTo(0, typeof scrollY === 'number' ? scrollY : 0)
+			})
 		},
 	}
 	const ticketsByUser = data.tickets.reduce((acc, ticket) => {

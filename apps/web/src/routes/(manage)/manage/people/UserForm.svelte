@@ -127,8 +127,8 @@
 		}
 	}
 	async function updateAvatar(mediaId: string) {
-		trpc().user.upsert.mutate({ userId: user.userId, mediaId })
-		invalidateAll()
+		await trpc().user.upsert.mutate({ userId: user.userId, mediaId })
+		await invalidateAll()
 	}
 	async function deactivateUser() {
 		await trpc().user.upsert.mutate({
