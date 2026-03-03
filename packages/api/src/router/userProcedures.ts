@@ -186,6 +186,8 @@ export async function sendWelcomeEmail(user: User, event: Event, eventUser: Even
     .where(eq(eventUserTable.id, eventUser.id))
   redis.del(`event_users:${event.id}`)
   redis.del(`event_usersWithInfo:${event.id}`)
+  redis.del(`stats:onboarding_completed:${event.id}`)
+  redis.del(`stats:onboarded_users:${event.id}`)
 }
 
 const t = initTRPC.context<TrpcContext>().create()
@@ -656,6 +658,9 @@ export const userProcedures = t.router({
       redis.del(`event_heavy:${eventId}`)
       redis.del(`event_users:${eventId}`)
       redis.del(`event_usersWithInfo:${eventId}`)
+      redis.del(`stats:attendees:${eventId}`)
+      redis.del(`stats:onboarding_completed:${eventId}`)
+      redis.del(`stats:onboarded_users:${eventId}`)
       return {
         user,
         eventUser,

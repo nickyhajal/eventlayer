@@ -8,7 +8,6 @@ import {
 	eq,
 	eventTicketTable,
 	eventUserTable,
-	formSessionTable,
 	isNotNull,
 	isNull,
 } from '@matterloop/db'
@@ -109,19 +108,19 @@ const unassignedTicketsStats = new Stat({
 })
 
 const onboardingCompletedStats = new Stat({
-	label: 'Onboarding Forms Completed',
-	unit: 'forms',
+	label: 'Attendees Onboarded',
+	unit: 'people',
 	query: async (eventId: string) => {
 		const result = await db
 			.select({ count: count() })
-			.from(formSessionTable)
+			.from(eventUserTable)
 			.where(and(
-				eq(formSessionTable.eventId, eventId),
-				eq(formSessionTable.status, 'submitted')
+				eq(eventUserTable.eventId, eventId),
+				eq(eventUserTable.onboardStatus, 'done')
 			))
 		return result[0]?.count || 0
 	},
-	cacheKey: (eventId: string) => `stats:onboarding_completed:${eventId}`,
+	cacheKey: (eventId: string) => `stats:onboarded_users:${eventId}`,
 })
 
 const availableStats = {
