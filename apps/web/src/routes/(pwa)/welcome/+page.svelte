@@ -16,9 +16,11 @@
   let pageHeight = "auto";
   let values: Record<string, string> = data.form?.elements.reduce(
     (out, curr) => {
-      out[curr.id] =
-        data.session?.responses?.find(({ elementId }) => elementId === curr.id)
-          ?.value || "";
+      const fromSession = data.session?.responses?.find(
+        ({ elementId }) => elementId === curr.id,
+      )?.value;
+      const fromUserInfo = data.userInfo?.[curr.id];
+      out[curr.id] = fromSession ?? fromUserInfo ?? "";
       return out;
     },
     {} as Record<string, string>,
