@@ -3,6 +3,7 @@ import FileQuestion from 'lucide-svelte/icons/file-question'
 import FileText from 'lucide-svelte/icons/file-text'
 import Handshake from 'lucide-svelte/icons/handshake'
 import Home from 'lucide-svelte/icons/home'
+import ImageIcon from 'lucide-svelte/icons/image'
 import KeyRound from 'lucide-svelte/icons/key-round'
 import Pin from 'lucide-svelte/icons/map-pinned'
 import SquareMenu from 'lucide-svelte/icons/menu-square'
@@ -81,6 +82,11 @@ export const sidebarLinks: SidebarLink[] = [
 		path: '/content',
 		label: 'Strings',
 		icon: TextCursor,
+	},
+	{
+		path: '/media',
+		label: 'Media',
+		icon: ImageIcon,
 	},
 	{
 		path: '/faqs',

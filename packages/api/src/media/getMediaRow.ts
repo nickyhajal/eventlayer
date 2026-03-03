@@ -19,6 +19,7 @@ interface Args {
   path?: string
   parentType: string
   parentId: string
+  allowMultiple?: boolean
 }
 
 export const getMediaRow = async ({
@@ -29,6 +30,7 @@ export const getMediaRow = async ({
   path: inputPath,
   parentType,
   parentId,
+  allowMultiple,
 }: Args) => {
   let row: Media | undefined | null
   let ext = mime.extension(mimetype) || 'jpg'
@@ -36,7 +38,8 @@ export const getMediaRow = async ({
   let dir = NODE_ENV === 'production' ? 'prod' : 'dev'
   let path = inputPath || (parentType === 'user' ? 'avatars' : parentType)
   ext = ext.replace('jpeg', 'jpg')
-  if (parentType && parentId && singles.includes(parentType)) {
+  const allowMultipleUploads = Boolean(allowMultiple)
+  if (!allowMultipleUploads && parentType && parentId && singles.includes(parentType)) {
     const existing = await db.query.mediaTable.findFirst({
       where: and(eq(mediaTable.parentId, parentId), eq(mediaTable.parentType, parentType)),
     })

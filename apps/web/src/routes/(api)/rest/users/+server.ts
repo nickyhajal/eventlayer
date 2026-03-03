@@ -30,18 +30,16 @@ function getMediaUrl(media: Media | null | undefined, transforms = ''): string |
 }
 
 // Handle CORS preflight
-export const OPTIONS: RequestHandler = async ({ request }) => {
-	const origin = request.headers.get('origin')
+export const OPTIONS: RequestHandler = async () => {
 	return new Response(null, {
 		status: 204,
-		headers: getCorsHeaders(origin),
+		headers: getCorsHeaders(),
 	})
 }
 
 // GET /rest/users - Returns all attendees for the event with user info and avatar
 export const GET: RequestHandler = async ({ request, url }) => {
-	const origin = request.headers.get('origin')
-	const corsHeaders = getCorsHeaders(origin)
+	const corsHeaders = getCorsHeaders()
 
 	const { event } = await validateApiKey(request)
 
@@ -66,9 +64,9 @@ export const GET: RequestHandler = async ({ request, url }) => {
 		orderBy: [asc(eventUserFieldTable.ord)],
 	})
 
-	// Fetch user info for all users if there are custom fields
+	// Fetch user info for all users
 	let userInfoByUserId: Record<string, Record<string, string>> = {}
-	if (customFieldDefs.length > 0 && users.length > 0) {
+	if (users.length > 0) {
 		const userIds = users.map((u) => u.userId).filter(Boolean) as string[]
 		if (userIds.length > 0) {
 			const userInfo = await db.query.eventUserInfoTable.findMany({

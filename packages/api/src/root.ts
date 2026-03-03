@@ -7,12 +7,14 @@ import { eventUserFieldProcedures } from './router/eventUserFieldProcedures'
 import { formElementProcedures } from './router/formElementProcedures'
 import { formProcedures } from './router/formProcedures'
 import { formSessionProcedures } from './router/formSessionProcedures'
+import { importProcedures } from './router/importProcedures'
 import { meRouter } from './router/me'
 import { mediaProcedures } from './router/mediaProcedures'
 import { menuProcedures } from './router/menuProcedures'
 import { pageProcedures } from './router/pageProcedures'
 import { searchProcedures } from './router/searchProcedures'
 import { sponsorProcedures } from './router/sponsorProcedures'
+import { statsProcedures } from './router/statsProcedures'
 import { userProcedures } from './router/userProcedures'
 import { venueProcedures } from './router/venueProcedures'
 
@@ -26,6 +28,7 @@ export const router = trpcApp.router({
   checkin: checkinProcedures,
   formElement: formElementProcedures,
   formSession: formSessionProcedures,
+  import: importProcedures,
   user: userProcedures,
   media: mediaProcedures,
   content: contentProcedures,
@@ -33,6 +36,7 @@ export const router = trpcApp.router({
   sponsor: sponsorProcedures,
   menu: menuProcedures,
   search: searchProcedures,
+  stats: statsProcedures,
 })
 
 export type Router = typeof router

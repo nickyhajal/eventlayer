@@ -244,9 +244,7 @@
 		<Dialog.Content class="sm:max-w-md">
 			<Dialog.Header>
 				<Dialog.Title>Add Custom Field</Dialog.Title>
-				<Dialog.Description>
-					Define a new custom field for user profiles.
-				</Dialog.Description>
+				<Dialog.Description>Define a new custom field for user profiles.</Dialog.Description>
 			</Dialog.Header>
 			<form on:submit|preventDefault={createField}>
 				<div class="grid gap-4 py-4">
@@ -333,11 +331,7 @@
 							</Select.Trigger>
 							<Select.Content>
 								{#each visibilityOptions as option}
-									<Select.Item
-										value={option.value}
-										label={option.label}
-										disabled={option.disabled}
-									>
+									<Select.Item value={option.value} label={option.label} disabled={option.disabled}>
 										{option.label}
 									</Select.Item>
 								{/each}
@@ -360,9 +354,7 @@
 		<Dialog.Content class="sm:max-w-md">
 			<Dialog.Header>
 				<Dialog.Title>Edit Custom Field</Dialog.Title>
-				<Dialog.Description>
-					Update the custom field settings.
-				</Dialog.Description>
+				<Dialog.Description>Update the custom field settings.</Dialog.Description>
 			</Dialog.Header>
 			<form on:submit|preventDefault={updateField}>
 				<div class="grid gap-4 py-4">
@@ -440,11 +432,7 @@
 							</Select.Trigger>
 							<Select.Content>
 								{#each visibilityOptions as option}
-									<Select.Item
-										value={option.value}
-										label={option.label}
-										disabled={option.disabled}
-									>
+									<Select.Item value={option.value} label={option.label} disabled={option.disabled}>
 										{option.label}
 									</Select.Item>
 								{/each}

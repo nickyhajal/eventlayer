@@ -18,6 +18,7 @@ export { default as NumberWithChangeArrow } from './src/components/NumberWithCha
 export { default as Sheet } from './src/components/Sheet.svelte'
 export { default as Loading } from './src/components/Loading.svelte'
 export { default as Squircle } from './src/components/Squircle.svelte'
+export { default as StatCard } from './src/components/StatCard.svelte'
 
 // Form elements
 export { default as Button } from './src/components/form/Button.svelte'

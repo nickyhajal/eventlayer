@@ -1,16 +1,15 @@
 <script lang="ts">
-	import type { ColumnDef, Row, TableOptions } from '@tanstack/svelte-table'
+	import type { ColumnDef, Row } from '@tanstack/svelte-table'
 	import { type FilterFn } from '@tanstack/svelte-table'
 	import { goto } from '$app/navigation'
 	import Table from '$lib/components/ui/Table.svelte'
-	// import { rankItem } from '@tanstack/match-sorter-utils';
-	import { writable } from 'svelte/store'
 
 	import { capitalize, dayjs } from '@matterloop/util'
 
-	import type { PageData } from './$types'
-
 	export let events: Event[]
+	export let table
+	export let setCurrentPage
+	export let setGlobalFilter
 
 	const globalFilterFn: FilterFn<any> = (row, columnId, value, addMeta) => {
 		if (Array.isArray(value)) {
@@ -55,4 +54,12 @@
 	]
 </script>
 
-<Table {columns} rows={events} {globalFilterFn} {onRowClick} />
+<Table
+	{columns}
+	rows={events}
+	{globalFilterFn}
+	bind:table
+	bind:setCurrentPage
+	bind:setGlobalFilter
+	{onRowClick}
+/>

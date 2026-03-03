@@ -239,6 +239,7 @@ export const formSessionProcedures = t.router({
         )
       }
       console.timeLog(key, 'user sync done')
+      redis.del(`stats:onboarding_completed:${eventId}`)
       console.timeEnd(key)
       return rows
     }

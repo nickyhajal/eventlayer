@@ -6,6 +6,7 @@
 	import Input from '$lib/components/ui/input/input.svelte'
 	import Label from '$lib/components/ui/label/label.svelte'
 	import * as Select from '$lib/components/ui/select'
+	import Switch from '$lib/components/ui/switch/switch.svelte'
 	import Textarea from '$lib/components/ui/textarea/textarea.svelte'
 	import Uploader from '$lib/components/ui/Uploader.svelte'
 	import { trpc } from '$lib/trpc/client.js'
@@ -15,8 +16,6 @@
 
 	import type { EventUserField, FullEventUser, User } from '@matterloop/db'
 	import { merge, tw } from '@matterloop/util'
-
-	import Switch from '$lib/components/ui/switch/switch.svelte'
 
 	export let user: Partial<FullEventUser> = {
 		firstName: '',
@@ -159,10 +158,10 @@
 		{/if}
 	{/if}
 	<div class="grid gap-4 py-4">
-		{#if error}
-			<div class="text-base">{error}</div>
-		{/if}
-		{#if emailConfirmed}
+			{#if error}
+				<div class="text-base">{error}</div>
+			{/if}
+			{#if emailConfirmed}
 			{#if !simplified && user?.id}
 				<div class="flex flex-col items-start justify-center gap-1">
 					<Label for="image" class="text-right">User Image</Label>
@@ -370,7 +369,7 @@
 					</div>
 				{/if}
 			{/if}
-		{/if}
+			{/if}
 	</div>
 	<div class="flex w-full justify-between">
 		{#if user?.status === 'active'}

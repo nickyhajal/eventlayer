@@ -51,6 +51,22 @@
 		const title = startCase(type)
 		return title
 	}
+
+	function formatEventDateTime(startsAt?: string | null, endsAt?: string | null) {
+		if (!startsAt) return ''
+		const start = dayjs(startsAt)
+		if (!endsAt) return start.format('dddd MMMM Do [at] h:mma')
+		const end = dayjs(endsAt)
+		if (!end.isValid()) return start.format('dddd MMMM Do [at] h:mma')
+
+		if (start.format('YYYY-MM-DD') === end.format('YYYY-MM-DD')) {
+			return `${start.format('dddd MMMM Do [at] h:mma')} - ${end.format('h:mma')}`
+		}
+
+		return `${start.format('dddd MMMM Do [at] h:mma')} - ${end.format('dddd MMMM Do [at] h:mma')}`
+	}
+
+	$: eventDateTime = formatEventDateTime(data.event.startsAt, data.event.endsAt)
 </script>
 
 <Screen
@@ -61,7 +77,7 @@
 >
 	<div class="shell mx-auto max-w-7xl pb-20 pt-safe-offset-3">
 		<div class="text-base font-semibold text-a-accent">
-			{dayjs(data.event.startsAt).format('dddd MMMM Do [at] h:mma')}
+			{eventDateTime}
 		</div>
 		<div class="pb-3 text-3xl font-bold">{event.name}</div>
 		{#if event.subtitle}

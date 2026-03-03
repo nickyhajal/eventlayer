@@ -77,8 +77,73 @@ function sortBestMatches(query: string, people: User[]): User[] {
   })
 }
 
+const USER_INFO_KEYS = ['firstName', 'lastName'] as const
+
+async function syncUserInfoBeforeWelcome(
+	user: User,
+	eventId: string,
+): Promise<{ firstName: string | null; lastName: string | null }> {
+	const infoRows = await db.query.eventUserInfoTable.findMany({
+		where: and(
+			eq(eventUserInfoTable.userId, user.id),
+			eq(eventUserInfoTable.eventId, eventId),
+			inArray(eventUserInfoTable.key, ['firstName', 'lastName']),
+		),
+	})
+	const infoByKey: Record<string, string> = {}
+	for (const r of infoRows) {
+		if (r.key) infoByKey[r.key] = (r.value ?? '').trim()
+	}
+
+	// Merge: prefer user table, fallback to event_user_info
+	const firstNameRaw = (user.firstName?.trim() ?? infoByKey['firstName'] ?? '').trim().slice(0, 255)
+	const lastNameRaw = (user.lastName?.trim() ?? infoByKey['lastName'] ?? '').trim().slice(0, 255)
+	const firstName = firstNameRaw || null
+	const lastName = lastNameRaw || null
+
+	// Sync to user table if missing
+	const userUpdates: Partial<User> = {}
+	if (firstName && !user.firstName?.trim()) userUpdates.firstName = firstName
+	if (lastName && !user.lastName?.trim()) userUpdates.lastName = lastName
+	if (Object.keys(userUpdates).length > 0) {
+		await db.update(userTable).set(userUpdates).where(eq(userTable.id, user.id))
+	}
+
+	// Sync to event_user_info if missing
+	for (const key of USER_INFO_KEYS) {
+		const value = key === 'firstName' ? firstName : lastName
+		if (!value) continue
+		const existing = infoRows.find((r) => r.key === key)
+		if (existing && existing.id) {
+			if (existing.value !== value) {
+				await db
+					.update(eventUserInfoTable)
+					.set({ value })
+					.where(eq(eventUserInfoTable.id, existing.id))
+			}
+		} else {
+			await db.insert(eventUserInfoTable).values({
+				userId: user.id,
+				eventId,
+				key,
+				value,
+				public: true,
+			})
+		}
+	}
+
+	void redis.del(`event_users:${eventId}`)
+	void redis.del(`event_usersWithInfo:${eventId}`)
+
+	return { firstName, lastName }
+}
+
 export async function sendWelcomeEmail(user: User, event: Event, eventUser: EventUser) {
-  const { url } = await ActiveLoginLink.generate({
+	const { firstName, lastName } = await syncUserInfoBeforeWelcome(user, event.id)
+	const displayName =
+		firstName ?? user.firstName ?? lastName ?? user.lastName ?? 'there'
+
+	const { url } = await ActiveLoginLink.generate({
     userId: user.id,
     event: event,
     codeLength: 10,
@@ -90,18 +155,18 @@ export async function sendWelcomeEmail(user: User, event: Event, eventUser: Even
   if (url) {
     const res = await mailer.send({
       to: user?.email ?? '',
-      subject: `Action Required: Get Access to the Gathering Event App`,
+      subject: `Action Required: Get Access to the NeuroDiversion 26 App`,
       event: event,
       more_params: {
-        body: `Hey ${user?.firstName},
-								<br><br>We’re excited to have you join us for the Innovation Network Gathering to shape the future of human-centric clinical trials.
-								<br><br>Instead of a one-time-use printed program, we’ve developed a helpful event app to guide you through all things related to the event.
-								<br><br>With the Gathering Event app you’ll be able to:
+        body: `Hey ${displayName},
+								<br><br>We’re excited to have you join us for NeuroDiversion 2026!
+								<br><br>We’ve prepared a helpful event app to guide you through all things related to the event.
+								<br><br>You’ll be able to:
 								<ul>
 								<li>View a full detailed schedule</li>
-								<li>RSVP for a lunch option on Day 1</li>
+								<li>Browse and RSVP to Meetups</li>
 								<li>Access an attendee list including information about our speakers</li>
-								<li>Connect with our amazing Partners</li>
+								<li>Discover our Expo Partipicants</li>
 								<li>And more...</li>
 								</ul>
 								<br><br>To gain access, click the link below and set up your account.
@@ -121,6 +186,8 @@ export async function sendWelcomeEmail(user: User, event: Event, eventUser: Even
     .where(eq(eventUserTable.id, eventUser.id))
   redis.del(`event_users:${event.id}`)
   redis.del(`event_usersWithInfo:${event.id}`)
+  redis.del(`stats:onboarding_completed:${event.id}`)
+  redis.del(`stats:onboarded_users:${event.id}`)
 }
 
 const t = initTRPC.context<TrpcContext>().create()
@@ -500,6 +567,7 @@ export const userProcedures = t.router({
             .insert(eventUserTable)
             .values({
               type: eventUserData.type,
+              internalNotes: eventUserData.internalNotes,
               userId: user.id,
               eventId: eventId,
               onboardFormId: onboardingFormId,
@@ -590,6 +658,9 @@ export const userProcedures = t.router({
       redis.del(`event_heavy:${eventId}`)
       redis.del(`event_users:${eventId}`)
       redis.del(`event_usersWithInfo:${eventId}`)
+      redis.del(`stats:attendees:${eventId}`)
+      redis.del(`stats:onboarding_completed:${eventId}`)
+      redis.del(`stats:onboarded_users:${eventId}`)
       return {
         user,
         eventUser,
