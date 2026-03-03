@@ -158,26 +158,21 @@ export async function sendWelcomeEmail(user: User, event: Event, eventUser: Even
       subject: `Action Required: Get Access to the NeuroDiversion 26 App`,
       event: event,
       more_params: {
-        body: `Hey ${displayName},
-								<br><br>We’re excited to have you join us for NeuroDiversion 2026!
-								<br><br>We’ve prepared a helpful event app to guide you through all things related to the event.
-								<br><br>You’ll be able to:
-								<ul>
-								<li>View a full detailed schedule</li>
-								<li>Browse and RSVP to Meetups</li>
-								<li>Access an attendee list including information about our speakers</li>
-								<li>Discover our Expo Partipicants</li>
-								<li>And more...</li>
-								</ul>
-								<br><br>To gain access, click the link below and set up your account.
-								<br><br>Here's the link: ${url} 
-								<br><br>See you soon!<br>${sig}`,
+        body: `<p style="margin: 0 0 16px;">Hey ${displayName},</p>
+<p style="margin: 0 0 16px;">We’re excited to have you join us for NeuroDiversion 2026!</p>
+<p style="margin: 0 0 16px;">We’ve prepared a helpful event app to guide you through all things related to the event.</p>
+<p style="margin: 0 0 8px;">You’ll be able to:</p>
+<ul style="margin: 0 0 16px; padding-left: 20px;">
+<li>View a full detailed schedule</li>
+<li>Browse and RSVP to Meetups</li>
+<li>Access an attendee list including information about our speakers</li>
+<li>Discover our Expo Participants</li>
+<li>And more...</li>
+</ul>
+<p style="margin: 0 0 16px;">To gain access, click the link below and set up your account.</p>
+<p style="margin: 0 0 16px;">Here’s the link: ${url}</p>
+<p style="margin: 0;">See you soon!<br>${sig}</p>`,
       },
-      // body: `<p style="margin-bottom: 16px;">Hey ${user?.firstName},</p>
-      // 				<p style="margin-bottom: 16px;">We’re excited to have you join us for ${event?.name}!</p>
-      // 				<p style="margin-bottom: 24px;">Click the link below to claim your ticket and set up your account.</p>
-      // 				<p style="margin-bottom: 32px;">Here's the link: <a href="${url}">${url}</a></p>
-      // 				<p style="margin-bottom: 16px;">See you soon!<br>${sig}</p>`,
     })
   }
   await db
