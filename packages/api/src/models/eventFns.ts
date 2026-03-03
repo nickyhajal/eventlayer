@@ -128,7 +128,7 @@ export const EventFns = (args: string | Args) => {
           gte(eventTable.startsAt, dayjs().subtract(timezoneShift, 'h').toISOString()),
         ),
         orderBy: asc(eventTable.startsAt),
-        with: { photo: true, venue: true },
+        with: { photo: true, venue: { with: { photo: true } } },
         limit: 3,
       })
     },

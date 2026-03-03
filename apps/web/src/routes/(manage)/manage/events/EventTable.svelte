@@ -1,12 +1,15 @@
 <script lang="ts">
-	import type { ColumnDef, Row, TableOptions } from '@tanstack/svelte-table'
+	import type { ColumnDef, Row } from '@tanstack/svelte-table'
 	import { type FilterFn } from '@tanstack/svelte-table'
 	import { goto } from '$app/navigation'
 	import Table from '$lib/components/ui/Table.svelte'
 
-	import { capitalize, dayjs, startCase } from '@matterloop/util'
+	import { capitalize, dayjs } from '@matterloop/util'
 
 	export let events: Event[]
+	export let table
+	export let setCurrentPage
+	export let setGlobalFilter
 
 	let filterType = ''
 
@@ -77,6 +80,9 @@
 	{columns}
 	rows={filteredEvents}
 	{globalFilterFn}
+	bind:table
+	bind:setCurrentPage
+	bind:setGlobalFilter
 	{onRowClick}
 	csvFilename="events"
 	{csvFields}
@@ -90,6 +96,6 @@
 			{#each types as t}
 				<option value={t}>{capitalize(t)}</option>
 			{/each}
-		</select>
-	</svelte:fragment>
+			</select>
+		</svelte:fragment>
 </Table>

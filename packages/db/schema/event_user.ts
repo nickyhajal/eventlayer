@@ -1,5 +1,5 @@
 import { relations, sql } from 'drizzle-orm'
-import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { index, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { createInsertSchema } from 'drizzle-zod'
 import { z } from 'zod'
 
@@ -8,33 +8,40 @@ import { formTable } from './form'
 import { sponsorTable } from './sponsor'
 import { User, userSchema, userTable } from './user'
 
-export const eventUserTable = pgTable('event_user', {
-  id: uuid('id')
-    .default(sql`extensions.uuid_generate_v4()`)
-    .primaryKey()
-    .notNull(),
-  type: text('type'),
-  status: text('status').default('active'),
-  proBio: text('pro_bio'),
-  bio: text('bio'),
-  url: text('url'),
-  company: text('company'),
-  sponsorId: uuid('sponsor_id').references(() => sponsorTable.id, { onDelete: 'cascade' }),
-  title: text('title'),
-  onboardFormId: uuid('onboard_form_id'),
-  onboardStatus: text('onboard_status').default('not-sent'),
-  userId: uuid('user_id').references(() => userTable.id, { onDelete: 'cascade' }),
-  eventId: uuid('event_id').references(() => eventTable.id, { onDelete: 'cascade' }),
+export const eventUserTable = pgTable(
+  'event_user',
+  {
+    id: uuid('id')
+      .default(sql`extensions.uuid_generate_v4()`)
+      .primaryKey()
+      .notNull(),
+    type: text('type'),
+    status: text('status').default('active'),
+    proBio: text('pro_bio'),
+    bio: text('bio'),
+    url: text('url'),
+    company: text('company'),
+    sponsorId: uuid('sponsor_id').references(() => sponsorTable.id, { onDelete: 'cascade' }),
+    title: text('title'),
+    onboardFormId: uuid('onboard_form_id'),
+    onboardStatus: text('onboard_status').default('not-sent'),
+    userId: uuid('user_id').references(() => userTable.id, { onDelete: 'cascade' }),
+    eventId: uuid('event_id').references(() => eventTable.id, { onDelete: 'cascade' }),
+    importId: text('import_id'),
 
-  // Tracking a main event_user when a user RSVPs to a sub-event
-  parentId: uuid('parent_id').references(() => eventTable.id, { onDelete: 'cascade' }),
+    // Tracking a main event_user when a user RSVPs to a sub-event
+    parentId: uuid('parent_id').references(() => eventTable.id, { onDelete: 'cascade' }),
 
-  // Tracking a mainEventId when a user RSVPs to a sub-event
-  mainId: uuid('main_id').references(() => eventTable.id, { onDelete: 'cascade' }),
-  internalNotes: text('internal_notes'),
-  createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
-  updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
-})
+    // Tracking a mainEventId when a user RSVPs to a sub-event
+    mainId: uuid('main_id').references(() => eventTable.id, { onDelete: 'cascade' }),
+    internalNotes: text('internal_notes'),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
+  },
+  (table) => ({
+    eventIdImportIdIdx: index('event_user_event_id_import_id').on(table.eventId, table.importId),
+  }),
+)
 
 export const eventUserRelations = relations(eventUserTable, ({ many, one }) => ({
   event: one(eventTable, {

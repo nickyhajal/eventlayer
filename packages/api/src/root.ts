@@ -7,6 +7,7 @@ import { eventUserFieldProcedures } from './router/eventUserFieldProcedures'
 import { formElementProcedures } from './router/formElementProcedures'
 import { formProcedures } from './router/formProcedures'
 import { formSessionProcedures } from './router/formSessionProcedures'
+import { importProcedures } from './router/importProcedures'
 import { meRouter } from './router/me'
 import { mediaProcedures } from './router/mediaProcedures'
 import { menuProcedures } from './router/menuProcedures'
@@ -25,6 +26,7 @@ export const router = trpcApp.router({
   checkin: checkinProcedures,
   formElement: formElementProcedures,
   formSession: formSessionProcedures,
+  import: importProcedures,
   user: userProcedures,
   media: mediaProcedures,
   content: contentProcedures,
