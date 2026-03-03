@@ -126,6 +126,15 @@
 
 	export let table = createSvelteTable(options)
 
+	// Keep TanStack options in sync with incoming props.
+	// Without this, parent-side filtered rows won't update the rendered table.
+	$: options.update((old) => ({
+		...old,
+		data: rows || [],
+		columns,
+		globalFilterFn,
+	}))
+
 	export function setGlobalFilter(filter: string) {
 		setCurrentPage(0)
 		globalFilter = filter
@@ -187,7 +196,7 @@
 
 	const noTypeCheck = (x: any) => x
 
-	let headerGroups = $table.getHeaderGroups()
+	$: headerGroups = $table.getHeaderGroups()
 </script>
 
 {#if !rows?.length}
