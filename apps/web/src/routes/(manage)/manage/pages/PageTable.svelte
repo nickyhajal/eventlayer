@@ -8,6 +8,9 @@
 	import { capitalize, dayjs } from '@matterloop/util'
 
 	export let rows: Page[]
+	export let table
+	export let setCurrentPage
+	export let setGlobalFilter
 
 	let filterStatus = ''
 
@@ -68,6 +71,9 @@
 	{columns}
 	rows={filteredRows}
 	{globalFilterFn}
+	bind:table
+	bind:setCurrentPage
+	bind:setGlobalFilter
 	{onRowClick}
 	emptyMsg="No pages yet"
 	csvFilename="pages"

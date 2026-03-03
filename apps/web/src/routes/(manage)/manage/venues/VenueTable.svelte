@@ -8,6 +8,9 @@
 	import { capitalize, dayjs } from '@matterloop/util'
 
 	export let rows: Venue[]
+	export let table
+	export let setCurrentPage
+	export let setGlobalFilter
 
 	let filterType = ''
 	let filterVisible = ''
@@ -68,6 +71,9 @@
 	{columns}
 	rows={filteredRows}
 	{globalFilterFn}
+	bind:table
+	bind:setCurrentPage
+	bind:setGlobalFilter
 	{onRowClick}
 	emptyMsg="No venues yet"
 	csvFilename="venues"

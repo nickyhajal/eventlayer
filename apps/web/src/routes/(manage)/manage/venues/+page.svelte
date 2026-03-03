@@ -4,15 +4,52 @@
 	import ListOrdered from 'lucide-svelte/icons/list-ordered'
 	import Map from 'lucide-svelte/icons/map'
 	import Plus from 'lucide-svelte/icons/plus'
+	import { tick } from 'svelte'
 
+	import type { Snapshot } from './$types'
 	import AdminScreen from '../AdminScreen.svelte'
 	import VenueForm from './VenueForm.svelte'
 	import VenueTable from './VenueTable.svelte'
 
 	export let data
+	let table
+	let setCurrentPage
+	let setGlobalFilter
 
 	let addOpen = false
 	let loading = false
+	export const snapshot: Snapshot = {
+		capture: () => {
+			const state = table ? $table.getState() : undefined
+			return {
+				query: state?.globalFilter ?? '',
+				scrollY: window.scrollY,
+				page: state?.pagination?.pageIndex ?? 0,
+				pageSize: state?.pagination?.pageSize,
+				sorting: state?.sorting ?? [],
+			}
+		},
+		restore: async ({ scrollY, page, pageSize, query, sorting }) => {
+			await tick()
+			if (table) {
+				if (Array.isArray(sorting)) {
+					$table.setSorting(sorting)
+				}
+				if (typeof pageSize === 'number') {
+					$table.setPageSize(pageSize)
+				}
+				if (typeof query === 'string' && typeof setGlobalFilter === 'function') {
+					setGlobalFilter(query)
+				}
+				if (typeof page === 'number' && typeof setCurrentPage === 'function') {
+					setCurrentPage(page)
+				}
+			}
+			window.requestAnimationFrame(() => {
+				window.scrollTo(0, typeof scrollY === 'number' ? scrollY : 0)
+			})
+		},
+	}
 </script>
 
 <AdminScreen title={true}>
@@ -31,7 +68,7 @@
 			Venue Maps</Button
 		>
 	</div>
-	<VenueTable rows={data.venues} />
+		<VenueTable rows={data.venues} bind:table bind:setCurrentPage bind:setGlobalFilter />
 </AdminScreen>
 
 <Dialog.Root bind:open={addOpen}>

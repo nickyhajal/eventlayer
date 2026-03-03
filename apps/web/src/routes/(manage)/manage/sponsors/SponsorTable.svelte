@@ -8,6 +8,9 @@
 	import { capitalize, dayjs, startCase } from '@matterloop/util'
 
 	export let rows: Sponsor[]
+	export let table
+	export let setCurrentPage
+	export let setGlobalFilter
 
 	let filterType = ''
 
@@ -61,6 +64,9 @@
 	{columns}
 	rows={filteredRows}
 	{globalFilterFn}
+	bind:table
+	bind:setCurrentPage
+	bind:setGlobalFilter
 	{onRowClick}
 	emptyMsg="No sponsors yet"
 	csvFilename="sponsors"

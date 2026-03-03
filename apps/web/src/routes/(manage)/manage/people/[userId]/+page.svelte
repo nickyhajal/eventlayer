@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { invalidateAll } from '$app/navigation'
+	import { goto, invalidateAll } from '$app/navigation'
 	import ChicletButton from '$lib/components/ui/ChicletButton.svelte'
 	import Label from '$lib/components/ui/label/label.svelte'
 	import { Textarea } from '$lib/components/ui/textarea'
@@ -43,16 +43,26 @@
 	function clearSelection() {
 		window.getSelection()?.removeAllRanges()
 	}
+
+	function goBackToPeople(e: MouseEvent) {
+		e.preventDefault()
+		if (window.history.length > 1) {
+			window.history.back()
+			return
+		}
+		goto('/manage/people')
+	}
 </script>
 
 {#key userKey}
 	<AdminScreen title={true}>
 		<div slot="title" class="flex w-full items-center justify-between">
-			<div class="flex items-center gap-2">
-				<a
-					href="/manage/people"
-					class="flex items-center justify-center rounded-md p-1 text-stone-400 hover:bg-stone-100 hover:text-stone-600"
-				>
+				<div class="flex items-center gap-2">
+					<a
+						href="/manage/people"
+						on:click={goBackToPeople}
+						class="flex items-center justify-center rounded-md p-1 text-stone-400 hover:bg-stone-100 hover:text-stone-600"
+					>
 					<ChevronLeft class="h-5 w-5" />
 				</a>
 				<div class="text-2xl font-semibold">{fullName}</div>

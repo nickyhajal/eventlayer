@@ -8,6 +8,9 @@
 	import { capitalize, dayjs } from '@matterloop/util'
 
 	export let rows: Form[]
+	export let table
+	export let setCurrentPage
+	export let setGlobalFilter
 
 	let filterType = ''
 
@@ -60,6 +63,9 @@
 	{columns}
 	rows={filteredRows}
 	{globalFilterFn}
+	bind:table
+	bind:setCurrentPage
+	bind:setGlobalFilter
 	{onRowClick}
 	emptyMsg="No forms yet"
 	csvFilename="forms"

@@ -31,7 +31,7 @@
 		if (!colVal) return false
 		return colVal.toString().toLowerCase().includes(value.toLowerCase())
 	}
-	const onRowClick = (row: Row<Event>) => {
+	const onRowClick = (row: Row<User>) => {
 		goto(`/manage/people/${row.original.id}`)
 	}
 
@@ -105,7 +105,6 @@
 	bind:setCurrentPage
 	bind:setGlobalFilter
 	{onRowClick}
-	rowHref={(cell) => `/manage/people/${cell.getContext().row.original.id}`}
 	emptyMsg="No people yet"
 	csvFilename="users"
 	{csvFields}
