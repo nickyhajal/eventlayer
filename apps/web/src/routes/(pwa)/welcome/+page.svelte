@@ -87,7 +87,6 @@
   let pageElms: HTMLElement[] = [];
   $: {
     if (lastPage !== onPage) {
-      console.log("onPage", onPage, lastPage);
       lastPage = onPage;
       setTimeout(() => {
         const newHeight = `${pageElms[onPage].clientHeight + 180}px`;
@@ -112,13 +111,12 @@
     {#each Object.values(elementsByPage) as page, i}
       <div id="page-{i}" class="h-16 w-full"></div>
       {@const lastPage = i === elementsListedByPage.length - 1}
+      {@const isCurrent = onPage === i}
       <div
-        id="page-{i}"
         bind:this={pageElms[i]}
-        class="relative top-[5vh] mt-0 flex h-fit flex-col justify-start gap-3 transition-all duration-300 lg:top-[5vh] {onPage ===
-        i
-          ? 'opacity-100'
-          : 'opacity-0'} {lastPage ? 'pb-32' : 'pb-0'}"
+        class="mt-0 flex h-fit flex-col justify-start gap-3 transition-all duration-300 {isCurrent
+          ? 'relative top-[5vh] opacity-100 lg:top-[5vh]'
+          : 'pointer-events-none absolute inset-x-6 top-[5vh] opacity-0 lg:top-[5vh]'} {lastPage ? 'pb-32' : 'pb-0'}"
       >
         <FormElements elements={page} bind:values shouldAutoFocus={i === 0} />
         <div class="mt-8 flex w-full items-center justify-between">
