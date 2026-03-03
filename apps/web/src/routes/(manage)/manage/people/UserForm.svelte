@@ -51,7 +51,8 @@
 		return defaultInfo
 	}
 
-	user.info = merge(buildDefaultInfo(), user?.info || {})
+	let lastUserKey = ''
+	let lastCustomFieldsKey = ''
 
 	// Helper to get custom field value with proper type handling
 	function getCustomFieldValue(key: string): string {
@@ -81,10 +82,35 @@
 		// { value: 'sponsor', label: 'Sponsor Rep' },
 		{ value: 'staff', label: 'Staff' },
 	]
-	let type = user?.type
-		? userTypes.find(({ value }) => value === user.type)
-		: { value: 'attendee', label: 'Attendee' }
-	$: user.type = type.value
+	const fallbackType = { value: 'attendee', label: 'Attendee' }
+	const toLabel = (value: string) =>
+		value
+			.split(/[-_]/g)
+			.map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+			.join(' ')
+	function resolveType(value?: string) {
+		if (!value) return fallbackType
+		return userTypes.find((t) => t.value === value) || { value, label: toLabel(value) }
+	}
+	let type = resolveType(user?.type)
+	$: {
+		const userKey = `${user?.id ?? ''}:${user?.userId ?? ''}`
+		const customFieldsKey = customFields.map((f) => f.key).join('|')
+		if (user && (userKey !== lastUserKey || customFieldsKey !== lastCustomFieldsKey)) {
+			lastUserKey = userKey
+			lastCustomFieldsKey = customFieldsKey
+			error = ''
+			userInEvent = false
+			userExistsNotInEvent = false
+			emailConfirmed = user?.id ? 'existing-user' : ''
+			user.info = merge(buildDefaultInfo(), user.info || {})
+			type = resolveType(user.type)
+		}
+	}
+	function handleTypeSelected(selected: { value: string; label: string } | undefined) {
+		type = selected || fallbackType
+		user.type = type.value
+	}
 	let userExistsNotInEvent: User | false = false
 	let image = ''
 	async function saveUser() {
@@ -92,7 +118,8 @@
 			await checkEmail()
 			return
 		} else {
-			const res = await trpc().user.upsert.mutate(user)
+				user.type = type?.value || fallbackType.value
+				const res = await trpc().user.upsert.mutate(user)
 			if (!user.id && res?.user?.id) {
 				goto(`/manage/people/${res.eventUser.id}`)
 			}
@@ -209,7 +236,7 @@
 		{#if emailConfirmed}
 			<div class="flex flex-col items-start justify-center gap-1">
 				<Label for="userType" class="text-right">User Type</Label>
-				<Select.Root bind:selected={type}>
+				<Select.Root bind:selected={type} onSelectedChange={handleTypeSelected}>
 					<Select.Trigger class="w-[220px]">
 						<Select.Value placeholder="Select Type" />
 					</Select.Trigger>

@@ -19,7 +19,9 @@ import {
   formResponseTable,
   formSessionTable,
   formTable,
+  ilike,
   isNull,
+  or,
   type EventUser,
 } from '@matterloop/db'
 import { userTable, type User } from '@matterloop/db/types'
@@ -69,6 +71,22 @@ async function getAttendeeStore(event: Event) {
 
 const t = initTRPC.context<TrpcContext>().create()
 export const eventProcedures = t.router({
+  search: procedureWithContext
+    .use(verifyEvent())
+    .input(z.object({ q: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const events = await db.query.eventTable.findMany({
+        where: and(
+          eq(eventTable.eventId, ctx.event.id),
+          or(
+            ilike(eventTable.name, `%${input.q}%`),
+            ilike(eventTable.subtitle, `%${input.q}%`),
+          ),
+        ),
+        limit: 10,
+      })
+      return events
+    }),
   get: procedureWithContext
     .input(
       z

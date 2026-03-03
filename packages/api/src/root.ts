@@ -12,6 +12,7 @@ import { meRouter } from './router/me'
 import { mediaProcedures } from './router/mediaProcedures'
 import { menuProcedures } from './router/menuProcedures'
 import { pageProcedures } from './router/pageProcedures'
+import { searchProcedures } from './router/searchProcedures'
 import { sponsorProcedures } from './router/sponsorProcedures'
 import { statsProcedures } from './router/statsProcedures'
 import { userProcedures } from './router/userProcedures'
@@ -34,6 +35,7 @@ export const router = trpcApp.router({
   page: pageProcedures,
   sponsor: sponsorProcedures,
   menu: menuProcedures,
+  search: searchProcedures,
   stats: statsProcedures,
 })
 
