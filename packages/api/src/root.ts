@@ -13,6 +13,7 @@ import { mediaProcedures } from './router/mediaProcedures'
 import { menuProcedures } from './router/menuProcedures'
 import { pageProcedures } from './router/pageProcedures'
 import { sponsorProcedures } from './router/sponsorProcedures'
+import { statsProcedures } from './router/statsProcedures'
 import { userProcedures } from './router/userProcedures'
 import { venueProcedures } from './router/venueProcedures'
 
@@ -33,6 +34,7 @@ export const router = trpcApp.router({
   page: pageProcedures,
   sponsor: sponsorProcedures,
   menu: menuProcedures,
+  stats: statsProcedures,
 })
 
 export type Router = typeof router
