@@ -2,11 +2,13 @@ import { error } from '@sveltejs/kit'
 
 import { EventFns } from '@matterloop/api'
 import { db, eq, eventTicketTable } from '@matterloop/db'
+import type { PageServerLoad } from './$types'
 
-export const load = async ({ locals }) => {
-	if (!locals.event.id) {
+export const load: PageServerLoad = async ({ locals }) => {
+	if (!locals.event?.id) {
 		error(404, 'Event not found')
 	}
+
 	const eventId = locals.event.id
 	const eventFns = EventFns({ eventId })
 
@@ -22,12 +24,12 @@ export const load = async ({ locals }) => {
 	const typeCounts: Record<string, number> = {}
 	const onboardCounts = { sent: 0, done: 0, notSent: 0 }
 
-	for (const u of users) {
-		const t = u.type || 'other'
-		typeCounts[t] = (typeCounts[t] || 0) + 1
-		if (u.onboardStatus === 'done') onboardCounts.done++
-		else if (u.onboardStatus === 'pending' || u.onboardStatus === 'sent')
-			onboardCounts.sent++
+	for (const user of users) {
+		const type = user.type || 'other'
+		typeCounts[type] = (typeCounts[type] || 0) + 1
+
+		if (user.onboardStatus === 'done') onboardCounts.done++
+		else if (user.onboardStatus === 'pending' || user.onboardStatus === 'sent') onboardCounts.sent++
 		else onboardCounts.notSent++
 	}
 
@@ -35,7 +37,8 @@ export const load = async ({ locals }) => {
 		.map(([type, count]) => ({ type, count }))
 		.sort((a, b) => b.count - a.count)
 
-	const claimedTickets = tickets.filter((t) => t.assignedTo).length
+	const assignedTickets = tickets.filter((ticket) => ticket.assignedTo).length
+	const unassignedTickets = tickets.length - assignedTickets
 
 	return {
 		stats: {
@@ -44,9 +47,13 @@ export const load = async ({ locals }) => {
 			totalEvents: events.length,
 			totalSponsors: sponsors.length,
 			totalTickets: tickets.length,
-			unclaimedTickets: tickets.length - claimedTickets,
-			claimedTickets,
+			claimedTickets: assignedTickets,
+			unclaimedTickets,
 			onboardCounts,
+			attendees: users.length,
+			assignedTickets,
+			unassignedTickets,
+			onboardingCompleted: onboardCounts.done,
 		},
 	}
 }

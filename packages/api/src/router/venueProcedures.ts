@@ -1,5 +1,5 @@
 // lib/trpc/router.ts
-import { db, eq, eventSchema, venueTable, venueSchema, venueTable, and } from '@matterloop/db'
+import { db, eq, eventSchema, ilike, or, venueTable, venueSchema, venueTable, and } from '@matterloop/db'
 import { userTable, type User } from '@matterloop/db/types'
 import { pick } from '@matterloop/util'
 import { TRPCError, initTRPC } from '@trpc/server'
@@ -17,6 +17,24 @@ import { redis } from '../core/redis'
 
 const t = initTRPC.context<TrpcContext>().create()
 export const venueProcedures = t.router({
+	search: procedureWithContext
+		.use(verifyEvent())
+		.input(z.object({ q: z.string() }))
+		.query(async ({ ctx, input }) => {
+			const venues = await db.query.venueTable.findMany({
+				where: and(
+					eq(venueTable.eventId, ctx.event.id),
+					or(
+						ilike(venueTable.name, `%${input.q}%`),
+						ilike(venueTable.description, `%${input.q}%`),
+						ilike(venueTable.address, `%${input.q}%`),
+					),
+				),
+				with: { photo: true },
+				limit: 10,
+			})
+			return venues
+		}),
 	get: procedureWithContext
 		.input(
 			z

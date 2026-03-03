@@ -9,9 +9,52 @@
 
 	import AdminScreen from './AdminScreen.svelte'
 
+	type UserTypeCount = {
+		type: string
+		count: number
+	}
+
+	type DashboardStats = {
+		totalUsers: number
+		userTypeCounts: UserTypeCount[]
+		totalEvents: number
+		totalSponsors: number
+		totalTickets: number
+		claimedTickets: number
+		unclaimedTickets: number
+		onboardCounts: {
+			sent: number
+			done: number
+			notSent: number
+		}
+		attendees: number
+		assignedTickets: number
+		unassignedTickets: number
+		onboardingCompleted: number
+	}
+
+	const emptyStats: DashboardStats = {
+		totalUsers: 0,
+		userTypeCounts: [],
+		totalEvents: 0,
+		totalSponsors: 0,
+		totalTickets: 0,
+		claimedTickets: 0,
+		unclaimedTickets: 0,
+		onboardCounts: {
+			sent: 0,
+			done: 0,
+			notSent: 0,
+		},
+		attendees: 0,
+		assignedTickets: 0,
+		unassignedTickets: 0,
+		onboardingCompleted: 0,
+	}
+
 	export let data
 
-	$: stats = data.stats
+	$: stats: DashboardStats = data.stats ?? emptyStats
 	$: event = data.event
 	$: startsAt = event?.startsAt ? dayjs(event.startsAt) : null
 
@@ -23,18 +66,55 @@
 			now = dayjs()
 		}, 60000)
 	})
+
 	onDestroy(() => {
 		if (interval) clearInterval(interval)
 	})
 
+	const getPercent = (value: number, total: number) => {
+		if (total <= 0) return 0
+		return Math.round((value / total) * 100)
+	}
+
 	$: daysUntil = startsAt ? startsAt.diff(now, 'day') : null
 	$: hoursUntil = startsAt ? startsAt.diff(now, 'hour') % 24 : null
 	$: isPast = startsAt ? startsAt.isBefore(now) : false
+	$: attendees = stats.attendees || stats.totalUsers
+	$: assignedTickets = stats.assignedTickets || stats.claimedTickets
+	$: unassignedTickets = stats.unassignedTickets || stats.unclaimedTickets
+	$: onboardingCompleted = stats.onboardingCompleted || stats.onboardCounts.done
+	$: totalTickets = assignedTickets + unassignedTickets
+	$: ticketsAssignedPercent = getPercent(assignedTickets, totalTickets)
+	$: attendeesOnboardedPercent = getPercent(onboardingCompleted, attendees)
 </script>
 
 <AdminScreen>
 	<div class="">
-		<div class="text-2xl font-semibold">Dashboard</div>
+		<div class="mb-6 text-2xl font-semibold">Dashboard</div>
+
+		<div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
+			<div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+				<div class="mb-3 text-sm font-medium text-gray-500">Tickets Assigned</div>
+				<div class="text-4xl font-bold leading-none text-gray-900">{ticketsAssignedPercent}%</div>
+				<div class="mt-2 text-sm text-gray-500">
+					{assignedTickets.toLocaleString()}/{totalTickets.toLocaleString()}
+				</div>
+			</div>
+
+			<div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+				<div class="mb-3 text-sm font-medium text-gray-500">Attendees Onboarded</div>
+				<div class="text-4xl font-bold leading-none text-gray-900">{attendeesOnboardedPercent}%</div>
+				<div class="mt-2 text-sm text-gray-500">
+					{onboardingCompleted.toLocaleString()}/{attendees.toLocaleString()}
+				</div>
+			</div>
+
+			<div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+				<div class="mb-3 text-sm font-medium text-gray-500">Total Attendees</div>
+				<div class="text-4xl font-bold leading-none text-gray-900">{attendees.toLocaleString()}</div>
+				<div class="mt-2 text-sm text-gray-500">Registered attendees</div>
+			</div>
+		</div>
 
 		{#if startsAt}
 			<div class="mt-6 rounded-xl border border-stone-200 bg-gradient-to-r from-sky-50 to-indigo-50 p-6">
@@ -136,9 +216,7 @@
 							<div class="h-2 w-24 overflow-hidden rounded-full bg-stone-100">
 								<div
 									class="h-full rounded-full bg-green-500"
-									style="width: {stats.totalUsers
-										? (stats.onboardCounts.done / stats.totalUsers) * 100
-										: 0}%"
+									style="width: {stats.totalUsers ? (stats.onboardCounts.done / stats.totalUsers) * 100 : 0}%"
 								/>
 							</div>
 							<span class="w-8 text-right text-sm font-semibold text-stone-700"
@@ -152,9 +230,7 @@
 							<div class="h-2 w-24 overflow-hidden rounded-full bg-stone-100">
 								<div
 									class="h-full rounded-full bg-amber-400"
-									style="width: {stats.totalUsers
-										? (stats.onboardCounts.sent / stats.totalUsers) * 100
-										: 0}%"
+									style="width: {stats.totalUsers ? (stats.onboardCounts.sent / stats.totalUsers) * 100 : 0}%"
 								/>
 							</div>
 							<span class="w-8 text-right text-sm font-semibold text-stone-700"
@@ -185,9 +261,7 @@
 				<div class="text-sm font-medium text-stone-500">Ticket Claim Rate</div>
 				<div class="mt-4 flex items-end gap-3">
 					<span class="text-4xl font-bold text-stone-800">
-						{stats.totalTickets
-							? Math.round((stats.claimedTickets / stats.totalTickets) * 100)
-							: 0}%
+						{stats.totalTickets ? Math.round((stats.claimedTickets / stats.totalTickets) * 100) : 0}%
 					</span>
 					<span class="mb-1 text-sm text-stone-400">
 						{stats.claimedTickets} of {stats.totalTickets} tickets claimed
@@ -196,9 +270,7 @@
 				<div class="mt-3 h-3 w-full overflow-hidden rounded-full bg-stone-100">
 					<div
 						class="h-full rounded-full bg-green-500 transition-all"
-						style="width: {stats.totalTickets
-							? (stats.claimedTickets / stats.totalTickets) * 100
-							: 0}%"
+						style="width: {stats.totalTickets ? (stats.claimedTickets / stats.totalTickets) * 100 : 0}%"
 					/>
 				</div>
 			</div>
@@ -213,14 +285,10 @@
 								<div class="h-2 w-20 overflow-hidden rounded-full bg-stone-100">
 									<div
 										class="h-full rounded-full bg-sky-500"
-										style="width: {stats.totalUsers
-											? (tc.count / stats.totalUsers) * 100
-											: 0}%"
+										style="width: {stats.totalUsers ? (tc.count / stats.totalUsers) * 100 : 0}%"
 									/>
 								</div>
-								<span class="w-8 text-right text-sm font-semibold text-stone-700"
-									>{tc.count}</span
-								>
+								<span class="w-8 text-right text-sm font-semibold text-stone-700">{tc.count}</span>
 							</div>
 						</div>
 					{/each}

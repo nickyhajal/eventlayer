@@ -19,7 +19,9 @@ import {
   formResponseTable,
   formSessionTable,
   formTable,
+  ilike,
   isNull,
+  or,
   type EventUser,
 } from '@matterloop/db'
 import { userTable, type User } from '@matterloop/db/types'
@@ -69,6 +71,22 @@ async function getAttendeeStore(event: Event) {
 
 const t = initTRPC.context<TrpcContext>().create()
 export const eventProcedures = t.router({
+  search: procedureWithContext
+    .use(verifyEvent())
+    .input(z.object({ q: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const events = await db.query.eventTable.findMany({
+        where: and(
+          eq(eventTable.eventId, ctx.event.id),
+          or(
+            ilike(eventTable.name, `%${input.q}%`),
+            ilike(eventTable.subtitle, `%${input.q}%`),
+          ),
+        ),
+        limit: 10,
+      })
+      return events
+    }),
   get: procedureWithContext
     .input(
       z
@@ -186,6 +204,7 @@ export const eventProcedures = t.router({
       redis.del(`event_users:${input.eventId}`)
       redis.del(`event_usersWithInfo:${input.eventId}`)
       redis.del(`event_meals:${input.eventId}`)
+      redis.del(`stats:attendees:${input.eventId}`)
       return true
     }),
   removeUser: procedureWithContext
@@ -208,6 +227,7 @@ export const eventProcedures = t.router({
       redis.del(`event_users:${input.eventId}`)
       redis.del(`event_usersWithInfo:${input.eventId}`)
       redis.del(`event_meals:${input.eventId}`)
+      redis.del(`stats:attendees:${input.eventId}`)
       return true
     }),
   delete: procedureWithContext
@@ -354,6 +374,9 @@ export const eventProcedures = t.router({
         redis.del(`event_heavy:${eventId}`)
         redis.del(`event_users:${eventId}`)
         redis.del(`event_usersWithInfo:${eventId}`)
+        redis.del(`stats:attendees:${eventId}`)
+        redis.del(`stats:assigned_tickets:${eventId}`)
+        redis.del(`stats:unassigned_tickets:${eventId}`)
         return { ticket: updatedTicket[0], eventUser: eventUser[0] }
 
         // Assign to new user
@@ -445,6 +468,10 @@ export const eventProcedures = t.router({
         redis.del(`event_heavy:${eventId}`)
         redis.del(`event_users:${eventId}`)
         redis.del(`event_usersWithInfo:${eventId}`)
+        redis.del(`stats:attendees:${eventId}`)
+        redis.del(`stats:assigned_tickets:${eventId}`)
+        redis.del(`stats:unassigned_tickets:${eventId}`)
+        redis.del(`stats:onboarding_completed:${eventId}`)
         return { ticket: updatedTicket[0], eventUser: eventUser[0] }
       }
     }),
