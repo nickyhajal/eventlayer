@@ -78,21 +78,41 @@
     }
   }
   function scrollToCurrent() {
-    const page = document.getElementById(`page-${onPage}`);
+    const spacer = document.getElementById(`spacer-${onPage}`);
     scrollElm.scrollTo({
-      top: page?.offsetTop,
+      top: spacer?.offsetTop,
       behavior: "smooth",
     });
   }
   let pageElms: HTMLElement[] = [];
   $: {
     if (lastPage !== onPage) {
+      console.log("onPage", onPage, lastPage);
       lastPage = onPage;
       setTimeout(() => {
-        const newHeight = `${pageElms[onPage].clientHeight + 180}px`;
-        pageHeight = newHeight;
+        updatePageHeight();
       }, 0);
+      setTimeout(() => {
+        updatePageHeight();
+      }, 100);
+      setTimeout(() => {
+        updatePageHeight();
+      }, 200);
+      setTimeout(() => {
+        updatePageHeight();
+      }, 300);
+      setTimeout(() => {
+        updatePageHeight();
+      }, 400);
+      setTimeout(() => {
+        updatePageHeight();
+      }, 500);
     }
+  }
+  function updatePageHeight() {
+    const vhOffset = window.innerHeight * 0.05;
+    const newHeight = `${64 + vhOffset + pageElms[onPage].clientHeight + 20}px`;
+    pageHeight = newHeight;
   }
 </script>
 
@@ -109,18 +129,18 @@
     style="height: {pageHeight}"
   >
     {#each Object.values(elementsByPage) as page, i}
-      <div id="page-{i}" class="h-16 w-full"></div>
+      <div id="spacer-{i}" class="h-16 w-full"></div>
       {@const lastPage = i === elementsListedByPage.length - 1}
-      {@const isCurrent = onPage === i}
       <div
         bind:this={pageElms[i]}
-        class="mt-0 flex h-fit flex-col justify-start gap-3 transition-all duration-300 {isCurrent
-          ? 'relative top-[5vh] opacity-100 lg:top-[5vh]'
-          : 'pointer-events-none absolute inset-x-6 top-[5vh] opacity-0 lg:top-[5vh]'} {lastPage ? 'pb-32' : 'pb-0'}"
+        class="relative top-[5vh] mt-0 flex h-fit flex-col justify-start gap-3 transition-all duration-300 {onPage ===
+        i
+          ? 'opacity-100'
+          : 'opacity-0'} {lastPage ? 'pb-32' : 'pb-0'}"
       >
         <FormElements elements={page} bind:values shouldAutoFocus={i === 0} />
         <div class="mt-8 flex w-full items-center justify-between">
-          <div class=" w-fit">
+          <div class="w-fit">
             {#if i > 0}
               <Button
                 class="rounded-full text-slate-600/70"
@@ -130,7 +150,6 @@
               >
             {/if}
           </div>
-          <!-- class="flex w-52 items-center border border-b-2 border-a-accent/10 border-b-a-accent/10 bg-a-accent/5 py-5 font-semibold text-a-accent  shadow-none brightness-90 hover:bg-a-accent/10" -->
           <Button
             class="flex w-52 items-center border border-b-2 border-a-accent/10 border-b-a-accent/10 bg-a-accent/5  font-semibold   shadow-none brightness-90 rounded-full bg-[#060C3A] text-white px-12 py-4 h-14 text-base tracking-wide"
             type="button"
@@ -139,5 +158,6 @@
         </div>
       </div>
     {/each}
+    <div class="pointer-events-none h-[50vh]" aria-hidden="true"></div>
   </div>
 </form>
