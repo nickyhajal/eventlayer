@@ -1,14 +1,11 @@
 <script lang="ts">
 	import { goto } from '$app/navigation'
-	import { page } from '$app/stores'
 	import * as Command from '$lib/components/ui/command'
 	import * as Dialog from '$lib/components/ui/dialog'
 	import { cn } from '$lib/utils'
-	import Search from 'lucide-svelte/icons/search'
-	import { onDestroy } from 'svelte'
+	import { onDestroy, tick } from 'svelte'
 
 	import { CommandSearchProvider } from './providers/CommandSearchProvider'
-	import { ContextualSearchProvider } from './providers/ContextualSearchProvider'
 	import { SidebarSearchProvider } from './providers/SidebarSearchProvider'
 	import { UnifiedSearchProvider } from './providers/UnifiedSearchProvider'
 	import type { SearchProvider, SearchResult } from './types'
@@ -19,17 +16,19 @@
 	let results: SearchResult[] = []
 	let loading = false
 	let debounceTimer: ReturnType<typeof setTimeout>
+	let paletteContainer: HTMLDivElement | null = null
 
-	const contextualProvider = new ContextualSearchProvider($page.url.pathname)
+	// TODO(command-palette):
+	// Reintroduce contextual actions once pages can provide runtime context to the palette.
+	// Needed:
+	// 1) Pass current entity context (ex: user/event from /[userId], /[eventId]).
+	// 2) Support non-navigation actions (open modal, run script, invoke command).
+	// 3) Allow page-level action handlers to run on-load or via registered callbacks.
 	const staticProviders: SearchProvider[] = [
-		contextualProvider,
 		new SidebarSearchProvider(),
 		new CommandSearchProvider(),
 	]
 	const unifiedProvider = new UnifiedSearchProvider()
-
-	// Keep contextual provider in sync with current route
-	$: contextualProvider.updatePath($page.url.pathname)
 
 	function handleKeydown(e: KeyboardEvent) {
 		if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -96,12 +95,25 @@
 		performSearch('')
 	}
 
+	async function focusSearchInput() {
+		await tick()
+		const input = paletteContainer?.querySelector<HTMLInputElement>('input[data-cmdk-input]')
+		if (input) {
+			input.focus()
+			input.select()
+		}
+	}
+
+	$: if (open) {
+		void focusSearchInput()
+	}
+
 	function handleSelect(result: SearchResult) {
 		open = false
 		if (result.action) {
 			result.action()
 		} else if (result.href) {
-			goto(result.href)
+			goto(result.href, { invalidateAll: true })
 		}
 	}
 
@@ -134,33 +146,35 @@
 
 <svelte:window on:keydown={handleKeydown} />
 
-<Dialog.Root bind:open>
-	<Dialog.Portal>
-		<Dialog.Overlay class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm" />
-		<div
-			class="fixed inset-0 z-50 flex items-start justify-center pt-[15vh]"
-			role="presentation"
-			on:pointerdown|self={() => (open = false)}
-		>
-			<Command.Command
-				class="w-full max-w-[560px] rounded-xl border border-stone-200 bg-white shadow-2xl"
-				shouldFilter={false}
+<Dialog.Root bind:open={open}>
+	{#if open}
+		<Dialog.Portal>
+			<Dialog.Overlay class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm" />
+			<div
+				class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
+				role="presentation"
+				bind:this={paletteContainer}
+				on:pointerdown|self={() => (open = false)}
 			>
-				<div class="flex items-center border-b border-stone-100 px-4" data-cmdk-input-wrapper="">
-					<Search class="mr-3 h-5 w-5 shrink-0 text-stone-400" />
-					<Command.CommandInput
-						placeholder="Search anything..."
-						class="flex h-14 w-full bg-transparent text-base outline-none placeholder:text-stone-400 disabled:cursor-not-allowed disabled:opacity-50"
-						bind:value={query}
-					/>
-					<kbd
-						class="ml-2 hidden shrink-0 rounded-md border border-stone-200 bg-stone-50 px-1.5 py-0.5 text-[11px] font-medium text-stone-400 sm:inline-block"
-					>
-						ESC
-					</kbd>
-				</div>
+				<Command.Command
+					class="h-auto max-h-[82vh] w-full max-w-[760px] rounded-xl border border-stone-200 bg-white shadow-2xl"
+					shouldFilter={false}
+					loop
+				>
+					<div class="relative">
+						<Command.CommandInput
+							placeholder="Search anything..."
+							class="h-14 w-full bg-transparent pr-16 text-base outline-none placeholder:text-stone-400 disabled:cursor-not-allowed disabled:opacity-50"
+							bind:value={query}
+						/>
+						<kbd
+							class="pointer-events-none absolute right-4 top-1/2 hidden -translate-y-1/2 rounded-md border border-stone-200 bg-stone-50 px-1.5 py-0.5 text-[11px] font-medium text-stone-400 sm:inline-block"
+						>
+							ESC
+						</kbd>
+					</div>
 
-				<Command.CommandList class="max-h-[400px] overflow-y-auto overflow-x-hidden p-2">
+					<Command.CommandList class="min-h-0 flex-1 overflow-y-auto overflow-x-hidden p-2">
 					{#if sortedGroups.length > 0}
 						{#each sortedGroups as [groupName, group] (groupName)}
 							<Command.CommandGroup
@@ -272,7 +286,8 @@
 						</div>
 					</div>
 				{/if}
-			</Command.Command>
-		</div>
-	</Dialog.Portal>
+				</Command.Command>
+			</div>
+		</Dialog.Portal>
+	{/if}
 </Dialog.Root>

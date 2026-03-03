@@ -9,6 +9,10 @@ import { getMediaUrl } from '@matterloop/util'
 
 import type { SearchResult } from '../types'
 
+function firstAlpha(s: string | null | undefined): string {
+	return s?.match(/[a-zA-Z]/)?.[0] ?? ''
+}
+
 export class UnifiedSearchProvider {
 	async search(query: string): Promise<SearchResult[]> {
 		const q = query.trim()
@@ -30,7 +34,7 @@ export class UnifiedSearchProvider {
 					avatarUrl: user.photo
 						? getMediaUrl(user.photo, 'w-64,h-64,fo-face,z-0.8')
 						: undefined,
-					avatarFallback: `${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`,
+					avatarFallback: `${firstAlpha(user.firstName)}${firstAlpha(user.lastName)}`,
 					href: `/manage/people/${user.id}`,
 				})
 			}
