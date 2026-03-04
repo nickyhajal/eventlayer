@@ -453,6 +453,43 @@ export const userProcedures = t.router({
         success: true,
       }
     }),
+  sendWelcomeEmails: procedureWithContext
+    .use(verifyAdmin())
+    .input(z.object({ userIds: z.array(z.string()).min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      const uniqueUserIds = [...new Set(input.userIds.filter(Boolean))]
+      if (!uniqueUserIds.length) {
+        return {
+          success: true,
+          sent: 0,
+        }
+      }
+
+      const users = await db.query.userTable.findMany({
+        where: inArray(userTable.id, uniqueUserIds),
+      })
+
+      const eventUsers = await db.query.eventUserTable.findMany({
+        where: and(
+          eq(eventUserTable.eventId, ctx.event.id),
+          inArray(eventUserTable.userId, uniqueUserIds),
+        ),
+      })
+      const eventUserByUserId = new Map(eventUsers.map((eventUser) => [eventUser.userId, eventUser]))
+
+      let sent = 0
+      for (const user of users) {
+        const eventUser = eventUserByUserId.get(user.id)
+        if (!eventUser || eventUser.onboardStatus !== 'not-sent') continue
+        await sendWelcomeEmail(user, ctx.event, eventUser)
+        sent++
+      }
+
+      return {
+        success: true,
+        sent,
+      }
+    }),
   sendAssignEmail: procedureWithContext
     .use(verifyAdmin())
     .input(z.object({ assignKey: z.string() }))

@@ -223,6 +223,7 @@
 								Export CSV
 							</button>
 						{/if}
+						<slot name="actions-right" />
 						<input
 							{...noTypeCheck(null)}
 							type="search"

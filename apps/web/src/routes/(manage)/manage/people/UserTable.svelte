@@ -2,6 +2,7 @@
 	import type { ColumnDef, Row, TableOptions } from '@tanstack/svelte-table'
 	import { type FilterFn } from '@tanstack/svelte-table'
 	import { goto } from '$app/navigation'
+	import { Button } from '$lib/components/ui/button'
 	import Table from '$lib/components/ui/Table.svelte'
 
 	import type { User } from '@matterloop/db'
@@ -11,6 +12,7 @@
 	export let table
 	export let setCurrentPage
 	export let setGlobalFilter
+	export let onSendWelcomeClick: (() => void) | null = null
 
 	let filterType = ''
 	let filterOnboard = ''
@@ -128,5 +130,16 @@
 				<option value={s}>{startCase(s)}</option>
 			{/each}
 		</select>
+	</svelte:fragment>
+	<svelte:fragment slot="actions-right">
+		{#if onSendWelcomeClick}
+			<Button
+				variant="outline"
+				class="h-[34px] border-stone-200 bg-white px-3 text-xs font-medium text-stone-600 hover:bg-stone-50"
+				on:click={onSendWelcomeClick}
+			>
+				Send Welcome Email
+			</Button>
+		{/if}
 	</svelte:fragment>
 </Table>
