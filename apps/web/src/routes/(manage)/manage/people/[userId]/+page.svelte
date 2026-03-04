@@ -18,7 +18,10 @@
 	let cameFromPeopleList = false
 
 	afterNavigate((nav) => {
-		cameFromPeopleList = nav.from?.url.pathname === '/manage/people'
+		const isRealNavigation = nav.from?.url.pathname !== nav.to?.url.pathname
+		if (isRealNavigation) {
+			cameFromPeopleList = nav.from?.url.pathname === '/manage/people'
+		}
 	})
 
 	$: userKey = `${data?.user?.id ?? ''}:${data?.user?.userId ?? ''}`
