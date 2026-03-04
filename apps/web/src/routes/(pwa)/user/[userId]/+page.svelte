@@ -150,6 +150,13 @@
       </div>
       <div class="flex flex-col text-center">
         <div class="pb-0 text-2xl font-bold xs:text-3xl">{name}</div>
+        {#if info("pronouns")}
+          <div
+            class="pb-0 text-[0.9rem] font-semibold text-slate-700 xs:text-base"
+          >
+            {info("pronouns")}
+          </div>
+        {/if}
         {#if info("title")}
           <div
             class="flex justify-center pb-0 text-[0.9rem] font-semibold text-slate-700 xs:text-base"
