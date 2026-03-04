@@ -170,7 +170,7 @@ export async function sendWelcomeEmail(user: User, event: Event, eventUser: Even
 <li>And more...</li>
 </ul>
 <p style="margin: 0 0 16px;">To gain access, click the link below and set up your account.</p>
-<p style="margin: 0 0 16px;">Here’s the link: ${url}</p>
+<p style="margin: 0 0 16px;">Here’s the link: <a href="${url}">${url}</a></p>
 <p style="margin: 0;">See you soon!<br>${sig}</p>`,
       },
     })
