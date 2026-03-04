@@ -118,7 +118,7 @@
 
 <form on:submit={(e) => submit(e)} class="lg:pt- pb-80 pt-safe-offset-8">
   <div
-    class="wrap mx-auto font-bold py-2.5 text-center fixed top-0 bg-white/60 backdrop-blur-md z-10 border-b-2 border-slate-200/50 text-sm uppercase text-slate-600 tracking-wide w-full"
+    class="wrap mx-auto font-bold py-2.5 text-center fixed top-0 bg-white/60 backdrop-blur-md z-30 border-b-2 border-slate-200/50 text-sm uppercase text-slate-600 tracking-wide w-full"
   >
     Create Your Account
   </div>
