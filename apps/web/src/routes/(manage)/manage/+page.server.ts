@@ -48,7 +48,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			totalSponsors: sponsors.length,
 			totalTickets: tickets.length,
 			claimedTickets: assignedTickets,
-			unclaimedTickets,
+			unclaimedTickets: unassignedTickets,
 			onboardCounts,
 			attendees: users.length,
 			assignedTickets,
