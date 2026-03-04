@@ -85,6 +85,12 @@
   const questions = [
     { label: `What's your super power?`, key: "superpower" },
     { label: `Ask me about...`, key: "ask-me" },
+    {
+      label: `What’s something you wish people understood about your brain?`,
+      key: "brain",
+    },
+    { label: `What are you excited about right now?`, key: "excited" },
+    { label: `What brought you to Neurodiversion?`, key: "neurodiversion" },
   ];
   async function toggleFriend() {
     if (loading) return;
