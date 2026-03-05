@@ -1,75 +1,8 @@
 <script lang="ts">
-	import Screen from '$lib/components/Screen.svelte'
-	import UserAvatar from '$lib/components/UserAvatar.svelte'
-	import { getAttendeeSearcherContext, getMeContext } from '$lib/state/getContexts'
-	import { getContext, onMount } from 'svelte'
-
-	import type { User } from '@matterloop/db'
-	import { getMediaUrl, orderBy, startCase } from '@matterloop/util'
-
-	import type { Snapshot } from '../$types.js'
-
-	export let data
-	export const snapshot: Snapshot = {
-		capture: () => {
-			return {
-				q: query,
-				scrollY: window.scrollY,
-			}
-		},
-		restore: ({ scrollY, q }) => {
-			query = q
-			window.scrollTo(0, scrollY)
-		},
-	}
-	let query = ''
-	const searcher = getAttendeeSearcherContext()
-	let allUsers: User[] = []
-	let users: User[] = []
-	let userStore = $searcher.store
-	allUsers = $userStore.attendees
-	$: if ($searcher && !allUsers.length) {
-		userStore = $searcher.store
-		allUsers = $userStore.attendees
-		// console.log('search', $searcher)
-		// allUsers = $userStore
-		// $searcher('')?.then((res) => {
-		// 	allUsers = res
-		// })
-	}
-	$: {
-		if (query) {
-			$searcher.query(query).then((res) => {
-				users = res
-			})
-		} else {
-			users =
-				typeof window !== 'undefined'
-					? orderBy(
-							allUsers.map((user) => ({ ...user, nameLower: user.lastName.toLowerCase() })),
-							['nameLower'],
-						)
-					: []
-		}
-	}
-	const usersByType = allUsers.reduce((out, user) => {
-		if (!out[user.type]) out[user.type] = []
-		out[user.type].push(user)
-		return out
-	}, {})
-	const types = Object.keys(usersByType)
-	const typeOptions = [
-		{ label: 'All Attendees', value: 'all' },
-		{ label: 'My Friends', value: 'my-friends' },
-		{ label: 'Friended Me', value: 'friended-me' },
-		...types
-			.map((type) => ({
-				label: type === 'staff' ? 'Staff' : `${startCase(type)}s`,
-				value: type,
-			}))
-			.sort((a, b) => a.label.localeCompare(b.label)),
-	]
-	let showType = 'all'
+    ...types
+      .map((type) => ({
+        label: type === "staff" ? "ND26 Team" : `${startCase(type)}s`,
+        value: type,
 
 	/**
 	 * Sorts users by whether they have a mediaId (users with mediaId come first),

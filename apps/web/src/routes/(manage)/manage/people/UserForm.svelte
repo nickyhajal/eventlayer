@@ -170,7 +170,7 @@
 		User not attending event
 	</div>
 {/if}
-<form on:submit={saveUser}>
+<form on:submit|preventDefault={saveUser}>
 	{#if showTitle}
 		{#if inDialog}
 			<Dialog.Header>

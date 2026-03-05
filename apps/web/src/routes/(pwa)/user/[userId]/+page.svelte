@@ -131,7 +131,7 @@
           <div
             class="mt-3 rounded-md bg-slate-50 px-3 py-0.5 text-sm font-medium text-slate-700"
           >
-            {startCase(user.type?.replace("staff", "nd26-team"))}
+            {startCase(user.type).replace("Staff", "ND26 Team")}
           </div>
         {/if}
         {#if isMyFriend || didFriendMe}
