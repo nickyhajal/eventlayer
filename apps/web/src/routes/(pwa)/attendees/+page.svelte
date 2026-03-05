@@ -1,8 +1,15 @@
 <script lang="ts">
+  const typeOptions = [
+    { label: "All Attendees", value: "all" },
+    { label: "My Friends", value: "my-friends" },
+    { label: "Friended Me", value: "friended-me" },
     ...types
       .map((type) => ({
         label: type === "staff" ? "ND26 Team" : `${startCase(type)}s`,
         value: type,
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label)),
+  ];
 
 	/**
 	 * Sorts users by whether they have a mediaId (users with mediaId come first),
