@@ -3,7 +3,7 @@ import { trpc } from '$lib/trpc/client'
 import { get, type Writable } from 'svelte/store'
 
 import type { AttendeeStore } from '@matterloop/db'
-import { dayjs } from '@matterloop/util'
+import { dayjs, uniqBy } from '@matterloop/util'
 
 export const loadAttendeeStore = async (store: Writable<AttendeeStore>) => {
   const current = get(store)
@@ -19,7 +19,15 @@ export const loadAttendeeStore = async (store: Writable<AttendeeStore>) => {
       store.set(res)
     }
   }
-  const attendees = res?.attendees || existingAttendees
+  const nextStore = res || current
+  const attendees = uniqBy(res?.attendees || existingAttendees, 'id')
+  if (attendees.length !== nextStore.attendees.length) {
+    store.set({
+      ...nextStore,
+      attendees,
+      num: attendees.length,
+    })
+  }
   const db = await create({
     schema: {
       firstName: 'string',

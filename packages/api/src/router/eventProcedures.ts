@@ -25,7 +25,7 @@ import {
   type EventUser,
 } from '@matterloop/db'
 import { userTable, type User } from '@matterloop/db/types'
-import { dayjs, pick } from '@matterloop/util'
+import { dayjs, pick, uniqBy } from '@matterloop/util'
 
 import { redis } from '../core/redis'
 import { EventFns } from '../models/eventFns'
@@ -48,7 +48,7 @@ const assignTicketSchema = z.object({
 async function getAttendeeStore(event: Event) {
   if (!event?.id) return false
   let store = await redis.get(`${event.id}_attendeeStore`)
-  const attendees = await EventFns({ eventId: event.id }).getUsers()
+  const attendees = uniqBy(await EventFns({ eventId: event.id }).getUsers(), 'id')
   const simpleAttendees = attendees.map(({ id, firstName, type, lastName, email, photo }) => ({
     id,
     photo,
