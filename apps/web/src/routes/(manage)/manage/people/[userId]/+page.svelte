@@ -98,6 +98,7 @@
 						titleClass="text-2xl font-semibold"
 						showTitle={false}
 						customFields={data.customFields}
+						eventInfoFields={data.eventInfoFields}
 					/>
 				</div>
 				<div class="grip mt-9 gap-4 px-4 py-4">
