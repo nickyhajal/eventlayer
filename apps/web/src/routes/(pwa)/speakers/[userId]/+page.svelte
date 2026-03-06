@@ -51,7 +51,7 @@
 				rel="noopener noreferrer"
 				class="-mt-2 mb-4 h-9 w-full rounded-lg bg-sky-700 text-sm"
 			>
-				Connect on LinkedIn
+				LinkedIn
 			</Button>
 		{/if}
 		<Markdown data={user.proBio} class="pr-4 text-slate-600" />
