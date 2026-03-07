@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { afterNavigate, goto, invalidateAll } from '$app/navigation'
+	import { goto, invalidateAll } from '$app/navigation'
 	import ChicletButton from '$lib/components/ui/ChicletButton.svelte'
 	import Label from '$lib/components/ui/label/label.svelte'
 	import { Textarea } from '$lib/components/ui/textarea'
@@ -15,14 +15,6 @@
 	let fullName = ''
 	let userKey = ''
 	let lastUserKey = ''
-	let cameFromPeopleList = false
-
-	afterNavigate((nav) => {
-		const isRealNavigation = nav.from?.url.pathname !== nav.to?.url.pathname
-		if (isRealNavigation) {
-			cameFromPeopleList = nav.from?.url.pathname === '/manage/people'
-		}
-	})
 
 	$: userKey = `${data?.user?.id ?? ''}:${data?.user?.userId ?? ''}`
 	$: fullName = `${data?.user?.firstName ?? ''} ${data?.user?.lastName ?? ''}`.trim()
@@ -54,11 +46,7 @@
 
 	function goBackToPeople(e: MouseEvent) {
 		e.preventDefault()
-		if (cameFromPeopleList) {
-			history.back()
-		} else {
-			goto('/manage/people')
-		}
+		goto('/manage/people', { replaceState: true })
 	}
 </script>
 

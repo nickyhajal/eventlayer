@@ -13,6 +13,9 @@ import {
   eq,
   eventTicketTable,
   eventUserFieldTable,
+  formElementTable,
+  formTable,
+  isNotNull,
   loginLinkTable,
   or,
 } from "@matterloop/db";
@@ -76,5 +79,69 @@ export const load = async ({ locals, params, url }) => {
     return false;
   });
 
-  return { user, qrcode, ticket, login_link: login_link?.url, customFields };
+  const formInfoElements = await db
+    .select({
+      id: formElementTable.id,
+      key: formElementTable.userInfoKey,
+      label: formElementTable.label,
+      type: formElementTable.type,
+      options: formElementTable.options,
+      ord: formElementTable.ord,
+    })
+    .from(formElementTable)
+    .leftJoin(formTable, eq(formTable.id, formElementTable.formId))
+    .where(
+      and(
+        eq(formTable.eventId, locals.event.id),
+        isNotNull(formElementTable.userInfoKey),
+      ),
+    )
+    .orderBy(asc(formElementTable.ord));
+
+  const eventInfoFieldsByKey = new Map<
+    string,
+    { key: string; label: string; fieldType: 'text' | 'textarea' | 'options'; options?: string }
+  >();
+  for (const element of formInfoElements) {
+    const key = element.key?.trim();
+    if (!key || eventInfoFieldsByKey.has(key)) continue;
+
+    let fieldType: 'text' | 'textarea' | 'options' = 'text';
+    if (element.type === 'textarea' || element.type === 'editor') {
+      fieldType = 'textarea';
+    } else if (element.type === 'select' || element.type === 'multi') {
+      fieldType = 'options';
+    }
+
+    let options: string | undefined;
+    if (fieldType === 'options' && element.options) {
+      try {
+        const parsed = JSON.parse(element.options) as Array<{ value?: string; label?: string }>;
+        const values = parsed
+          .map((option) => (option.value || option.label || '').trim())
+          .filter(Boolean);
+        if (values.length) {
+          options = values.join(',');
+        }
+      } catch {
+        options = undefined;
+      }
+    }
+
+    eventInfoFieldsByKey.set(key, {
+      key,
+      label: (element.label || key).trim(),
+      fieldType,
+      options,
+    });
+  }
+
+  return {
+    user,
+    qrcode,
+    ticket,
+    login_link: login_link?.url,
+    customFields,
+    eventInfoFields: Array.from(eventInfoFieldsByKey.values()),
+  };
 };
