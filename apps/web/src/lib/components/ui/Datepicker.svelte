@@ -5,6 +5,7 @@ import { Calendar } from '$lib/components/ui/calendar'
 import * as Popover from '$lib/components/ui/popover'
 import { cn } from '$lib/utils'
 import { Calendar as CalendarIcon } from 'radix-icons-svelte'
+import { beforeUpdate } from 'svelte'
 
 import { dayjs } from '@matterloop/util'
 
@@ -12,8 +13,28 @@ export let valueStr = ''
 const df = new DateFormatter('en-US', {
 	dateStyle: 'long',
 })
-let value: DateValue | undefined = valueStr ? parseDate(valueStr) : undefined
-$: valueStr = value ? dayjs(value?.toDate()).format('YYYY-MM-DD') : ''
+
+function parseValue(valueStr: string) {
+	if (!valueStr) return undefined
+	try {
+		return parseDate(valueStr)
+	} catch {
+		return undefined
+	}
+}
+
+let value: DateValue | undefined = parseValue(valueStr)
+let lastHydratedValueStr = valueStr
+
+beforeUpdate(() => {
+	const formattedValue = value ? dayjs(value.toDate()).format('YYYY-MM-DD') : ''
+	if (valueStr === lastHydratedValueStr || valueStr === formattedValue) return
+
+	value = parseValue(valueStr)
+	lastHydratedValueStr = valueStr
+})
+
+$: valueStr = value ? dayjs(value.toDate()).format('YYYY-MM-DD') : ''
 </script>
 
 <Popover.Root>

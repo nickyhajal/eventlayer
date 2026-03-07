@@ -68,18 +68,32 @@
 	$: event.type = type.value
 	$: event.eventFor = eventFor?.value
 
-	function normalizeDateTime(value?: string | null) {
-		if (!value) return undefined
-		const normalized = value.trim()
-		if (!normalized) return undefined
-		if (!/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}$/.test(normalized)) return undefined
-		return normalized
+	function getDateTimeParts(value?: string | null) {
+		const normalized = value?.trim()
+		if (!normalized) return { date: '', time: '' }
+
+		const [date = '', time = ''] = normalized.split(/[ T]/)
+		return { date, time: time.slice(0, 5) }
+	}
+
+	function normalizeDateTime(value?: string | null, fallback?: string | null) {
+		const normalized = value?.trim()
+		if (!normalized) return fallback?.trim() || undefined
+
+		const { date, time } = getDateTimeParts(normalized)
+		if (!date) return fallback?.trim() || undefined
+
+		const fallbackParts = getDateTimeParts(fallback)
+		const normalizedTime = time || fallbackParts.time
+		if (!normalizedTime) return undefined
+
+		return `${date} ${normalizedTime}`
 	}
 
 	async function createEvent() {
 		const ord = event?.ord || 0
 		const startsAt = normalizeDateTime(event.startsAt)
-		const endsAt = normalizeDateTime(event.endsAt)
+		const endsAt = normalizeDateTime(event.endsAt, startsAt)
 		const res = await trpc().event.upsert.mutate({
 			...event,
 			ord: +ord,
@@ -185,7 +199,12 @@
 					</div>
 				</div>
 				<DatetimePicker bind:value={event.startsAt} label="Start" />
-				<DatetimePicker bind:value={event.endsAt} label="End" defaultDate={event.startsAt?.split(' ')[0] ?? ''} defaultTime="" />
+				<DatetimePicker
+					bind:value={event.endsAt}
+					label="End"
+					defaultDate={getDateTimeParts(event.startsAt).date}
+					defaultTime={getDateTimeParts(event.startsAt).time}
+				/>
 				{#if !simplified}
 					<div class="flex flex-col items-start justify-center gap-1">
 						<Label for="description" class="text-right">Description</Label>
