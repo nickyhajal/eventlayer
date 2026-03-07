@@ -48,6 +48,10 @@
     return item.value?.trim() || item.html?.replace(/<[^>]+>/g, ' ')?.trim() || 'No response'
   }
 
+  function formatPercent(value: number) {
+    return `${value.toFixed(value % 1 === 0 ? 0 : 1)}%`
+  }
+
   function goBackToForms(e: MouseEvent) {
     e.preventDefault()
     goto('/manage/forms', { replaceState: true })
@@ -143,7 +147,7 @@
                   {getQuestionLabel(question)}
                 </div>
                 <div class="mt-1 text-xs text-slate-500">
-                  {question.answers.length} answer{question.answers.length === 1 ? '' : 's'}
+                  {question.answerCount} answer{question.answerCount === 1 ? '' : 's'}
                 </div>
               </button>
             {/each}
@@ -205,12 +209,47 @@
           <div class="border-b border-slate-200 px-6 py-5">
             <div class="text-lg font-semibold text-slate-900">{getQuestionLabel(selectedQuestion)}</div>
             <div class="mt-1 text-sm text-slate-500">
-              {selectedQuestion.answers.length} answer{selectedQuestion.answers.length === 1 ? '' : 's'}
+              {selectedQuestion.answerCount} answer{selectedQuestion.answerCount === 1 ? '' : 's'}
             </div>
+            {#if selectedQuestion.displayMode === 'grouped' && selectedQuestion.type === 'multi'}
+              <div class="mt-2 text-xs text-slate-400">
+                Percentages are based on respondents, so totals may exceed 100%.
+              </div>
+            {/if}
           </div>
 
           <div class="space-y-4 p-6">
-            {#if selectedQuestion.answers.length}
+            {#if selectedQuestion.displayMode === 'grouped'}
+              {#if selectedQuestion.groupedAnswers?.length}
+                <div class="space-y-3">
+                  {#each selectedQuestion.groupedAnswers as groupedAnswer}
+                    <div class="rounded-2xl border border-slate-200 p-4">
+                      <div class="flex items-center justify-between gap-4">
+                        <div class="min-w-0">
+                          <div class="truncate text-sm font-semibold text-slate-800">
+                            {groupedAnswer.label}
+                          </div>
+                          <div class="mt-1 text-xs text-slate-500">
+                            {groupedAnswer.count} response{groupedAnswer.count === 1 ? '' : 's'}
+                          </div>
+                        </div>
+                        <div class="shrink-0 text-sm font-medium text-slate-600">
+                          {formatPercent(groupedAnswer.percent)}
+                        </div>
+                      </div>
+                      <div class="mt-3 h-3 overflow-hidden rounded-full bg-slate-100">
+                        <div
+                          class="h-full rounded-full bg-slate-900 transition-[width]"
+                          style={`width: ${Math.max(0, Math.min(groupedAnswer.barPercent, 100))}%`}
+                        />
+                      </div>
+                    </div>
+                  {/each}
+                </div>
+              {:else}
+                <div class="text-sm text-slate-500">No answers for this question yet.</div>
+              {/if}
+            {:else if selectedQuestion.answers.length}
               {#each selectedQuestion.answers as answer}
                 <div class="rounded-2xl border border-slate-200 p-4">
                   <div class="flex items-center gap-3">

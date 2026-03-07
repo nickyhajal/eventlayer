@@ -13,6 +13,74 @@ import {
 } from '@matterloop/db'
 
 const NON_ANSWERABLE_TYPES = new Set(['title', 'markdown', 'button', 'space', 'avatar'])
+const GROUPED_TYPES = new Set(['select', 'multi'])
+
+type Photo = {
+  id: string
+  dir: string | null
+  path: string | null
+  ext: string | null
+  version: number | null
+} | null
+
+type Answer = {
+  id: string
+  value: string | null
+  html: string | null
+  createdAt: string | null
+  updatedAt: string | null
+  user: {
+    id: string
+    firstName: string | null
+    lastName: string | null
+    email: string | null
+    photo: Photo
+  }
+}
+
+function parseOptions(
+  options: string | null,
+): Array<{ value: string; label: string }> {
+  if (!options?.trim()) return []
+  try {
+    const parsed = JSON.parse(options) as Array<{ value?: string; label?: string }>
+    return parsed
+      .map((option) => {
+        const value = (option.value || option.label || '').trim()
+        const label = (option.label || option.value || '').trim()
+        return value ? { value, label: label || value } : null
+      })
+      .filter(Boolean) as Array<{ value: string; label: string }>
+  } catch {
+    return []
+  }
+}
+
+function parseMultiResponse(value: string | null): string[] {
+  if (!value?.trim()) return []
+
+  try {
+    const parsed = JSON.parse(value)
+    if (Array.isArray(parsed)) {
+      return parsed
+        .flatMap((item) => (typeof item === 'string' ? [item] : []))
+        .map((item) => item.trim())
+        .filter(Boolean)
+    }
+  } catch {
+    // Fall through to string parsing for legacy/non-JSON values.
+  }
+
+  return value
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean)
+}
+
+function formatPercent(count: number, denominator: number) {
+  if (!denominator) return 0
+  return Number(((count / denominator) * 100).toFixed(1))
+}
 
 export const load = async ({ locals, params }) => {
   if (!locals.event.id) {
@@ -47,6 +115,7 @@ export const load = async ({ locals, params }) => {
       elementType: formElementTable.type,
       elementLabel: formElementTable.label,
       elementContent: formElementTable.content,
+      elementOptions: formElementTable.options,
       elementOrd: formElementTable.ord,
       userId: userTable.id,
       firstName: userTable.firstName,
@@ -82,6 +151,7 @@ export const load = async ({ locals, params }) => {
       type: element.type,
       label: element.label,
       content: element.content,
+      options: element.options,
       ord: element.ord,
     }))
 
@@ -114,29 +184,7 @@ export const load = async ({ locals, params }) => {
     }
   >()
 
-  const answersByElementId = new Map<
-    string,
-    Array<{
-      id: string
-      value: string | null
-      html: string | null
-      createdAt: string | null
-      updatedAt: string | null
-      user: {
-        id: string
-        firstName: string | null
-        lastName: string | null
-        email: string | null
-        photo: {
-          id: string
-          dir: string | null
-          path: string | null
-          ext: string | null
-          version: number | null
-        } | null
-      }
-    }>
-  >()
+  const answersByElementId = new Map<string, Answer[]>()
 
   for (const row of responseRows) {
     if (!row.userId || !row.elementId) continue
@@ -203,10 +251,71 @@ export const load = async ({ locals, params }) => {
     return collator.compare(aName, bName)
   })
 
-  const questions = answerableElements.map((element) => ({
-    ...element,
-    answers: answersByElementId.get(element.id) ?? [],
-  }))
+  const questions = answerableElements.map((element) => {
+    const answers = answersByElementId.get(element.id) ?? []
+    const displayMode = GROUPED_TYPES.has(element.type || '') ? 'grouped' : 'individual'
+    const answerCount = answers.length
+
+    if (displayMode === 'individual') {
+      return {
+        ...element,
+        displayMode,
+        answerCount,
+        answers,
+      }
+    }
+
+    const optionDefs = parseOptions(element.options)
+    const optionLabelByValue = new Map(optionDefs.map((option) => [option.value, option.label]))
+    const countsByValue = new Map<string, number>()
+    const respondents = new Set<string>()
+
+    for (const answer of answers) {
+      respondents.add(answer.user.id)
+
+      if (element.type === 'multi') {
+        for (const selectedValue of parseMultiResponse(answer.value)) {
+          countsByValue.set(selectedValue, (countsByValue.get(selectedValue) ?? 0) + 1)
+        }
+        continue
+      }
+
+      const rawValue = answer.value?.trim()
+      if (!rawValue) continue
+      countsByValue.set(rawValue, (countsByValue.get(rawValue) ?? 0) + 1)
+    }
+
+    const groupedAnswerValues = new Set<string>([
+      ...optionDefs.map((option) => option.value),
+      ...countsByValue.keys(),
+    ])
+
+    const groupedAnswers = [...groupedAnswerValues]
+      .map((value) => {
+        const count = countsByValue.get(value) ?? 0
+        const percent = formatPercent(count, respondents.size)
+        return {
+          value,
+          label: optionLabelByValue.get(value) ?? value,
+          count,
+          percent,
+          barPercent: percent,
+        }
+      })
+      .filter((group) => group.count > 0)
+      .sort((a, b) => {
+        if (b.count !== a.count) return b.count - a.count
+        return collator.compare(a.label, b.label)
+      })
+
+    return {
+      ...element,
+      displayMode,
+      answerCount,
+      answers,
+      groupedAnswers,
+    }
+  })
 
   return {
     form: {
