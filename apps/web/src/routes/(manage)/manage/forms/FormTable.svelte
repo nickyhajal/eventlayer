@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ColumnDef, Row, TableOptions } from '@tanstack/svelte-table'
+	import type { ColumnDef, Row } from '@tanstack/svelte-table'
 	import { type FilterFn } from '@tanstack/svelte-table'
 	import { goto } from '$app/navigation'
 	import Table from '$lib/components/ui/Table.svelte'
@@ -7,7 +7,9 @@
 	import type { Form } from '@matterloop/db'
 	import { capitalize, dayjs } from '@matterloop/util'
 
-	export let rows: Form[]
+	type FormRow = Form & { responseCount?: number }
+
+	export let rows: FormRow[]
 	export let table
 	export let setCurrentPage
 	export let setGlobalFilter
@@ -27,11 +29,17 @@
 		if (!colVal) return false
 		return colVal.toString().toLowerCase().includes(value.toLowerCase())
 	}
-	const onRowClick = (row: Row<Event>) => {
+	const onRowClick = (row: Row<FormRow>) => {
 		goto(`/manage/forms/${row.original.id}`)
 	}
 
-	const columns: ColumnDef<Form>[] = [
+	function showResponses(e: Event, row: FormRow) {
+		e.preventDefault()
+		e.stopPropagation()
+		goto(`/manage/forms/${row.id}/responses`)
+	}
+
+	const columns: ColumnDef<FormRow>[] = [
 		{
 			accessorKey: 'type',
 			header: 'Type',
@@ -49,6 +57,18 @@
 			cell: (info) =>
 				info.getValue() ? dayjs(info.getValue()).format('MMM. Do [at] h:mma') : '-',
 			header: () => 'Starts',
+		},
+		{
+			accessorKey: 'responseCount',
+			header: 'Responses',
+			cell: (info) => info.getValue() ?? 0,
+		},
+		{
+			id: 'show-responses',
+			header: '',
+			enableSorting: false,
+			handleClick: (e, row) => showResponses(e, row),
+			accessorFn: () => 'button: Show Responses',
 		},
 	]
 
