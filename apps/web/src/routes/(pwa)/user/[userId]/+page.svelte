@@ -223,7 +223,7 @@
             >
               <SiteIcon class="inline w-4 text-teal-800" />
             </div>
-            <div class="px-3">View their Site</div>
+            <div class="px-3">Website</div>
           </Button>
         {/if}
         {#if info("linkedin_url")}
@@ -238,7 +238,7 @@
             >
               <LinkedInIcon class="inline w-4 text-sky-800" />
             </div>
-            <div class="px-3">Connect on LinkedIn</div>
+            <div class="px-3">LinkedIn</div>
           </Button>
         {/if}
         {#if info("ig_url")}
@@ -253,7 +253,7 @@
             >
               <IGIcon class="inline w-4 text-red-800" />
             </div>
-            <div class="px-3">Connect on Instagram</div>
+            <div class="px-3">Instagram</div>
           </Button>
         {/if}
         {#if info("fb_url")}
@@ -268,7 +268,7 @@
             >
               <FBIcon class="inline w-4 text-blue-800" />
             </div>
-            <div class="px-3">Connect on Facebook</div>
+            <div class="px-3">Facebook</div>
           </Button>
         {/if}
         {#if info("phone_shared")}
