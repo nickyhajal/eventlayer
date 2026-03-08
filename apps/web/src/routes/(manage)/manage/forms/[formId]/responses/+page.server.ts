@@ -7,6 +7,7 @@ import {
   eq,
   formElementTable,
   formResponseTable,
+  formSessionTable,
   formTable,
   mediaTable,
   userTable,
@@ -14,6 +15,7 @@ import {
 
 const NON_ANSWERABLE_TYPES = new Set(['title', 'markdown', 'button', 'space', 'avatar'])
 const GROUPED_TYPES = new Set(['select', 'multi'])
+const EXCLUDED_USER_INFO_KEYS = new Set(['firstName', 'lastName'])
 
 type Photo = {
   id: string
@@ -128,13 +130,15 @@ export const load = async ({ locals, params }) => {
       mediaVersion: mediaTable.version,
     })
     .from(formResponseTable)
+    .leftJoin(formSessionTable, eq(formSessionTable.id, formResponseTable.sessionId))
     .leftJoin(formElementTable, eq(formElementTable.id, formResponseTable.elementId))
     .leftJoin(userTable, eq(userTable.id, formResponseTable.userId))
     .leftJoin(mediaTable, eq(mediaTable.id, userTable.mediaId))
     .where(
       and(
         eq(formResponseTable.formId, params.formId),
-        eq(formResponseTable.eventId, locals.event.id),
+        eq(formSessionTable.eventId, locals.event.id),
+        eq(formSessionTable.formId, params.formId),
       ),
     )
     .orderBy(
@@ -152,8 +156,10 @@ export const load = async ({ locals, params }) => {
       label: element.label,
       content: element.content,
       options: element.options,
+      userInfoKey: element.userInfoKey,
       ord: element.ord,
     }))
+    .filter((element) => !EXCLUDED_USER_INFO_KEYS.has(element.userInfoKey || ''))
 
   const usersById = new Map<
     string,

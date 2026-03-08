@@ -2,7 +2,7 @@
 import { error, fail, redirect } from '@sveltejs/kit'
 
 import { EventFns } from '@matterloop/api'
-import { db, eq, formResponseTable } from '@matterloop/db'
+import { and, db, eq, formResponseTable, formSessionTable } from '@matterloop/db'
 
 export const load = async ({ locals }) => {
   if (!locals.event.id) {
@@ -17,7 +17,13 @@ export const load = async ({ locals }) => {
         userId: formResponseTable.userId,
       })
       .from(formResponseTable)
-      .where(eq(formResponseTable.eventId, locals.event.id)),
+      .leftJoin(formSessionTable, eq(formSessionTable.id, formResponseTable.sessionId))
+      .where(
+        and(
+          eq(formSessionTable.eventId, locals.event.id),
+          eq(formSessionTable.formId, formResponseTable.formId),
+        ),
+      ),
   ])
 
   const countsByFormId = new Map<string, Set<string>>()
