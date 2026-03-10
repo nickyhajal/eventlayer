@@ -5,7 +5,6 @@
 	import { Pincode, PincodeInput } from 'svelte-pincode'
 
 	export let handleSuccess: undefined | ((id: string) => Promise<void>)
-	export let handleCreateAccount = () => {}
 	let firstName = ''
 	let lastName = ''
 	let email = ''
@@ -110,13 +109,19 @@
 				<Button {loading}>Login</Button>
 			{/if}
 		</div>
-		<Button
-			on:click={() => handleCreateAccount()}
-			type="submit"
-			class="mx-auto mt-4 h-8 w-40 bg-white px-2 py-2 text-xs text-slate-700 opacity-50 transition-all hover:opacity-100"
-			variant="ghost"
-			>Or create an account
-		</Button>
+		{#if !codeEmailSent}
+			<div class="mt-4 flex justify-center">
+				<Button
+					on:click={() => {
+						codeEmailSent = true
+					}}
+					type="button"
+					class="h-8 bg-white px-2 py-2 text-center text-xs text-slate-700 opacity-50 transition-all hover:opacity-100"
+					variant="ghost"
+					>I already have a code
+				</Button>
+			</div>
+		{/if}
 	{:else}
 		<input
 			class="rounded-md border border-slate-200 p-1"
