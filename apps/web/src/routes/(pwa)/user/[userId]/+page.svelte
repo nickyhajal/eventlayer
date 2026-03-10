@@ -50,8 +50,9 @@
     if (!str.includes("https://")) return `https://${str}`;
     return str;
   }
-  const buttonClass =
-    "grid grid-cols-[3rem_1fr] items-center overflow-hidden hover:bg-blue-50 relative p-0 flex-grow h-9 w-fit  rounded-lg bg-slate-100 text-slate-700 text-center text-sm";
+  const socialButtonClass =
+    "relative grid h-9 w-full min-w-0 grid-cols-[2.75rem_minmax(0,1fr)] items-center overflow-hidden rounded-lg bg-slate-100 p-0 text-center text-sm text-slate-700 hover:bg-blue-50";
+  const socialButtonLabelClass = "truncate px-2";
 
   // const why = {
   // 	community: 'Join a community of like-minded people in Oregon',
@@ -185,7 +186,7 @@
       </div>
     </div>
     <div class="flex flex-col gap-4">
-      <div class="mb-4 flex flex-wrap justify-start gap-2">
+      <div class="mb-4 flex flex-col gap-2">
         <div
           class="mb-3.5 flex w-full items-center justify-center border-b border-b-slate-100 pb-6"
         >
@@ -211,79 +212,81 @@
             {/if}
           </Button>
         </div>
-        {#if info("site")}
-          <Button
-            href={siteUrl(info("site") || "")}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="relative grid h-9 w-fit min-w-[32%] flex-grow grid-cols-[3rem_1fr] items-center overflow-hidden rounded-lg bg-slate-100  p-0 text-center text-sm text-slate-700 hover:bg-blue-50"
-          >
-            <div
-              class="flex h-full items-center justify-center border-r border-slate-300/50 bg-slate-200/50 px-3"
+        <div class="grid grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] gap-2">
+          {#if info("site")}
+            <Button
+              href={siteUrl(info("site") || "")}
+              target="_blank"
+              rel="noopener noreferrer"
+              class={socialButtonClass}
             >
-              <SiteIcon class="inline w-4 text-teal-800" />
-            </div>
-            <div class="px-3">View their Site</div>
-          </Button>
-        {/if}
-        {#if info("linkedin_url")}
-          <Button
-            href={linkedinUrl(info("linkedin_url") || "")}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="relative grid h-9 w-fit flex-grow grid-cols-[3rem_1fr] items-center overflow-hidden rounded-lg bg-slate-100  p-0 text-center text-sm text-slate-700 hover:bg-blue-50"
-          >
-            <div
-              class="flex h-full items-center justify-center border-r border-slate-300/50 bg-slate-200/50 px-3"
+              <div
+                class="flex h-full items-center justify-center border-r border-slate-300/50 bg-slate-200/50 px-3"
+              >
+                <SiteIcon class="inline w-4 text-teal-800" />
+              </div>
+              <div class={socialButtonLabelClass}>Site</div>
+            </Button>
+          {/if}
+          {#if info("linkedin_url")}
+            <Button
+              href={linkedinUrl(info("linkedin_url") || "")}
+              target="_blank"
+              rel="noopener noreferrer"
+              class={socialButtonClass}
             >
-              <LinkedInIcon class="inline w-4 text-sky-800" />
-            </div>
-            <div class="px-3">Connect on LinkedIn</div>
-          </Button>
-        {/if}
-        {#if info("ig_url")}
-          <Button
-            href={instagramUrl(info("ig_url") || "")}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="relative grid h-9  w-fit min-w-[32%] flex-grow grid-cols-[3rem_1fr] items-center overflow-hidden rounded-lg bg-slate-100  p-0 text-center text-sm text-slate-700 hover:bg-blue-50"
-          >
-            <div
-              class="flex h-full items-center justify-center border-r border-slate-300/50 bg-slate-200/50 px-3"
+              <div
+                class="flex h-full items-center justify-center border-r border-slate-300/50 bg-slate-200/50 px-3"
+              >
+                <LinkedInIcon class="inline w-4 text-sky-800" />
+              </div>
+              <div class={socialButtonLabelClass}>LinkedIn</div>
+            </Button>
+          {/if}
+          {#if info("ig_url")}
+            <Button
+              href={instagramUrl(info("ig_url") || "")}
+              target="_blank"
+              rel="noopener noreferrer"
+              class={socialButtonClass}
             >
-              <IGIcon class="inline w-4 text-red-800" />
-            </div>
-            <div class="px-3">Connect on Instagram</div>
-          </Button>
-        {/if}
-        {#if info("fb_url")}
-          <Button
-            href={fbUrl(info("fb_url") || "")}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="relative grid h-9 w-fit min-w-[32%] flex-grow grid-cols-[3rem_1fr] items-center overflow-hidden rounded-lg bg-slate-100  p-0 text-center text-sm text-slate-700 hover:bg-blue-50"
-          >
-            <div
-              class="flex h-full items-center justify-center border-r border-slate-300/50 bg-slate-200/50 px-3"
+              <div
+                class="flex h-full items-center justify-center border-r border-slate-300/50 bg-slate-200/50 px-3"
+              >
+                <IGIcon class="inline w-4 text-red-800" />
+              </div>
+              <div class={socialButtonLabelClass}>Instagram</div>
+            </Button>
+          {/if}
+          {#if info("fb_url")}
+            <Button
+              href={fbUrl(info("fb_url") || "")}
+              target="_blank"
+              rel="noopener noreferrer"
+              class={socialButtonClass}
             >
-              <FBIcon class="inline w-4 text-blue-800" />
-            </div>
-            <div class="px-3">Connect on Facebook</div>
-          </Button>
-        {/if}
-        {#if info("phone_shared")}
-          <Button
-            href={`sms:${info("phone_shared")}`}
-            class="relative grid h-9 w-fit min-w-[32%] flex-grow grid-cols-[3rem_1fr] items-center overflow-hidden rounded-lg bg-slate-100  p-0 text-center text-sm text-slate-700 hover:bg-blue-50"
-          >
-            <div
-              class="flex h-full items-center justify-center border-r border-slate-300/50 bg-slate-200/50 px-3"
+              <div
+                class="flex h-full items-center justify-center border-r border-slate-300/50 bg-slate-200/50 px-3"
+              >
+                <FBIcon class="inline w-4 text-blue-800" />
+              </div>
+              <div class={socialButtonLabelClass}>Facebook</div>
+            </Button>
+          {/if}
+          {#if info("phone_shared")}
+            <Button
+              href={`sms:${info("phone_shared")}`}
+              class={socialButtonClass}
             >
-              <PhoneIcon class="inline w-4 text-blue-800" />
-            </div>
-            <div class="px-3">Show Phone Number</div>
-          </Button>
-        {/if}
+              <div
+                class="flex h-full items-center justify-center border-r border-slate-300/50 bg-slate-200/50 px-3"
+              >
+                <PhoneIcon class="inline w-4 text-blue-800" />
+              </div>
+              <div class={socialButtonLabelClass}>Phone</div>
+            </Button>
+          {/if}
+        </div>
       </div>
       {#if user.bio}
         <div class="border-t border-slate-200 pb-8 pt-8"></div>
