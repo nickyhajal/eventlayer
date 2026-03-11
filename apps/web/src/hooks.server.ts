@@ -158,21 +158,23 @@ export const handleUserContext: Handle = async ({ event, resolve }) => {
 						event.locals.me.photo = media
 					}
 				}
-				event.locals.me.connectionsTo = await db.query.eventUserConnectionTable.findMany({
-					where: and(
-						eq(eventUserConnectionTable.eventId, event.locals.event.id),
-						eq(eventUserConnectionTable.fromId, user?.id),
-					),
-				})
-				event.locals.me.connectionsFrom = await db.query.eventUserConnectionTable.findMany({
-					where: and(
-						eq(eventUserConnectionTable.eventId, event.locals.event.id),
-						eq(eventUserConnectionTable.toId, eventUserRow?.id ?? ''),
-					),
-				})
-				event.locals.me.rsvps = await db.query.eventUserTable.findMany({
-					where: and(
-						eq(eventUserTable.mainId, event.locals.event.id),
+					event.locals.me.connectionsTo = await db.query.eventUserConnectionTable.findMany({
+						where: and(
+							eq(eventUserConnectionTable.eventId, event.locals.event.id),
+							eq(eventUserConnectionTable.fromId, user?.id),
+						),
+					})
+					event.locals.me.connectionsFrom = eventUserRow?.id
+						? await db.query.eventUserConnectionTable.findMany({
+								where: and(
+									eq(eventUserConnectionTable.eventId, event.locals.event.id),
+									eq(eventUserConnectionTable.toId, eventUserRow.id),
+								),
+							})
+						: []
+					event.locals.me.rsvps = await db.query.eventUserTable.findMany({
+						where: and(
+							eq(eventUserTable.mainId, event.locals.event.id),
 						eq(eventUserTable.userId, user?.id),
 					),
 					with: {
