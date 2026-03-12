@@ -80,70 +80,70 @@ function sortBestMatches(query: string, people: User[]): User[] {
 const USER_INFO_KEYS = ['firstName', 'lastName'] as const
 
 async function syncUserInfoBeforeWelcome(
-	user: User,
-	eventId: string,
+  user: User,
+  eventId: string,
 ): Promise<{ firstName: string | null; lastName: string | null }> {
-	const infoRows = await db.query.eventUserInfoTable.findMany({
-		where: and(
-			eq(eventUserInfoTable.userId, user.id),
-			eq(eventUserInfoTable.eventId, eventId),
-			inArray(eventUserInfoTable.key, ['firstName', 'lastName']),
-		),
-	})
-	const infoByKey: Record<string, string> = {}
-	for (const r of infoRows) {
-		if (r.key) infoByKey[r.key] = (r.value ?? '').trim()
-	}
+  const infoRows = await db.query.eventUserInfoTable.findMany({
+    where: and(
+      eq(eventUserInfoTable.userId, user.id),
+      eq(eventUserInfoTable.eventId, eventId),
+      inArray(eventUserInfoTable.key, ['firstName', 'lastName']),
+    ),
+  })
+  const infoByKey: Record<string, string> = {}
+  for (const r of infoRows) {
+    if (r.key) infoByKey[r.key] = (r.value ?? '').trim()
+  }
 
-	// Merge: prefer user table, fallback to event_user_info
-	const firstNameRaw = (user.firstName?.trim() ?? infoByKey['firstName'] ?? '').trim().slice(0, 255)
-	const lastNameRaw = (user.lastName?.trim() ?? infoByKey['lastName'] ?? '').trim().slice(0, 255)
-	const firstName = firstNameRaw || null
-	const lastName = lastNameRaw || null
+  // Merge: prefer user table, fallback to event_user_info
+  const firstNameRaw = (user.firstName?.trim() ?? infoByKey['firstName'] ?? '').trim().slice(0, 255)
+  const lastNameRaw = (user.lastName?.trim() ?? infoByKey['lastName'] ?? '').trim().slice(0, 255)
+  const firstName = firstNameRaw || null
+  const lastName = lastNameRaw || null
 
-	// Sync to user table if missing
-	const userUpdates: Partial<User> = {}
-	if (firstName && !user.firstName?.trim()) userUpdates.firstName = firstName
-	if (lastName && !user.lastName?.trim()) userUpdates.lastName = lastName
-	if (Object.keys(userUpdates).length > 0) {
-		await db.update(userTable).set(userUpdates).where(eq(userTable.id, user.id))
-	}
+  // Sync to user table if missing
+  const userUpdates: Partial<User> = {}
+  if (firstName && !user.firstName?.trim()) userUpdates.firstName = firstName
+  if (lastName && !user.lastName?.trim()) userUpdates.lastName = lastName
+  if (Object.keys(userUpdates).length > 0) {
+    await db.update(userTable).set(userUpdates).where(eq(userTable.id, user.id))
+  }
 
-	// Sync to event_user_info if missing
-	for (const key of USER_INFO_KEYS) {
-		const value = key === 'firstName' ? firstName : lastName
-		if (!value) continue
-		const existing = infoRows.find((r) => r.key === key)
-		if (existing && existing.id) {
-			if (existing.value !== value) {
-				await db
-					.update(eventUserInfoTable)
-					.set({ value })
-					.where(eq(eventUserInfoTable.id, existing.id))
-			}
-		} else {
-			await db.insert(eventUserInfoTable).values({
-				userId: user.id,
-				eventId,
-				key,
-				value,
-				public: true,
-			})
-		}
-	}
+  // Sync to event_user_info if missing
+  for (const key of USER_INFO_KEYS) {
+    const value = key === 'firstName' ? firstName : lastName
+    if (!value) continue
+    const existing = infoRows.find((r) => r.key === key)
+    if (existing && existing.id) {
+      if (existing.value !== value) {
+        await db
+          .update(eventUserInfoTable)
+          .set({ value })
+          .where(eq(eventUserInfoTable.id, existing.id))
+      }
+    } else {
+      await db.insert(eventUserInfoTable).values({
+        userId: user.id,
+        eventId,
+        key,
+        value,
+        public: true,
+      })
+    }
+  }
 
-	void redis.del(`event_users:${eventId}`)
-	void redis.del(`event_usersWithInfo:${eventId}`)
+  void redis.del(`event_users:${eventId}`)
+  void redis.del(`event_usersWithInfo:${eventId}`)
 
-	return { firstName, lastName }
+  return { firstName, lastName }
 }
 
 export async function sendWelcomeEmail(user: User, event: Event, eventUser: EventUser) {
-	const { firstName, lastName } = await syncUserInfoBeforeWelcome(user, event.id)
-	const displayName =
-		firstName ?? user.firstName ?? lastName ?? user.lastName ?? 'there'
+  const { firstName, lastName } = await syncUserInfoBeforeWelcome(user, event.id)
+  const displayName =
+    firstName ?? user.firstName ?? lastName ?? user.lastName ?? 'there'
 
-	const { url } = await ActiveLoginLink.generate({
+  const { url } = await ActiveLoginLink.generate({
     userId: user.id,
     event: event,
     codeLength: 10,
@@ -155,7 +155,7 @@ export async function sendWelcomeEmail(user: User, event: Event, eventUser: Even
   if (url) {
     const res = await mailer.send({
       to: user?.email ?? '',
-      subject: `Action Required: Get Access to the NeuroDiversion 26 App`,
+      subject: `[Reminder] Action Required: Get Access to the NeuroDiversion 26 App`,
       event: event,
       more_params: {
         body: `<p style="margin: 0 0 16px;">Hey ${displayName},</p>
