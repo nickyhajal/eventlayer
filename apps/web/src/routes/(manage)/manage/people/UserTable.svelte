@@ -4,6 +4,7 @@
 	import { goto } from '$app/navigation'
 	import { Button } from '$lib/components/ui/button'
 	import Table from '$lib/components/ui/Table.svelte'
+	import { normalizeLinkedinPath } from '$lib/util/linkedin'
 
 	import type { User } from '@matterloop/db'
 	import { capitalize, dayjs, getMediaUrl, startCase } from '@matterloop/util'
@@ -68,8 +69,7 @@
 		{
 			accessorKey: 'linkedin',
 			header: 'LinkedIn',
-			accessorFn: (row) =>
-				(row?.info?.['linkedin_url']?.value || '').replace('https://www.linkedin.com/', ''),
+			accessorFn: (row) => normalizeLinkedinPath(row?.info?.['linkedin_url']?.value),
 		},
 		{
 			accessorKey: 'onboardStatus',

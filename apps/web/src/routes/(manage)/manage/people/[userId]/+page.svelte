@@ -4,6 +4,7 @@
 	import Label from '$lib/components/ui/label/label.svelte'
 	import { Textarea } from '$lib/components/ui/textarea'
 	import { trpc } from '$lib/trpc/client'
+	import { buildLinkedinUrl, normalizeLinkedinPath } from '$lib/util/linkedin'
 	import ChevronLeft from 'lucide-svelte/icons/chevron-left'
 
 	import AdminScreen from '../../AdminScreen.svelte'
@@ -19,6 +20,9 @@
 	$: userKey = `${data?.user?.id ?? ''}:${data?.user?.userId ?? ''}`
 	$: fullName = `${data?.user?.firstName ?? ''} ${data?.user?.lastName ?? ''}`.trim()
 	$: onboardStatus = data.user.onboardStatus
+	$: linkedinRaw = data?.user?.info?.linkedin_url?.value
+	$: linkedinHref = buildLinkedinUrl(linkedinRaw)
+	$: linkedinDisplay = normalizeLinkedinPath(linkedinRaw)
 	$: if (userKey !== lastUserKey) {
 		lastUserKey = userKey
 		confirmingSend = false
@@ -120,6 +124,19 @@
 								on:mouseover={selectLoginLink}
 								on:mouseout={clearSelection}
 							/>
+						</div>
+					{/if}
+					{#if linkedinHref}
+						<label class="block pb-2.5 pt-3.5 text-sm font-semibold">LinkedIn</label>
+						<div class="">
+							<a
+								href={linkedinHref}
+								target="_blank"
+								rel="noreferrer"
+								class="text-sm text-slate-600 hover:text-slate-800 hover:underline"
+							>
+								{linkedinDisplay || linkedinHref}
+							</a>
 						</div>
 					{/if}
 					<div class="mt-4">
