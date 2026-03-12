@@ -480,7 +480,7 @@ export const userProcedures = t.router({
       let sent = 0
       for (const user of users) {
         const eventUser = eventUserByUserId.get(user.id)
-        if (!eventUser || eventUser.onboardStatus !== 'not-sent') continue
+        if (!eventUser || eventUser.onboardStatus === 'done') continue
         await sendWelcomeEmail(user, ctx.event, eventUser)
         sent++
       }

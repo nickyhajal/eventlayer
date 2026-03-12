@@ -99,7 +99,7 @@
 
 	$: currentPageUsers = table ? ($table.getRowModel().rows.map((r) => r.original) as User[]) : []
 	$: usersWithoutWelcomeEmail = currentPageUsers.filter(
-		(user) => user.onboardStatus === 'not-sent' && user.userId,
+		(user) => user.onboardStatus !== 'done' && user.userId,
 	)
 
 	function openSendWelcomeModal() {
@@ -219,7 +219,7 @@
 				</div>
 			{:else}
 				<div class="rounded-lg border border-stone-200 bg-stone-50 p-3 text-sm text-stone-600">
-					No users on the current page are pending a welcome email.
+					No users on the current page are eligible for a welcome email.
 				</div>
 			{/if}
 			<div class="flex justify-end gap-2">
