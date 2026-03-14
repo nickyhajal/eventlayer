@@ -81,6 +81,13 @@
   onMount(() => {
     if (window.location.hash === "#search") {
       searchInput?.focus();
+      const delayedFocus = window.setTimeout(() => {
+        searchInput?.focus();
+      }, 150);
+
+      return () => {
+        window.clearTimeout(delayedFocus);
+      };
     }
   });
 

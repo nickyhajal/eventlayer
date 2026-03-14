@@ -9,6 +9,7 @@ import Pin from 'lucide-svelte/icons/map-pinned'
 import SquareMenu from 'lucide-svelte/icons/menu-square'
 import NotePadText from 'lucide-svelte/icons/notepad-text'
 import Paintbrush from 'lucide-svelte/icons/paintbrush'
+import Presentation from 'lucide-svelte/icons/presentation'
 import Settings from 'lucide-svelte/icons/settings'
 import TextCursor from 'lucide-svelte/icons/text-cursor-input'
 import Ticket from 'lucide-svelte/icons/ticket'
@@ -92,6 +93,15 @@ export const sidebarLinks: SidebarLink[] = [
 		path: '/faqs',
 		label: 'FAQs',
 		icon: FileQuestion,
+	},
+	{
+		section: true,
+		label: 'Comms',
+	},
+	{
+		path: '/screens',
+		label: 'Screens',
+		icon: Presentation,
 	},
 	{
 		section: true,

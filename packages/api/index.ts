@@ -2,10 +2,12 @@ import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server'
 
 // import type { Router } from './src/root'
 export { EventFns } from './src/models/eventFns'
+export { ScreenFns } from './src/models/screenFns'
 export { VenueFns } from './src/models/venueFns'
 export { FormFns } from './src/models/formFns'
 // export { UserFns } from './src/models/userFns'
-export { router, Router } from './src/root'
+export { router } from './src/root'
+export type { Router } from './src/root'
 
 /**
  * Inference helpers for input types

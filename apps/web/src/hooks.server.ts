@@ -158,23 +158,23 @@ export const handleUserContext: Handle = async ({ event, resolve }) => {
 						event.locals.me.photo = media
 					}
 				}
-					event.locals.me.connectionsTo = await db.query.eventUserConnectionTable.findMany({
+				event.locals.me.connectionsTo = await db.query.eventUserConnectionTable.findMany({
+					where: and(
+						eq(eventUserConnectionTable.eventId, event.locals.event.id),
+						eq(eventUserConnectionTable.fromId, user?.id),
+					),
+				})
+				event.locals.me.connectionsFrom = eventUserRow?.id
+					? await db.query.eventUserConnectionTable.findMany({
 						where: and(
 							eq(eventUserConnectionTable.eventId, event.locals.event.id),
-							eq(eventUserConnectionTable.fromId, user?.id),
+							eq(eventUserConnectionTable.toId, eventUserRow.id),
 						),
 					})
-					event.locals.me.connectionsFrom = eventUserRow?.id
-						? await db.query.eventUserConnectionTable.findMany({
-								where: and(
-									eq(eventUserConnectionTable.eventId, event.locals.event.id),
-									eq(eventUserConnectionTable.toId, eventUserRow.id),
-								),
-							})
-						: []
-					event.locals.me.rsvps = await db.query.eventUserTable.findMany({
-						where: and(
-							eq(eventUserTable.mainId, event.locals.event.id),
+					: []
+				event.locals.me.rsvps = await db.query.eventUserTable.findMany({
+					where: and(
+						eq(eventUserTable.mainId, event.locals.event.id),
 						eq(eventUserTable.userId, user?.id),
 					),
 					with: {
@@ -241,6 +241,8 @@ const handleRouteConfig: Handle = async ({ event, resolve }) => {
 			!event.url.pathname.includes('/trpc') &&
 			!event.url.pathname.includes('/stripe') &&
 			!event.url.pathname.includes('/add-a') &&
+			!event.url.pathname.includes('/ably') &&
+			!event.url.pathname.includes('/screen') &&
 			!event.url.pathname.includes('/welcome') &&
 			!event.url.pathname.includes('/rest') &&
 			!event.url.pathname.includes('manifest') &&
