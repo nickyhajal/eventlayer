@@ -1,29 +1,29 @@
 <script lang="ts">
-  import Screen from '$lib/components/Screen.svelte'
-  import Button from '$lib/components/ui/button/button.svelte'
-  import { getEventContext } from '$lib/state/getContexts.js'
-  import { ArrowRight, Ticket, X } from 'lucide-svelte'
-  import BadgeCheck from 'lucide-svelte/icons/badge-check'
-  import Calendar from 'lucide-svelte/icons/calendar'
-  import Map from 'lucide-svelte/icons/map'
-  import Pin from 'lucide-svelte/icons/map-pinned'
-  import { ChevronRight } from 'radix-icons-svelte'
+  import Screen from "$lib/components/Screen.svelte";
+  import Button from "$lib/components/ui/button/button.svelte";
+  import { getEventContext } from "$lib/state/getContexts.js";
+  import { ArrowRight, Ticket, X } from "lucide-svelte";
+  import BadgeCheck from "lucide-svelte/icons/badge-check";
+  import Calendar from "lucide-svelte/icons/calendar";
+  import Map from "lucide-svelte/icons/map";
+  import MagnifyingGlass from "lucide-svelte/icons/search";
+  import { ChevronRight } from "radix-icons-svelte";
 
-  import { tw } from '@matterloop/ui'
-  import { dayjs, getMediaUrl } from '@matterloop/util'
+  import { tw } from "@matterloop/ui";
+  import { dayjs, getMediaUrl } from "@matterloop/util";
 
-  export let data
-  $: upcoming = data.upcoming
-  $: team = data.info.find((info) => info.key === 'diveTeam')
-  $: table = data.info.find((info) => info.key === 'dinnerTable')
-  let event = getEventContext()
+  export let data;
+  $: upcoming = data.upcoming;
+  $: team = data.info.find((info) => info.key === "diveTeam");
+  $: table = data.info.find((info) => info.key === "dinnerTable");
+  let event = getEventContext();
   let tabs = $event.menus
-    .filter((m) => m.location === 'quick')
+    .filter((m) => m.location === "quick")
     .map((m) => {
-      return { ...m, props: m.props ?? {} }
-    })
-  if (data?.me?.type !== 'main-stage') {
-    tabs = [...tabs]
+      return { ...m, props: m.props ?? {} };
+    });
+  if (data?.me?.type !== "main-stage") {
+    tabs = [...tabs];
   }
   // const tabs = [
   // 	{
@@ -49,33 +49,49 @@
   // ]
   function getContent(key: string) {
     if (data?.event?.contentByKey?.[key]) {
-      return data.event.contentByKey[key]?.body || ''
+      return data.event.contentByKey[key]?.body || "";
     }
-    return ''
+    return "";
   }
-  let ignorePreorderKey = `ignorePreorder-nd26-${dayjs().format('YYYY')}`
+  let ignorePreorderKey = `ignorePreorder-nd26-${dayjs().format("YYYY")}`;
   let ignorePreorder =
-    typeof window === 'undefined' ? true : localStorage.getItem(ignorePreorderKey) === 'true'
+    typeof window === "undefined"
+      ? true
+      : localStorage.getItem(ignorePreorderKey) === "true";
   function handleIgnorePreorder(e: MouseEvent) {
-    e.preventDefault()
-    e.stopPropagation()
-    ignorePreorder = true
-    localStorage.setItem(ignorePreorderKey, 'true')
-    return false
+    e.preventDefault();
+    e.stopPropagation();
+    ignorePreorder = true;
+    localStorage.setItem(ignorePreorderKey, "true");
+    return false;
   }
 </script>
 
 <Screen title={$event.name}>
+  <div
+    class="topNav md:hidden sticky z-40 -ml-4 flex w-[calc(100vw+0.25rem)] items-center justify-center border-b border-slate-300/50 bg-slate-50 px-5 text-center text-sm text-slate-600 lg:mx-0 lg:mt-1 lg:w-full lg:rounded-2xl lg:border"
+  >
+    <a
+      href="/attendees#search"
+      type="text"
+      class="w-full bg-transparent items-center gap-1.5 text-slate-700 py-2.5 text-base flex !outline-none text-left"
+    >
+      <MagnifyingGlass class="h-4 w-4 text-slate-700" />
+      <div>Search attendees...</div>
+    </a>
+  </div>
   <div class="shell mx-auto pt-12 md:max-w-7xl">
-    {#if $event.getContent('alert')}
-      {#if $event.getContent('alert-link')}
+    {#if $event.getContent("alert")}
+      {#if $event.getContent("alert-link")}
         <a
-          href={$event.getContent('alert-link')}
-          target={$event.getContent('alert-link').includes('eventlayer') ? '' : '_blank'}
+          href={$event.getContent("alert-link")}
+          target={$event.getContent("alert-link").includes("eventlayer")
+            ? ""
+            : "_blank"}
           class="-mt-8 mb-16 block rounded-xl bg-amber-100/30 p-4 text-center text-sm text-slate-700 transition-all hover:bg-amber-100/60 lg:-mt-16 lg:mb-36"
         >
           <div class="text-sm font-semibold">
-            {$event.getContent('alert')}
+            {$event.getContent("alert")}
           </div>
         </a>
       {:else}
@@ -83,14 +99,14 @@
           class="-mt-8 mb-16 rounded-xl bg-amber-100/30 p-4 text-center text-sm text-slate-700 lg:-mt-16 lg:mb-36"
         >
           <div class="text-sm font-semibold">
-            {$event.getContent('alert')}
+            {$event.getContent("alert")}
           </div>
         </div>
       {/if}
     {/if}
-    {#if $event.getContent('preorder') && !ignorePreorder}
+    {#if $event.getContent("preorder") && !ignorePreorder}
       <a
-        href={`${$event.getContent('preorder')}?prefilled_email=${data.me?.email ?? ''}`}
+        href={`${$event.getContent("preorder")}?prefilled_email=${data.me?.email ?? ""}`}
         target="_blank"
         class="relative mx-auto -mt-8 mb-2 block w-full max-w-xl overflow-hidden rounded-xl border border-[#dae7e6] bg-[#F9FFFF] pt-4 text-center text-slate-700 transition-all hover:saturate-[140%] lg:-mt-20 lg:mb-16"
       >
@@ -122,28 +138,28 @@
     {/if}
     <div class="rounded-t-xl bg-slate-200/70 p-3 text-center font-medium">
       <div class="text-base">
-        {$event.getContent('main-start-date')}
+        {$event.getContent("main-start-date")}
       </div>
-      <div>{$event.getContent('main-start-time')}</div>
+      <div>{$event.getContent("main-start-time")}</div>
     </div>
     <div
       class="mb-2 rounded-b-xl bg-slate-100/70 p-8 text-center text-sm font-medium leading-snug md:text-base"
     >
       <div>
         <div class=" px-4 text-sm leading-tight md:text-lg">
-          {$event.getContent('main-location-name')}
+          {$event.getContent("main-location-name")}
         </div>
         <div class="mt-2 px-4 text-sm leading-tight md:text-base">
-          {$event.getContent('main-location-line-1')}
+          {$event.getContent("main-location-line-1")}
         </div>
         <div class="px-4 text-sm leading-tight md:text-base">
-          {$event.getContent('main-location-line-2')}
+          {$event.getContent("main-location-line-2")}
         </div>
         <div class="mt-2 px-4 text-xs leading-tight md:text-sm">
-          {$event.getContent('main-location-line-3')}
+          {$event.getContent("main-location-line-3")}
         </div>
         <div class="px-4 text-xs leading-tight md:text-sm">
-          {$event.getContent('main-location-line-4')}
+          {$event.getContent("main-location-line-4")}
         </div>
       </div>
     </div>
@@ -182,16 +198,20 @@
     <!-- </div> -->
     <!-- {/if} -->
     <div class="mt-8">
-      <div class="mb-1.5 text-2xl font-semibold text-slate-700">Quick Links</div>
+      <div class="mb-1.5 text-2xl font-semibold text-slate-700">
+        Quick Links
+      </div>
       <div class="grid grid-cols-2 gap-2">
-        {#if $event.getContent('preorder')}
+        {#if $event.getContent("preorder")}
           <Button
-            href={`${$event.getContent('preorder')}?prefilled_email=${data.me?.email ?? ''}`}
+            href={`${$event.getContent("preorder")}?prefilled_email=${data.me?.email ?? ""}`}
             target="_blank"
             variant="secondary"
             class="col-span-2 flex w-full flex-none flex-col items-start justify-center gap-0.5 border border-b border-a-accent border-b-main/10 border-opacity-[0.07] bg-a-accent bg-opacity-[0.02] py-9 text-left text-sm font-semibold text-a-accent hover:bg-a-accent hover:bg-opacity-[0.07]"
           >
-            <div class="mb-0.5 rounded-full border border-main/20 bg-white/40 p-1.5 opacity-80">
+            <div
+              class="mb-0.5 rounded-full border border-main/20 bg-white/40 p-1.5 opacity-80"
+            >
               <div class="icon"><Ticket /></div>
               <!-- <svelte:component this={icon} class="text-main/70  h-[1rem] w-[1rem] flex-none" /> -->
             </div>
@@ -207,7 +227,9 @@
             )}
           >
             {#if icon}
-              <div class="mb-0.5 rounded-full border border-main/20 bg-white/40 p-1.5 opacity-80">
+              <div
+                class="mb-0.5 rounded-full border border-main/20 bg-white/40 p-1.5 opacity-80"
+              >
                 <div class="icon">{@html icon}</div>
                 <!-- <svelte:component this={icon} class="text-main/70  h-[1rem] w-[1rem] flex-none" /> -->
               </div>
@@ -235,7 +257,9 @@
     {#if upcoming}
       <div class="mt-8 border-t border-slate-100 pt-8">
         <div class="flex items-center justify-between">
-          <div class="mb-1.5 text-2xl font-semibold text-slate-700">Upcoming Events</div>
+          <div class="mb-1.5 text-2xl font-semibold text-slate-700">
+            Upcoming Events
+          </div>
           <Button
             href="/schedule"
             variant="outline"
@@ -245,8 +269,12 @@
             <ChevronRight class="h-4 w-4 text-a-accent" />
           </Button>
         </div>
-        <div class="mb-6 w-[calc(100dvw-0.9rem)] overflow-x-auto lg:w-[calc(100%)] lg:pb-8">
-          <div class="flex w-[49.5rem] gap-4 pb-4 pr-6 lg:w-[calc(100%)] lg:pr-0">
+        <div
+          class="mb-6 w-[calc(100dvw-0.9rem)] overflow-x-auto lg:w-[calc(100%)] lg:pb-8"
+        >
+          <div
+            class="flex w-[49.5rem] gap-4 pb-4 pr-6 lg:w-[calc(100%)] lg:pr-0"
+          >
             {#each upcoming as event, i}
               <Button
                 variant="outline"
@@ -265,8 +293,12 @@
                     {event.name}
                   </div>
                   {#if event.venue}
-                    <div class="whitespace-normal pb-1.5 text-sm font-medium text-slate-600">
-                      {event.venue.name} | {dayjs(event.startsAt).format('MMM D, h:mma')}
+                    <div
+                      class="whitespace-normal pb-1.5 text-sm font-medium text-slate-600"
+                    >
+                      {event.venue.name} | {dayjs(event.startsAt).format(
+                        "MMM D, h:mma",
+                      )}
                     </div>
                   {/if}
                 </div>

@@ -76,6 +76,13 @@
       .sort((a, b) => a.label.localeCompare(b.label)),
   ];
   let showType = "all";
+  let searchInput: HTMLInputElement | undefined;
+
+  onMount(() => {
+    if (window.location.hash === "#search") {
+      searchInput?.focus();
+    }
+  });
 
   /**
    * Sorts users by whether they have a mediaId (users with mediaId come first),
@@ -125,6 +132,7 @@
     class="topNav sticky z-40 -ml-4 flex w-[calc(100vw+0.25rem)] items-center justify-center border-b border-slate-300/50 bg-slate-50 px-5 text-center text-sm text-slate-600 lg:mx-0 lg:mt-1 lg:w-full lg:rounded-2xl lg:border"
   >
     <input
+      bind:this={searchInput}
       type="text"
       class="w-full bg-transparent py-2.5 text-base !outline-none"
       placeholder="Search {typeOptions

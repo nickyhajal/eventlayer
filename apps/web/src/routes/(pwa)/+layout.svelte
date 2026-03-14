@@ -1,6 +1,7 @@
 <script lang="ts">
 	import '../../app.postcss'
 
+	import { preloadData } from '$app/navigation'
 	import { navigating, page } from '$app/stores'
 	// import RequestNotificationPermission from '$lib/components/RequestNotificationPermission.svelte'
 	import Confirmations from '$lib/components/Confirmations.svelte'
@@ -93,6 +94,7 @@
 
 	onMount(async () => {
 		mounted = true
+		void preloadData('/attendees')
 		const setVh = () => {
 			const vh = typeof window !== 'undefined' ? window.innerHeight * 0.01 : 0
 			document.documentElement.style.setProperty('--vh', `${vh}px`)
