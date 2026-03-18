@@ -82,8 +82,8 @@
 				</ChicletButton>
 			</div>
 		</div>
-		<div>
-			<div class="grid grid-cols-[20rem_1fr] gap-8">
+    <div>
+      <div class="grid grid-cols-[20rem_24rem] gap-8">
 				<div>
 					<UserForm
 						bind:user={data.user}
