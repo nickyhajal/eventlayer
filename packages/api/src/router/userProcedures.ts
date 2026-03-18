@@ -155,7 +155,7 @@ export async function sendWelcomeEmail(user: User, event: Event, eventUser: Even
   if (url) {
     const res = await mailer.send({
       to: user?.email ?? '',
-      subject: `[Reminder] Action Required: Get Access to the NeuroDiversion 26 App`,
+      subject: `[Final Reminder] Action Required: Get Access to the NeuroDiversion 26 App`,
       event: event,
       more_params: {
         body: `<p style="margin: 0 0 16px;">Hey ${displayName},</p>
