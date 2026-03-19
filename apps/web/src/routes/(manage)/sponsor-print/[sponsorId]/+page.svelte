@@ -78,7 +78,7 @@
     </p>
 
     <div
-      class="mt-12 w-full max-w-[34rem] rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm"
+      class="mt-12 w-full max-w-[25.5rem] rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm"
     >
       <img
         src={data.qrcode}
