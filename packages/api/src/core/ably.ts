@@ -25,6 +25,17 @@ export async function publishScreensInvalidation(eventId: string, data?: Record<
   return true
 }
 
+/** Tells all subscribed display clients to full page reload (e.g. after a code deploy). */
+export async function publishScreensHardRefresh(eventId: string) {
+  const rest = getRestClient()
+  if (!rest) return false
+  const channel = rest.channels.get(getScreensChannelName(eventId))
+  await channel.publish('screen-hard-refresh', {
+    at: new Date().toISOString(),
+  })
+  return true
+}
+
 export async function createScreensTokenRequest({
   eventId,
   clientId,

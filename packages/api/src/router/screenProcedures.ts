@@ -1,7 +1,7 @@
 import { initTRPC } from '@trpc/server'
 import { z } from 'zod'
 
-import { publishScreensInvalidation } from '../core/ably'
+import { publishScreensHardRefresh, publishScreensInvalidation } from '../core/ably'
 import { ScreenFns } from '../models/screenFns'
 import { procedureWithContext, verifyEvent, type TrpcContext } from '../procedureWithContext'
 
@@ -20,6 +20,15 @@ async function notify(eventId: string, data?: Record<string, unknown>) {
     await publishScreensInvalidation(eventId, data)
   } catch (e) {
     console.error('Failed to publish screens update', e)
+  }
+}
+
+async function publishHardRefresh(eventId: string) {
+  try {
+    return await publishScreensHardRefresh(eventId)
+  } catch (e) {
+    console.error('Failed to publish screen hard refresh', e)
+    return false
   }
 }
 
@@ -122,4 +131,9 @@ export const screenProcedures = t.router({
     .query(async ({ ctx, input }) => {
       return ScreenFns({ eventId: ctx.event.id }).getEffectiveConfigByKey(input.key)
     }),
+  /** Broadcast to all `/screen/*` clients: full browser reload (new JS/CSS after deploy). */
+  broadcastHardRefresh: procedureWithContext.use(verifyEvent()).mutation(async ({ ctx }) => {
+    const ok = await publishHardRefresh(ctx.event.id)
+    return { ok }
+  }),
 })

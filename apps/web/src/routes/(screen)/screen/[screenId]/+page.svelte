@@ -21,7 +21,7 @@
 			authUrl: '/ably/token',
 		})
 		const channel = client.channels.get(data.screensChannel)
-		const listener = async () => {
+		const dataListener = async () => {
 			if (refreshing) return
 			refreshing = true
 			try {
@@ -30,9 +30,14 @@
 				refreshing = false
 			}
 		}
-		channel.subscribe('screens-updated', listener)
+		const hardRefreshListener = () => {
+			window.location.reload()
+		}
+		channel.subscribe('screens-updated', dataListener)
+		channel.subscribe('screen-hard-refresh', hardRefreshListener)
 		return () => {
-			channel.unsubscribe('screens-updated', listener)
+			channel.unsubscribe('screens-updated', dataListener)
+			channel.unsubscribe('screen-hard-refresh', hardRefreshListener)
 			client.close()
 		}
 	})

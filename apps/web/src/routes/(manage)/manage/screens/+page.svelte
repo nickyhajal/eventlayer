@@ -4,6 +4,7 @@
 	import Input from '$lib/components/ui/input/input.svelte'
 	import { Textarea } from '$lib/components/ui/textarea'
 	import { trpc } from '$lib/trpc/client'
+	import RefreshCw from 'lucide-svelte/icons/refresh-cw'
 	import Plus from 'lucide-svelte/icons/plus'
 	import { toast } from 'svelte-sonner'
 
@@ -61,6 +62,7 @@
 
 	let savingGlobal = false
 	let creating = false
+	let broadcastingHardRefresh = false
 	let rowSaving = ''
 	let overrideSaving = ''
 
@@ -155,6 +157,22 @@
 	async function refresh() {
 		await invalidateAll()
 	}
+
+	async function forceHardRefreshAllDisplays() {
+		try {
+			broadcastingHardRefresh = true
+			const res = await trpc().screen.broadcastHardRefresh.mutate()
+			if (res?.ok) {
+				toast.success('Hard refresh sent to all connected displays')
+			} else {
+				toast.error('Ably is not configured or publish failed')
+			}
+		} catch (e) {
+			toast.error(getErrorMessage(e, 'Failed to broadcast hard refresh'))
+		} finally {
+			broadcastingHardRefresh = false
+		}
+	}
 </script>
 
 <AdminScreen title="Screens">
@@ -167,6 +185,16 @@
 		>
 			<Plus class="mr-1 w-[1rem] text-slate-700" />
 			{creating ? 'Creating...' : 'Add Screen'}
+		</Button>
+		<Button
+			variant="outline"
+			class="h-7 py-[0.3rem] pl-1.5 pr-3"
+			on:click={forceHardRefreshAllDisplays}
+			disabled={broadcastingHardRefresh}
+			title="Full browser reload on every open /screen/* tab (after a deploy)"
+		>
+			<RefreshCw class="mr-1 h-[1rem] w-[1rem] text-slate-700" />
+			{broadcastingHardRefresh ? 'Sending…' : 'Hard refresh displays'}
 		</Button>
 	</div>
 
