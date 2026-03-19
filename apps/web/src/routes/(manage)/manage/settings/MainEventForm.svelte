@@ -18,20 +18,36 @@
 	import { tw } from '@matterloop/ui'
 	import { capitalize, debounce, getMediaUrl } from '@matterloop/util'
 
+	type EventFormModel = Partial<Event> & {
+		venueId?: string
+		colors: { accent?: string }
+		settings: {
+			header_scripts?: string
+			groove_api_key?: string
+			groove_inbox_id?: string
+			support_email?: string
+			[key: string]: unknown
+		}
+		photo?: any
+		largeLogo?: any
+		favicon?: any
+	}
+
 	export let simplified = false
 	export let inDialog = false
 	export let titleClass = ''
 	export let showTitle = true
 	export let users: FullEventUser[] = []
-	export let event: Partial<Event> = {
+	export let event: EventFormModel = {
 		name: '',
 		subtitle: '',
 		colors: { accent: '' },
-		settings: { header_scripts: '' },
+		settings: { header_scripts: '', groove_api_key: '' },
 	}
 
 	let loading = false
 	let userSearchQuery = ''
+	let venueId = (event.venueId ?? undefined) as string | undefined
 	let eventUserType = { value: 'host', label: 'Host' }
 	let eventUserTypes = [
 		{ value: 'attendee', label: 'Attendee' },
@@ -55,11 +71,12 @@
 	$: buttonMsg = event?.id ? 'Save Event' : 'Add Event'
 	$: editing = event?.id ? true : false
 	$: event.colors = event.colors || { accent: '' }
-	$: event.settings = event.settings || { header_scripts: '' }
+	$: event.settings = event.settings || { header_scripts: '', groove_api_key: '' }
+	$: event.venueId = venueId
 	$: title = editing ? event?.name : 'Add an Event'
 	// let type = eventTypes.find((t) => t.value === (event.type || 'program'))
 	async function createEvent() {
-		const res = await trpc().event.upsert.mutate(event)
+		await trpc().event.upsert.mutate(event as any)
 		toast.success('Saved')
 	}
 	async function updateMedia(mediaId: string, remoteKey: string) {
@@ -124,7 +141,7 @@
 					</div>
 					<div class="flex flex-col items-start justify-center gap-1">
 						<Label for="venue" class="text-right">Event Venue</Label>
-						<SelectVenue bind:value={event.venueId} />
+						<SelectVenue bind:value={venueId} />
 					</div>
 				{/if}
 				<div class="flex flex-col items-start justify-center gap-1">
@@ -144,6 +161,14 @@
 					<Textarea
 						id="event_settings_head"
 						bind:value={event.settings.header_scripts}
+						class="col-span-3"
+					/>
+				</div>
+				<div class="flex flex-col items-start justify-center gap-1">
+					<Label for="event_settings_groove_api_key" class="text-right">Groove API Key</Label>
+					<Input
+						id="event_settings_groove_api_key"
+						bind:value={event.settings.groove_api_key}
 						class="col-span-3"
 					/>
 				</div>

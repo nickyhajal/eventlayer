@@ -1,6 +1,7 @@
 import { relations, sql, type InferModel } from 'drizzle-orm'
 import { boolean, integer, jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { createInsertSchema } from 'drizzle-zod'
+import { z } from 'zod'
 
 import { contentTable } from './content'
 import { eventUserTable } from './event_user'
@@ -64,8 +65,20 @@ export const eventRelations = relations(eventTable, ({ many, one }) => ({
   content: many(contentTable),
 }))
 
+export const eventSettingsSchema = z
+  .object({
+    header_scripts: z.string().optional(),
+    groove_api_key: z.string().optional(),
+    groove_inbox_id: z.string().optional(),
+    support_email: z.string().optional(),
+  })
+  .passthrough()
+
+export type EventSettings = z.infer<typeof eventSettingsSchema>
+
 export const eventSchema = createInsertSchema(eventTable, {
   name: (schema) => schema.name.min(1).default(''),
+  settings: eventSettingsSchema.nullable().optional(),
 })
 export type Event = typeof eventTable.$inferSelect
 export type EventSchemaType = typeof eventSchema
