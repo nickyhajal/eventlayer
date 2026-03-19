@@ -11,6 +11,7 @@
   import Uploader from "$lib/components/ui/Uploader.svelte";
   import { trpc } from "$lib/trpc/client.js";
   import { getMediaUrl } from "$lib/util/getMediaUrl";
+  import { buildLinkedinUrl, normalizeLinkedinPath } from "$lib/util/linkedin";
   import Check from "lucide-svelte/icons/check";
   import { toast } from "svelte-sonner";
 
@@ -187,6 +188,9 @@
   }
   let userExistsNotInEvent: User | false = false;
   let image = "";
+  $: linkedinRaw = user?.info?.linkedin_url?.value ?? "";
+  $: linkedinHref = buildLinkedinUrl(linkedinRaw);
+  $: linkedinDisplay = normalizeLinkedinPath(linkedinRaw);
   async function saveUser() {
     if (!emailConfirmed) {
       await checkEmail();
@@ -273,7 +277,11 @@
           class="flex flex-col items-center gap-2 overflow-hidden rounded-lg border border-stone-200 bg-stone-50 p-1"
         >
           {#if user.photo}
-            <img src={getMediaUrl(user.photo)} alt="at" class="w-full" />
+            <img
+              src={getMediaUrl(user.photo, "w-400")}
+              alt="at"
+              class="w-full"
+            />
           {/if}
           <div class="w-full bg-stone-100">
             <Uploader
@@ -391,13 +399,16 @@
             bind:value={user.info.linkedin_url.value}
             class="col-span-3"
           />
-          <a
-            href={user.info.linkedin_url.value}
-            target="_blank"
-            class="text-sm text-slate-600"
-          >
-            {user.info.linkedin_url.value}
-          </a>
+          {#if linkedinHref}
+            <a
+              href={linkedinHref}
+              target="_blank"
+              rel="noreferrer"
+              class="text-sm text-slate-600 hover:text-slate-800 hover:underline"
+            >
+              {linkedinDisplay || linkedinHref}
+            </a>
+          {/if}
         </div>
         <div class="flex flex-col items-start justify-center gap-1">
           <Label for="proBio" class="text-right">Professional Bio</Label>
