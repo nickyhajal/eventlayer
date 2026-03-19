@@ -9,6 +9,7 @@ import {
   db,
   eq,
   eventTable,
+  eventSponsorConnectionTable,
   EventUser,
   eventUserCheckinTable,
   eventUserInfoTable,
@@ -236,6 +237,34 @@ export const EventFns = (args: string | Args) => {
         orderBy: asc(sponsorTable.ord),
       })
       return sponsor
+    },
+    getSponsorHeart: async (sponsorId: string, userId?: string | null) => {
+      if (!userId) {
+        return null
+      }
+
+      return db.query.eventSponsorConnectionTable.findFirst({
+        where: and(
+          eq(eventSponsorConnectionTable.eventId, eventId),
+          eq(eventSponsorConnectionTable.sponsorId, sponsorId),
+          eq(eventSponsorConnectionTable.userId, userId),
+        ),
+      })
+    },
+    getSponsorLeads: async (sponsorId: string) => {
+      const leads = await db.query.eventSponsorConnectionTable.findMany({
+        where: and(
+          eq(eventSponsorConnectionTable.eventId, eventId),
+          eq(eventSponsorConnectionTable.sponsorId, sponsorId),
+        ),
+        with: {
+          user: true,
+        },
+      })
+
+      return leads.sort((a, b) => {
+        return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+      })
     },
     getEvents: async ({ eventFor, type }: GetEventsArgs = {}) => {
       const events = await db.query.eventTable.findMany({

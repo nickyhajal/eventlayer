@@ -1,5 +1,5 @@
-import { relations, sql, type InferModel } from 'drizzle-orm'
-import { integer, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { relations, sql } from 'drizzle-orm'
+import { integer, jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { createInsertSchema } from 'drizzle-zod'
 
 import { eventUserTable } from './event_user'
@@ -16,6 +16,7 @@ export const sponsorTable = pgTable('sponsor', {
   mediaId: uuid('media_id'),
   title: text('title'),
   expoLocation: text('expo_location'),
+  settings: jsonb('settings'),
   url: text('url'),
   ord: integer('ord'),
   bookingUrl: text('booking_url'),

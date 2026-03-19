@@ -235,12 +235,15 @@ const handleLogout: Handle = async ({ event, resolve }) => {
 }
 const handleRouteConfig: Handle = async ({ event, resolve }) => {
 	const { me } = event.locals
+	const isPublicSponsorExpoLanding = /^\/expo\/[^/]+$/.test(event.url.pathname)
 	if (!me) {
 		if (
+			!isPublicSponsorExpoLanding &&
 			!event.url.pathname.includes('/login') &&
 			!event.url.pathname.includes('/trpc') &&
 			!event.url.pathname.includes('/stripe') &&
 			!event.url.pathname.includes('/add-a') &&
+			!event.url.pathname.includes('/attendees-export') &&
 			!event.url.pathname.includes('/ably') &&
 			!event.url.pathname.includes('/screen') &&
 			!event.url.pathname.includes('/welcome') &&

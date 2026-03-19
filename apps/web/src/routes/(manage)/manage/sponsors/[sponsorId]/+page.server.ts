@@ -1,26 +1,29 @@
-// routes/login/+page.server.ts
-import { error, fail, redirect } from '@sveltejs/kit'
-import { message, setError, superValidate } from 'sveltekit-superforms/server'
-import { z } from 'zod'
+import { error } from '@sveltejs/kit'
+import QRCode from 'qrcode'
 
-import { EventFns, VenueFns } from '@matterloop/api'
-import { db, eq, sponsorTable } from '@matterloop/db'
+import { EventFns } from '@matterloop/api'
 
-const schema = z.object({
-  email: z.string().email(),
-  password: z.string(),
-})
-
-export const load = async ({ locals, params }) => {
+export const load = async ({ locals, params, url }) => {
   if (!params.sponsorId) {
-    return error(404, 'No sponsor id')
+    throw error(404, 'No sponsor id')
   }
-  const sponsor = await db.query.sponsorTable.findFirst({
-    where: eq(sponsorTable.id, params.sponsorId),
-    with: { photo: true, users: { with: { user: true } } },
-  })
+
+  const eventFns = EventFns({ eventId: locals.event.id })
+  const sponsor = await eventFns.getSponsor(params.sponsorId)
+
   if (!sponsor) {
-    return error(404, 'Sponsor not found')
+    throw error(404, 'Sponsor not found')
   }
-  return { sponsor }
+
+  const publicUrl = `${url.protocol}//${url.host}/expo/${sponsor.id}`
+  const qrcode = await QRCode.toDataURL(publicUrl, {
+    width: 320,
+  })
+
+  return {
+    sponsor,
+    publicUrl,
+    qrcode,
+    leads: await eventFns.getSponsorLeads(params.sponsorId),
+  }
 }

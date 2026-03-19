@@ -1,36 +1,37 @@
 <script lang="ts">
-	import EventRow from '$lib/components/EventRow.svelte'
+	import SponsorLeadCaptureForm from '$lib/components/SponsorLeadCaptureForm.svelte'
 	import Screen from '$lib/components/Screen.svelte'
 	import Button from '$lib/components/ui/button/button.svelte'
-	import VenueBlock from '$lib/components/VenueBlock.svelte'
-	import { getMeContext } from '$lib/state/getContexts'
 
-	import type { Event } from '@matterloop/db'
 	import { Markdown } from '@matterloop/ui'
-	import { dayjs, getMediaUrl } from '@matterloop/util'
+	import { getMediaUrl } from '@matterloop/util'
 
 	export let data
 	$: sponsor = data.sponsor
+	$: screenPhoto = sponsor.photo as any
 </script>
 
-<Screen title={sponsor.title} back="/expo">
+<Screen title={sponsor.title || 'Sponsor'} back="/expo" photo={screenPhoto}>
 	<div class="mx-auto max-w-7xl py-6">
 		<div class="flex flex-col items-center justify-start gap-2 pb-6">
-			<div
-				class="mb-16 flex items-center justify-center rounded-lg border border-slate-100 bg-slate-50 p-8"
-			>
-				<img
-					src={getMediaUrl(sponsor.photo, 'w-780')}
-					class=" w-80"
-					alt={`Photo of ${sponsor.title}`}
-				/>
-			</div>
+			{#if sponsor.photo}
+				<div
+					class="mb-16 flex items-center justify-center rounded-lg border border-slate-100 bg-slate-50 p-8"
+				>
+					<img
+						src={getMediaUrl(sponsor.photo, 'w-780')}
+						class="w-80"
+						alt={`Photo of ${sponsor.title || 'sponsor'}`}
+					/>
+				</div>
+			{/if}
 			<div class="flex flex-grow flex-col items-start">
 				<div class="w-fell flex-grow pb-0 text-left text-2xl font-bold xs:text-3xl">
 					{sponsor.title}
 				</div>
 			</div>
 		</div>
+		<SponsorLeadCaptureForm sponsorId={sponsor.id} sponsorName={sponsor.title || 'this sponsor'} />
 		{#if sponsor?.url}
 			<Button
 				href={sponsor.url}
@@ -47,13 +48,16 @@
 				<div class="mt-1 flex flex-wrap gap-1">
 					{#each sponsor.users as { id, user }}
 						<a
-							href={`/expo/${id}`}
+							href={`/user/${id}`}
 							class="flex w-fit items-center rounded-lg border border-b-2 border-slate-100 bg-white px-2 py-1 text-sm font-medium text-slate-700"
 						>
-							<img
-								src={getMediaUrl(user?.photo)}
-								class="flex-0 mr-1 h-6 w-6 rounded-full object-cover"
-							/>
+							{#if user?.photo}
+								<img
+									src={getMediaUrl(user.photo)}
+									class="flex-0 mr-1 h-6 w-6 rounded-full object-cover"
+									alt={`${user?.firstName} ${user?.lastName}`}
+								/>
+							{/if}
 							{user?.firstName}
 							{user?.lastName}
 						</a>

@@ -16,10 +16,15 @@
 	import type { FullEventUser, Sponsor } from '@matterloop/db'
 	import { capitalize, tw } from '@matterloop/util'
 
-	export let sponsor: Partial<Sponsor> = {
+	export let sponsor: any = {
 		title: '',
 		url: '',
 		description: '',
+		settings: {
+			qrEyebrow: 'Expo Sponsor',
+			qrTitle: '',
+			qrDescription: '',
+		},
 	}
 	export let simplified = false
 	export let inDialog = false
@@ -28,6 +33,11 @@
 	$: buttonMsg = sponsor?.id ? 'Save Sponsor' : 'Add Sponsor'
 	$: editing = sponsor?.id ? true : false
 	$: title = editing ? sponsor?.title : 'Add a Sponsor'
+	$: sponsor.settings = sponsor.settings || {
+		qrEyebrow: 'Expo Sponsor',
+		qrTitle: '',
+		qrDescription: '',
+	}
 	let sponsorTypes = [
 		{ value: 'sponsor', label: 'Sponsor' },
 		// { value: 'impact-partner', label: 'Impact Partner' },
@@ -129,6 +139,34 @@
 					<Label for="descriptin" class="text-right">Description</Label>
 					<Textarea id="description" bind:value={sponsor.description} class="col-span-3" />
 				</div>
+				<div class="flex flex-col items-start justify-center gap-1">
+					<Label for="qrEyebrow" class="text-right">QR Eyebrow</Label>
+					<Input
+						id="qrEyebrow"
+						bind:value={sponsor.settings.qrEyebrow}
+						class="col-span-3"
+						placeholder="Expo Sponsor"
+					/>
+				</div>
+				<div class="flex flex-col items-start justify-center gap-1">
+					<Label for="qrTitle" class="text-right">QR Title</Label>
+					<Input
+						id="qrTitle"
+						bind:value={sponsor.settings.qrTitle}
+						class="col-span-3"
+						placeholder="Defaults to sponsor title"
+					/>
+				</div>
+				<div class="flex flex-col items-start justify-center gap-1">
+					<Label for="qrDescription" class="text-right">QR Description</Label>
+					<Textarea
+						id="qrDescription"
+						bind:value={sponsor.settings.qrDescription}
+						class="col-span-3"
+						rows={4}
+						placeholder="Scan to connect with this sponsor and get follow-up information after the expo."
+					/>
+				</div>
 			{/if}
 			<div class="flex justify-end">
 				<Button type="submit">{buttonMsg}</Button>
@@ -152,7 +190,7 @@
 							<div
 								class="absolute right-3 text-xs text-stone-500 transition-all group-hover:right-10"
 							>
-								{capitalize(type)}
+								{capitalize(type || '')}
 							</div>
 						</div>
 						<Button
@@ -174,6 +212,7 @@
 				<div class="mb-0.5 pl-0.5 text-sm font-medium text-gray-500">Add Rep</div>
 				<AttendeeSearchInput handleClick={addUser} />
 			</div>
+			<slot name="right-bottom" />
 		</div>
 	{/if}
 </div>

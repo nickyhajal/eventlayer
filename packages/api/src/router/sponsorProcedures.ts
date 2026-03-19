@@ -7,6 +7,7 @@ import {
   and,
   db,
   eq,
+  eventSponsorConnectionTable,
   eventSchema,
   eventUserTable,
   ilike,
@@ -17,6 +18,7 @@ import {
 import { userTable, type User } from '@matterloop/db/types'
 import { pick } from '@matterloop/util'
 
+import { mailer } from '../../../../apps/web/src/lib/server/core/mailer'
 import {
   procedureWithContext,
   verifyAdmin,
@@ -26,6 +28,91 @@ import {
 } from '../procedureWithContext'
 
 const t = initTRPC.context<TrpcContext>().create()
+
+const setHeartSchema = z.object({
+  sponsorId: z.string(),
+  hearted: z.boolean().default(true),
+  source: z.string().default('manual'),
+})
+
+const capturePublicLeadSchema = z.object({
+  sponsorId: z.string(),
+  name: z.string().trim().min(1),
+  email: z.string().trim().email(),
+  source: z.string().default('qr'),
+})
+
+function splitName(name: string) {
+  const trimmed = name.trim().replace(/\s+/g, ' ')
+  if (!trimmed.length) {
+    return { firstName: '', lastName: '' }
+  }
+
+  const [firstName, ...rest] = trimmed.split(' ')
+  return {
+    firstName,
+    lastName: rest.join(' '),
+  }
+}
+
+async function getSponsorForEvent(eventId: string, sponsorId: string) {
+  const sponsor = await db.query.sponsorTable.findFirst({
+    where: and(eq(sponsorTable.id, sponsorId), eq(sponsorTable.eventId, eventId)),
+  })
+
+  if (!sponsor) {
+    throw error(404, 'Sponsor not found')
+  }
+
+  return sponsor
+}
+
+async function upsertSponsorHeart({
+  eventId,
+  sponsorId,
+  userId,
+  source,
+}: {
+  eventId: string
+  sponsorId: string
+  userId: string
+  source: string
+}) {
+  const now = new Date().toISOString()
+
+  await db
+    .insert(eventSponsorConnectionTable)
+    .values({
+      type: 'heart',
+      status: 'active',
+      source,
+      eventId,
+      sponsorId,
+      userId,
+      updatedAt: now,
+    })
+    .onConflictDoUpdate({
+      target: [
+        eventSponsorConnectionTable.eventId,
+        eventSponsorConnectionTable.sponsorId,
+        eventSponsorConnectionTable.userId,
+      ],
+      set: {
+        type: 'heart',
+        status: 'active',
+        source,
+        updatedAt: now,
+      },
+    })
+}
+
+function canViewSponsorLeads(
+  me: (User & { sponsorId?: string | null }) | undefined,
+  sponsorId: string,
+) {
+  return Boolean(me?.isSuperAdmin || me?.sponsorId === sponsorId)
+}
+
 export const sponsorProcedures = t.router({
   search: procedureWithContext
     .use(verifyEvent())
@@ -63,6 +150,140 @@ export const sponsorProcedures = t.router({
       return db.query.userTable.findFirst({
         where: eq(userTable.id, ctx.meId),
         with: {},
+      })
+    }),
+  setHeart: procedureWithContext
+    .use(verifyMe())
+    .use(verifyEvent())
+    .input(setHeartSchema)
+    .mutation(async ({ ctx, input }) => {
+      const sponsor = await getSponsorForEvent(ctx.event.id, input.sponsorId)
+
+      if (input.hearted) {
+        await upsertSponsorHeart({
+          eventId: ctx.event.id,
+          sponsorId: sponsor.id,
+          userId: ctx.me.id,
+          source: input.source,
+        })
+      } else {
+        await db
+          .delete(eventSponsorConnectionTable)
+          .where(
+            and(
+              eq(eventSponsorConnectionTable.eventId, ctx.event.id),
+              eq(eventSponsorConnectionTable.sponsorId, sponsor.id),
+              eq(eventSponsorConnectionTable.userId, ctx.me.id),
+            ),
+          )
+      }
+
+      return {
+        success: true,
+        hearted: input.hearted,
+      }
+    }),
+  capturePublicLead: procedureWithContext
+    .use(verifyEvent())
+    .input(capturePublicLeadSchema)
+    .mutation(async ({ ctx, input }) => {
+      const sponsor = await getSponsorForEvent(ctx.event.id, input.sponsorId)
+      const email = input.email.trim().toLowerCase()
+      const { firstName, lastName } = splitName(input.name)
+
+      let user = await db.query.userTable.findFirst({
+        where: eq(userTable.email, email),
+      })
+
+      if (!user) {
+        const created = await db
+          .insert(userTable)
+          .values({
+            email,
+            firstName,
+            lastName,
+          })
+          .returning()
+        user = created[0]
+      } else {
+        const updates: Partial<typeof userTable.$inferInsert> = {}
+        if (!user.firstName && firstName) {
+          updates.firstName = firstName
+        }
+        if (!user.lastName && lastName) {
+          updates.lastName = lastName
+        }
+        if (Object.keys(updates).length) {
+          const updated = await db
+            .update(userTable)
+            .set(updates)
+            .where(eq(userTable.id, user.id))
+            .returning()
+          user = updated[0] || user
+        }
+      }
+
+      if (!user?.id) {
+        throw error(500, 'Unable to save sponsor lead')
+      }
+
+      const existingConnection = await db.query.eventSponsorConnectionTable.findFirst({
+        where: and(
+          eq(eventSponsorConnectionTable.eventId, ctx.event.id),
+          eq(eventSponsorConnectionTable.sponsorId, sponsor.id),
+          eq(eventSponsorConnectionTable.userId, user.id),
+        ),
+      })
+
+      await upsertSponsorHeart({
+        eventId: ctx.event.id,
+        sponsorId: sponsor.id,
+        userId: user.id,
+        source: input.source,
+      })
+
+      if (!existingConnection && user.email) {
+        await mailer.send({
+          to: user.email,
+          event: ctx.event,
+          subject: `Thanks for connecting with ${sponsor.title || 'this sponsor'}`,
+          more_params: {
+            body: `<p style="margin: 0 0 16px;">Hi ${firstName || user.firstName || 'there'},</p>
+<p style="margin: 0 0 16px;">Thanks for letting us know you're interested in ${sponsor.title || 'this sponsor'} at ${ctx.event.name}.</p>
+<p style="margin: 0 0 16px;">We will share your information so they can follow up and say hello. Keep an eye on your inbox for more information soon.</p>
+<p style="margin: 0;">Best,<br>${ctx.event.name}</p>`,
+          },
+        })
+      }
+
+      return {
+        success: true,
+        alreadyHearted: Boolean(existingConnection),
+      }
+    }),
+  getSponsorLeads: procedureWithContext
+    .use(verifyMe())
+    .use(verifyEvent())
+    .input(z.object({ sponsorId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      await getSponsorForEvent(ctx.event.id, input.sponsorId)
+
+      if (!canViewSponsorLeads(ctx.me, input.sponsorId)) {
+        throw error(401, 'Not Authorized')
+      }
+
+      const leads = await db.query.eventSponsorConnectionTable.findMany({
+        where: and(
+          eq(eventSponsorConnectionTable.eventId, ctx.event.id),
+          eq(eventSponsorConnectionTable.sponsorId, input.sponsorId),
+        ),
+        with: {
+          user: true,
+        },
+      })
+
+      return leads.sort((a, b) => {
+        return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
       })
     }),
   addRep: procedureWithContext
@@ -115,6 +336,7 @@ export const sponsorProcedures = t.router({
               'type',
               'eventId',
               'mediaId',
+              'settings',
             ]),
           })
           .where(eq(sponsorTable.id, input.id))
@@ -134,6 +356,7 @@ export const sponsorProcedures = t.router({
               'type',
               'eventId',
               'mediaId',
+              'settings',
             ]),
           )
           .returning()
