@@ -166,7 +166,7 @@
           <Button
             type="submit"
             disabled={isSubmitting}
-            class="w-full border border-b-2 border-a-accent/30 bg-a-accent/5 font-semibold text-a-accent brightness-90 hover:bg-a-accent/10"
+            class="w-full mb-12 border border-b-2 border-a-accent/30 bg-a-accent/5 font-semibold text-a-accent brightness-90 hover:bg-a-accent/10"
           >
             {isSubmitting ? "Sending..." : "Send Message"}
           </Button>
