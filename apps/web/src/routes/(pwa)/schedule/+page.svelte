@@ -92,7 +92,7 @@
 					</button>
 				{/each} -->
 			</div>
-			<div class="relative w-[calc(100dvw-2rem)] pb-[5vh] lg:w-[calc(100%-2rem)]">
+			<div class="relative w-[calc(100dvw-2rem)] pt-6 pb-[5vh] lg:w-[calc(100%-2rem)]">
 				<div
 					class="fadeRect sticky z-20 -mb-7 h-5 w-full bg-gradient-to-b from-white to-white/0"
 				></div>
@@ -107,6 +107,20 @@
 					</div>
 				{/if}
 				{#each visibleEvents as event, i}
+					{@const previousEvent = visibleEvents[i - 1]}
+					{@const isNewDay =
+						i === 0 ||
+						dayjs(event.startsAt).format('YYYY-MM-DD') !==
+							dayjs(previousEvent?.startsAt).format('YYYY-MM-DD')}
+					{#if isNewDay}
+						<div class="mt-6 flex items-center gap-3 px-1">
+							<div class="h-px flex-1 bg-slate-300/70"></div>
+							<div class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+								{dayjs(event.startsAt).format('dddd')}
+							</div>
+							<div class="h-px flex-1 bg-slate-300/70"></div>
+						</div>
+					{/if}
 					{@const isNew = isNewHour(event)}
 					{#if isNew}
 						<!-- {#if checkIfUpcoming(event, i) === i}
