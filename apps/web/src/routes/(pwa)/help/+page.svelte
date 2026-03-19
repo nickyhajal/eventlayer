@@ -70,11 +70,8 @@
           <div class="text-3xl font-semibold text-emerald-800">
             Message Received!
           </div>
-          <p class="mt-3 text-base text-emerald-700">
-            {form?.message || successMessage}
-          </p>
           <p class="mt-2 text-sm text-emerald-700/80">
-            Our team will review this and get back to you shortly.
+            Our team is on it and will get back to you shortly.
           </p>
         </div>
       {:else}
