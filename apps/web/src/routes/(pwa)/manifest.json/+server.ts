@@ -10,10 +10,10 @@ export const GET = async (req) => {
 		const event = locals.event
 		const favicon = event.faviconId
 			? await db.query.mediaTable.findFirst({
-					where: eq(mediaTable.id, event.faviconId),
-				})
+				where: eq(mediaTable.id, event.faviconId),
+			})
 			: '/'
-		const icon = getMediaUrl(favicon, 'force_format=webp')
+		const icon = getMediaUrl(favicon, 'f-webp')
 		return json({
 			short_name: event.name.replace('Conference', 'Conf'),
 			name: `${kebabCase(event.name)}-app`,

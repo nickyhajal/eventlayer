@@ -12,7 +12,7 @@
   import type { PWAInstallElement } from "@khmyznikov/pwa-install";
   import { tick } from "svelte";
 
-  import { dayjs } from "@matterloop/util";
+  import { dayjs, getMediaUrl } from "@matterloop/util";
 
   import TabBar from "./TabBar.svelte";
 
@@ -117,6 +117,7 @@
       bind:this={pwaInstallEl}
       manual-apple
       manual-chrome
+      install-description={`Install the ${$event?.name} app on your home screen to get the best experience`}
       manifest-url="/manifest.json"
     />
   {/await}
