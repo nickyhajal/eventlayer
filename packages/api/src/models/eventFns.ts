@@ -65,7 +65,7 @@ export const EventFns = (args: string | Args) => {
               with: { user: true },
             },
             photo: true,
-            venue: true,
+            venue: { with: { photo: true } },
             favicon: true,
             largeLogo: true,
             menus: { orderBy: asc(menuTable.ord) },

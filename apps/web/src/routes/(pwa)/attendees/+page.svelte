@@ -192,7 +192,9 @@
     />
   </div>
   <div class=" relative mx-auto -mt-2 max-w-7xl bg-slate-100">
-    <div class="mt-4 grid grid-cols-1 gap-1.5 py-2 lg:grid-cols-2 lg:gap-4">
+    <div
+      class="mt-4 grid grid-cols-1 gap-1.5 pt-2 pb-16 lg:grid-cols-2 lg:gap-4"
+    >
       {#each sortUsers(filterUsers(users, showType)) as user}
         {@const {
           id,
