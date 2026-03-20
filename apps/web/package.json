@@ -62,6 +62,7 @@
     "@aws-sdk/client-s3": "^3.540.0",
     "@aws-sdk/s3-request-presigner": "^3.540.0",
     "@internationalized/date": "^3.5.2",
+    "@khmyznikov/pwa-install": "^0.6.3",
     "@matterloop/api": "workspace:*",
     "@matterloop/db": "workspace:*",
     "@matterloop/eslint-config": "workspace:*",
