@@ -28,6 +28,7 @@ import some from 'lodash/some'
 import sortBy from 'lodash/sortBy'
 import startCase from 'lodash/startCase'
 import uniq from 'lodash/uniq'
+import truncate from 'lodash/truncate'
 import uniqBy from 'lodash/uniqBy'
 import without from 'lodash/without'
 
@@ -92,6 +93,7 @@ export {
   isFunction,
   capitalize,
   set,
+  truncate,
   get,
   debounce,
   pick,
@@ -151,7 +153,7 @@ export const unflatten = function (data: any) {
     last: number,
     temp: string
   for (var p in data) {
-    ;((cur = result), (prop = ''), (last = 0))
+    ; ((cur = result), (prop = ''), (last = 0))
     do {
       idx = p.indexOf('.', last)
       temp = p.substring(last, idx !== -1 ? idx : undefined)
