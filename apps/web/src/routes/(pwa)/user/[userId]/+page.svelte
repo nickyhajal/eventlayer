@@ -287,11 +287,11 @@
       </div>
       {#if user.bio}
         <div class="border-t border-slate-200 pb-8 pt-8"></div>
+        <Markdown
+          data={user.bio || user.info?.bio?.value || ""}
+          class="border-b border-slate-200 pb-4 text-lg font-medium text-slate-600"
+        />
       {/if}
-      <Markdown
-        data={user.bio || user.info?.bio?.value || ""}
-        class="border-b border-slate-200 pb-4 text-lg font-medium text-slate-600"
-      />
       {#if user.proBio}
         <Markdown
           data={user.proBio}
