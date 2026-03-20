@@ -180,7 +180,7 @@
 <style lang="postcss">
 	.topNav {
 		/* top: 3rem; */
-		top: calc((env(safe-area-inset-top) * 0.68) + 3rem);
+		top: calc(env(safe-area-inset-top, 0px) + 3rem);
 		@media screen and (min-width: 1024px) {
 			top: 0.5rem;
 		}

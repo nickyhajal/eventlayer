@@ -312,9 +312,20 @@
 </Screen>
 
 <style lang="postcss">
+  .topNav {
+    top: calc(env(safe-area-inset-top, 0px) + 3rem);
+    @media screen and (min-width: 1024px) {
+      top: 0.5rem;
+    }
+  }
   .shell {
     position: relative;
-    top: calc(env(safe-area-inset-top) - 0.5rem);
+    top: 0;
+  }
+  @media screen and (min-width: 1024px) {
+    .shell {
+      top: calc(env(safe-area-inset-top) - 0.5rem);
+    }
   }
   .icon :global(svg) {
     @apply h-[1rem] w-[1rem]  flex-none text-a-accent/70 brightness-90;

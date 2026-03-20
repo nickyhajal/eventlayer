@@ -75,10 +75,10 @@
 </script>
 
 <!-- class="flex w-full flex-none flex-col items-start justify-center gap-0.5 border border-b-2 border-slate-200/50 border-b-slate-300/50 bg-slate-100/70 py-9 text-left text-sm font-semibold text-slate-600 {bits[1] === currBits[1]?'' : ''} {classes ||''}" -->
-<Screen title="Menu" photo={$event?.photo}>
+<Screen title="Menu">
   <div class="mx-auto min-h-[calc(100vh-5rem)] max-w-7xl">
     <div class="flex flex-col justify-end gap-2 pt-2">
-      <div class="login mt-16 flex touch-manipulation gap-2">
+      <div class="login mt-0 flex touch-manipulation gap-2">
         {#if !$me?.id}
           <Button
             href="/login"
@@ -133,7 +133,7 @@
 <style lang="postcss">
   .login {
     position: relative;
-    top: calc(0.5rem + env(safe-area-inset-top));
+    top: 0.5rem;
   }
   .menu {
     bottom: calc(4rem + env(safe-area-inset-bottom));

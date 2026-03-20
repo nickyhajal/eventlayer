@@ -14,7 +14,7 @@
   export let bigTitle = "";
   export let back = "";
   export let noBgScreen = false;
-  export let photo: Media;
+  export let photo: Media | undefined = undefined;
   export let bodyClass = "";
   export let titleSelectOptions:
     | false
@@ -58,7 +58,7 @@
 <div
   class="relative mx-auto h-full min-h-[40dvh] {bigTitle
     ? 'bg-white'
-    : 'bg-white'} pt-12 lg:pt-0"
+    : 'bg-white'} max-lg:pt-[calc(3rem+env(safe-area-inset-top,0px))] lg:pt-0"
 >
   <!-- bottom extra blue -->
   {#if !noBgScreen}
@@ -67,42 +67,46 @@
     ></div>
   {/if}
 
-  <!-- title bar -->
+  <!-- title bar: safe-area once on wrapper, fixed 3rem row (matches shell padding-top) -->
   <div
-    class="topControls fixed top-0 z-50 flex h-12 w-full items-center justify-between bg-slate-800 py-2 lg:relative lg:hidden"
+    class="topControlsWrap fixed top-0 z-50 w-full bg-slate-800 lg:relative lg:hidden"
     style="--tw-bg-opacity: {photo ? mainTitleOpacity : 1}"
   >
-    <!-- back button -->
-    <div>
-      {#if back}
-        <div transition:fade>
-          <Button
-            on:click={(e) => handleBack(e)}
-            variant="ghost"
-            href={back}
-            class="px-1 hover:bg-transparent"
-          >
-            <ChevronLeft class="h-8 w-8 px-0 text-white hover:bg-transparent"
-            ></ChevronLeft>
-          </Button>
-        </div>
-      {/if}
-    </div>
     <div
-      class="absolute left-0 right-0 mx-auto w-fit max-w-56 truncate text-center text-sm font-semibold text-white"
-      style="opacity: {mainTitleOpacity}"
+      class="topControls relative flex h-12 w-full items-center justify-between py-2"
     >
-      {titleSelectOptions
-        ? titleSelectOptions.find(({ value }) => value === titleSelectValue)
-            ?.label || title
-        : title}
+      <!-- back button -->
+      <div>
+        {#if back}
+          <div transition:fade>
+            <Button
+              on:click={(e) => handleBack(e)}
+              variant="ghost"
+              href={back}
+              class="px-1 hover:bg-transparent"
+            >
+              <ChevronLeft class="h-8 w-8 px-0 text-white hover:bg-transparent"
+              ></ChevronLeft>
+            </Button>
+          </div>
+        {/if}
+      </div>
+      <div
+        class="absolute left-0 right-0 mx-auto w-fit max-w-56 truncate text-center text-sm font-semibold text-white"
+        style="opacity: {mainTitleOpacity}"
+      >
+        {titleSelectOptions
+          ? titleSelectOptions.find(({ value }) => value === titleSelectValue)
+              ?.label || title
+          : title}
+      </div>
     </div>
   </div>
 
   <!-- content -->
   <div
     class={tw(
-      `contentShell relative z-20 -mt-0.5 h-full bg-white pb-6 lg:px-16   ${photo ? "-mt-16" : ""} ${bodyClass}`,
+      `contentShell relative z-20 -mt-0.5 h-full bg-white pb-6 lg:px-16   ${bigTitle && photo ? "-mt-16" : ""} ${bodyClass}`,
     )}
     bind:this={contentElm}
     on:scroll={handleContentScroll}
@@ -242,9 +246,8 @@
 </div>
 
 <style>
-  .topControls {
-    padding-top: calc(env(safe-area-inset-top) * 1.2);
-    padding-bottom: calc(env(safe-area-inset-top) * 0.5);
+  .topControlsWrap {
+    padding-top: env(safe-area-inset-top, 0px);
   }
   .contentSlot {
     padding-bottom: calc(env(safe-area-inset-top) * 2);
