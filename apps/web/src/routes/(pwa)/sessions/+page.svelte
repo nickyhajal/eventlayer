@@ -108,6 +108,20 @@
 					</div>
 				{/if}
 				{#each visibleEvents as event, i}
+					{@const previousEvent = visibleEvents[i - 1]}
+					{@const isNewDay =
+						i === 0 ||
+						dayjs(event.startsAt).format('YYYY-MM-DD') !==
+							dayjs(previousEvent?.startsAt).format('YYYY-MM-DD')}
+					{#if isNewDay}
+						<div class="my-4 flex items-center gap-3 px-1">
+							<div class="h-px flex-1 bg-slate-300/70"></div>
+							<div class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+								{dayjs(event.startsAt).format('dddd')}
+							</div>
+							<div class="h-px flex-1 bg-slate-300/70"></div>
+						</div>
+					{/if}
 					{@const isNew = isNewHour(event)}
 					{#if isNew}
 						<div
