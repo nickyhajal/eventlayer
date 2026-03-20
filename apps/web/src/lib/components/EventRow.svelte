@@ -21,7 +21,7 @@
       class="h-10 w-14 flex-none rounded-md bg-cover object-cover"
     /> -->
   {:else}
-    <div class="h-12 w-20 flex-none rounded-md bg-slate-100"></div>
+    <!-- <div class="h-12 w-20 flex-none rounded-md bg-slate-100"></div> -->
   {/if}
   <div class="flex flex-none flex-col -mt-[4px]">
     <div
