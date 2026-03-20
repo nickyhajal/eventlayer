@@ -5,10 +5,10 @@
     getAttendeeSearcherContext,
     getMeContext,
   } from "$lib/state/getContexts";
-  import { getContext, onMount } from "svelte";
+  import { getContext, onMount, tick } from "svelte";
 
   import type { User } from "@matterloop/db";
-  import { getMediaUrl, orderBy, startCase } from "@matterloop/util";
+  import { getMediaUrl, isIos, orderBy, startCase } from "@matterloop/util";
 
   import type { Snapshot } from "../$types.js";
 
@@ -79,16 +79,54 @@
   let searchInput: HTMLInputElement | undefined;
 
   onMount(() => {
-    if (window.location.hash === "#search") {
-      searchInput?.focus();
-      const delayedFocus = window.setTimeout(() => {
-        searchInput?.focus();
-      }, 150);
+    const fromHash = window.location.hash === "#search";
+    const fromQuery = data.shouldAutofocusSearch;
+    if (!fromHash && !fromQuery) return;
 
-      return () => {
-        window.clearTimeout(delayedFocus);
+    let cleared = false;
+    const timers: number[] = [];
+
+    void tick().then(() => {
+      if (cleared) return;
+      const el = searchInput;
+      if (!el) return;
+
+      const runFocus = () => {
+        el.focus({ preventScroll: true });
       };
-    }
+
+      runFocus();
+
+      // iOS only treats focus as user-initiated inside a gesture; after client-side
+      // navigation, plain focus() is ignored. Toggling readOnly is a common workaround.
+      if (isIos()) {
+        el.readOnly = true;
+        runFocus();
+        queueMicrotask(() => {
+          if (cleared) return;
+          el.readOnly = false;
+          runFocus();
+        });
+        timers.push(
+          window.setTimeout(() => {
+            if (!cleared) runFocus();
+          }, 50),
+        );
+        timers.push(
+          window.setTimeout(() => {
+            if (!cleared) runFocus();
+          }, 200),
+        );
+      } else {
+        timers.push(window.setTimeout(runFocus, 150));
+      }
+    });
+
+    return () => {
+      cleared = true;
+      for (const t of timers) window.clearTimeout(t);
+      if (searchInput?.readOnly) searchInput.readOnly = false;
+    };
   });
 
   /**
@@ -141,6 +179,11 @@
     <input
       bind:this={searchInput}
       type="text"
+      enterkeyhint="search"
+      autocorrect="off"
+      autocomplete="off"
+      spellcheck="false"
+      {...data.shouldAutofocusSearch ? { autofocus: true } : {}}
       class="w-full bg-transparent py-2.5 text-base !outline-none"
       placeholder="Search {typeOptions
         .find(({ value }) => value === showType)

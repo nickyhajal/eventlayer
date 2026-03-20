@@ -9,5 +9,7 @@ export const load = async (req) => {
   // return {
   // 	users,
   // }
-  return {}
+  return {
+    shouldAutofocusSearch: url.searchParams.get('focus') === 'search',
+  }
 }

@@ -72,7 +72,7 @@
     class="topNav md:hidden sticky z-40 -ml-4 flex w-[calc(100vw+0.25rem)] items-center justify-center border-b border-slate-300/50 bg-slate-50 px-5 text-center text-sm text-slate-600 lg:mx-0 lg:mt-1 lg:w-full lg:rounded-2xl lg:border"
   >
     <a
-      href="/attendees#search"
+      href="/attendees?focus=search"
       type="text"
       class="w-full bg-transparent items-center gap-1.5 text-slate-700 py-2.5 text-base flex !outline-none text-left"
     >
