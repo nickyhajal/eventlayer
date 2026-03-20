@@ -87,7 +87,7 @@
       {/each}
     </div>
     <div
-      class="mx-auto flex w-full items-center justify-around gap-0 md:max-w-2xl lg:hidden"
+      class="mobileTabStrip mx-auto flex w-full items-center justify-around gap-0 md:max-w-2xl lg:hidden"
     >
       {#each mobileTabs as { label, icon, link, classes }, i}
         {@const currBits = link.split("/")}
@@ -95,7 +95,7 @@
           href={link}
           variant="ghost"
           class={tw(
-            `flex h-full w-20 flex-none flex-col items-center gap-0.5 py-1 text-[0.7rem] transition-none hover:bg-transparent focus:bg-transparent lg:w-full lg:flex-row lg:items-center lg:justify-start lg:gap-3 lg:rounded-lg lg:bg-slate-800 lg:px-2.5 lg:py-2 lg:text-sm lg:text-white  lg:hover:text-white ${bits[1] === currBits[1] ? "text-a-accent brightness-90 hover:text-a-accent lg:bg-slate-900 lg:hover:bg-slate-900" : "text-slate-600 hover:lg:bg-slate-700"} ${classes}`,
+            `flex h-full top-0.5 relative w-20 flex-none flex-col items-center gap-[1px] pt-1 pb-1 text-[0.7rem] transition-none hover:bg-transparent focus:bg-transparent lg:w-full lg:flex-row lg:items-center lg:justify-start lg:gap-3 lg:rounded-lg lg:bg-slate-800 lg:px-2.5 lg:py-2 lg:text-sm lg:text-white  lg:hover:text-white ${bits[1] === currBits[1] ? "text-a-accent brightness-90 hover:text-a-accent lg:bg-slate-900 lg:hover:bg-slate-900" : "text-slate-600 hover:lg:bg-slate-700"} ${classes}`,
           )}
         >
           <div class="icon {bits[1] === currBits[1] ? 'selected' : ''}">
@@ -191,5 +191,12 @@
 <style lang="postcss">
   .tabbar {
     padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  @media (display-mode: standalone) {
+    .mobileTabStrip {
+      position: relative;
+      top: 0.4rem;
+    }
   }
 </style>
