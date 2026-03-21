@@ -178,7 +178,7 @@
     <div class="relative z-10 px-8 py-8">
       <div class="mb-8 justify-center flex items-center gap-10 text-center">
         <div class="mt-2 text-slate-100 font-semibold text-5xl">
-          What's Happening
+          What's Happening Now
         </div>
       </div>
 
