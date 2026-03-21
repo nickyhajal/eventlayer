@@ -33,6 +33,27 @@ function parseTimeOverrideAt(value: string | null | undefined) {
   return parsed.isValid() ? parsed : null
 }
 
+function getWallClockNowInTimeZone(timeZone: string) {
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  })
+  const parts = formatter.formatToParts(new Date())
+  const getPart = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((part) => part.type === type)?.value ?? ''
+  const wallClockNow = `${getPart('year')}-${getPart('month')}-${getPart('day')}T${getPart(
+    'hour',
+  )}:${getPart('minute')}:${getPart('second')}`
+
+  return dayjs(wallClockNow)
+}
+
 function isEffectiveScreenData(value: unknown): value is EffectiveScreenData {
   if (!value || typeof value !== 'object') return false
   if (!('mode' in value) || typeof value.mode !== 'string') return false
@@ -61,7 +82,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
   const effective = effectiveUnknown
 
   const timeOverrideAt = parseTimeOverrideAt(effective.timeOverrideAt)
-  const comparisonNow = timeOverrideAt ?? dayjs()
+  const comparisonNow = timeOverrideAt ?? getWallClockNowInTimeZone('America/Chicago')
   const comparisonStart = comparisonNow.subtract(20, 'minute')
   const comparisonEnd = comparisonNow.add(45, 'minute')
 
