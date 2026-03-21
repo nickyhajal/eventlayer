@@ -12,13 +12,14 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const eventId = locals.event.id
 	const eventFns = EventFns({ eventId })
 
-	const [users, events, sponsors, tickets] = await Promise.all([
+	const [users, events, sponsors, tickets, checkinStats] = await Promise.all([
 		eventFns.getUsersWithInfo(),
 		eventFns.getEvents(),
 		eventFns.getSponsors(),
 		db.query.eventTicketTable.findMany({
 			where: eq(eventTicketTable.eventId, eventId),
 		}),
+		eventFns.getCheckinStats(),
 	])
 
 	const typeCounts: Record<string, number> = {}
@@ -54,6 +55,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			assignedTickets,
 			unassignedTickets,
 			onboardingCompleted: onboardCounts.done,
+			checkinsCompleted: checkinStats.checkedInIds.length,
 		},
 	}
 }

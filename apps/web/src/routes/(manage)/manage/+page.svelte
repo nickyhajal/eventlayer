@@ -31,6 +31,7 @@
     assignedTickets: number;
     unassignedTickets: number;
     onboardingCompleted: number;
+    checkinsCompleted: number;
   };
 
   const emptyStats: DashboardStats = {
@@ -50,13 +51,13 @@
     assignedTickets: 0,
     unassignedTickets: 0,
     onboardingCompleted: 0,
+    checkinsCompleted: 0,
   };
 
   export let data;
 
   $: stats = (data.stats ?? emptyStats) as DashboardStats;
   $: event = data.event;
-  $: console.log(event.startsAt);
   $: startsAt = event?.startsAt ? dayjs(event.startsAt) : null;
 
   let now = dayjs();
@@ -77,7 +78,6 @@
     return Math.round((value / total) * 100);
   };
 
-  $: console.log(startsAt);
   $: daysUntil = startsAt ? startsAt.diff(now, "day") : null;
   $: hoursUntil = startsAt ? startsAt.diff(now, "hour") % 24 : null;
   $: isPast = startsAt ? startsAt.isBefore(now) : false;
@@ -86,9 +86,11 @@
   $: unassignedTickets = stats.unassignedTickets || stats.unclaimedTickets;
   $: onboardingCompleted =
     stats.onboardingCompleted || stats.onboardCounts.done;
+  $: checkinsCompleted = stats.checkinsCompleted || 0;
   $: totalTickets = assignedTickets + unassignedTickets;
   $: ticketsAssignedPercent = getPercent(assignedTickets, totalTickets);
   $: attendeesOnboardedPercent = getPercent(onboardingCompleted, attendees);
+  $: attendeesCheckedInPercent = getPercent(checkinsCompleted, attendees);
 </script>
 
 <AdminScreen>
@@ -108,7 +110,7 @@
         </div>
       </div>
     {/if}
-    <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
+    <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-4">
       <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
         <div class="mb-3 text-sm font-medium text-gray-500">
           Tickets Assigned
@@ -130,6 +132,18 @@
         </div>
         <div class="mt-2 text-sm text-gray-500">
           {onboardingCompleted.toLocaleString()}/{attendees.toLocaleString()}
+        </div>
+      </div>
+
+      <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <div class="mb-3 text-sm font-medium text-gray-500">
+          Attendees Checked In
+        </div>
+        <div class="text-4xl font-bold leading-none text-gray-900">
+          {attendeesCheckedInPercent}%
+        </div>
+        <div class="mt-2 text-sm text-gray-500">
+          {checkinsCompleted.toLocaleString()}/{attendees.toLocaleString()}
         </div>
       </div>
 

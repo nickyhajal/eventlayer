@@ -14,22 +14,8 @@
 	let setCurrentPage
 	let setGlobalFilter
 
-	type PageStats = {
-		attendees: number
-		checkinsCompleted: number
-	}
-
-	const emptyStats: PageStats = {
-		attendees: 0,
-		checkinsCompleted: 0,
-	}
-
 	let addOpen = false
 	let loading = false
-	$: stats = (data.stats ?? emptyStats) as PageStats
-	$: attendees = stats.attendees
-	$: checkinsCompleted = stats.checkinsCompleted
-	$: attendeeCheckinPercent = attendees > 0 ? Math.round((checkinsCompleted / attendees) * 100) : 0
 	export const snapshot: Snapshot = {
 		capture: () => {
 			const state = table ? $table.getState() : undefined
@@ -72,16 +58,7 @@
 			Add Page</Button
 		>
 	</div>
-	<div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
-		<div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-			<div class="mb-3 text-sm font-medium text-gray-500">Attendees Checked In</div>
-			<div class="text-4xl font-bold leading-none text-gray-900">{attendeeCheckinPercent}%</div>
-			<div class="mt-2 text-sm text-gray-500">
-				{checkinsCompleted.toLocaleString()}/{attendees.toLocaleString()}
-			</div>
-		</div>
-	</div>
-		<PageTable rows={data.pages} bind:table bind:setCurrentPage bind:setGlobalFilter />
+	<PageTable rows={data.pages} bind:table bind:setCurrentPage bind:setGlobalFilter />
 </AdminScreen>
 
 <Dialog.Root bind:open={addOpen}>
