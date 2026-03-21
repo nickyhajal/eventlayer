@@ -211,7 +211,7 @@
                       class="overflow-hidden rounded-2xl flex-none {activeUpcomingPage.length >
                       4
                         ? 'w-[30%]'
-                        : 'w-[40%]'} border border-slate-700 bg-slate-900 shadow-xl"
+                        : 'w-[30%]'} border border-slate-700 bg-slate-900 shadow-xl"
                     >
                       {#if getCardImage(event)}
                         <img
