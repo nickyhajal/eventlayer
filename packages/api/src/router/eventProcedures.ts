@@ -277,6 +277,7 @@ export const eventProcedures = t.router({
               'settings',
               'emailFromName',
               'largeLogoId',
+              'darkLogoId',
               'venueId',
             ]),
           )

@@ -1,30 +1,105 @@
 import { error } from '@sveltejs/kit'
 
+import type { PageServerLoad } from './$types'
+import { dayjs } from '@matterloop/util'
+
 import { EventFns, ScreenFns } from '@matterloop/api'
 import { getScreensChannelName } from '@matterloop/api/src/core/ably'
 
-export const load = async ({ locals, params }) => {
+import { getScreenBackdropPreset } from '$lib/screen/screenBackdropPresets'
+import {
+  compileTailwindForScreenBackdrop,
+  prepareScreenBackdropClasses,
+} from '$lib/server/compileTailwindForScreenBackdrop'
+
+interface EffectiveScreenData {
+  mode: 'upcoming_events' | 'message' | 'image' | 'logo'
+  notificationEnabled: boolean
+  notificationMessage?: string | null
+  notificationPosition: 'top' | 'bottom'
+  timeOverrideAt?: string | null
+  messageBody?: string | null
+  imageUrl?: string | null
+  backgroundStyles?: string | null
+}
+
+function isEffectiveScreenData(value: unknown): value is EffectiveScreenData {
+  if (!value || typeof value !== 'object') return false
+  if (!('mode' in value) || typeof value.mode !== 'string') return false
+  if (!('notificationEnabled' in value) || typeof value.notificationEnabled !== 'boolean') return false
+  if (!('notificationPosition' in value) || typeof value.notificationPosition !== 'string') return false
+  return true
+}
+
+export const load: PageServerLoad = async ({ locals, params }) => {
   if (!locals.event?.id) {
-    error(404, 'Event not found')
+    throw error(404, 'Event not found')
   }
 
-  const screenFns = ScreenFns({ eventId: locals.event.id })
+  const eventId = locals.event.id
+  const screenFns = ScreenFns({ eventId })
   const resolved = await screenFns.getEffectiveConfigByKey(params.screenId)
 
   if (!resolved) {
-    error(404, 'Screen not found')
+    throw error(404, 'Screen not found')
   }
 
+  const effectiveUnknown: unknown = resolved.effective
+  if (!isEffectiveScreenData(effectiveUnknown)) {
+    throw error(500, 'Invalid screen config')
+  }
+  const effective = effectiveUnknown
+
+  const timeOverrideAt =
+    effective.timeOverrideAt && dayjs(effective.timeOverrideAt).isValid()
+      ? dayjs(effective.timeOverrideAt)
+      : null
+  const comparisonNow = timeOverrideAt ?? dayjs()
+  const comparisonEnd = comparisonNow.add(1, 'hour')
+
   const upcoming =
-    resolved.effective.mode === 'upcoming_events'
-      ? await EventFns({ eventId: locals.event.id }).getNextEvents()
+    effective.mode === 'upcoming_events'
+      ? (await EventFns({ eventId }).getEvents()).filter((event) => {
+          if (!event.startsAt) return false
+          const startsAt = dayjs(event.startsAt)
+          return (
+            startsAt.isValid() &&
+            (startsAt.isSame(comparisonNow) || startsAt.isAfter(comparisonNow)) &&
+            startsAt.isBefore(comparisonEnd)
+          )
+        })
       : []
+
+  const backgroundStyles = typeof effective.backgroundStyles === 'string' ? effective.backgroundStyles : ''
+  const backdropPreset = getScreenBackdropPreset(backgroundStyles)
+  let imageModeBackdropCss = ''
+  let imageModeBackdropClassNames = ''
+  if (!backdropPreset) {
+    const rawBackdrop = backgroundStyles.trim()
+    // The helper is imported through a workspace alias that loses its function type here.
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const prepareBackdropClasses: (value: string) => string | null = prepareScreenBackdropClasses
+    const compileBackdropCss: (value: string) => Promise<string> = compileTailwindForScreenBackdrop
+    const preparedBackdropClasses = prepareBackdropClasses(rawBackdrop)
+    imageModeBackdropClassNames = preparedBackdropClasses ?? ''
+    try {
+      if (imageModeBackdropClassNames) {
+        imageModeBackdropCss = await compileBackdropCss(rawBackdrop)
+      }
+    } catch (e) {
+      console.error('Screen backdrop Tailwind compile failed', e)
+    }
+  }
 
   return {
     event: locals.event,
     screen: resolved.screen,
-    effective: resolved.effective,
+    effective,
     upcoming,
-    screensChannel: getScreensChannelName(locals.event.id),
+    backdropPresetId: backdropPreset?.id ?? null,
+    imageModeBackdropCss,
+    imageModeBackdropClassNames,
+    timeOverrideAt: timeOverrideAt?.toISOString() ?? null,
+    screensChannel: getScreensChannelName(eventId),
   }
 }

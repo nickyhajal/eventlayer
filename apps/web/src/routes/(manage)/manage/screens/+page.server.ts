@@ -4,11 +4,12 @@ import { ScreenFns } from '@matterloop/api'
 
 export const load = async ({ locals }) => {
   if (!locals.event.id) {
-    error(404, 'Event not found')
+    throw error(404, 'Event not found')
   }
   const screenFns = ScreenFns({ eventId: locals.event.id })
   const global = await screenFns.getGlobal()
   const screens = await screenFns.getScreens()
+  const profiles = await screenFns.getProfiles()
   const screensWithConfig = await Promise.all(
     screens.map(async (screen) => ({
       ...screen,
@@ -17,6 +18,7 @@ export const load = async ({ locals }) => {
   )
   return {
     global,
+    profiles,
     screens: screensWithConfig,
   }
 }

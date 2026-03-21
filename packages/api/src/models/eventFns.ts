@@ -22,6 +22,7 @@ import {
   isNotNull,
   key,
   like,
+  lt,
   mediaTable,
   menuTable,
   ne,
@@ -68,6 +69,7 @@ export const EventFns = (args: string | Args) => {
             venue: { with: { photo: true } },
             favicon: true,
             largeLogo: true,
+            darkLogo: true,
             menus: { orderBy: asc(menuTable.ord) },
             content: {
               where: and(eq(contentTable.eventId, eventId), ne(contentTable.type, 'faq')),
@@ -121,16 +123,43 @@ export const EventFns = (args: string | Args) => {
       }
       return events
     },
-    getNextEvents: async (timezoneShift = 7) => {
+    getNextEvents: async (
+      args:
+        | number
+        | {
+            timezoneShift?: number
+            nowIso?: string
+            includeRestricted?: boolean
+            withinHours?: number
+            limit?: number | null
+          } = 7,
+    ) => {
+      const timezoneShift = typeof args === 'number' ? args : (args.timezoneShift ?? 7)
+      const includeRestricted = typeof args === 'object' ? args.includeRestricted === true : false
+      const withinHours = typeof args === 'object' ? args.withinHours : undefined
+      const limit = typeof args === 'object' ? (args.limit ?? undefined) : 3
+      const simulatedNow =
+        typeof args === 'object' && args.nowIso && dayjs(args.nowIso).isValid()
+          ? dayjs(args.nowIso)
+          : dayjs()
+      const comparisonNow = simulatedNow.subtract(timezoneShift, 'h')
+
       return db.query.eventTable.findMany({
         where: and(
           eq(eventTable.eventId, eventId),
-          and(not(eq(eventTable.eventFor, 'selected')), not(eq(eventTable.eventFor, 'rsvp'))),
-          gte(eventTable.startsAt, dayjs().subtract(timezoneShift, 'h').toISOString()),
+          includeRestricted
+            ? undefined
+            : and(not(eq(eventTable.eventFor, 'selected')), not(eq(eventTable.eventFor, 'rsvp'))),
+          withinHours == null
+            ? gte(eventTable.startsAt, comparisonNow.toISOString())
+            : and(
+                gte(eventTable.startsAt, comparisonNow.toISOString()),
+                lt(eventTable.startsAt, comparisonNow.add(withinHours, 'h').toISOString()),
+              ),
         ),
         orderBy: asc(eventTable.startsAt),
         with: { photo: true, venue: { with: { photo: true } } },
-        limit: 3,
+        limit,
       })
     },
     getUsers: async () => {

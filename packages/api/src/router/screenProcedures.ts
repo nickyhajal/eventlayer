@@ -1,5 +1,6 @@
 import { initTRPC } from '@trpc/server'
 import { z } from 'zod'
+import { dayjs } from '@matterloop/util'
 
 import { publishScreensHardRefresh, publishScreensInvalidation } from '../core/ably'
 import { ScreenFns } from '../models/screenFns'
@@ -7,12 +8,53 @@ import { procedureWithContext, verifyEvent, type TrpcContext } from '../procedur
 
 const t = initTRPC.context<TrpcContext>().create()
 
+function isAllowedScreenImageUrl(url: string): boolean {
+  const t = url.trim()
+  if (!t) return true
+  if (/^javascript:/i.test(t) || /^data:/i.test(t) || /^vbscript:/i.test(t)) return false
+  if (t.startsWith('/')) return !t.includes('//')
+  try {
+    const u = new URL(t)
+    return u.protocol === 'http:' || u.protocol === 'https:'
+  } catch {
+    return false
+  }
+}
+
+function isAllowedTimeOverride(value: string | null | undefined): boolean {
+  if (value == null || value === '') return true
+  return dayjs(value).isValid()
+}
+
 const screenConfigInput = z.object({
-  mode: z.enum(['upcoming_events', 'message']),
+  mode: z.enum(['upcoming_events', 'message', 'image']),
   notificationEnabled: z.boolean().default(false),
   notificationMessage: z.string().nullable().optional(),
   notificationPosition: z.enum(['top', 'bottom']).default('top'),
+  timeOverrideAt: z
+    .string()
+    .nullable()
+    .optional()
+    .refine((v) => isAllowedTimeOverride(v), 'Invalid time override'),
   messageBody: z.string().nullable().optional(),
+  screenProfileId: z.string().uuid().nullable().optional(),
+  imageUrl: z
+    .string()
+    .max(2048)
+    .nullable()
+    .optional()
+    .refine((v) => v == null || v === '' || isAllowedScreenImageUrl(v), 'Invalid image URL'),
+  backgroundStyles: z.string().nullable().optional(),
+})
+
+const screenProfileInput = z.object({
+  name: z.string().trim().min(1).max(120),
+  config: screenConfigInput.omit({
+    notificationEnabled: true,
+    notificationMessage: true,
+    notificationPosition: true,
+    screenProfileId: true,
+  }),
 })
 
 async function notify(eventId: string, data?: Record<string, unknown>) {
@@ -118,6 +160,39 @@ export const screenProcedures = t.router({
         await notify(ctx.event.id, { scope: 'screen_config', action: 'clear', screenId: input.screenId })
       }
       return cleared
+    }),
+  createProfile: procedureWithContext
+    .use(verifyEvent())
+    .input(screenProfileInput)
+    .mutation(async ({ ctx, input }) => {
+      return ScreenFns({ eventId: ctx.event.id }).createProfile(input)
+    }),
+  updateProfile: procedureWithContext
+    .use(verifyEvent())
+    .input(
+      z.object({
+        id: z.string().uuid(),
+        name: z.string().trim().min(1).max(120),
+        config: screenConfigInput.omit({
+          notificationEnabled: true,
+          notificationMessage: true,
+          notificationPosition: true,
+          screenProfileId: true,
+        }),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const updated = await ScreenFns({ eventId: ctx.event.id }).updateProfile(input)
+      if (updated) {
+        await notify(ctx.event.id, { scope: 'screen_profile', action: 'update', profileId: input.id })
+      }
+      return updated
+    }),
+  deleteProfile: procedureWithContext
+    .use(verifyEvent())
+    .input(z.object({ id: z.string().uuid() }))
+    .mutation(async ({ ctx, input }) => {
+      return ScreenFns({ eventId: ctx.event.id }).deleteProfile(input.id)
     }),
   getEffectiveById: procedureWithContext
     .use(verifyEvent())

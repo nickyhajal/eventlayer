@@ -105,7 +105,7 @@
             ? "Saving..."
             : data.isHearted
               ? "Remove Heart"
-              : "Heart Sponsor"}
+              : "Heart this Vendor"}
         </div>
       </Button>
     {/if}

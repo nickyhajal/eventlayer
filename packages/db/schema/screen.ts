@@ -39,7 +39,7 @@ export const screenSchema = createInsertSchema(screenTable, {
   name: (schema) => schema.name.min(1),
 })
 
-export const screenModeEnum = z.enum(['upcoming_events', 'message'])
+export const screenModeEnum = z.enum(['upcoming_events', 'message', 'image'])
 export const screenNotificationPositionEnum = z.enum(['top', 'bottom'])
 
 export type ScreenMode = z.infer<typeof screenModeEnum>

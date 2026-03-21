@@ -42,6 +42,14 @@ const capturePublicLeadSchema = z.object({
   source: z.string().default('qr'),
 })
 
+const escapeHtml = (value: string) =>
+  value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;')
+
 function splitName(name: string) {
   const trimmed = name.trim().replace(/\s+/g, ' ')
   if (!trimmed.length) {
@@ -65,6 +73,49 @@ async function getSponsorForEvent(eventId: string, sponsorId: string) {
   }
 
   return sponsor
+}
+
+async function getExistingSponsorConnection(eventId: string, sponsorId: string, userId: string) {
+  return db.query.eventSponsorConnectionTable.findFirst({
+    where: and(
+      eq(eventSponsorConnectionTable.eventId, eventId),
+      eq(eventSponsorConnectionTable.sponsorId, sponsorId),
+      eq(eventSponsorConnectionTable.userId, userId),
+    ),
+  })
+}
+
+async function sendSponsorInterestEmail({
+  event,
+  to,
+  sponsor,
+}: {
+  event: NonNullable<TrpcContext['event']>
+  to: string
+  sponsor: Awaited<ReturnType<typeof getSponsorForEvent>>
+}) {
+  const sponsorName = sponsor.title?.trim() || 'this sponsor'
+  const sponsorWebsite = sponsor.url?.trim()
+  const sponsorDescription = sponsor.description?.trim()
+
+  const body = [
+    `<p style="margin: 0 0 16px;">Thanks for your interest in ${escapeHtml(sponsorName)}!</p>`,
+    sponsorWebsite
+      ? `<p style="margin: 0 0 16px;">You can find more information about them here: <a href="${escapeHtml(sponsorWebsite)}">${escapeHtml(sponsorWebsite)}</a></p>`
+      : '',
+    sponsorDescription
+      ? `<p style="margin: 0;">${escapeHtml(sponsorDescription).replaceAll('\n', '<br/>')}</p>`
+      : '',
+  ]
+    .filter(Boolean)
+    .join('\n')
+
+  await mailer.send({
+    to,
+    event,
+    subject: `Thanks for your interest in ${sponsorName}!`,
+    more_params: { body },
+  })
 }
 
 async function upsertSponsorHeart({
@@ -158,6 +209,9 @@ export const sponsorProcedures = t.router({
     .input(setHeartSchema)
     .mutation(async ({ ctx, input }) => {
       const sponsor = await getSponsorForEvent(ctx.event.id, input.sponsorId)
+      const existingConnection = input.hearted
+        ? await getExistingSponsorConnection(ctx.event.id, sponsor.id, ctx.me.id)
+        : null
 
       if (input.hearted) {
         await upsertSponsorHeart({
@@ -176,6 +230,14 @@ export const sponsorProcedures = t.router({
               eq(eventSponsorConnectionTable.userId, ctx.me.id),
             ),
           )
+      }
+
+      if (input.hearted && !existingConnection && ctx.me.email) {
+        await sendSponsorInterestEmail({
+          event: ctx.event,
+          to: ctx.me.email,
+          sponsor,
+        })
       }
 
       return {
@@ -227,13 +289,7 @@ export const sponsorProcedures = t.router({
         throw error(500, 'Unable to save sponsor lead')
       }
 
-      const existingConnection = await db.query.eventSponsorConnectionTable.findFirst({
-        where: and(
-          eq(eventSponsorConnectionTable.eventId, ctx.event.id),
-          eq(eventSponsorConnectionTable.sponsorId, sponsor.id),
-          eq(eventSponsorConnectionTable.userId, user.id),
-        ),
-      })
+      const existingConnection = await getExistingSponsorConnection(ctx.event.id, sponsor.id, user.id)
 
       await upsertSponsorHeart({
         eventId: ctx.event.id,
@@ -243,16 +299,10 @@ export const sponsorProcedures = t.router({
       })
 
       if (!existingConnection && user.email) {
-        await mailer.send({
-          to: user.email,
+        await sendSponsorInterestEmail({
           event: ctx.event,
-          subject: `Thanks for connecting with ${sponsor.title || 'this sponsor'}`,
-          more_params: {
-            body: `<p style="margin: 0 0 16px;">Hi ${firstName || user.firstName || 'there'},</p>
-<p style="margin: 0 0 16px;">Thanks for letting us know you're interested in ${sponsor.title || 'this sponsor'} at ${ctx.event.name}.</p>
-<p style="margin: 0 0 16px;">We will share your information so they can follow up and say hello. Keep an eye on your inbox for more information soon.</p>
-<p style="margin: 0;">Best,<br>${ctx.event.name}</p>`,
-          },
+          to: user.email,
+          sponsor,
         })
       }
 

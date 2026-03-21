@@ -5,6 +5,7 @@ import {
   eq,
   ne,
   screenConfigTable,
+  screenProfileTable,
   screenTable,
   type ScreenConfig,
 } from '@matterloop/db'
@@ -12,11 +13,22 @@ import {
 const GLOBAL_SCREEN_KEY = 'GLOBAL'
 
 type UpsertConfigInput = {
-  mode: 'upcoming_events' | 'message'
+  mode: 'upcoming_events' | 'message' | 'image'
   notificationEnabled: boolean
   notificationMessage?: string | null
   notificationPosition: 'top' | 'bottom'
+  timeOverrideAt?: string | null
   messageBody?: string | null
+  screenProfileId?: string | null
+  imageUrl?: string | null
+  backgroundStyles?: string | null
+}
+
+type UpsertProfileInput = {
+  mode: 'upcoming_events' | 'message' | 'image'
+  messageBody?: string | null
+  imageUrl?: string | null
+  backgroundStyles?: string | null
 }
 
 export const ScreenFns = ({ eventId }: { eventId: string }) => {
@@ -53,7 +65,11 @@ export const ScreenFns = ({ eventId }: { eventId: string }) => {
           mode: 'upcoming_events',
           notificationEnabled: false,
           notificationPosition: 'top',
+          timeOverrideAt: null,
           messageBody: '',
+          screenProfileId: null,
+          imageUrl: null,
+          backgroundStyles: null,
         })
         .returning()
       config = inserted[0]
@@ -65,6 +81,42 @@ export const ScreenFns = ({ eventId }: { eventId: string }) => {
     const screen = await ensureGlobalScreen()
     const config = await ensureConfig(screen.id)
     return { screen, config }
+  }
+
+  const getProfileById = async (profileId: string) => {
+    return db.query.screenProfileTable.findFirst({
+      where: and(eq(screenProfileTable.id, profileId), eq(screenProfileTable.eventId, eventId)),
+    })
+  }
+
+  const profileToConfigInput = (
+    profile: NonNullable<Awaited<ReturnType<typeof getProfileById>>>,
+    current: UpsertConfigInput,
+  ): UpsertConfigInput => ({
+    mode: profile.mode as UpsertConfigInput['mode'],
+    notificationEnabled: current.notificationEnabled,
+    notificationMessage: current.notificationMessage,
+    notificationPosition: current.notificationPosition,
+    timeOverrideAt: current.timeOverrideAt,
+    messageBody: profile.messageBody,
+    screenProfileId: profile.id,
+    imageUrl: profile.imageUrl,
+    backgroundStyles: profile.backgroundStyles,
+  })
+
+  const resolveConfigInput = async (input: UpsertConfigInput): Promise<UpsertConfigInput> => {
+    if (!input.screenProfileId) {
+      return {
+        ...input,
+        screenProfileId: null,
+      }
+    }
+
+    const profile = await getProfileById(input.screenProfileId)
+    if (!profile) {
+      throw new Error('Screen profile not found')
+    }
+    return profileToConfigInput(profile, input)
   }
 
   const upsertConfig = async (screenId: string, input: UpsertConfigInput) => {
@@ -79,7 +131,11 @@ export const ScreenFns = ({ eventId }: { eventId: string }) => {
           notificationEnabled: input.notificationEnabled,
           notificationMessage: input.notificationMessage,
           notificationPosition: input.notificationPosition,
+          timeOverrideAt: input.timeOverrideAt,
           messageBody: input.messageBody,
+          screenProfileId: input.screenProfileId,
+          imageUrl: input.imageUrl,
+          backgroundStyles: input.backgroundStyles,
           updatedAt: new Date().toISOString(),
         })
         .where(eq(screenConfigTable.id, existing.id))
@@ -95,7 +151,11 @@ export const ScreenFns = ({ eventId }: { eventId: string }) => {
         notificationEnabled: input.notificationEnabled,
         notificationMessage: input.notificationMessage,
         notificationPosition: input.notificationPosition,
+        timeOverrideAt: input.timeOverrideAt,
         messageBody: input.messageBody,
+        screenProfileId: input.screenProfileId,
+        imageUrl: input.imageUrl,
+        backgroundStyles: input.backgroundStyles,
       })
       .returning()
     return created[0]
@@ -105,6 +165,79 @@ export const ScreenFns = ({ eventId }: { eventId: string }) => {
     globalKey: GLOBAL_SCREEN_KEY,
     ensureGlobalScreen,
     getGlobal,
+    getProfiles: async () => {
+      return db.query.screenProfileTable.findMany({
+        where: eq(screenProfileTable.eventId, eventId),
+        orderBy: [asc(screenProfileTable.name)],
+      })
+    },
+    getProfileById,
+    createProfile: async ({ name, config }: { name: string; config: UpsertProfileInput }) => {
+      const inserted = await db
+        .insert(screenProfileTable)
+        .values({
+          eventId,
+          name,
+          mode: config.mode,
+          notificationEnabled: false,
+          notificationMessage: null,
+          notificationPosition: 'top',
+          messageBody: config.messageBody,
+          imageUrl: config.imageUrl,
+          backgroundStyles: config.backgroundStyles,
+        })
+        .returning()
+      return inserted[0]
+    },
+    updateProfile: async ({
+      id,
+      name,
+      config,
+    }: {
+      id: string
+      name: string
+      config: UpsertProfileInput
+    }) => {
+      const profile = await getProfileById(id)
+      if (!profile) return null
+      const updated = await db
+        .update(screenProfileTable)
+        .set({
+          name,
+          mode: config.mode,
+          messageBody: config.messageBody,
+          imageUrl: config.imageUrl,
+          backgroundStyles: config.backgroundStyles,
+          updatedAt: new Date().toISOString(),
+        })
+        .where(eq(screenProfileTable.id, id))
+        .returning()
+      const nextProfile = updated[0]
+      if (!nextProfile) return null
+
+      await db
+        .update(screenConfigTable)
+        .set({
+          mode: nextProfile.mode,
+          messageBody: nextProfile.messageBody,
+          imageUrl: nextProfile.imageUrl,
+          backgroundStyles: nextProfile.backgroundStyles,
+          updatedAt: new Date().toISOString(),
+        })
+        .where(
+          and(
+            eq(screenConfigTable.eventId, eventId),
+            eq(screenConfigTable.screenProfileId, nextProfile.id),
+          ),
+        )
+      return nextProfile
+    },
+    deleteProfile: async (profileId: string) => {
+      const profile = await getProfileById(profileId)
+      if (!profile) return false
+      await db.delete(screenProfileTable).where(eq(screenProfileTable.id, profileId))
+      return true
+    },
     getScreens: async ({ includeSystem = false }: { includeSystem?: boolean } = {}) => {
       await ensureGlobalScreen()
       return db.query.screenTable.findMany({
@@ -179,18 +312,18 @@ export const ScreenFns = ({ eventId }: { eventId: string }) => {
     },
     upsertGlobalConfig: async (input: UpsertConfigInput) => {
       const { screen } = await getGlobal()
-      return upsertConfig(screen.id, input)
+      return upsertConfig(screen.id, await resolveConfigInput(input))
     },
     upsertScreenConfig: async (screenId: string, input: UpsertConfigInput) => {
       const { screen: globalScreen } = await getGlobal()
       if (screenId === globalScreen.id) {
-        return upsertConfig(screenId, input)
+        return upsertConfig(screenId, await resolveConfigInput(input))
       }
       const screen = await db.query.screenTable.findFirst({
         where: and(eq(screenTable.id, screenId), eq(screenTable.eventId, eventId)),
       })
       if (!screen || screen.key === GLOBAL_SCREEN_KEY) return null
-      return upsertConfig(screenId, input)
+      return upsertConfig(screenId, await resolveConfigInput(input))
     },
     clearScreenConfig: async (screenId: string) => {
       const screen = await db.query.screenTable.findFirst({

@@ -24,6 +24,7 @@ export const eventTable = pgTable('event', {
   eventId: uuid('event_id'),
   mediaId: uuid('mediaId'),
   largeLogoId: uuid('large_logo_id'),
+  darkLogoId: uuid('dark_logo_id'),
   faviconId: uuid('favicon_id'),
   domainId: text('domain_id').unique(),
   description: text('description'),
@@ -59,6 +60,10 @@ export const eventRelations = relations(eventTable, ({ many, one }) => ({
   }),
   largeLogo: one(mediaTable, {
     fields: [eventTable.largeLogoId],
+    references: [mediaTable.id],
+  }),
+  darkLogo: one(mediaTable, {
+    fields: [eventTable.darkLogoId],
     references: [mediaTable.id],
   }),
   menus: many(menuTable),

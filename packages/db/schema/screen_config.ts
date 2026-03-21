@@ -10,6 +10,7 @@ import {
 import { createInsertSchema } from 'drizzle-zod'
 
 import { eventTable } from './event'
+import { screenProfileTable } from './screen_profile'
 import { screenTable } from './screen'
 
 export const screenConfigTable = pgTable(
@@ -30,6 +31,15 @@ export const screenConfigTable = pgTable(
     notificationMessage: text('notification_message'),
     notificationPosition: text('notification_position').default('top').notNull(),
     messageBody: text('message_body'),
+    screenProfileId: uuid('screen_profile_id').references(() => screenProfileTable.id, {
+      onDelete: 'set null',
+    }),
+    /** Centered image URL for `image` mode (https URL or same-origin path). */
+    imageUrl: text('image_url'),
+    /** Space-separated Tailwind classes for `image` mode backdrop (compiled server-side). */
+    backgroundStyles: text('background_styles'),
+    /** Optional backend-controlled clock override for upcoming events mode. */
+    timeOverrideAt: timestamp('time_override_at', { withTimezone: true, mode: 'string' }),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
   },
@@ -46,6 +56,10 @@ export const screenConfigRelations = relations(screenConfigTable, ({ one }) => (
   screen: one(screenTable, {
     fields: [screenConfigTable.screenId],
     references: [screenTable.id],
+  }),
+  screenProfile: one(screenProfileTable, {
+    fields: [screenConfigTable.screenProfileId],
+    references: [screenProfileTable.id],
   }),
 }))
 
