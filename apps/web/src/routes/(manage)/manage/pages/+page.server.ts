@@ -7,6 +7,18 @@ export const load = async ({ locals }) => {
   if (!locals.event.id) {
     error(404, 'Event not found')
   }
-  const eventFns = EventFns(locals.event.id)
-  return { pages: await eventFns.getPages() }
+  const eventFns = EventFns({ eventId: locals.event.id })
+  const [pages, users, checkinStats] = await Promise.all([
+    eventFns.getPages(),
+    eventFns.getUsersWithInfo(),
+    eventFns.getCheckinStats(),
+  ])
+
+  return {
+    pages,
+    stats: {
+      attendees: users.length,
+      checkinsCompleted: checkinStats.checkedInIds.length,
+    },
+  }
 }
