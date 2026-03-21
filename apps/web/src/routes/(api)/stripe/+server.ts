@@ -6,7 +6,7 @@ import { db, eq, eventTicketTable, userTable } from '@matterloop/db'
 import type { RequestHandler } from './$types'
 
 const REDIRECT_URL = 'https://neurodiversion.org'
-const TICKET_ID = 'prod_T6sHMm2WwJ0Ems'
+const TICKET_ID = 'prod_UBrYPMn0LffusA'
 const MEDIA_ID = 'prod_T87jfY4Rq2PfyP'
 // const TICKET_ID = "prod_T7D44P6gpKyggR";
 // const MEDIA_ID = "prod_T87kEIyazXtUww";
@@ -105,8 +105,8 @@ export const GET: RequestHandler = async ({ url }) => {
 							.values({
 								userId: user?.id,
 								type: checkoutId,
-								eventId: 'd7ee6ca9-5df0-44ec-be1e-6ba1d2d895a4',
-								mainId: 'd7ee6ca9-5df0-44ec-be1e-6ba1d2d895a4',
+								eventId: 'ba3e8c2a-094b-4694-9a75-9fd75a4e00f7',
+								mainId: 'ba3e8c2a-094b-4694-9a75-9fd75a4e00f7',
 								status: 'paid',
 							})
 							.returning()
