@@ -23,6 +23,16 @@ interface EffectiveScreenData {
   backgroundStyles?: string | null
 }
 
+function parseTimeOverrideAt(value: string | null | undefined) {
+  if (!value) return null
+  const trimmed = value.trim()
+  const match = trimmed.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::\d{2})?/)
+  if (!match) return null
+  const [, year, month, day, hour, minute] = match
+  const parsed = dayjs(`${year}-${month}-${day}T${hour}:${minute}`)
+  return parsed.isValid() ? parsed : null
+}
+
 function isEffectiveScreenData(value: unknown): value is EffectiveScreenData {
   if (!value || typeof value !== 'object') return false
   if (!('mode' in value) || typeof value.mode !== 'string') return false
@@ -50,10 +60,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
   }
   const effective = effectiveUnknown
 
-  const timeOverrideAt =
-    effective.timeOverrideAt && dayjs(effective.timeOverrideAt).isValid()
-      ? dayjs(effective.timeOverrideAt)
-      : null
+  const timeOverrideAt = parseTimeOverrideAt(effective.timeOverrideAt)
   const comparisonNow = timeOverrideAt ?? dayjs()
   const comparisonEnd = comparisonNow.add(1, 'hour')
 

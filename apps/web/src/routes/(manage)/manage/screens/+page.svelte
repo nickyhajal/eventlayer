@@ -92,6 +92,13 @@
     return dayjs().format("YYYY-MM-DD");
   }
 
+  function formatDisplayDateTime(dateValue: string, timeValue: string) {
+    const normalized = `${dateValue} ${timeValue}`;
+    return dayjs(normalized).isValid()
+      ? dayjs(normalized).format("MMM D, YYYY h:mm A")
+      : normalized;
+  }
+
   function parseLocalTimeOverride(value: string) {
     const trimmed = value.trim();
     if (!trimmed) {
@@ -99,7 +106,7 @@
     }
 
     const localMatch = trimmed.match(
-      /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})$/,
+      /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::\d{2})?(?:\.\d+)?(?:Z|[+-]\d{2}:?\d{2})?$/,
     );
     if (localMatch) {
       const [, year, month, day, hour, minute] = localMatch;
@@ -137,6 +144,11 @@
     return parseLocalTimeOverride(value).time;
   }
 
+  function toStoredTimeOverrideValue(dateValue: string, timeValue: string) {
+    if (!dateValue || !timeValue) return null;
+    return `${dateValue} ${timeValue}:00`;
+  }
+
   function updateTimeOverrideDate(currentValue: string, nextDate: string) {
     if (!nextDate) return "";
     return composeLocalTimeOverride(
@@ -155,35 +167,19 @@
 
   function formatTimeOverrideInput(value: unknown) {
     if (typeof value !== "string" || !value.trim()) return "";
-    const date = new Date(value);
-    return Number.isNaN(date.getTime()) ? "" : formatLocalDateTime(date);
+    const { date, time } = parseLocalTimeOverride(value);
+    return date && time ? `${date} ${time}` : "";
   }
 
   function normalizeTimeOverrideInput(value: string) {
-    const trimmed = value.trim();
-    if (!trimmed) return null;
-
-    const match = trimmed.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})$/);
-    if (!match) return null;
-
-    const [, year, month, day, hour, minute] = match;
-    const date = new Date(
-      Number(year),
-      Number(month) - 1,
-      Number(day),
-      Number(hour),
-      Number(minute),
-      0,
-      0,
-    );
-
-    return Number.isNaN(date.getTime()) ? null : date.toISOString();
+    const { date, time } = parseLocalTimeOverride(value);
+    return toStoredTimeOverrideValue(date, time);
   }
 
   function describeTimeOverride(value: string) {
-    const normalized = normalizeTimeOverrideInput(value);
-    return normalized
-      ? `Clock: ${dayjs(normalized).format("MMM D, YYYY h:mm A")} override`
+    const { date, time } = parseLocalTimeOverride(value);
+    return date && time
+      ? `Clock: ${formatDisplayDateTime(date, time)} override`
       : "Clock: Real time";
   }
 

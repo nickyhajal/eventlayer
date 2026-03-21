@@ -38,8 +38,8 @@ export const screenConfigTable = pgTable(
     imageUrl: text('image_url'),
     /** Space-separated Tailwind classes for `image` mode backdrop (compiled server-side). */
     backgroundStyles: text('background_styles'),
-    /** Optional backend-controlled clock override for upcoming events mode. */
-    timeOverrideAt: timestamp('time_override_at', { withTimezone: true, mode: 'string' }),
+    /** Optional wall-clock override for upcoming events mode, stored without timezone conversion. */
+    timeOverrideAt: timestamp('time_override_at', { withTimezone: false, mode: 'string' }),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
   },

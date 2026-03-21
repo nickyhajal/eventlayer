@@ -1,6 +1,5 @@
 import { initTRPC } from '@trpc/server'
 import { z } from 'zod'
-import { dayjs } from '@matterloop/util'
 
 import { publishScreensHardRefresh, publishScreensInvalidation } from '../core/ably'
 import { ScreenFns } from '../models/screenFns'
@@ -23,7 +22,7 @@ function isAllowedScreenImageUrl(url: string): boolean {
 
 function isAllowedTimeOverride(value: string | null | undefined): boolean {
   if (value == null || value === '') return true
-  return dayjs(value).isValid()
+  return /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::\d{2})?$/.test(value.trim())
 }
 
 const screenConfigInput = z.object({
