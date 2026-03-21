@@ -83,21 +83,31 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
   const timeOverrideAt = parseTimeOverrideAt(effective.timeOverrideAt)
   const comparisonNow = timeOverrideAt ?? getWallClockNowInTimeZone('America/Chicago')
-  const comparisonStart = comparisonNow.subtract(20, 'minute')
+  const comparisonStart = comparisonNow.subtract(25, 'minute')
+  const happeningNowEnd = comparisonNow.add(15, 'minute')
   const comparisonEnd = comparisonNow.add(45, 'minute')
 
   const upcoming =
     effective.mode === 'upcoming_events'
       ? (await EventFns({ eventId }).getEvents()).filter((event) => {
-          if (!event.startsAt) return false
-          const startsAt = dayjs(event.startsAt)
-          return (
-            startsAt.isValid() &&
-            (startsAt.isSame(comparisonStart) || startsAt.isAfter(comparisonStart)) &&
-            (startsAt.isSame(comparisonEnd) || startsAt.isBefore(comparisonEnd))
-          )
-        })
+        if (!event.startsAt) return false
+        const startsAt = dayjs(event.startsAt)
+        return (
+          startsAt.isValid() &&
+          (startsAt.isSame(comparisonStart) || startsAt.isAfter(comparisonStart)) &&
+          (startsAt.isSame(comparisonEnd) || startsAt.isBefore(comparisonEnd))
+        )
+      })
       : []
+  const hasHappeningNowEvents = upcoming.some((event) => {
+    if (!event.startsAt) return false
+    const startsAt = dayjs(event.startsAt)
+    return (
+      startsAt.isValid() &&
+      (startsAt.isSame(comparisonStart) || startsAt.isAfter(comparisonStart)) &&
+      (startsAt.isSame(happeningNowEnd) || startsAt.isBefore(happeningNowEnd))
+    )
+  })
 
   const backgroundStyles = typeof effective.backgroundStyles === 'string' ? effective.backgroundStyles : ''
   const backdropPreset = getScreenBackdropPreset(backgroundStyles)
@@ -125,6 +135,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
     screen: resolved.screen,
     effective,
     upcoming,
+    hasHappeningNowEvents,
     backdropPresetId: backdropPreset?.id ?? null,
     imageModeBackdropCss,
     imageModeBackdropClassNames,
