@@ -13,6 +13,7 @@
   export let data;
   const event = getEventContext();
   const upcomingPageRotationMs = 12000;
+  const upcomingRefreshMs = 60000;
   let currentUpcomingPageIndex = 0;
   let currentUpcomingPageProgress = 0;
   let upcomingPageStartedAt = 0;
@@ -23,6 +24,11 @@
   $: imageBackdropHeadHtml = wrapScreenBackdropCssForHead(
     data.imageModeBackdropCss,
   );
+  $: mainLogoUrl = getMainLogoUrl();
+  $: showLogoOnlyWhenNoUpcoming =
+    data.effective.mode === "upcoming_events" &&
+    !data.upcoming?.length &&
+    !!mainLogoUrl;
 
   function getCardImage(event: any) {
     const media = event?.photo ?? event?.venue?.photo;
@@ -31,7 +37,7 @@
 
   function getMainLogoUrl() {
     const largeLogo = ($event as any)?.darkLogo;
-    return largeLogo ? getMediaUrl(largeLogo, "w-256") : "";
+    return largeLogo ? getMediaUrl(largeLogo, "w-512") : "";
   }
 
   function splitUpcomingIntoPages(events: any[]) {
@@ -70,9 +76,11 @@
     const hardRefreshListener = () => {
       window.location.reload();
     };
+    const refreshInterval = window.setInterval(dataListener, upcomingRefreshMs);
     channel.subscribe("screens-updated", dataListener);
     channel.subscribe("screen-hard-refresh", hardRefreshListener);
     return () => {
+      window.clearInterval(refreshInterval);
       channel.unsubscribe("screens-updated", dataListener);
       channel.unsubscribe("screen-hard-refresh", hardRefreshListener);
       client.close();
@@ -116,10 +124,10 @@
 </svelte:head>
 
 <main
-  class="relative isolate flex min-h-screen flex-col overflow-hidden bg-slate-800 text-slate-100"
+  class="relative isolate flex min-h-screen flex-col overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900 text-slate-100"
 >
   <div class="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-    <div class="absolute inset-0 bg-slate-800"></div>
+    <div class="absolute inset-0"></div>
     {#if data.imageModeBackdropClassNames}
       <div
         class="absolute inset-0 opacity-60 {data.imageModeBackdropClassNames}"
@@ -130,16 +138,16 @@
     ></div>
   </div>
 
-  {#if showBanner && isTopBanner}
+  {#if !showLogoOnlyWhenNoUpcoming && showBanner && isTopBanner}
     <div
       class="relative z-10 border-b border-amber-200/40 bg-amber-200 px-6 py-4 text-center text-2xl font-semibold text-slate-900"
     >
       {data.effective.notificationMessage}
     </div>
-  {:else}
+  {:else if !showLogoOnlyWhenNoUpcoming}
     <div class="relative z-10 pt-8 text-5xl font-semibold tracking-tight">
-      {#if getMainLogoUrl()}
-        <img alt="" src={getMainLogoUrl()} class="mt-4 -mb-4 mx-auto w-24" />
+      {#if mainLogoUrl}
+        <img alt="" src={mainLogoUrl} class="mt-4 -mb-4 mx-auto w-24" />
       {/if}
     </div>
   {/if}
@@ -173,6 +181,16 @@
           No image URL configured. Set it under Manage → Screens (image mode).
         </div>
       {/if}
+    </div>
+  {:else if showLogoOnlyWhenNoUpcoming}
+    <div
+      class="relative z-10 flex min-h-screen flex-1 items-center justify-center px-10 py-10"
+    >
+      <img
+        alt={data.event.name}
+        src={mainLogoUrl}
+        class="w-80 object-contain"
+      />
     </div>
   {:else}
     <div class="relative z-10 px-8 py-8">
@@ -254,7 +272,7 @@
     </div>
   {/if}
 
-  {#if showBanner && !isTopBanner}
+  {#if !showLogoOnlyWhenNoUpcoming && showBanner && !isTopBanner}
     <div
       class="relative z-10 border-t border-amber-300/40 bg-amber-200 px-6 py-4 text-center text-2xl font-semibold text-amber-900"
     >

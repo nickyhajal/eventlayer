@@ -62,7 +62,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
   const timeOverrideAt = parseTimeOverrideAt(effective.timeOverrideAt)
   const comparisonNow = timeOverrideAt ?? dayjs()
-  const comparisonEnd = comparisonNow.add(1, 'hour')
+  const comparisonStart = comparisonNow.subtract(20, 'minute')
+  const comparisonEnd = comparisonNow.add(45, 'minute')
 
   const upcoming =
     effective.mode === 'upcoming_events'
@@ -71,8 +72,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
           const startsAt = dayjs(event.startsAt)
           return (
             startsAt.isValid() &&
-            (startsAt.isSame(comparisonNow) || startsAt.isAfter(comparisonNow)) &&
-            startsAt.isBefore(comparisonEnd)
+            (startsAt.isSame(comparisonStart) || startsAt.isAfter(comparisonStart)) &&
+            (startsAt.isSame(comparisonEnd) || startsAt.isBefore(comparisonEnd))
           )
         })
       : []
