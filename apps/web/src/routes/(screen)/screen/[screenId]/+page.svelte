@@ -210,16 +210,20 @@
                 <div class="mx-auto flex flex-wrap justify-center gap-6">
                   {#each activeUpcomingPage as event}
                     <div
-                      class="overflow-hidden rounded-2xl flex-none {activeUpcomingPage.length >
-                      4
-                        ? 'w-[30%]'
-                        : 'w-[30%]'} border border-slate-700 bg-slate-900 shadow-xl"
+                      class="overflow-hidden rounded-2xl flex-none {activeUpcomingPage.length ===
+                      1
+                        ? 'w-[50%]'
+                        : activeUpcomingPage.length > 4
+                          ? 'w-[30%]'
+                          : 'w-[30%]'} border border-slate-700 bg-slate-900 shadow-xl"
                     >
                       {#if getCardImage(event)}
                         <img
                           alt={event.name}
                           src={getCardImage(event)}
-                          class="h-[13rem] w-full object-cover"
+                          class="{activeUpcomingPage.length === 1
+                            ? 'h-[24rem]'
+                            : 'h-[13rem]'} w-full object-cover"
                         />
                       {/if}
                       <div class="space-y-2 p-5">
