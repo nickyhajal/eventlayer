@@ -287,7 +287,7 @@
     >
       <div class="flex flex-col">
         <div class="font-h mt-2 text-white text-5xl font-semibold">
-          Join us as we continue the adventure
+          Scan to Join Us for ND27
         </div>
         <div
           class="flex w-fit mx-auto items-center gap-4 bg-[#E2FFFE] mt-4 rounded-3xl overflow-hidden"
