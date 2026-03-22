@@ -465,7 +465,7 @@ export const eventProcedures = t.router({
             await db.insert(formResponseTable).values(elementRows)
           }
         }
-        await sendWelcomeEmail(user, ctx.event, eventUser[0])
+        // await sendWelcomeEmail(user, ctx.event, eventUser[0])
         redis.del(`event_heavy:${eventId}`)
         redis.del(`event_users:${eventId}`)
         redis.del(`event_usersWithInfo:${eventId}`)
