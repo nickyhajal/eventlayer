@@ -3,9 +3,6 @@
   import Button from "$lib/components/ui/button/button.svelte";
   import { getEventContext } from "$lib/state/getContexts.js";
   import { ArrowRight, Ticket, X } from "lucide-svelte";
-  import BadgeCheck from "lucide-svelte/icons/badge-check";
-  import Calendar from "lucide-svelte/icons/calendar";
-  import Map from "lucide-svelte/icons/map";
   import MagnifyingGlass from "lucide-svelte/icons/search";
   import { ChevronRight } from "radix-icons-svelte";
 
@@ -69,7 +66,7 @@
 
 <Screen title={$event.name}>
   <div
-    class="topNav md:hidden sticky z-40 -ml-4 flex w-[calc(100vw+0.25rem)] items-center justify-center border-b border-slate-300/50 bg-slate-50 px-5 text-center text-sm text-slate-600 lg:mx-0 lg:mt-1 lg:w-full lg:rounded-2xl lg:border"
+    class="topNav md:hidden sticky left-0 right-0 z-40 -ml-[50vw] -mr-[50vw] flex w-screen items-center justify-center border-b border-slate-300/50 bg-slate-50 px-5 text-center text-sm text-slate-600 lg:left-auto lg:right-auto lg:ml-0 lg:mr-0 lg:mt-1 lg:w-full lg:rounded-2xl lg:border"
   >
     <a
       href="/attendees?focus=search"
@@ -270,7 +267,7 @@
           </Button>
         </div>
         <div
-          class="mb-6 w-[calc(100dvw-0.9rem)] overflow-x-auto lg:w-[calc(100%)] lg:pb-8"
+          class="relative left-1/2 right-1/2 mb-6 -ml-[50vw] -mr-[50vw] w-screen overflow-x-auto px-3.5 lg:left-auto lg:right-auto lg:ml-0 lg:mr-0 lg:w-full lg:px-0 lg:pb-8"
         >
           <div
             class="flex w-[49.5rem] gap-4 pb-4 pr-6 lg:w-[calc(100%)] lg:pr-0"
