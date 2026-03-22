@@ -117,7 +117,7 @@ export const GET: RequestHandler = async ({ url }) => {
 			payload.quantity = (payload.quantity || 0) - numAssigned
 		}
 		const data = Buffer.from(JSON.stringify(payload)).toString('base64')
-		redirect(303, `${REDIRECT_URL}/be-there?${data}`)
+		redirect(303, `${REDIRECT_URL}/nd27?${data}`)
 		return
 	}
 
