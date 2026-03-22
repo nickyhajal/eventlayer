@@ -40,13 +40,18 @@
     return largeLogo ? getMediaUrl(largeLogo, "w-512") : "";
   }
 
+  const upcomingEventsPerPage = 3;
+
   function splitUpcomingIntoPages(events: any[]) {
-    if (events.length <= 6) {
-      return [events];
+    if (!events.length) {
+      return [[]];
     }
 
-    const firstPageSize = Math.ceil(events.length / 2);
-    return [events.slice(0, firstPageSize), events.slice(firstPageSize)];
+    const pages = [];
+    for (let i = 0; i < events.length; i += upcomingEventsPerPage) {
+      pages.push(events.slice(i, i + upcomingEventsPerPage));
+    }
+    return pages;
   }
 
   $: upcomingPages = splitUpcomingIntoPages(data.upcoming || []);
@@ -207,15 +212,16 @@
           <Animate class="mx-auto">
             {#key currentUpcomingPageIndex}
               <div transition:fade={{ duration: 450 }}>
-                <div class="mx-auto flex flex-wrap justify-center gap-6">
+                <div
+                  class="mx-auto grid gap-6"
+                  style={`grid-template-columns: repeat(${Math.max(
+                    1,
+                    Math.min(3, activeUpcomingPage.length),
+                  )}, minmax(0, 1fr));`}
+                >
                   {#each activeUpcomingPage as event}
                     <div
-                      class="overflow-hidden rounded-2xl flex-none {activeUpcomingPage.length ===
-                      1
-                        ? 'w-[50%]'
-                        : activeUpcomingPage.length > 4
-                          ? 'w-[30%]'
-                          : 'w-[30%]'} border border-slate-700 bg-slate-900 shadow-xl"
+                      class="overflow-hidden rounded-2xl border border-slate-700 bg-slate-900 shadow-xl"
                     >
                       {#if getCardImage(event)}
                         <img
@@ -275,6 +281,33 @@
           No upcoming events to display.
         </div>
       {/if}
+      <div
+        class="relative gap-16 flex items-center w-fit mx-auto rounded-xl text-center text-slate-700 transition-all mt-14"
+      >
+        <div class="flex flex-col">
+          <div class="font-h mt-2 text-white text-5xl font-semibold">
+            Join us as we continue the adventure
+          </div>
+          <div
+            class="flex w-fit mx-auto items-center gap-4 bg-[#E2FFFE] mt-4 rounded-3xl overflow-hidden"
+          >
+            <div class="">
+              <img src="/banner.png" class="mx-auto h-60" alt="" />
+            </div>
+            <div
+              class="font-h flex items-center justify-between mx-auto p-3 relative right-2 bg-[#E2FFFE] py-4 text-lg font-semibold"
+            >
+              <div class="rounded-xl overflow-hidden">
+                <img
+                  src="/qr27.svg"
+                  class="mx-auto h-52"
+                  alt="rounded-xl overflow-hidden"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   {/if}
 
