@@ -17,6 +17,7 @@ import {
 	mediaTable,
 	userTable,
 } from '@matterloop/db'
+import { getMediaUrl } from '@matterloop/util'
 import dayjs from '@matterloop/util/src/lib/dayjs'
 
 import type { RequestHandler } from './$types'
@@ -260,6 +261,39 @@ const getOrCreateEventUser = async (userId: string, type: string) => {
 	return eventUser
 }
 
+const cacheNextAttendingUsers = async () => {
+	const attendees = await db.query.eventUserTable.findMany({
+		where: and(
+			eq(eventUserTable.eventId, CURRENT_YEAR_ID),
+			eq(eventUserTable.status, 'active'),
+			eq(eventUserTable.type, 'attendee'),
+		),
+		with: {
+			user: {
+				with: {
+					photo: true,
+				},
+			},
+		},
+	})
+
+	const usersWithPhotos = attendees.flatMap((attendee) => {
+		if (!attendee.user?.photo) {
+			return []
+		}
+
+		return [
+			{
+				firstName: attendee.user.firstName,
+				lastName: attendee.user.lastName,
+				photo: getMediaUrl(attendee.user.photo),
+			},
+		]
+	})
+
+	await redis.set(`next_attending:${PREVIOUS_YEAR_ID}`, JSON.stringify(usersWithPhotos))
+}
+
 async function addToKit(email: string, name: string) {
 	const url = `https://api.kit.com/v4/forms/${KIT_FORM_ID}/subscribers`
 	try {
@@ -333,6 +367,8 @@ export const POST: RequestHandler = async ({ url, request }) => {
 						.where(eq(eventTicketTable.id, tickets[i].id))
 				}),
 		)
+
+		await cacheNextAttendingUsers()
 
 		return json(stripe)
 	} catch (e) {
