@@ -20,6 +20,8 @@ export const load = async (req) => {
       } catch {
         nextAttending = []
       }
+    } else if (nextAttendingRaw) {
+      nextAttending = nextAttendingRaw
     }
     console.log(nextAttending)
     return {
