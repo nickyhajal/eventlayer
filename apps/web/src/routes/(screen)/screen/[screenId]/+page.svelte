@@ -221,14 +221,17 @@
                 >
                   {#each activeUpcomingPage as event}
                     <div
-                      class="overflow-hidden rounded-2xl border border-slate-700 bg-slate-900 shadow-xl"
+                      class="overflow-hidden rounded-2xl border border-slate-700 bg-slate-900 shadow-xl {activeUpcomingPage.length ===
+                      1
+                        ? 'mx-auto w-full max-w-[40rem]'
+                        : 'w-full'}"
                     >
                       {#if getCardImage(event)}
                         <img
                           alt={event.name}
                           src={getCardImage(event)}
                           class="{activeUpcomingPage.length === 1
-                            ? 'h-[24rem]'
+                            ? 'h-[20rem]'
                             : 'h-[13rem]'} w-full object-cover"
                         />
                       {/if}
