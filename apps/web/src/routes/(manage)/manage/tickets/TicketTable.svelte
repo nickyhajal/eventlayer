@@ -14,38 +14,35 @@
 		assignedOn: string | null
 	}
 
-	type TicketTableRow = {
+	type TicketPurchaseRow = {
 		id: string
-		assignKey: string | null
-		type: string
+		stripeId: string
 		status: string
 		quantity: number
 		assignedCount: number
 		unassignedCount: number
 		user: User
 		assignedUsers: AssignedUserSummary[]
+		unassignedAssignKeys: string[]
 	}
 
-	export let rows: TicketTableRow[]
+	export let rows: TicketPurchaseRow[]
 	export let table: any
 	export let setCurrentPage: any
 	export let setGlobalFilter: any
 
-	type ActionColumnDef = ColumnDef<TicketTableRow> & {
-		handleClick?: (e: Event, row: TicketTableRow) => void
+	type ActionColumnDef = ColumnDef<TicketPurchaseRow> & {
+		handleClick?: (e: Event, row: TicketPurchaseRow) => void
 	}
 
 	let filterStatus = ''
-	let filterType = ''
 	let filterAssignment = ''
 	let selectedRowId: string | null = null
 
 	$: statuses = [...new Set(rows.map((r) => r.status).filter(Boolean))].sort()
-	$: ticketTypes = [...new Set(rows.map((r) => r.type).filter(Boolean))].sort()
 
 	$: filteredRows = rows.filter((r) => {
 		if (filterStatus && r.status !== filterStatus) return false
-		if (filterType && r.type !== filterType) return false
 		if (filterAssignment === 'unassigned' && r.assignedCount > 0) return false
 		if (filterAssignment === 'partially-assigned' && !(r.assignedCount > 0 && r.unassignedCount > 0)) {
 			return false
@@ -54,7 +51,6 @@
 		return true
 	})
 
-	$: selectedRow = rows.find((row) => row.id === selectedRowId) || null
 	$: if (selectedRowId && !filteredRows.some((row) => row.id === selectedRowId)) {
 		selectedRowId = null
 	}
@@ -66,7 +62,7 @@
 		return colVal.toString().toLowerCase().includes(value.toLowerCase())
 	}
 
-	const onRowClick = (row: Row<TicketTableRow>) => {
+	const onRowClick = (row: Row<TicketPurchaseRow>) => {
 		if (!row.original.assignedUsers.length) {
 			selectedRowId = null
 			return
@@ -75,11 +71,11 @@
 		selectedRowId = selectedRowId === row.original.id ? null : row.original.id
 	}
 
-	function copyTicketLink(e: Event, row: TicketTableRow) {
+	function copyTicketLink(e: Event, row: TicketPurchaseRow) {
 		e.preventDefault()
 		e.stopPropagation()
 
-		if (!row.assignKey || row.unassignedCount === 0) {
+		if (!row.unassignedAssignKeys.length) {
 			return
 		}
 
@@ -90,12 +86,14 @@
 			elm.textContent = tmp
 		}, 1000)
 
-		const url = `${window.location.origin}/welcome/${row.assignKey}`
-		copyToClipboard(url)
+		const urls = row.unassignedAssignKeys.map(
+			(assignKey) => `${window.location.origin}/welcome/${assignKey}`,
+		)
+		copyToClipboard(urls.join('\n'))
 	}
 
 	let confirmingSend = false
-	async function sendClaimEmail(e: Event, row: TicketTableRow) {
+	async function sendClaimEmail(e: Event, row: TicketPurchaseRow) {
 		e.preventDefault()
 		e.stopPropagation()
 
@@ -109,12 +107,16 @@
 				confirmingSend = false
 			}, 700)
 		} else if (confirmingSend) {
-			if (!row.assignKey || row.unassignedCount === 0) {
+			if (!row.unassignedAssignKeys.length) {
 				return
 			}
 
 			elm.textContent = 'Sending...'
-			await trpc().user.sendAssignEmail.mutate({ assignKey: row.assignKey })
+			await Promise.all(
+				row.unassignedAssignKeys.map((assignKey) =>
+					trpc().user.sendAssignEmail.mutate({ assignKey }),
+				),
+			)
 			elm.textContent = 'Sent!'
 			setTimeout(() => {
 				elm.textContent = 'Send Email Again'
@@ -124,7 +126,7 @@
 		}
 	}
 
-	function getAssignmentLabel(row: TicketTableRow) {
+	function getAssignmentLabel(row: TicketPurchaseRow) {
 		if (row.assignedCount === 0) {
 			return 'Unassigned'
 		}
@@ -136,6 +138,23 @@
 		return `${row.assignedCount}/${row.quantity} assigned`
 	}
 
+	function getSendEmailLabel(row: TicketPurchaseRow) {
+		if (!row.unassignedAssignKeys.length) {
+			return ''
+		}
+
+		const labelBase = row.status === 'sent' ? 'Send Email Again' : 'Send Email'
+		return row.unassignedAssignKeys.length > 1 ? `${labelBase}s` : labelBase
+	}
+
+	function getCopyLinkLabel(row: TicketPurchaseRow) {
+		if (!row.unassignedAssignKeys.length) {
+			return ''
+		}
+
+		return row.unassignedAssignKeys.length > 1 ? 'Copy Links' : 'Copy Link'
+	}
+
 	const columns: ActionColumnDef[] = [
 		{
 			accessorKey: 'photo',
@@ -144,9 +163,9 @@
 			enableSorting: false,
 		},
 		{
-			accessorKey: 'type',
-			header: 'Type',
-			accessorFn: (row) => row.type,
+			accessorKey: 'stripeId',
+			header: 'Stripe ID',
+			accessorFn: (row) => `readonlyInput:${row.stripeId}`,
 		},
 		{
 			accessorKey: 'status',
@@ -191,16 +210,14 @@
 			header: 'Send Email',
 			handleClick: (e, row) => sendClaimEmail(e, row),
 			accessorFn: (row) =>
-				row.unassignedCount > 0
-					? `button: ${row.status === 'sent' ? 'Send Email Again' : 'Send Email'}`
-					: '',
+				getSendEmailLabel(row) ? `button: ${getSendEmailLabel(row)}` : '',
 			enableSorting: false,
 		},
 		{
 			accessorKey: 'copy-link',
 			header: 'Copy Link',
 			handleClick: (e, row) => copyTicketLink(e, row),
-			accessorFn: (row) => (row.unassignedCount > 0 ? 'button: Copy Link' : ''),
+			accessorFn: (row) => (getCopyLinkLabel(row) ? `button: ${getCopyLinkLabel(row)}` : ''),
 			enableSorting: false,
 		},
 	]
@@ -209,16 +226,16 @@
 		{
 			key: 'purchaser',
 			label: 'Purchaser',
-			accessor: (row: TicketTableRow) => `${row.user?.firstName || ''} ${row.user?.lastName || ''}`,
+			accessor: (row: TicketPurchaseRow) => `${row.user?.firstName || ''} ${row.user?.lastName || ''}`,
 		},
-		{ key: 'email', label: 'Email', accessor: (row: TicketTableRow) => row.user?.email || '' },
+		{ key: 'email', label: 'Email', accessor: (row: TicketPurchaseRow) => row.user?.email || '' },
 		{ key: 'status', label: 'Status' },
 		{ key: 'quantity', label: 'Quantity' },
-		{ key: 'type', label: 'Type' },
+		{ key: 'stripeId', label: 'Stripe ID' },
 		{
 			key: 'assignedSummary',
 			label: 'Assignment',
-			accessor: (row: TicketTableRow) => getAssignmentLabel(row),
+			accessor: (row: TicketPurchaseRow) => getAssignmentLabel(row),
 		},
 	]
 </script>
@@ -228,7 +245,7 @@
 	rows={filteredRows}
 	sorting={[
 		{ id: 'purchaser', desc: false },
-		{ id: 'type', desc: false },
+		{ id: 'stripeId', desc: false },
 	]}
 	pageSize={25}
 	{globalFilterFn}
@@ -236,6 +253,7 @@
 	bind:setCurrentPage
 	bind:setGlobalFilter
 	{onRowClick}
+	isExpandedRow={(row) => selectedRowId === row.original.id}
 	emptyMsg="No tickets yet"
 	csvFilename="tickets"
 	{csvFields}
@@ -251,15 +269,6 @@
 			<option value="fully-assigned">Fully Assigned</option>
 		</select>
 		<select
-			bind:value={filterType}
-			class="rounded-lg border border-stone-200 bg-white px-2 py-1.5 text-xs font-medium text-stone-600"
-		>
-			<option value="">All Ticket Types</option>
-			{#each ticketTypes as ticketType}
-				<option value={ticketType}>{ticketType}</option>
-			{/each}
-		</select>
-		<select
 			bind:value={filterStatus}
 			class="rounded-lg border border-stone-200 bg-white px-2 py-1.5 text-xs font-medium text-stone-600"
 		>
@@ -269,48 +278,47 @@
 			{/each}
 		</select>
 	</svelte:fragment>
-</Table>
-
-{#if selectedRow && selectedRow.assignedUsers.length}
-	<div class="mt-4 rounded-2xl border border-stone-200 bg-white p-4">
-		<div class="flex items-start justify-between gap-4 border-b border-stone-100 pb-3">
-			<div>
-				<div class="text-sm font-semibold text-stone-900">
-					Assigned {selectedRow.type} tickets
-				</div>
-				<div class="mt-1 text-sm text-stone-500">
-					{selectedRow.user.firstName} {selectedRow.user.lastName} purchased {selectedRow.quantity}
-					{plural(selectedRow.quantity, 'ticket')}. {selectedRow.assignedCount} assigned, {selectedRow.unassignedCount}
-					unassigned.
-				</div>
-			</div>
-			<div class="text-xs font-medium uppercase tracking-wide text-stone-400">
-				{selectedRow.assignedUsers.length} recipient{selectedRow.assignedUsers.length === 1 ? '' : 's'}
-			</div>
-		</div>
-
-		<div class="divide-y divide-stone-100">
-			{#each selectedRow.assignedUsers as assignedUser}
-				<a
-					href={`/manage/people/${assignedUser.user.id}`}
-					class="flex items-center justify-between gap-4 py-3 transition-colors hover:bg-stone-50"
-				>
-					<div>
-						<div class="text-sm font-medium text-stone-900">
-							{assignedUser.user.firstName} {assignedUser.user.lastName}
-						</div>
-						<div class="text-sm text-stone-500">{assignedUser.user.email}</div>
+	<svelte:fragment slot="expanded-row" let:row>
+		<div class="my-1 rounded-xl border border-stone-200 bg-white p-4">
+			<div class="flex items-start justify-between gap-4 border-b border-stone-100 pb-3">
+				<div>
+					<div class="text-sm font-semibold text-stone-900">
+						Assigned tickets for purchase `{row.original.stripeId}`
 					</div>
-					<div class="text-right text-sm text-stone-500">
-						<div>{assignedUser.count} {plural(assignedUser.count, 'ticket')}</div>
-						{#if assignedUser.assignedOn}
-							<div class="text-xs text-stone-400">
-								Assigned {dayjs(assignedUser.assignedOn).format('MMM D, YYYY h:mm A')}
+					<div class="mt-1 text-sm text-stone-500">
+						{row.original.user.firstName} {row.original.user.lastName} purchased {row.original.quantity}
+						{plural(row.original.quantity, 'ticket')}. {row.original.assignedCount} assigned, {row.original.unassignedCount}
+						unassigned.
+					</div>
+				</div>
+				<div class="text-xs font-medium uppercase tracking-wide text-stone-400">
+					{row.original.assignedUsers.length} recipient{row.original.assignedUsers.length === 1 ? '' : 's'}
+				</div>
+			</div>
+
+			<div class="divide-y divide-stone-100">
+				{#each row.original.assignedUsers as assignedUser}
+					<a
+						href={`/manage/people/${assignedUser.user.id}`}
+						class="flex items-center justify-between gap-4 py-3 transition-colors hover:bg-stone-50"
+					>
+						<div>
+							<div class="text-sm font-medium text-stone-900">
+								{assignedUser.user.firstName} {assignedUser.user.lastName}
 							</div>
-						{/if}
-					</div>
-				</a>
-			{/each}
+							<div class="text-sm text-stone-500">{assignedUser.user.email}</div>
+						</div>
+						<div class="text-right text-sm text-stone-500">
+							<div>{assignedUser.count} {plural(assignedUser.count, 'ticket')}</div>
+							{#if assignedUser.assignedOn}
+								<div class="text-xs text-stone-400">
+									Assigned {dayjs(assignedUser.assignedOn).format('MMM D, YYYY h:mm A')}
+								</div>
+							{/if}
+						</div>
+					</a>
+				{/each}
+			</div>
 		</div>
-	</div>
-{/if}
+	</svelte:fragment>
+</Table>

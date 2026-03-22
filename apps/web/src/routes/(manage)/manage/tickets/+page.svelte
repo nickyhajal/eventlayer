@@ -17,16 +17,16 @@
 		assignedOn: string | null
 	}
 
-	type TicketTableRow = {
+	type TicketPurchaseRow = {
 		id: string
-		assignKey: string | null
-		type: string
+		stripeId: string
 		status: string
 		quantity: number
 		assignedCount: number
 		unassignedCount: number
 		user: NonNullable<TicketWithRelations['user']>
 		assignedUsers: AssignedUserSummary[]
+		unassignedAssignKeys: string[]
 	}
 
 	export const snapshot: Snapshot = {
@@ -65,13 +65,11 @@
 	function getTicketGroupKey(ticket: TicketWithRelations) {
 		return [
 			ticket.userId,
-			ticket.assignKey || 'no-assign-key',
-			ticket.type || 'Untyped',
-			ticket.status || 'unknown',
+			ticket.type || 'no-stripe-id',
 		].join(':')
 	}
 
-	const ticketsByGroup = data.tickets.reduce<Record<string, TicketTableRow>>((acc, ticket) => {
+	const ticketsByGroup = data.tickets.reduce<Record<string, TicketPurchaseRow>>((acc, ticket) => {
 		if (!ticket.user) {
 			return acc
 		}
@@ -81,18 +79,21 @@
 		if (!acc[key]) {
 			acc[key] = {
 				id: key,
-				assignKey: ticket.assignKey,
-				type: ticket.type || 'Untyped',
+				stripeId: ticket.type || 'Unknown',
 				status: ticket.status || 'unknown',
 				quantity: 0,
 				assignedCount: 0,
 				unassignedCount: 0,
 				user: ticket.user,
 				assignedUsers: [],
+				unassignedAssignKeys: [],
 			}
 		}
 
 		acc[key].quantity += 1
+		if (acc[key].status !== (ticket.status || 'unknown')) {
+			acc[key].status = 'mixed'
+		}
 
 		if (ticket.assignedToUser) {
 			acc[key].assignedCount += 1
@@ -113,12 +114,15 @@
 			}
 		} else {
 			acc[key].unassignedCount += 1
+			if (ticket.assignKey && !acc[key].unassignedAssignKeys.includes(ticket.assignKey)) {
+				acc[key].unassignedAssignKeys.push(ticket.assignKey)
+			}
 		}
 
 		return acc
 	}, {})
 
-	const tickets: TicketTableRow[] = Object.values(ticketsByGroup)
+	const tickets: TicketPurchaseRow[] = Object.values(ticketsByGroup)
 		.map((ticket) => ({
 			...ticket,
 			assignedUsers: [...ticket.assignedUsers].sort((a, b) =>

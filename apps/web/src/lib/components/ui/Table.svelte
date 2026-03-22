@@ -40,6 +40,7 @@
 	export let globalFilterFn: FilterFn<any>
 	export let pageSize = 50
 	export let onRowClick: (row: Row<T>) => void = () => {}
+	export let isExpandedRow: (row: Row<T>) => boolean = () => false
 	export let rowHref: undefined | ((cell: Cell<T, unknown>) => string) = undefined
 	export let csvFilename = 'export'
 	export let csvFields: { key: string; label: string; default?: boolean; accessor?: (row: T) => string }[] = []
@@ -198,6 +199,10 @@
 		setCurrentPage(parseInt(target.value) - 1)
 	}
 
+	function selectInputValue(e: Event) {
+		;(e.currentTarget as HTMLInputElement | null)?.select()
+	}
+
 	const noTypeCheck = (x: any) => x
 	const getCellStringValue = (cell: Cell<T, unknown>) => {
 		const value = cell.getValue()
@@ -309,6 +314,15 @@
 													>
 														{getCellStringValue(cell).replace('button:', '').trim()}
 													</ChicletButton>
+												{:else if getCellStringValue(cell).startsWith('readonlyInput:')}
+													<input
+														type="text"
+														readonly
+														value={getCellStringValue(cell).replace('readonlyInput:', '').trim()}
+														class="w-full min-w-[12rem] rounded-md border border-stone-200 bg-white px-2 py-1 text-xs text-stone-600"
+														on:click|stopPropagation={selectInputValue}
+														on:focus={selectInputValue}
+													/>
 												{:else}
 													<svelte:component
 														this={flexRender(
@@ -321,6 +335,13 @@
 										</td>
 									{/each}
 								</tr>
+								{#if isExpandedRow(row)}
+									<tr class="bg-white">
+										<td colspan={row.getVisibleCells().length} class="border-t border-stone-100 px-4 py-0">
+											<slot name="expanded-row" {row} />
+										</td>
+									</tr>
+								{/if}
 							{/each}
 						</tbody>
 					</table>
