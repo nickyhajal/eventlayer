@@ -160,7 +160,10 @@
   }
   let type = resolveType(user?.type);
   $: {
-    const userKey = `${user?.id ?? ""}:${user?.userId ?? ""}`;
+    // Only reinitialize when the backing event-user record changes.
+    // Email lookup sets `user.userId` locally, and including it here causes the
+    // form to immediately clear the prefetched "add existing user" state.
+    const userKey = `${user?.id ?? ""}`;
     const customFieldsKey = customFields.map((f) => f.key).join("|");
     const eventInfoFieldsKey = eventInfoFields.map((f) => f.key).join("|");
     if (
