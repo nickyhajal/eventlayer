@@ -281,29 +281,29 @@
           No upcoming events to display.
         </div>
       {/if}
-      <div
-        class="relative gap-16 flex items-center w-fit mx-auto rounded-xl text-center text-slate-700 transition-all mt-14"
-      >
-        <div class="flex flex-col">
-          <div class="font-h mt-2 text-white text-5xl font-semibold">
-            Join us as we continue the adventure
+    </div>
+    <div
+      class="gap-16 flex items-center w-fit mx-auto rounded-xl text-center text-slate-700 transition-all mt-14 absolute bottom-8 max-auto right-0 left-0"
+    >
+      <div class="flex flex-col">
+        <div class="font-h mt-2 text-white text-5xl font-semibold">
+          Join us as we continue the adventure
+        </div>
+        <div
+          class="flex w-fit mx-auto items-center gap-4 bg-[#E2FFFE] mt-4 rounded-3xl overflow-hidden"
+        >
+          <div class="">
+            <img src="/banner.png" class="mx-auto h-60" alt="" />
           </div>
           <div
-            class="flex w-fit mx-auto items-center gap-4 bg-[#E2FFFE] mt-4 rounded-3xl overflow-hidden"
+            class="font-h flex items-center justify-between mx-auto p-3 relative right-2 bg-[#E2FFFE] py-4 text-lg font-semibold"
           >
-            <div class="">
-              <img src="/banner.png" class="mx-auto h-60" alt="" />
-            </div>
-            <div
-              class="font-h flex items-center justify-between mx-auto p-3 relative right-2 bg-[#E2FFFE] py-4 text-lg font-semibold"
-            >
-              <div class="rounded-xl overflow-hidden">
-                <img
-                  src="/qr27.svg"
-                  class="mx-auto h-52"
-                  alt="rounded-xl overflow-hidden"
-                />
-              </div>
+            <div class="rounded-xl overflow-hidden">
+              <img
+                src="/qr27.svg"
+                class="mx-auto h-52"
+                alt="rounded-xl overflow-hidden"
+              />
             </div>
           </div>
         </div>
