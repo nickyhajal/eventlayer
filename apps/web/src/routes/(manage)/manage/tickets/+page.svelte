@@ -1,24 +1,37 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button'
-	import * as Dialog from '$lib/components/ui/dialog'
-	import Plus from 'lucide-svelte/icons/plus'
 	import { tick } from 'svelte'
 
 	import type { Snapshot } from '../$types'
 	import AdminScreen from '../AdminScreen.svelte'
 	import TicketTable from './TicketTable.svelte'
-	import UserForm from './UserForm.svelte'
 
 	export let data
-	let table
-	let setCurrentPage
-	let setGlobalFilter
+	let table: any
+	let setCurrentPage: ((page: number) => void) | undefined
+	let setGlobalFilter: ((value: string) => void) | undefined
 
-	let addOpen = false
-	let loading = false
+	type TicketWithRelations = (typeof data.tickets)[number]
+	type AssignedUserSummary = {
+		user: NonNullable<TicketWithRelations['assignedToUser']>
+		count: number
+		assignedOn: string | null
+	}
+
+	type TicketTableRow = {
+		id: string
+		assignKey: string | null
+		type: string
+		status: string
+		quantity: number
+		assignedCount: number
+		unassignedCount: number
+		user: NonNullable<TicketWithRelations['user']>
+		assignedUsers: AssignedUserSummary[]
+	}
+
 	export const snapshot: Snapshot = {
 		capture: () => {
-			const state = table ? $table.getState() : undefined
+			const state = table ? $table?.getState?.() : undefined
 			return {
 				query: state?.globalFilter ?? '',
 				scrollY: window.scrollY,
@@ -31,15 +44,15 @@
 			await tick()
 			if (table) {
 				if (Array.isArray(sorting)) {
-					$table.setSorting(sorting)
+					$table?.setSorting?.(sorting)
 				}
 				if (typeof pageSize === 'number') {
-					$table.setPageSize(pageSize)
+					$table?.setPageSize?.(pageSize)
 				}
-				if (typeof query === 'string' && typeof setGlobalFilter === 'function') {
+				if (typeof query === 'string' && setGlobalFilter) {
 					setGlobalFilter(query)
 				}
-				if (typeof page === 'number' && typeof setCurrentPage === 'function') {
+				if (typeof page === 'number' && setCurrentPage) {
 					setCurrentPage(page)
 				}
 			}
@@ -48,34 +61,79 @@
 			})
 		},
 	}
-	const ticketsByUser = data.tickets.reduce((acc, ticket) => {
-		const userId = ticket.user.id
-		if (acc[userId]) {
-			acc[userId].quantity += 1
-		} else {
-			acc[userId] = {
-				...ticket,
-				quantity: 1,
+
+	function getTicketGroupKey(ticket: TicketWithRelations) {
+		return [
+			ticket.userId,
+			ticket.assignKey || 'no-assign-key',
+			ticket.type || 'Untyped',
+			ticket.status || 'unknown',
+		].join(':')
+	}
+
+	const ticketsByGroup = data.tickets.reduce<Record<string, TicketTableRow>>((acc, ticket) => {
+		if (!ticket.user) {
+			return acc
+		}
+
+		const key = getTicketGroupKey(ticket)
+
+		if (!acc[key]) {
+			acc[key] = {
+				id: key,
+				assignKey: ticket.assignKey,
+				type: ticket.type || 'Untyped',
+				status: ticket.status || 'unknown',
+				quantity: 0,
+				assignedCount: 0,
+				unassignedCount: 0,
+				user: ticket.user,
+				assignedUsers: [],
 			}
 		}
+
+		acc[key].quantity += 1
+
+		if (ticket.assignedToUser) {
+			acc[key].assignedCount += 1
+
+			const existingAssignedUser = acc[key].assignedUsers.find(
+				(assignedUser) => assignedUser.user.id === ticket.assignedToUser?.id,
+			)
+
+			if (existingAssignedUser) {
+				existingAssignedUser.count += 1
+				existingAssignedUser.assignedOn ||= ticket.assignedOn || null
+			} else {
+				acc[key].assignedUsers.push({
+					user: ticket.assignedToUser,
+					count: 1,
+					assignedOn: ticket.assignedOn || null,
+				})
+			}
+		} else {
+			acc[key].unassignedCount += 1
+		}
+
 		return acc
 	}, {})
-	const tickets = Object.values(ticketsByUser)
+
+	const tickets: TicketTableRow[] = Object.values(ticketsByGroup)
+		.map((ticket) => ({
+			...ticket,
+			assignedUsers: [...ticket.assignedUsers].sort((a, b) =>
+				`${a.user.firstName || ''} ${a.user.lastName || ''}`.localeCompare(
+					`${b.user.firstName || ''} ${b.user.lastName || ''}`,
+				),
+			),
+		}))
+		.sort((a, b) =>
+			`${a.user.firstName || ''} ${a.user.lastName || ''}`.localeCompare(
+				`${b.user.firstName || ''} ${b.user.lastName || ''}`,
+			),
+		)
 </script>
 
-<AdminScreen title={true}>
-	<div class="flex items-center gap-5" slot="title">
-		<div class="text-2xl font-semibold">Tickets</div>
-		<!-- <Button variant="outline" class="h-7 py-[0.3rem] pl-1.5 pr-3" on:click={() => (addOpen = true)}>
-			<Plus class="mr-1 w-[1rem] text-slate-700" />
-			Add User</Button
-		> -->
-	</div>
+<AdminScreen title="Tickets">
 	<TicketTable rows={tickets} bind:table bind:setCurrentPage bind:setGlobalFilter />
 </AdminScreen>
-
-<Dialog.Root bind:open={addOpen}>
-	<Dialog.Content class="sm:max-w-[425px]">
-		<UserForm simplified={true} inDialog={true} />
-	</Dialog.Content>
-</Dialog.Root>

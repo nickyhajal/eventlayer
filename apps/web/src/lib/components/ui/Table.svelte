@@ -39,11 +39,15 @@
 	export let columns: ColumnDef<T>[]
 	export let globalFilterFn: FilterFn<any>
 	export let pageSize = 50
-	export let onRowClick: (row: Row<T>) => {}
-	export let rowHref: undefined | ((cell: Cell<T, unknown>) => string)
+	export let onRowClick: (row: Row<T>) => void = () => {}
+	export let rowHref: undefined | ((cell: Cell<T, unknown>) => string) = undefined
 	export let csvFilename = 'export'
 	export let csvFields: { key: string; label: string; default?: boolean; accessor?: (row: T) => string }[] = []
 	export const numFormat = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' })
+
+	type ActionColumnDef = ColumnDef<T> & {
+		handleClick?: (e: Event, row: T) => void
+	}
 
 	let csvModalOpen = false
 	let csvScope: 'page' | 'all' = 'all'
@@ -195,6 +199,12 @@
 	}
 
 	const noTypeCheck = (x: any) => x
+	const getCellStringValue = (cell: Cell<T, unknown>) => {
+		const value = cell.getValue()
+		return typeof value === 'string' ? value : ''
+	}
+	const getColumnHandleClick = (cell: Cell<T, unknown>) =>
+		(cell.getContext().column.columnDef as ActionColumnDef).handleClick
 
 	$: headerGroups = $table.getHeaderGroups()
 </script>
@@ -286,23 +296,18 @@
 												this={rowHref ? 'a' : 'div'}
 												href={rowHref ? rowHref(cell) : ''}
 											>
-												{#if cell.getValue()?.startsWith?.('userAvatar')}
+												{#if getCellStringValue(cell).startsWith('userAvatar')}
 													<UserAvatar
 														class="h-8 w-8"
 														fallbackClass="text-md font-medium text-slate-400"
-														user={JSON.parse(cell.getValue().replace('userAvatar:', ''))}
+														user={JSON.parse(getCellStringValue(cell).replace('userAvatar:', ''))}
 													/>
-												{:else if cell.getValue()?.startsWith?.('button:')}
+												{:else if getCellStringValue(cell).startsWith('button:')}
 													<ChicletButton
 														on:click={(e) =>
-															cell
-																.getContext()
-																.column.columnDef.handleClick(
-																	e,
-																	cell.getContext().row.original,
-																)}
+															getColumnHandleClick(cell)?.(e, cell.getContext().row.original)}
 													>
-														{cell.getValue().replace('button:', '').trim()}
+														{getCellStringValue(cell).replace('button:', '').trim()}
 													</ChicletButton>
 												{:else}
 													<svelte:component
@@ -396,7 +401,7 @@
 		<div class="relative z-10 w-full max-w-md rounded-lg border bg-white p-6 shadow-lg">
 			<h3 class="mb-4 text-lg font-semibold">Export CSV</h3>
 			<div class="mb-4">
-				<label class="mb-2 block text-sm font-medium text-stone-700">Scope</label>
+				<div class="mb-2 block text-sm font-medium text-stone-700">Scope</div>
 				<div class="flex gap-3">
 					<label class="flex items-center gap-2 text-sm">
 						<input type="radio" bind:group={csvScope} value="all" class="accent-sky-600" />
@@ -409,7 +414,7 @@
 				</div>
 			</div>
 			<div class="mb-4">
-				<label class="mb-2 block text-sm font-medium text-stone-700">Fields</label>
+				<div class="mb-2 block text-sm font-medium text-stone-700">Fields</div>
 				<div class="max-h-60 space-y-1.5 overflow-y-auto rounded-md border border-stone-200 p-3">
 					{#each csvFields as field}
 						<label class="flex items-center gap-2 text-sm">
