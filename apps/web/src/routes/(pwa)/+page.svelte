@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { onDestroy, onMount } from "svelte";
+  import { fly } from "svelte/transition";
+  import { writable } from "svelte/store";
   import Screen from "$lib/components/Screen.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
   import { getEventContext } from "$lib/state/getContexts.js";
@@ -7,10 +10,45 @@
   import { ChevronRight } from "radix-icons-svelte";
 
   import { tw } from "@matterloop/ui";
-  import { dayjs, getMediaUrl } from "@matterloop/util";
+  import { dayjs, getMediaUrl, shuffle } from "@matterloop/util";
+  import Animate from "@matterloop/ui/src/components/Animate.svelte";
 
   export let data;
   $: upcoming = data.upcoming;
+  $: nextAttending = (data.nextAttending ?? []) as Array<{
+    firstName: string;
+    lastName: string;
+    photo: string;
+  }>;
+  $: console.log("nextAttending", nextAttending);
+  $: shuffledAttendees =
+    nextAttending.length > 0 ? shuffle([...nextAttending]) : [];
+
+  let currentIndex = writable(0);
+  let tickerInterval: ReturnType<typeof setInterval> | null = null;
+  $: currentAttendee =
+    shuffledAttendees[$currentIndex % (shuffledAttendees.length || 1)];
+  $: eventName = "NeuroDiversion 27";
+
+  function formatAttendeeLabel(
+    attendee: { firstName?: string; lastName?: string } | undefined,
+  ) {
+    if (!attendee) return "";
+    const first = attendee.firstName ?? "";
+    const lastInitial = attendee.lastName?.[0] ?? "";
+    return `${first} ${lastInitial}.`.trim();
+  }
+
+  onMount(() => {
+    if (shuffledAttendees.length > 1) {
+      tickerInterval = setInterval(() => {
+        currentIndex.update((n) => (n + 1) % shuffledAttendees.length);
+      }, 10000);
+    }
+  });
+  onDestroy(() => {
+    if (tickerInterval) clearInterval(tickerInterval);
+  });
   $: team = data.info.find((info) => info.key === "diveTeam");
   $: table = data.info.find((info) => info.key === "dinnerTable");
   let event = getEventContext();
@@ -62,6 +100,8 @@
     localStorage.setItem(ignorePreorderKey, "true");
     return false;
   }
+
+  const emojis = ["🥳", "🎉", "🎊", "🎇", "🍾", "🥂"];
 </script>
 
 <Screen title={$event.name}>
@@ -101,6 +141,7 @@
         </div>
       {/if}
     {/if}
+
     {#if $event.getContent("preorder") && !ignorePreorder}
       <a
         href={`${$event.getContent("preorder")}?prefilled_email=${data.me?.email ?? ""}`}
@@ -133,6 +174,34 @@
         class="mx-auto mb-12 mt-2 w-3/12 pb-2 md:-mt-24 md:w-3/12"
       />
     {/if}
+    {#if shuffledAttendees.length > 0 && currentAttendee}
+      <div
+        class="relative mb-12 max-w-xl mx-auto -mt-14 overflow-hidden rounded-xl bg-slate-50 p-3"
+      >
+        <Animate>
+          {#key currentAttendee}
+            <div
+              class="flex items-center gap-4"
+              in:fly={{ y: 60, duration: 400 }}
+              out:fly={{ y: -60, duration: 400 }}
+            >
+              <img
+                src={currentAttendee.photo.replace(
+                  "/vfbggzlfe",
+                  "/vfbggzlfe/tr:w-128",
+                )}
+                alt=""
+                class="h-10 w-10 shrink-0 overflow-hidden rounded-full object-cover"
+              />
+              <div class="text-sm font-medium text-slate-700 md:text-base">
+                {formatAttendeeLabel(currentAttendee)} will be at {eventName}!
+                {emojis[Math.floor(Math.random() * emojis.length)]}
+              </div>
+            </div>
+          {/key}
+        </Animate>
+      </div>
+    {/if}
     <div class="rounded-t-xl bg-slate-200/70 p-3 text-center font-medium">
       <div class="text-base">
         {$event.getContent("main-start-date")}
@@ -160,6 +229,7 @@
         </div>
       </div>
     </div>
+
     <!-- {#if data?.me?.type !== 'main-stage'}
 			<div
 				class="mb-8 rounded-xl overflow-hidden text-a-accent/90 bg-amber-100/30 mt-8 text-center text-sm font-medium leading-snug md:text-base"
