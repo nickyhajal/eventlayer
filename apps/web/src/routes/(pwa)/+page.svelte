@@ -210,9 +210,8 @@
               class="mb-0.5 rounded-full border border-main/20 bg-white/40 p-1.5 opacity-80"
             >
               <div class="icon"><Ticket /></div>
-              <!-- <svelte:component this={icon} class="text-main/70  h-[1rem] w-[1rem] flex-none" /> -->
             </div>
-            Join us for ND26: Preorder Now
+            Join us for ND27: Preorder Now
           </Button>
         {/if}
         {#each tabs as { label, icon, link, className }}
