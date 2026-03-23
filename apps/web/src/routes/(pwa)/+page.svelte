@@ -39,6 +39,19 @@
     return `${first} ${lastInitial}.`.trim();
   }
 
+  function preloadImage(src: string) {
+    const img = new Image();
+    img.src = src;
+  }
+
+  $: if (typeof window !== "undefined" && shuffledAttendees.length > 0) {
+    const len = shuffledAttendees.length;
+    for (let i = 1; i <= 2; i++) {
+      const next = shuffledAttendees[($currentIndex + i) % len];
+      if (next?.photo) preloadImage(next.photo);
+    }
+  }
+
   onMount(() => {
     if (shuffledAttendees.length > 1) {
       tickerInterval = setInterval(() => {
@@ -176,7 +189,7 @@
     {/if}
     {#if shuffledAttendees.length > 0 && currentAttendee}
       <div
-        class="relative mb-12 max-w-xl mx-auto -mt-14 overflow-hidden rounded-xl bg-slate-50 p-3"
+        class="relative mb-12 max-w-xl mx-auto mt-0 md:-mt-14 overflow-hidden rounded-xl bg-slate-50 p-3"
       >
         <Animate>
           {#key currentAttendee}
