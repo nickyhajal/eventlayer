@@ -20,7 +20,6 @@
     lastName: string;
     photo: string;
   }>;
-  $: console.log("nextAttending", nextAttending);
   $: shuffledAttendees =
     nextAttending.length > 0 ? shuffle([...nextAttending]) : [];
 

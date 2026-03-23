@@ -13,7 +13,6 @@ export const load = async (req) => {
       redis.get<string>(`next_attending:${locals.event.id}`),
     ])
     let nextAttending: Array<{ firstName: string; lastName: string; photo: string }> = []
-    console.log(nextAttendingRaw)
     if (typeof nextAttendingRaw === 'string') {
       try {
         nextAttending = JSON.parse(nextAttendingRaw) ?? []
@@ -23,7 +22,6 @@ export const load = async (req) => {
     } else if (nextAttendingRaw) {
       nextAttending = nextAttendingRaw
     }
-    console.log(nextAttending)
     return {
       upcoming,
       nextAttending,
