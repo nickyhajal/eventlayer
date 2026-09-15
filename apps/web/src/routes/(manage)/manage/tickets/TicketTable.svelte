@@ -1,268 +1,247 @@
 <script lang="ts">
-  import type { ColumnDef, Row } from "@tanstack/svelte-table";
-  import { type FilterFn } from "@tanstack/svelte-table";
-  import { invalidateAll } from "$app/navigation";
-  import Table from "$lib/components/ui/Table.svelte";
-  import { trpc } from "$lib/trpc/client";
+  import type { ColumnDef, Row } from '@tanstack/svelte-table'
+  import { type FilterFn } from '@tanstack/svelte-table'
+  import { invalidateAll } from '$app/navigation'
+  import Table from '$lib/components/ui/Table.svelte'
+  import { trpc } from '$lib/trpc/client'
 
-  import type { User } from "@matterloop/db";
-  import { copyToClipboard, dayjs, plural, startCase } from "@matterloop/util";
+  import type { User } from '@matterloop/db'
+  import { copyToClipboard, dayjs, plural, startCase } from '@matterloop/util'
 
   type AssignedUserSummary = {
-    user: User;
-    count: number;
-    assignedOn: string | null;
-  };
+    user: User
+    count: number
+    assignedOn: string | null
+  }
 
   type TicketPurchaseRow = {
-    id: string;
-    stripeId: string;
-    status: string;
-    quantity: number;
-    assignedCount: number;
-    unassignedCount: number;
-    user: User;
-    assignedUsers: AssignedUserSummary[];
-    unassignedAssignKeys: string[];
-  };
+    id: string
+    stripeId: string
+    status: string
+    quantity: number
+    assignedCount: number
+    unassignedCount: number
+    createdAt: string | null
+    user: User
+    assignedUsers: AssignedUserSummary[]
+    unassignedAssignKeys: string[]
+  }
 
-  export let rows: TicketPurchaseRow[];
-  export let table: any;
-  export let setCurrentPage: any;
-  export let setGlobalFilter: any;
+  export let rows: TicketPurchaseRow[]
+  export let table: any
+  export let setCurrentPage: any
+  export let setGlobalFilter: any
 
   type ActionColumnDef = ColumnDef<TicketPurchaseRow> & {
-    handleClick?: (e: Event, row: TicketPurchaseRow) => void;
-  };
+    handleClick?: (e: Event, row: TicketPurchaseRow) => void
+  }
 
-  let filterStatus = "";
-  let filterAssignment = "";
-  let selectedRowId: string | null = null;
+  let filterStatus = ''
+  let filterAssignment = ''
+  let selectedRowId: string | null = null
 
-  $: statuses = [...new Set(rows.map((r) => r.status).filter(Boolean))].sort();
+  $: statuses = [...new Set(rows.map((r) => r.status).filter(Boolean))].sort()
 
   $: filteredRows = rows.filter((r) => {
-    if (filterStatus && r.status !== filterStatus) return false;
-    if (filterAssignment === "unassigned" && r.assignedCount > 0) return false;
+    if (filterStatus && r.status !== filterStatus) return false
+    if (filterAssignment === 'unassigned' && r.assignedCount > 0) return false
     if (
-      filterAssignment === "partially-assigned" &&
+      filterAssignment === 'partially-assigned' &&
       !(r.assignedCount > 0 && r.unassignedCount > 0)
     ) {
-      return false;
+      return false
     }
-    if (filterAssignment === "fully-assigned" && r.unassignedCount > 0)
-      return false;
-    return true;
-  });
+    if (filterAssignment === 'fully-assigned' && r.unassignedCount > 0) return false
+    return true
+  })
 
-  $: if (
-    selectedRowId &&
-    !filteredRows.some((row) => row.id === selectedRowId)
-  ) {
-    selectedRowId = null;
+  $: if (selectedRowId && !filteredRows.some((row) => row.id === selectedRowId)) {
+    selectedRowId = null
   }
 
   const globalFilterFn: FilterFn<any> = (row, columnId, value) => {
-    if (!value || value.length === 0) return true;
-    const colVal = row.getValue(columnId);
-    if (!colVal) return false;
-    return colVal.toString().toLowerCase().includes(value.toLowerCase());
-  };
+    if (!value || value.length === 0) return true
+    const colVal = row.getValue(columnId)
+    if (!colVal) return false
+    return colVal.toString().toLowerCase().includes(value.toLowerCase())
+  }
 
   const onRowClick = (row: Row<TicketPurchaseRow>) => {
     if (!row.original.assignedUsers.length) {
-      selectedRowId = null;
-      return;
+      selectedRowId = null
+      return
     }
 
-    selectedRowId = selectedRowId === row.original.id ? null : row.original.id;
-  };
+    selectedRowId = selectedRowId === row.original.id ? null : row.original.id
+  }
 
   function copyTicketLink(e: Event, row: TicketPurchaseRow) {
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault()
+    e.stopPropagation()
 
     if (!row.unassignedAssignKeys.length) {
-      return;
+      return
     }
 
-    const elm = e.currentTarget as HTMLButtonElement;
-    const tmp = elm.textContent;
-    elm.textContent = "Copied!";
+    const elm = e.currentTarget as HTMLButtonElement
+    const tmp = elm.textContent
+    elm.textContent = 'Copied!'
     setTimeout(() => {
-      elm.textContent = tmp;
-    }, 1000);
+      elm.textContent = tmp
+    }, 1000)
 
     const urls = row.unassignedAssignKeys.map(
       (assignKey) => `${window.location.origin}/welcome/${assignKey}`,
-    );
-    copyToClipboard(urls.join("\n"));
+    )
+    copyToClipboard(urls.join('\n'))
   }
 
-  let confirmingSend = false;
+  let confirmingSend = false
   async function sendClaimEmail(e: Event, row: TicketPurchaseRow) {
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault()
+    e.stopPropagation()
 
-    const elm = e.currentTarget as HTMLButtonElement;
+    const elm = e.currentTarget as HTMLButtonElement
     if (!confirmingSend) {
-      confirmingSend = true;
-      const tmp = elm.textContent;
-      elm.textContent = "Again to Confirm";
+      confirmingSend = true
+      const tmp = elm.textContent
+      elm.textContent = 'Again to Confirm'
       setTimeout(() => {
-        elm.textContent =
-          row.status === "sent" ? "Send Email Again" : "Send Email";
-        confirmingSend = false;
-      }, 700);
+        elm.textContent = row.status === 'sent' ? 'Send Email Again' : 'Send Email'
+        confirmingSend = false
+      }, 700)
     } else if (confirmingSend) {
       if (!row.unassignedAssignKeys.length) {
-        return;
+        return
       }
 
-      elm.textContent = "Sending...";
+      elm.textContent = 'Sending...'
       await Promise.all(
         row.unassignedAssignKeys.map((assignKey) =>
           trpc().user.sendAssignEmail.mutate({ assignKey }),
         ),
-      );
-      elm.textContent = "Sent!";
+      )
+      elm.textContent = 'Sent!'
       setTimeout(() => {
-        elm.textContent = "Send Email Again";
-        confirmingSend = false;
-      }, 1000);
-      invalidateAll();
+        elm.textContent = 'Send Email Again'
+        confirmingSend = false
+      }, 1000)
+      invalidateAll()
     }
   }
 
   function getAssignmentLabel(row: TicketPurchaseRow) {
     if (row.assignedCount === 0) {
-      return "Unassigned";
+      return 'Unassigned'
     }
 
     if (row.unassignedCount === 0) {
-      return `${row.assignedCount}/${row.quantity} assigned`;
+      return `${row.assignedCount}/${row.quantity} Assigned`
     }
 
-    return `${row.assignedCount}/${row.quantity} assigned`;
+    return `${row.assignedCount}/${row.quantity} Assigned`
+  }
+
+  function getStatusLabel(row: TicketPurchaseRow) {
+    return `${startCase(row.status)} - ${getAssignmentLabel(row)}`
   }
 
   function getSendEmailLabel(row: TicketPurchaseRow) {
     if (!row.unassignedAssignKeys.length) {
-      return "";
+      return ''
     }
 
-    const labelBase = row.status === "sent" ? "Send Email Again" : "Send Email";
-    return row.unassignedAssignKeys.length > 1 ? `${labelBase}s` : labelBase;
+    const labelBase = row.status === 'sent' ? 'Send Email Again' : 'Send Email'
+    return row.unassignedAssignKeys.length > 1 ? `${labelBase}s` : labelBase
   }
 
   function getCopyLinkLabel(row: TicketPurchaseRow) {
     if (!row.unassignedAssignKeys.length) {
-      return "";
+      return ''
     }
 
-    return row.unassignedAssignKeys.length > 1 ? "Copy Links" : "Copy Link";
+    return row.unassignedAssignKeys.length > 1 ? 'Copy Links' : 'Copy Link'
   }
 
   const columns: ActionColumnDef[] = [
     {
-      accessorKey: "photo",
-      header: "Photo",
+      accessorKey: 'photo',
+      header: 'Photo',
       accessorFn: (row) => `userAvatar:${JSON.stringify(row.user)}`,
       enableSorting: false,
     },
     {
-      accessorKey: "stripeId",
-      header: "Stripe ID",
+      accessorKey: 'stripeId',
+      header: 'Stripe ID',
       accessorFn: (row) => `readonlyInput:${row.stripeId}`,
     },
     {
-      accessorKey: "status",
-      header: "Status",
-      cell: (info) => startCase(info.getValue<string>()),
+      accessorKey: 'status',
+      header: 'Status',
+      cell: (info) => getStatusLabel(info.row.original),
       filterFn: globalFilterFn,
     },
     {
-      accessorKey: "quantity",
-      header: "Quantity",
-      cell: (info) => info.getValue<number>(),
-    },
-    {
-      accessorKey: "assigned",
-      header: "Assigned",
-      accessorFn: (row) =>
-        [
-          getAssignmentLabel(row),
-          row.assignedUsers.length
-            ? row.assignedUsers
-                .map((assignedUser) => assignedUser.user.email)
-                .join(" ")
-            : "",
-        ].join(" "),
+      accessorKey: 'createdAt',
+      header: 'Created At',
       cell: (info) => {
-        const row = info.row.original;
-        return row.assignedUsers.length
-          ? `${getAssignmentLabel(row)}`
-          : getAssignmentLabel(row);
+        const createdAt = info.getValue<string | null>()
+        return createdAt ? dayjs(createdAt).format('MMM D, YYYY h:mm A') : '—'
       },
     },
     {
-      accessorKey: "purchaser",
-      header: "Purchaser",
+      accessorKey: 'purchaser',
+      header: 'Purchaser',
       accessorFn: (row) => `${row.user.firstName} ${row.user.lastName}`,
     },
     {
-      accessorKey: "email",
-      header: "E-Mail Address",
+      accessorKey: 'email',
+      header: 'E-Mail Address',
       accessorFn: (row) => `${row.user.email}`,
     },
     {
-      accessorKey: "email-action",
-      header: "Send Email",
+      accessorKey: 'email-action',
+      header: 'Send Email',
       handleClick: (e, row) => sendClaimEmail(e, row),
-      accessorFn: (row) =>
-        getSendEmailLabel(row) ? `button: ${getSendEmailLabel(row)}` : "",
+      accessorFn: (row) => (getSendEmailLabel(row) ? `button: ${getSendEmailLabel(row)}` : ''),
       enableSorting: false,
     },
     {
-      accessorKey: "copy-link",
-      header: "Copy Link",
+      accessorKey: 'copy-link',
+      header: 'Copy Link',
       handleClick: (e, row) => copyTicketLink(e, row),
-      accessorFn: (row) =>
-        getCopyLinkLabel(row) ? `button: ${getCopyLinkLabel(row)}` : "",
+      accessorFn: (row) => (getCopyLinkLabel(row) ? `button: ${getCopyLinkLabel(row)}` : ''),
       enableSorting: false,
     },
-  ];
+  ]
 
   const csvFields = [
     {
-      key: "purchaser",
-      label: "Purchaser",
+      key: 'purchaser',
+      label: 'Purchaser',
       accessor: (row: TicketPurchaseRow) =>
-        `${row.user?.firstName || ""} ${row.user?.lastName || ""}`,
+        `${row.user?.firstName || ''} ${row.user?.lastName || ''}`,
     },
     {
-      key: "email",
-      label: "Email",
-      accessor: (row: TicketPurchaseRow) => row.user?.email || "",
+      key: 'email',
+      label: 'Email',
+      accessor: (row: TicketPurchaseRow) => row.user?.email || '',
     },
-    { key: "status", label: "Status" },
-    { key: "quantity", label: "Quantity" },
-    { key: "stripeId", label: "Stripe ID" },
+    { key: 'status', label: 'Status' },
+    { key: 'quantity', label: 'Quantity' },
+    { key: 'stripeId', label: 'Stripe ID' },
     {
-      key: "assignedSummary",
-      label: "Assignment",
+      key: 'assignedSummary',
+      label: 'Assignment',
       accessor: (row: TicketPurchaseRow) => getAssignmentLabel(row),
     },
-  ];
+  ]
 </script>
 
 <Table
   {columns}
   rows={filteredRows}
-  sorting={[
-    { id: "purchaser", desc: false },
-    { id: "stripeId", desc: false },
-  ]}
+  sorting={[{ id: 'createdAt', desc: true }]}
   pageSize={25}
   {globalFilterFn}
   bind:table
@@ -296,9 +275,7 @@
   </svelte:fragment>
   <svelte:fragment slot="expanded-row" let:row>
     <div class="my-1 rounded-xl border border-stone-200 bg-white p-4">
-      <div
-        class="flex items-start justify-between gap-4 border-b border-stone-100 pb-3"
-      >
+      <div class="flex items-start justify-between gap-4 border-b border-stone-100 pb-3">
         <div>
           <div class="text-sm font-semibold text-stone-900">
             Assigned tickets for purchase `{row.original.stripeId}`
@@ -306,16 +283,15 @@
           <div class="mt-1 text-sm text-stone-500">
             {row.original.user.firstName}
             {row.original.user.lastName} purchased {row.original.quantity}
-            {plural(row.original.quantity, "ticket")}. {row.original
-              .assignedCount} assigned, {row.original.unassignedCount}
+            {plural(row.original.quantity, 'ticket')}. {row.original.assignedCount} assigned, {row
+              .original.unassignedCount}
             unassigned.
           </div>
         </div>
         <div class="text-xs font-medium uppercase tracking-wide text-stone-400">
-          {row.original.assignedUsers.length} recipient{row.original
-            .assignedUsers.length === 1
-            ? ""
-            : "s"}
+          {row.original.assignedUsers.length} recipient{row.original.assignedUsers.length === 1
+            ? ''
+            : 's'}
         </div>
       </div>
 
@@ -337,13 +313,11 @@
             <div class="text-right text-sm text-stone-500">
               <div>
                 {assignedUser.count}
-                {plural(assignedUser.count, "ticket")}
+                {plural(assignedUser.count, 'ticket')}
               </div>
               {#if assignedUser.assignedOn}
                 <div class="text-xs text-stone-400">
-                  Assigned {dayjs(assignedUser.assignedOn).format(
-                    "MMM D, YYYY h:mm A",
-                  )}
+                  Assigned {dayjs(assignedUser.assignedOn).format('MMM D, YYYY h:mm A')}
                 </div>
               {/if}
             </div>

@@ -1,143 +1,140 @@
 <script lang="ts">
-	import { tick } from 'svelte'
+  import { tick } from 'svelte'
 
-	import type { Snapshot } from '../$types'
-	import AdminScreen from '../AdminScreen.svelte'
-	import TicketTable from './TicketTable.svelte'
+  import type { Snapshot } from '../$types'
+  import AdminScreen from '../AdminScreen.svelte'
+  import TicketTable from './TicketTable.svelte'
 
-	export let data
-	let table: any
-	let setCurrentPage: ((page: number) => void) | undefined
-	let setGlobalFilter: ((value: string) => void) | undefined
+  export let data
+  let table: any
+  let setCurrentPage: ((page: number) => void) | undefined
+  let setGlobalFilter: ((value: string) => void) | undefined
 
-	type TicketWithRelations = (typeof data.tickets)[number]
-	type AssignedUserSummary = {
-		user: NonNullable<TicketWithRelations['assignedToUser']>
-		count: number
-		assignedOn: string | null
-	}
+  type TicketWithRelations = (typeof data.tickets)[number]
+  type AssignedUserSummary = {
+    user: NonNullable<TicketWithRelations['assignedToUser']>
+    count: number
+    assignedOn: string | null
+  }
 
-	type TicketPurchaseRow = {
-		id: string
-		stripeId: string
-		status: string
-		quantity: number
-		assignedCount: number
-		unassignedCount: number
-		user: NonNullable<TicketWithRelations['user']>
-		assignedUsers: AssignedUserSummary[]
-		unassignedAssignKeys: string[]
-	}
+  type TicketPurchaseRow = {
+    id: string
+    stripeId: string
+    status: string
+    quantity: number
+    assignedCount: number
+    unassignedCount: number
+    createdAt: string | null
+    user: NonNullable<TicketWithRelations['user']>
+    assignedUsers: AssignedUserSummary[]
+    unassignedAssignKeys: string[]
+  }
 
-	export const snapshot: Snapshot = {
-		capture: () => {
-			const state = table ? $table?.getState?.() : undefined
-			return {
-				query: state?.globalFilter ?? '',
-				scrollY: window.scrollY,
-				page: state?.pagination?.pageIndex ?? 0,
-				pageSize: state?.pagination?.pageSize,
-				sorting: state?.sorting ?? [],
-			}
-		},
-		restore: async ({ scrollY, page, pageSize, query, sorting }) => {
-			await tick()
-			if (table) {
-				if (Array.isArray(sorting)) {
-					$table?.setSorting?.(sorting)
-				}
-				if (typeof pageSize === 'number') {
-					$table?.setPageSize?.(pageSize)
-				}
-				if (typeof query === 'string' && setGlobalFilter) {
-					setGlobalFilter(query)
-				}
-				if (typeof page === 'number' && setCurrentPage) {
-					setCurrentPage(page)
-				}
-			}
-			window.requestAnimationFrame(() => {
-				window.scrollTo(0, typeof scrollY === 'number' ? scrollY : 0)
-			})
-		},
-	}
+  export const snapshot: Snapshot = {
+    capture: () => {
+      const state = table ? $table?.getState?.() : undefined
+      return {
+        query: state?.globalFilter ?? '',
+        scrollY: window.scrollY,
+        page: state?.pagination?.pageIndex ?? 0,
+        pageSize: state?.pagination?.pageSize,
+        sorting: state?.sorting ?? [],
+      }
+    },
+    restore: async ({ scrollY, page, pageSize, query, sorting }) => {
+      await tick()
+      if (table) {
+        if (Array.isArray(sorting)) {
+          $table?.setSorting?.(sorting)
+        }
+        if (typeof pageSize === 'number') {
+          $table?.setPageSize?.(pageSize)
+        }
+        if (typeof query === 'string' && setGlobalFilter) {
+          setGlobalFilter(query)
+        }
+        if (typeof page === 'number' && setCurrentPage) {
+          setCurrentPage(page)
+        }
+      }
+      window.requestAnimationFrame(() => {
+        window.scrollTo(0, typeof scrollY === 'number' ? scrollY : 0)
+      })
+    },
+  }
 
-	function getTicketGroupKey(ticket: TicketWithRelations) {
-		return [
-			ticket.userId,
-			ticket.type || 'no-stripe-id',
-		].join(':')
-	}
+  function getTicketGroupKey(ticket: TicketWithRelations) {
+    return [ticket.userId, ticket.type || 'no-stripe-id'].join(':')
+  }
 
-	const ticketsByGroup = data.tickets.reduce<Record<string, TicketPurchaseRow>>((acc, ticket) => {
-		if (!ticket.user) {
-			return acc
-		}
+  const ticketsByGroup = data.tickets.reduce<Record<string, TicketPurchaseRow>>((acc, ticket) => {
+    if (!ticket.user) {
+      return acc
+    }
 
-		const key = getTicketGroupKey(ticket)
+    const key = getTicketGroupKey(ticket)
 
-		if (!acc[key]) {
-			acc[key] = {
-				id: key,
-				stripeId: ticket.type || 'Unknown',
-				status: ticket.status || 'unknown',
-				quantity: 0,
-				assignedCount: 0,
-				unassignedCount: 0,
-				user: ticket.user,
-				assignedUsers: [],
-				unassignedAssignKeys: [],
-			}
-		}
+    if (!acc[key]) {
+      acc[key] = {
+        id: key,
+        stripeId: ticket.type || 'Unknown',
+        status: ticket.status || 'unknown',
+        quantity: 0,
+        assignedCount: 0,
+        unassignedCount: 0,
+        createdAt: ticket.createdAt || null,
+        user: ticket.user,
+        assignedUsers: [],
+        unassignedAssignKeys: [],
+      }
+    }
 
-		acc[key].quantity += 1
-		if (acc[key].status !== (ticket.status || 'unknown')) {
-			acc[key].status = 'mixed'
-		}
+    if (ticket.createdAt && (!acc[key].createdAt || ticket.createdAt < acc[key].createdAt)) {
+      acc[key].createdAt = ticket.createdAt
+    }
 
-		if (ticket.assignedToUser) {
-			acc[key].assignedCount += 1
+    acc[key].quantity += 1
+    if (acc[key].status !== (ticket.status || 'unknown')) {
+      acc[key].status = 'mixed'
+    }
 
-			const existingAssignedUser = acc[key].assignedUsers.find(
-				(assignedUser) => assignedUser.user.id === ticket.assignedToUser?.id,
-			)
+    if (ticket.assignedToUser) {
+      acc[key].assignedCount += 1
 
-			if (existingAssignedUser) {
-				existingAssignedUser.count += 1
-				existingAssignedUser.assignedOn ||= ticket.assignedOn || null
-			} else {
-				acc[key].assignedUsers.push({
-					user: ticket.assignedToUser,
-					count: 1,
-					assignedOn: ticket.assignedOn || null,
-				})
-			}
-		} else {
-			acc[key].unassignedCount += 1
-			if (ticket.assignKey && !acc[key].unassignedAssignKeys.includes(ticket.assignKey)) {
-				acc[key].unassignedAssignKeys.push(ticket.assignKey)
-			}
-		}
+      const existingAssignedUser = acc[key].assignedUsers.find(
+        (assignedUser) => assignedUser.user.id === ticket.assignedToUser?.id,
+      )
 
-		return acc
-	}, {})
+      if (existingAssignedUser) {
+        existingAssignedUser.count += 1
+        existingAssignedUser.assignedOn ||= ticket.assignedOn || null
+      } else {
+        acc[key].assignedUsers.push({
+          user: ticket.assignedToUser,
+          count: 1,
+          assignedOn: ticket.assignedOn || null,
+        })
+      }
+    } else {
+      acc[key].unassignedCount += 1
+      if (ticket.assignKey && !acc[key].unassignedAssignKeys.includes(ticket.assignKey)) {
+        acc[key].unassignedAssignKeys.push(ticket.assignKey)
+      }
+    }
 
-	const tickets: TicketPurchaseRow[] = Object.values(ticketsByGroup)
-		.map((ticket) => ({
-			...ticket,
-			assignedUsers: [...ticket.assignedUsers].sort((a, b) =>
-				`${a.user.firstName || ''} ${a.user.lastName || ''}`.localeCompare(
-					`${b.user.firstName || ''} ${b.user.lastName || ''}`,
-				),
-			),
-		}))
-		.sort((a, b) =>
-			`${a.user.firstName || ''} ${a.user.lastName || ''}`.localeCompare(
-				`${b.user.firstName || ''} ${b.user.lastName || ''}`,
-			),
-		)
+    return acc
+  }, {})
+
+  const tickets: TicketPurchaseRow[] = Object.values(ticketsByGroup).map((ticket) => ({
+    ...ticket,
+    assignedUsers: [...ticket.assignedUsers].sort((a, b) =>
+      `${a.user.firstName || ''} ${a.user.lastName || ''}`.localeCompare(
+        `${b.user.firstName || ''} ${b.user.lastName || ''}`,
+      ),
+    ),
+  }))
 </script>
 
 <AdminScreen title="Tickets">
-	<TicketTable rows={tickets} bind:table bind:setCurrentPage bind:setGlobalFilter />
+  <TicketTable rows={tickets} bind:table bind:setCurrentPage bind:setGlobalFilter />
 </AdminScreen>

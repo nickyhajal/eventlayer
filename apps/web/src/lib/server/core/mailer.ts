@@ -35,6 +35,8 @@ export const mailer = {
       const p = more_params[i]
       merge[i] = p
     }
+    const bodyPlaceholder = '__MAILER_HTML_BODY__'
+    merge.body = bodyPlaceholder
     const layout = `<style type="text/css">
     .body {
       max-width: 768px;
@@ -48,7 +50,10 @@ export const mailer = {
     </div>`
     const liquify = new Liquid()
     const layoutTpl = liquify.parse(layout)
-    const htmlRaw = await liquify.render(layoutTpl, merge)
+    const htmlRaw = (await liquify.render(layoutTpl, merge)).replaceAll(
+      bodyPlaceholder,
+      more_params.body ?? '',
+    )
     const html = juice(htmlRaw)
     const req = {
       from: `${from_name} <${from}>`,
