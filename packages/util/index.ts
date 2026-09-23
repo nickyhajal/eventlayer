@@ -38,6 +38,7 @@ import { generateSha1, generateSha256 } from './src/lib/generateSha256'
 
 export * from './src/lib/getMediaUrl'
 export * from './src/lib/getContentFromContentArray'
+export * from './src/lib/eventIds'
 export * from './src/lib/joinWithCommasUntilAnd'
 export * from './src/lib/getEmbeddedYoutubeLinks'
 export * from './src/lib/zodUtils'
