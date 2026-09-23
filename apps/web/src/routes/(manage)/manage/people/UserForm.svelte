@@ -133,6 +133,7 @@
     { value: "attendee", label: "Attendee" },
     // { value: 'main-stage', label: 'Main Stage Only Attendee' },
     { value: "speaker", label: "Speaker" },
+    { value: "panelist", label: "Panelist" },
     { value: "ambassador", label: "Ambassador" },
     // { value: 'main-stage-speaker', label: 'Main Stage Speaker' },
     // { value: 'on-stage-host', label: 'On Stage Host' },

@@ -431,6 +431,7 @@ export const EventFns = (args: string | Args) => {
                   'host',
                   'main-stage-speaker',
                   'showcase-speaker',
+                  'panelist',
                 ]),
               ),
             ),
