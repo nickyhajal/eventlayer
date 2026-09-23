@@ -42,7 +42,7 @@
 		{ value: 'sponsor', label: 'Sponsor' },
 		// { value: 'impact-partner', label: 'Impact Partner' },
 		// { value: 'organizing-partner', label: 'Organizing Partner' },
-		// { value: 'whale', label: 'Whale Tank' },
+		{ value: 'whale', label: 'Whale Tank' },
 	]
 	let sponsorExpoOptions = [
 		{ value: '0', label: 'No' },
