@@ -1,27 +1,26 @@
+// Converts a CSS color (#rgb, #rrggbb, #rrggbbaa, rrggbb, rgb()/rgba()) to "r g b" for rgb(var(--x))
 export function getRawRgb(str: string) {
-  if (str.startsWith('rgb')) {
-    return str.replace('rgb(', '').replace('rgba(', '').replace(')', '')
-  } else if (str.startsWith('#')) {
-    return hexToRGB(str)
+  if (typeof str !== 'string') return undefined
+  const value = str.trim()
+  if (value.startsWith('rgb')) {
+    const parts = value
+      .replace(/rgba?\(/, '')
+      .replace(')', '')
+      .split(/[\s,/]+/)
+      .filter(Boolean)
+    return parts.slice(0, 3).join(' ')
+  }
+  const hex = value.replace(/^#/, '')
+  if (/^[0-9a-f]{3}$/i.test(hex)) {
+    return hexToRGB(hex.split('').map((c) => c + c).join(''))
+  }
+  if (/^[0-9a-f]{6}([0-9a-f]{2})?$/i.test(hex)) {
+    return hexToRGB(hex.slice(0, 6))
   }
 }
-function hexToRGB(h) {
-  let r = 0,
-    g = 0,
-    b = 0
-
-  // 3 digits
-  if (h.length == 4) {
-    r = '0x' + h[1] + h[1]
-    g = '0x' + h[2] + h[2]
-    b = '0x' + h[3] + h[3]
-
-    // 6 digits
-  } else if (h.length == 7) {
-    r = '0x' + h[1] + h[2]
-    g = '0x' + h[3] + h[4]
-    b = '0x' + h[5] + h[6]
-  }
-
-  return +r + ' ' + +g + ' ' + +b
+function hexToRGB(hex: string) {
+  const r = parseInt(hex.slice(0, 2), 16)
+  const g = parseInt(hex.slice(2, 4), 16)
+  const b = parseInt(hex.slice(4, 6), 16)
+  return `${r} ${g} ${b}`
 }

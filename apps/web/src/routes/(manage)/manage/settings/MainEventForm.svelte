@@ -18,6 +18,19 @@
   import { tw } from "@matterloop/ui";
   import { capitalize, debounce, getMediaUrl } from "@matterloop/util";
 
+  // Accept "212540", " #212540 " etc. and store a clean "#212540"
+  function normalizeHex(value?: string) {
+    const trimmed = (value || "").trim();
+    return /^[0-9a-f]{3}([0-9a-f]{3})?$/i.test(trimmed) ? `#${trimmed}` : trimmed;
+  }
+  function toColorInputValue(value?: string) {
+    const hex = normalizeHex(value);
+    if (/^#[0-9a-f]{6}/i.test(hex)) return hex.slice(0, 7).toLowerCase();
+    if (/^#[0-9a-f]{3}$/i.test(hex))
+      return `#${hex.slice(1).split("").map((c) => c + c).join("")}`.toLowerCase();
+    return "#000000";
+  }
+
   type EventFormModel = Partial<Event> & {
     venueId?: string;
     colors: { accent?: string };
@@ -181,11 +194,22 @@
         </div>
         <div class="flex flex-col items-start justify-center gap-1">
           <Label for="event_accent" class="text-right">Accent Color</Label>
-          <Input
-            id="event_accent"
-            bind:value={event.colors.accent}
-            class="col-span-3"
-          />
+          <div class="flex items-center gap-2">
+            <input
+              type="color"
+              aria-label="Pick accent color"
+              value={toColorInputValue(event.colors.accent)}
+              on:input={(e) => (event.colors.accent = e.currentTarget.value)}
+              class="h-9 w-12 cursor-pointer rounded-md border border-input bg-white p-1"
+            />
+            <Input
+              id="event_accent"
+              bind:value={event.colors.accent}
+              on:blur={() => (event.colors.accent = normalizeHex(event.colors.accent))}
+              placeholder="#212540"
+              class="col-span-3"
+            />
+          </div>
         </div>
         <div class="flex flex-col items-start justify-center gap-1">
           <Label for="event_settings_head" class="text-right"
