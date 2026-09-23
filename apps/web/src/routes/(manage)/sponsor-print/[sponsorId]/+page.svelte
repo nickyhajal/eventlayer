@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { getMediaUrl } from "@matterloop/util";
+  import { getMediaUrl, isND } from "@matterloop/util";
 
   export let data;
   $: qrSettings = (data.sponsor.settings || {}) as {
@@ -11,7 +11,8 @@
     (data.event as any)?.largeLogo || (data.event as any)?.photo;
   $: sponsorPhoto = data.sponsor?.photo;
 
-  $: qrEyebrow = qrSettings.qrEyebrow || "Neurodiversion Expo";
+  $: qrEyebrow =
+    qrSettings.qrEyebrow || (isND(data.event) ? "Neurodiversion Expo" : "Expo");
   $: qrTitle = qrSettings.qrTitle || data.sponsor.title || "Sponsor";
   $: qrDescription =
     qrSettings.qrDescription ||

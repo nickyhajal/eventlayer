@@ -4,6 +4,7 @@
   import Screen from "$lib/components/Screen.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
   import UserAvatar from "$lib/components/UserAvatar.svelte";
+  import { getEventContext } from "$lib/state/getContexts";
   import { trpc } from "$lib/trpc/client.js";
   import FBIcon from "lucide-svelte/icons/facebook";
   import SiteIcon from "lucide-svelte/icons/globe";
@@ -15,9 +16,10 @@
   import SmilePlusIcon from "lucide-svelte/icons/smile-plus";
 
   import { Markdown } from "@matterloop/ui";
-  import { capitalize, dayjs, startCase } from "@matterloop/util";
+  import { capitalize, dayjs, eventNickname, isND, startCase } from "@matterloop/util";
 
   export let data;
+  const event = getEventContext();
   $: user = data.user;
   $: events = data.events;
   $: eventStr = events.reduce((acc, event, i) => {
@@ -82,7 +84,8 @@
   $: isMyFriend = data.me?.connectionsTo?.some((c) => c.toId === user?.id);
   $: didFriendMe = data.me?.connectionsFrom?.some((c) => c.fromId === user?.id);
   let loading = false;
-  const questions = [
+  $: questions = isND($event) ? ndQuestions : [];
+  const ndQuestions = [
     { label: `What's your super power?`, key: "superpower" },
     { label: `Ask me about...`, key: "ask-me" },
     {
@@ -131,7 +134,7 @@
           <div
             class="mt-3 rounded-md bg-slate-50 px-3 py-0.5 text-sm font-medium text-slate-700"
           >
-            {startCase(user.type).replace("Staff", "ND26 Team")}
+            {startCase(user.type).replace("Staff", `${eventNickname($event)} Team`)}
           </div>
         {/if}
         {#if isMyFriend || didFriendMe}

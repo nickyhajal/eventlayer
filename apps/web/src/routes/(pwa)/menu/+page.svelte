@@ -12,6 +12,8 @@
   import Utensils from "lucide-svelte/icons/utensils";
   import ArrowRight from "lucide-svelte/icons/arrow-right";
 
+  import { isND } from "@matterloop/util";
+
   const event = getEventContext() as any;
   const data = getMeContext();
   const tabs = $event.menus
@@ -80,14 +82,16 @@
 <Screen title="Menu">
   <div class="mx-auto min-h-[calc(100vh-5rem)] max-w-7xl">
     <div class="flex flex-col justify-end gap-2 pt-2">
+      {#if isND($event) || $event.getContent("preorder")}
       <a
         href={`${$event.getContent("preorder")}?prefilled_email=${data.me?.email ?? ""}`}
         target="_blank"
         class="relative mx-auto py-2 flex items-center justify-between border-b-2 px-4 w-full max-w-xl overflow-hidden rounded-lg mt-2 border border-a-accent/20 bg-a-accent/5 font-semibold text-a-accent brightness-90 text-center transition-all hover:saturate-[140%] lg:-mt-20 lg:mb-16"
       >
-        <div>Pre-order for ND27</div>
+        <div>{isND($event) ? "Pre-order for ND27" : "Pre-order Now"}</div>
         <ArrowRight class="h-5 w-5 text-a-accent/70" />
       </a>
+      {/if}
       <div class="login mt-0 flex touch-manipulation gap-2">
         {#if !$me?.id}
           <Button

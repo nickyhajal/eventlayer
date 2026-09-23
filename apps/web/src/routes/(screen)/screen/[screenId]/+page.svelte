@@ -5,7 +5,7 @@
   import Ably from "ably";
 
   import { Animate } from "@matterloop/ui";
-  import { dayjs, getMediaUrl } from "@matterloop/util";
+  import { dayjs, getMediaUrl, isND } from "@matterloop/util";
 
   import { wrapScreenBackdropCssForHead } from "$lib/screen/wrapScreenBackdropCssForHead";
   import { getEventContext } from "$lib/state/getContexts";
@@ -290,7 +290,7 @@
     >
       <div class="flex flex-col">
         <div class="font-h mt-2 text-white text-5xl font-semibold">
-          Scan to Join Us for ND27
+          {isND($event) ? "Scan to Join Us for ND27" : "Scan to Join Us"}
         </div>
         <div
           class="flex w-fit mx-auto items-center gap-4 bg-[#E2FFFE] mt-4 rounded-3xl overflow-hidden"

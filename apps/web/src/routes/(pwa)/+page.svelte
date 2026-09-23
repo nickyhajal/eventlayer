@@ -10,7 +10,7 @@
   import { ChevronRight } from "radix-icons-svelte";
 
   import { tw } from "@matterloop/ui";
-  import { dayjs, getMediaUrl, shuffle } from "@matterloop/util";
+  import { dayjs, getMediaUrl, isND, shuffle } from "@matterloop/util";
   import Animate from "@matterloop/ui/src/components/Animate.svelte";
 
   export let data;
@@ -27,7 +27,7 @@
   let tickerInterval: ReturnType<typeof setInterval> | null = null;
   $: currentAttendee =
     shuffledAttendees[$currentIndex % (shuffledAttendees.length || 1)];
-  $: eventName = "NeuroDiversion 27";
+  $: eventName = isND($event) ? "NeuroDiversion 27" : $event.name;
 
   function formatAttendeeLabel(
     attendee: { firstName?: string; lastName?: string } | undefined,
@@ -175,7 +175,7 @@
         <div
           class="font-h mt-10 flex items-center justify-between border-t border-[#dae7e6] bg-[#E2FFFE] py-4 pl-3 pr-2 text-lg font-semibold"
         >
-          <div>Pre-order for ND27</div>
+          <div>{isND($event) ? "Pre-order for ND27" : "Pre-order Now"}</div>
           <ArrowRight class="h-6 w-6 text-slate-800" />
         </div>
       </a>
@@ -293,7 +293,7 @@
             >
               <div class="icon"><Ticket /></div>
             </div>
-            Join us for ND27: Preorder Now
+            {isND($event) ? "Join us for ND27: Preorder Now" : "Preorder Now"}
           </Button>
         {/if}
         {#each tabs as { label, icon, link, className }}

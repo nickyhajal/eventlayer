@@ -3,12 +3,19 @@
   import UserAvatar from "$lib/components/UserAvatar.svelte";
   import {
     getAttendeeSearcherContext,
+    getEventContext,
     getMeContext,
   } from "$lib/state/getContexts";
   import { getContext, onMount, tick } from "svelte";
 
   import type { User } from "@matterloop/db";
-  import { getMediaUrl, isIos, orderBy, startCase } from "@matterloop/util";
+  import {
+    eventNickname,
+    getMediaUrl,
+    isIos,
+    orderBy,
+    startCase,
+  } from "@matterloop/util";
 
   import type { Snapshot } from "../$types.js";
 
@@ -25,6 +32,7 @@
       window.scrollTo(0, scrollY);
     },
   };
+  const event = getEventContext();
   let query = "";
   const searcher = getAttendeeSearcherContext();
   let allUsers: User[] = [];
@@ -70,7 +78,7 @@
     { label: "Friended Me", value: "friended-me" },
     ...types
       .map((type) => ({
-        label: type === "staff" ? "ND26 Team" : `${startCase(type)}s`,
+        label: type === "staff" ? `${eventNickname($event)} Team` : `${startCase(type)}s`,
         value: type,
       }))
       .sort((a, b) => a.label.localeCompare(b.label)),

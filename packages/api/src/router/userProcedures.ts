@@ -34,7 +34,7 @@ import {
   venueTable,
 } from '@matterloop/db'
 import { userTable, type User } from '@matterloop/db/types'
-import { dayjs, getId, omit, pick, plural } from '@matterloop/util'
+import { dayjs, getId, isND, omit, pick, plural } from '@matterloop/util'
 
 import { mailer } from '../../../../apps/web/src/lib/server/core/mailer'
 import { NotAuthdError } from '../core/Errors'
@@ -152,14 +152,16 @@ export async function sendWelcomeEmail(user: User, event: Event, eventUser: Even
   const sig = event?.name
     ? `The ${event?.name} Team`.replace('The The', 'The')
     : 'The Eventlayer Team'
+  const appName = isND(event) ? 'NeuroDiversion 26' : event?.name || 'Event'
+  const eventTitle = isND(event) ? 'NeuroDiversion 2026' : event?.name || 'the event'
   if (url) {
     const res = await mailer.send({
       to: user?.email ?? '',
-      subject: `[Final Reminder] Action Required: Get Access to the NeuroDiversion 26 App`,
+      subject: `[Final Reminder] Action Required: Get Access to the ${appName} App`,
       event: event,
       more_params: {
         body: `<p style="margin: 0 0 16px;">Hey ${displayName},</p>
-<p style="margin: 0 0 16px;">We’re excited to have you join us for NeuroDiversion 2026!</p>
+<p style="margin: 0 0 16px;">We’re excited to have you join us for ${eventTitle}!</p>
 <p style="margin: 0 0 16px;">We’ve prepared a helpful event app to guide you through all things related to the event.</p>
 <p style="margin: 0 0 8px;">You’ll be able to:</p>
 <ul style="margin: 0 0 16px; padding-left: 20px;">
