@@ -5,7 +5,8 @@
   import { getMediaUrl, orderBy, startCase } from "@matterloop/util";
 
   export let data;
-  $: users = orderBy(data.users, ["mainEventUser.type"]);
+  // Server returns users sorted by first name; the priority sort below is stable
+  $: users = data.users;
   const me = getMeContext();
   const typeOptions = [
     { label: "Speakers", value: "all" },

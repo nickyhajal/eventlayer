@@ -436,7 +436,11 @@ export const EventFns = (args: string | Args) => {
             ),
           ),
         )
-      return orderBy(users, ['user.lastName', 'user.firstName'], ['asc', 'asc'])
+      return orderBy(
+        users,
+        [(u) => u.user?.firstName?.toLowerCase(), (u) => u.user?.lastName?.toLowerCase()],
+        ['asc', 'asc'],
+      )
     },
     toggleUserCheckin: async ({ staffId, userId }: { staffId: string; userId: string }) => {
       const existing = await db.query.eventUserCheckinTable.findFirst({
