@@ -113,6 +113,14 @@
 					<div class="">
 						<img src={data.qrcode} class="w-[10rem]" />
 					</div>
+					<a
+						href={data.profileUrl}
+						target="_blank"
+						rel="noopener noreferrer"
+						class="mt-1 inline-block text-sm font-medium text-blue-600 hover:underline"
+					>
+						View live profile →
+					</a>
 					{#if data?.login_link}
 						<label class="block pb-2.5 pt-3.5 text-sm font-semibold">Login Link</label>
 						<div class="">

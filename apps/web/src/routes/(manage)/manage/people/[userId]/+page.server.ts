@@ -58,12 +58,10 @@ export const load = async ({ locals, params, url }) => {
     });
   }
 
-  const qrcode = await QRCode.toDataURL(
-    `${url.protocol}://${url.host}/user/${user.id}`,
-    {
-      width: 320,
-    },
-  );
+  const profileUrl = `${url.origin}/user/${user.id}`;
+  const qrcode = await QRCode.toDataURL(profileUrl, {
+    width: 320,
+  });
 
   // Load custom fields applicable to this user
   const allCustomFields = await db.query.eventUserFieldTable.findMany({
@@ -139,6 +137,7 @@ export const load = async ({ locals, params, url }) => {
   return {
     user,
     qrcode,
+    profileUrl,
     ticket,
     login_link: login_link?.url,
     customFields,

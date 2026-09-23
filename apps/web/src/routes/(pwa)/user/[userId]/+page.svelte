@@ -101,7 +101,7 @@
   }
 </script>
 
-<Screen title={name} back="/speakers">
+<Screen title={name} back="/attendees">
   <div class="mx-auto max-w-7xl pb-28 pt-safe-offset-8 lg:pt-0">
     <div class="text-base font-semibold text-red-600">
       <!-- {dayjs(data.v.startsAt).format('dddd MMMM Do [at] h:mma')} -->
@@ -326,40 +326,6 @@
           class="w-fit rounded-md border border-slate-200/50 px-2 py-1 text-sm font-medium text-slate-600"
         >
           {user?.info?.["traveling-from"]?.value}
-        </div>
-      </div>
-    {/if}
-    {#if user?.info?.["why"]?.value?.length > 2}
-      <div class="mt-1 pt-8">
-        <div class="mb-2 font-semibold">Coming to Wings in order to:</div>
-        <div class="flex flex-col gap-1">
-          {#each JSON.parse(user?.info?.["why"]?.value) as key}
-            {#if why[key]}
-              <div
-                class="w-fit rounded-md border border-slate-200/50 px-2 py-1 text-sm font-medium text-slate-600"
-              >
-                {why[key]}
-              </div>
-            {/if}
-          {/each}
-        </div>
-      </div>
-    {/if}
-    {#if user?.info?.["interests"]?.value?.length > 2}
-      <div class="mt-1 pt-8">
-        <div class="mb-2 font-semibold">Interested in:</div>
-        <div class="flex">
-          <div class="flex flex-wrap gap-1">
-            {#each JSON.parse(user?.info?.["interests"]?.value) as key}
-              {#if topics[key]}
-                <div
-                  class="w-fit rounded-md border border-slate-200/50 px-2 py-1 text-sm font-medium text-slate-600"
-                >
-                  {topics[key]}
-                </div>
-              {/if}
-            {/each}
-          </div>
         </div>
       </div>
     {/if}
