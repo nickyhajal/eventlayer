@@ -11,6 +11,10 @@
 	export let label = ''
 	export let placeholder = ''
 	export let options: Option[] = []
+	// Keep an existing value that isn't in the list instead of silently overwriting it
+	if (value && !options.some((o) => o.value === value)) {
+		options = [...options, { value, label: value }]
+	}
 	let selectedOption = options.find((o) => o.value === value) ?? options[0]
 	$: value = selectedOption?.value || ''
 </script>
