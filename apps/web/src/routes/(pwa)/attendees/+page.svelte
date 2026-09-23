@@ -51,7 +51,7 @@
           ? orderBy(
               allUsers.map((user) => ({
                 ...user,
-                nameLower: user.lastName.toLowerCase(),
+                nameLower: `${user.firstName} ${user.lastName}`.toLowerCase(),
               })),
               ["nameLower"],
             )
@@ -131,7 +131,7 @@
 
   /**
    * Sorts users by whether they have a mediaId (users with mediaId come first),
-   * then by lastName, and finally by firstName
+   * then by firstName, and finally by lastName
    * @param users - Array of User objects to sort
    * @returns Sorted array of User objects
    */
@@ -141,14 +141,14 @@
       if (a.mediaId !== null && b.mediaId === null) return -1;
       if (a.mediaId === null && b.mediaId !== null) return 1;
 
-      // Then sort by lastName
-      const lastNameComparison = a.lastName
+      // Then sort by firstName
+      const firstNameComparison = (a.firstName ?? "")
         .toLowerCase()
-        .localeCompare(b.lastName.toLowerCase());
-      if (lastNameComparison !== 0) return lastNameComparison;
+        .localeCompare((b.firstName ?? "").toLowerCase());
+      if (firstNameComparison !== 0) return firstNameComparison;
 
-      // Finally sort by firstName
-      return a.firstName.toLowerCase().localeCompare(b.firstName.toLowerCase());
+      // Finally sort by lastName
+      return (a.lastName ?? "").toLowerCase().localeCompare((b.lastName ?? "").toLowerCase());
     });
   }
   function filterUsers(users: User[], showType: string) {
