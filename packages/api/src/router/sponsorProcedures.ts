@@ -16,7 +16,7 @@ import {
   sponsorTable,
 } from '@matterloop/db'
 import { userTable, type User } from '@matterloop/db/types'
-import { pick } from '@matterloop/util'
+import { isND, pick } from '@matterloop/util'
 
 import { mailer } from '../../../../apps/web/src/lib/server/core/mailer'
 import {
@@ -94,6 +94,8 @@ async function sendSponsorInterestEmail({
   to: string
   sponsor: Awaited<ReturnType<typeof getSponsorForEvent>>
 }) {
+  // Only ND sends this; other events (ING) asked for it off
+  if (!isND(event)) return
   const sponsorName = sponsor.title?.trim() || 'this sponsor'
   const sponsorWebsite = sponsor.url?.trim()
   const sponsorDescription = sponsor.description?.trim()
