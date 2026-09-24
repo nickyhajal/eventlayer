@@ -66,9 +66,12 @@
           : [];
     }
   }
+  // `staff` (can use staff-only pages) and `team` (no permissions) are both shown as the event's team
+  const filterType = (type: string) => (type === "team" ? "staff" : type);
   const usersByType = allUsers.reduce((out, user) => {
-    if (!out[user.type]) out[user.type] = [];
-    out[user.type].push(user);
+    const type = filterType(user.type);
+    if (!out[type]) out[type] = [];
+    out[type].push(user);
     return out;
   }, {});
   const types = Object.keys(usersByType);
@@ -170,7 +173,7 @@
         data.me.connectionsFrom.some((c) => c.fromId === user.userId),
       );
     }
-    return users.filter((user) => showType === "all" || user.type === showType);
+    return users.filter((user) => showType === "all" || filterType(user.type) === showType);
   }
 </script>
 

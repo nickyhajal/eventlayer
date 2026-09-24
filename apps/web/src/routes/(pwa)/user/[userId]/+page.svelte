@@ -134,7 +134,9 @@
           <div
             class="mt-3 rounded-md bg-slate-50 px-3 py-0.5 text-sm font-medium text-slate-700"
           >
-            {startCase(user.type).replace("Staff", `${eventNickname($event)} Team`)}
+            {user.type === "staff" || user.type === "team"
+              ? `${eventNickname($event)} Team`
+              : startCase(user.type)}
           </div>
         {/if}
         {#if isMyFriend || didFriendMe}

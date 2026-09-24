@@ -55,7 +55,8 @@
 		{ value: 'organizing-partner', label: 'Organizing Partner' },
 		{ value: 'divesession-facilitator', label: 'Dive-Session Facilitator' },
 		{ value: 'sponsor', label: 'Sponsor Rep' },
-		{ value: 'staff', label: 'Staff' },
+		{ value: 'team', label: 'Team' },
+		{ value: 'staff', label: 'Staff (staff access)' },
 	]
 	let type = user?.type
 		? userTypes.find(({ value }) => value === user.type)

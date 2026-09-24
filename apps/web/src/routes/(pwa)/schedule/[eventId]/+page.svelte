@@ -58,7 +58,7 @@
     loading = false;
   }
   function getUserTitle(type) {
-    if (type === "staff") return "Team";
+    if (type === "staff" || type === "team") return "Team";
     const title = startCase(type);
     return title;
   }

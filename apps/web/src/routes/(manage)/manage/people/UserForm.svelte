@@ -142,7 +142,8 @@
     // { value: 'organizing-partner', label: 'Organizing Partner' },
     // { value: 'divesession-facilitator', label: 'Dive-Session Facilitator' },
     // { value: 'sponsor', label: 'Sponsor Rep' },
-    { value: "staff", label: "Staff" },
+    { value: "team", label: "Team" },
+    { value: "staff", label: "Staff (staff access)" },
   ];
   const fallbackType = { value: "attendee", label: "Attendee" };
   const toLabel = (value: string) =>
