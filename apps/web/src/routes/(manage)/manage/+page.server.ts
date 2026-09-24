@@ -15,7 +15,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const [users, events, sponsors, tickets, checkinStats] = await Promise.all([
 		eventFns.getUsersWithInfo(),
 		eventFns.getEvents(),
-		eventFns.getSponsors(),
+		eventFns.getSponsors({ includePrivate: true }),
 		db.query.eventTicketTable.findMany({
 			where: eq(eventTicketTable.eventId, eventId),
 		}),

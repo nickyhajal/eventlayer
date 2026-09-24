@@ -342,6 +342,7 @@
     {"table_name":"sponsor","column_name":"expo_location","udt_name":"text","is_nullable":"YES"},
     {"table_name":"sponsor","column_name":"ord","udt_name":"int4","is_nullable":"YES"},
     {"table_name":"sponsor","column_name":"settings","udt_name":"jsonb","is_nullable":"YES"},
+    {"table_name":"sponsor","column_name":"is_public","udt_name":"bool","is_nullable":"NO"},
     {"table_name":"venue","column_name":"id","udt_name":"uuid","is_nullable":"NO"},
     {"table_name":"venue","column_name":"name","udt_name":"text","is_nullable":"YES"},
     {"table_name":"venue","column_name":"max_attendees","udt_name":"int4","is_nullable":"YES"},

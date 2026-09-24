@@ -6,6 +6,7 @@
 	import * as Dialog from '$lib/components/ui/dialog'
 	import Input from '$lib/components/ui/input/input.svelte'
 	import Label from '$lib/components/ui/label/label.svelte'
+	import Switch from '$lib/components/ui/switch/switch.svelte'
 	import Textarea from '$lib/components/ui/textarea/textarea.svelte'
 	import Uploader from '$lib/components/ui/Uploader.svelte'
 	import { trpc } from '$lib/trpc/client.js'
@@ -59,6 +60,22 @@
 		trpc().sponsor.upsert.mutate({ id: sponsor.id, mediaId })
 		invalidateAll()
 	}
+	async function setPublic(isPublic: boolean) {
+		await trpc().sponsor.setPublic.mutate({ id: sponsor.id, isPublic })
+		toast.success(isPublic ? 'Sponsor is now public' : 'Sponsor is now private')
+		invalidateAll()
+	}
+	async function deleteSponsor() {
+		if (!confirm(`Delete ${sponsor.title || 'this sponsor'}? It will be hidden everywhere.`)) return
+		await trpc().sponsor.delete.mutate({ id: sponsor.id })
+		toast.success('Sponsor deleted')
+		goto('/manage/sponsors')
+	}
+	async function restoreSponsor() {
+		await trpc().sponsor.restore.mutate({ id: sponsor.id })
+		toast.success('Sponsor restored')
+		invalidateAll()
+	}
 	async function addUser(user: FullEventUser) {
 		if (sponsor?.id && user.userId) {
 			await trpc().sponsor.addRep.mutate({
@@ -82,7 +99,34 @@
 			</div>
 		{/if}
 		<div class="grid gap-4 py-4">
+			{#if sponsor?.status === 'deleted'}
+				<div
+					class="flex items-center justify-between gap-3 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800"
+				>
+					This sponsor was deleted and is hidden everywhere.
+					<Button type="button" variant="outline" class="h-7 px-2.5" on:click={restoreSponsor}
+						>Restore</Button
+					>
+				</div>
+			{/if}
 			{#if !simplified && sponsor?.id}
+				<div class="flex items-center justify-between rounded-md border bg-stone-50 p-3">
+					<div>
+						<label for="sponsorIsPublic" class="text-sm font-medium text-stone-800">
+							{sponsor.isPublic ? 'Public' : 'Private'}
+						</label>
+						<div class="text-xs text-stone-500">
+							{sponsor.isPublic
+								? 'Shown to attendees in the app'
+								: 'Only visible to staff until made public'}
+						</div>
+					</div>
+					<Switch
+						id="sponsorIsPublic"
+						checked={sponsor.isPublic}
+						onCheckedChange={(checked) => setPublic(Boolean(checked))}
+					/>
+				</div>
 				<div class="flex flex-col items-start justify-center gap-1">
 					<Label for="image" class="text-right">Sponsor Image</Label>
 				</div>
@@ -168,7 +212,17 @@
 					/>
 				</div>
 			{/if}
-			<div class="flex justify-end">
+			<div class="flex justify-between">
+				{#if editing && !simplified && sponsor?.status !== 'deleted'}
+					<Button
+						type="button"
+						variant="ghost"
+						class="px-2.5 font-semibold text-red-700/70 hover:text-red-700"
+						on:click={deleteSponsor}>Delete Sponsor</Button
+					>
+				{:else}
+					<div></div>
+				{/if}
 				<Button type="submit">{buttonMsg}</Button>
 			</div>
 		</div>

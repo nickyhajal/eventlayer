@@ -20,6 +20,7 @@ import {
   gte,
   inArray,
   isNotNull,
+  isNull,
   key,
   like,
   lt,
@@ -38,6 +39,8 @@ import {
 import { dayjs, groupBy, keyBy, omit, orderBy } from '@matterloop/util'
 
 import { redis } from '../core/redis'
+
+const notDeletedSponsor = or(isNull(sponsorTable.status), ne(sponsorTable.status, 'deleted'))
 
 interface Args {
   eventId: string
@@ -259,9 +262,18 @@ export const EventFns = (args: string | Args) => {
         }
       }
     },
-    getSponsor: async (sponsorId: string) => {
+    // Deleted sponsors are only returned with includeDeleted (manage detail page, to restore them)
+    getSponsor: async (
+      sponsorId: string,
+      { includePrivate = false, includeDeleted = false } = {},
+    ) => {
       const sponsor = await db.query.sponsorTable.findFirst({
-        where: and(eq(sponsorTable.eventId, eventId), eq(sponsorTable.id, sponsorId)),
+        where: and(
+          eq(sponsorTable.eventId, eventId),
+          eq(sponsorTable.id, sponsorId),
+          includePrivate ? undefined : eq(sponsorTable.isPublic, true),
+          includeDeleted ? undefined : notDeletedSponsor,
+        ),
         with: { photo: true, users: { with: { user: { with: { photo: true } } } } },
         orderBy: asc(sponsorTable.ord),
       })
@@ -354,9 +366,13 @@ export const EventFns = (args: string | Args) => {
       })
       return venues
     },
-    getSponsors: async () => {
+    getSponsors: async ({ includePrivate = false } = {}) => {
       const sponsors = await db.query.sponsorTable.findMany({
-        where: and(eq(sponsorTable.eventId, eventId)),
+        where: and(
+          eq(sponsorTable.eventId, eventId),
+          includePrivate ? undefined : eq(sponsorTable.isPublic, true),
+          notDeletedSponsor,
+        ),
         with: { photo: true, users: { with: { user: { with: { photo: true } } } } },
         orderBy: [asc(sponsorTable.ord), asc(sponsorTable.title)],
       })

@@ -13,11 +13,13 @@
 	export let setGlobalFilter
 
 	let filterType = ''
+	let filterVisibility = ''
 
 	$: types = [...new Set(rows.map((r) => r.type).filter(Boolean))].sort()
 
 	$: filteredRows = rows.filter((r) => {
 		if (filterType && r.type !== filterType) return false
+		if (filterVisibility && (r.isPublic ? 'public' : 'private') !== filterVisibility) return false
 		return true
 	})
 
@@ -44,6 +46,11 @@
 			cell: (info) => (info.getValue() as number).toString(),
 		},
 		{
+			accessorKey: 'isPublic',
+			header: 'Visibility',
+			cell: (info) => (info.getValue() ? 'Public' : 'Private'),
+		},
+		{
 			accessorKey: 'ord',
 			header: 'Order',
 			cell: (info) => ((info.getValue() as number) || 0).toString(),
@@ -53,6 +60,7 @@
 	const csvFields = [
 		{ key: 'title', label: 'Name' },
 		{ key: 'type', label: 'Type' },
+		{ key: 'isPublic', label: 'Public' },
 		{ key: 'url', label: 'URL', default: false },
 		{ key: 'description', label: 'Description', default: false },
 		{ key: 'ord', label: 'Order', default: false },
@@ -81,6 +89,14 @@
 			{#each types as t}
 				<option value={t}>{startCase(t)}</option>
 			{/each}
+		</select>
+		<select
+			bind:value={filterVisibility}
+			class="rounded-lg border border-stone-200 bg-white px-2 py-1.5 text-xs font-medium text-stone-600"
+		>
+			<option value="">Public &amp; Private</option>
+			<option value="public">Public</option>
+			<option value="private">Private</option>
 		</select>
 	</svelte:fragment>
 </Table>

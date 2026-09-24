@@ -1,5 +1,5 @@
 import { relations, sql } from 'drizzle-orm'
-import { integer, jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { boolean, integer, jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { createInsertSchema } from 'drizzle-zod'
 
 import { eventUserTable } from './event_user'
@@ -11,7 +11,10 @@ export const sponsorTable = pgTable('sponsor', {
     .primaryKey()
     .notNull(),
   type: text('type'),
+  // 'deleted' hides the sponsor everywhere; rows are kept so reps, hearts and leads survive
   status: text('status'),
+  // Private sponsors only show in manage. Existing rows default to public; new ones are created private
+  isPublic: boolean('is_public').notNull().default(true),
   eventId: uuid('event_id'),
   mediaId: uuid('media_id'),
   title: text('title'),

@@ -9,7 +9,10 @@ export const load = async ({ locals, params, url }) => {
   }
 
   const eventFns = EventFns({ eventId: locals.event.id })
-  const sponsor = await eventFns.getSponsor(params.sponsorId)
+  const sponsor = await eventFns.getSponsor(params.sponsorId, {
+    includePrivate: true,
+    includeDeleted: true,
+  })
 
   if (!sponsor) {
     throw error(404, 'Sponsor not found')

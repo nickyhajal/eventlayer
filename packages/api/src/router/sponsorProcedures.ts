@@ -11,6 +11,8 @@ import {
   eventSchema,
   eventUserTable,
   ilike,
+  isNull,
+  ne,
   or,
   sponsorSchema,
   sponsorTable,
@@ -174,6 +176,8 @@ export const sponsorProcedures = t.router({
       const sponsors = await db.query.sponsorTable.findMany({
         where: and(
           eq(sponsorTable.eventId, ctx.event.id),
+          eq(sponsorTable.isPublic, true),
+          or(isNull(sponsorTable.status), ne(sponsorTable.status, 'deleted')),
           or(
             ilike(sponsorTable.title, `%${input.q}%`),
             ilike(sponsorTable.description, `%${input.q}%`),
@@ -399,8 +403,10 @@ export const sponsorProcedures = t.router({
         input.eventId = ctx.event.id
         const newForm = await db
           .insert(sponsorTable)
-          .values(
-            pick(input, [
+          .values({
+            // New sponsors stay private until someone makes them public
+            isPublic: false,
+            ...pick(input, [
               'title',
               'description',
               'url',
@@ -410,10 +416,47 @@ export const sponsorProcedures = t.router({
               'mediaId',
               'settings',
             ]),
-          )
+          })
           .returning()
         return newForm[0]
       }
+    }),
+  setPublic: procedureWithContext
+    .use(verifyMe('staff'))
+    .use(verifyEvent())
+    .input(z.object({ id: z.string(), isPublic: z.boolean() }))
+    .mutation(async ({ ctx, input }) => {
+      const [updated] = await db
+        .update(sponsorTable)
+        .set({ isPublic: input.isPublic })
+        .where(and(eq(sponsorTable.id, input.id), eq(sponsorTable.eventId, ctx.event.id)))
+        .returning()
+      return updated
+    }),
+  // Soft delete: a hard delete would cascade to the reps' event_user rows, hearts and leads
+  delete: procedureWithContext
+    .use(verifyMe('staff'))
+    .use(verifyEvent())
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const [updated] = await db
+        .update(sponsorTable)
+        .set({ status: 'deleted' })
+        .where(and(eq(sponsorTable.id, input.id), eq(sponsorTable.eventId, ctx.event.id)))
+        .returning()
+      return updated
+    }),
+  restore: procedureWithContext
+    .use(verifyMe('staff'))
+    .use(verifyEvent())
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const [updated] = await db
+        .update(sponsorTable)
+        .set({ status: null })
+        .where(and(eq(sponsorTable.id, input.id), eq(sponsorTable.eventId, ctx.event.id)))
+        .returning()
+      return updated
     }),
   order: procedureWithContext
     .use(verifyMe())

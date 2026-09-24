@@ -9,5 +9,5 @@ export const load = async ({ locals }) => {
     error(404, 'Event not found')
   }
   const eventFns = EventFns(locals.event.id)
-  return { sponsors: await eventFns.getSponsors() }
+  return { sponsors: await eventFns.getSponsors({ includePrivate: true }) }
 }
