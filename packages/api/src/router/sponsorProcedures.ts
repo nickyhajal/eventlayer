@@ -343,36 +343,39 @@ export const sponsorProcedures = t.router({
       })
     }),
   addRep: procedureWithContext
+    .use(verifyMe('staff'))
+    .use(verifyEvent())
     .input(z.object({ sponsorId: z.string(), eventUserId: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      try {
-        const existing = await db
-          .select()
-          .from(eventUserTable)
-          .where(eq(eventUserTable.id, input.eventUserId))
-        if (!existing) {
-          return error(404, 'User not in event')
-        }
-        await db
-          .update(eventUserTable)
-          .set({ sponsorId: input.sponsorId })
-          .where(eq(eventUserTable.id, input.eventUserId))
-      } catch (e) {
-        return {}
+      await getSponsorForEvent(ctx.event.id, input.sponsorId)
+      const [updated] = await db
+        .update(eventUserTable)
+        .set({ sponsorId: input.sponsorId })
+        .where(
+          and(eq(eventUserTable.id, input.eventUserId), eq(eventUserTable.eventId, ctx.event.id)),
+        )
+        .returning()
+      if (!updated) {
+        throw error(404, 'User not in event')
       }
+      return updated
     }),
   removeRep: procedureWithContext
+    .use(verifyMe('staff'))
+    .use(verifyEvent())
     .input(z.object({ eventUserId: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      console.log(input)
-      try {
-        await db
-          .update(eventUserTable)
-          .set({ sponsorId: null })
-          .where(eq(eventUserTable.id, input.eventUserId))
-      } catch (e) {
-        return {}
+      const [updated] = await db
+        .update(eventUserTable)
+        .set({ sponsorId: null })
+        .where(
+          and(eq(eventUserTable.id, input.eventUserId), eq(eventUserTable.eventId, ctx.event.id)),
+        )
+        .returning()
+      if (!updated) {
+        throw error(404, 'User not in event')
       }
+      return updated
     }),
   upsert: procedureWithContext
     .use(verifyMe('staff'))
