@@ -23,7 +23,6 @@ import { isND, pick } from '@matterloop/util'
 import { mailer } from '../../../../apps/web/src/lib/server/core/mailer'
 import {
   procedureWithContext,
-  verifyAdmin,
   verifyEvent,
   verifyMe,
   type TrpcContext,
@@ -465,9 +464,8 @@ export const sponsorProcedures = t.router({
       return updated
     }),
   order: procedureWithContext
-    .use(verifyMe())
+    .use(verifyMe('staff'))
     .use(verifyEvent())
-    .use(verifyAdmin())
     .input(
       z.object({
         changes: z.array(
