@@ -15,10 +15,13 @@ import {
   eventUserFieldTable,
   formElementTable,
   formTable,
+  gt,
   isNotNull,
   loginLinkTable,
+  ne,
   or,
 } from "@matterloop/db";
+import { dayjs } from "@matterloop/util";
 import { ActiveLoginLink } from "@matterloop/api/src/models/ActiveLoginLink";
 
 const schema = z.object({
@@ -46,16 +49,23 @@ export const load = async ({ locals, params, url }) => {
     },
   });
 
+  // Always show a working login link: reuse the newest live one, otherwise create one.
+  // Links used to only exist once a welcome email was sent, so most attendees had none.
   let login_link = null;
-  const login_links = await db.query.loginLinkTable.findMany({
-    where: eq(loginLinkTable.userId, user.userId),
-    orderBy: desc(loginLinkTable.createdAt),
-  });
-  if (login_links.length) {
-    login_link = ActiveLoginLink.getUrl({
-      loginLink: login_links[0],
-      event: locals.event,
+  if (user.userId) {
+    const liveLink = await db.query.loginLinkTable.findFirst({
+      where: and(
+        eq(loginLinkTable.userId, user.userId),
+        ne(loginLinkTable.publicId, ""),
+        gt(loginLinkTable.expires, dayjs().toISOString()),
+      ),
+      orderBy: desc(loginLinkTable.createdAt),
     });
+    login_link = liveLink
+      ? ActiveLoginLink.getUrl({ loginLink: liveLink, event: locals.event })
+      : await ActiveLoginLink.generate({ userId: user.userId, event: locals.event }).catch(
+          () => null,
+        );
   }
 
   const profileUrl = `${url.origin}/user/${user.id}`;

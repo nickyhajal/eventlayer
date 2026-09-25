@@ -6,6 +6,7 @@
 	import { trpc } from '$lib/trpc/client'
 	import { buildLinkedinUrl, normalizeLinkedinPath } from '$lib/util/linkedin'
 	import ChevronLeft from 'lucide-svelte/icons/chevron-left'
+	import { toast } from 'svelte-sonner'
 
 	import AdminScreen from '../../AdminScreen.svelte'
 	import UserForm from '../UserForm.svelte'
@@ -44,6 +45,14 @@
 		(e.currentTarget as HTMLInputElement | null)?.select()
 	}
 
+	async function copyLoginLink() {
+		try {
+			await navigator.clipboard.writeText(data.login_link || '')
+			toast.success('Login link copied')
+		} catch (e) {
+			toast.error('Could not copy. Select the link and copy it manually.')
+		}
+	}
 	function clearSelection() {
 		window.getSelection()?.removeAllRanges()
 	}
@@ -132,7 +141,15 @@
 								on:mouseover={selectLoginLink}
 								on:mouseout={clearSelection}
 							/>
+							<button
+								type="button"
+								on:click={copyLoginLink}
+								class="ml-1 rounded-md border border-slate-300 px-2 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+							>
+								Copy
+							</button>
 						</div>
+						<div class="pt-1 text-xs text-slate-500">Signs this person in directly. Only share it with them.</div>
 					{/if}
 					{#if linkedinHref}
 						<label class="block pb-2.5 pt-3.5 text-sm font-semibold">LinkedIn</label>
