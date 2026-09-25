@@ -395,6 +395,7 @@ export const sponsorProcedures = t.router({
               'type',
               'mediaId',
               'settings',
+              'expoLocation',
             ]),
           })
           .where(and(eq(sponsorTable.id, input.id), eq(sponsorTable.eventId, ctx.event.id)))
@@ -419,6 +420,7 @@ export const sponsorProcedures = t.router({
               'eventId',
               'mediaId',
               'settings',
+              'expoLocation',
             ]),
           })
           .returning()
