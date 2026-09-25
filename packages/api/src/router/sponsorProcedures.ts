@@ -375,13 +375,13 @@ export const sponsorProcedures = t.router({
       }
     }),
   upsert: procedureWithContext
-    // .use(verifyMe())
+    .use(verifyMe('staff'))
     .use(verifyEvent())
     .input(sponsorSchema)
     .mutation(async ({ ctx, input }) => {
-      const { id, ...data } = input
       if (input.id) {
-        await db
+        // eventId is not updatable, so a sponsor can't be moved into another event
+        const [updated] = await db
           .update(sponsorTable)
           .set({
             ...pick(input, [
@@ -390,15 +390,16 @@ export const sponsorProcedures = t.router({
               'url',
               'bookingUrl',
               'type',
-              'eventId',
               'mediaId',
               'settings',
             ]),
           })
-          .where(eq(sponsorTable.id, input.id))
+          .where(and(eq(sponsorTable.id, input.id), eq(sponsorTable.eventId, ctx.event.id)))
           .returning()
-        const updated = await db.select().from(sponsorTable).where(eq(sponsorTable.id, input.id))
-        return updated[0]
+        if (!updated) {
+          throw error(404, 'Sponsor not found')
+        }
+        return updated
       } else {
         input.eventId = ctx.event.id
         const newForm = await db
