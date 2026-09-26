@@ -1,16 +1,33 @@
-<img
-  src="https://ik.imagekit.io/vfbggzlfe/prod/event-large-logo/92fdfc3e-501e-4985-b42f-397e584a77dd-1.png?v=1"
-  class="mx-auto mb-10 mt-8 w-20"
-/>
-<div class="fixed left-0 top-0 h-full w-full">
-  <div
-    class="ball-blue absolute -right-[220px] bottom-[12%] w-72 md:-right-[120px] md:bottom-[20%]"
-  ></div>
-  <div
-    class="ball-oj absolute -left-[150px] top-[8%] w-48 md:-left-[60px] md:top-[12%]"
-  ></div>
-</div>
-<div class="bg-image fixed left-0 top-0 z-10 h-full w-full opacity-30"></div>
+<script lang="ts">
+  import { getEventContext } from "$lib/state/getContexts";
+
+  import { getMediaUrl, isND } from "@matterloop/util";
+
+  const event = getEventContext();
+  const ndLogo =
+    "https://ik.imagekit.io/vfbggzlfe/prod/event-large-logo/92fdfc3e-501e-4985-b42f-397e584a77dd-1.png?v=1";
+  $: logoUrl = $event?.largeLogo
+    ? getMediaUrl($event.largeLogo)
+    : isND($event)
+      ? ndLogo
+      : "";
+</script>
+
+{#if logoUrl}
+  <img src={logoUrl} alt={$event?.name ?? ""} class="mx-auto mb-10 mt-8 w-20" />
+{/if}
+<!-- Background photo and circles are ND branding -->
+{#if isND($event)}
+  <div class="fixed left-0 top-0 h-full w-full">
+    <div
+      class="ball-blue absolute -right-[220px] bottom-[12%] w-72 md:-right-[120px] md:bottom-[20%]"
+    ></div>
+    <div
+      class="ball-oj absolute -left-[150px] top-[8%] w-48 md:-left-[60px] md:top-[12%]"
+    ></div>
+  </div>
+  <div class="bg-image fixed left-0 top-0 z-10 h-full w-full opacity-30"></div>
+{/if}
 
 <style>
   .bg-image {
