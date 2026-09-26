@@ -169,9 +169,11 @@
         <div class="font-h mb-6 mt-10 px-2 text-2xl font-semibold">
           Join us as we continue the adventure!
         </div>
-        <div class="px-2">
-          <img src="/banner.png" class="mx-auto w-72" alt="" />
-        </div>
+        {#if isND($event)}
+          <div class="px-2">
+            <img src="/banner.png" class="mx-auto w-72" alt="" />
+          </div>
+        {/if}
         <div
           class="font-h mt-10 flex items-center justify-between border-t border-[#dae7e6] bg-[#E2FFFE] py-4 pl-3 pr-2 text-lg font-semibold"
         >

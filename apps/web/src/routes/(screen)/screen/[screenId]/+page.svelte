@@ -285,12 +285,14 @@
         </div>
       {/if}
     </div>
+    <!-- ND27 pre-order banner and QR code are ND-only -->
+    {#if isND($event)}
     <div
       class="gap-16 flex items-center w-fit mx-auto rounded-xl text-center text-slate-700 transition-all mt-14 absolute bottom-8 max-auto right-0 left-0"
     >
       <div class="flex flex-col">
         <div class="font-h mt-2 text-white text-5xl font-semibold">
-          {isND($event) ? "Scan to Join Us for ND27" : "Scan to Join Us"}
+          Scan to Join Us for ND27
         </div>
         <div
           class="flex w-fit mx-auto items-center gap-4 bg-[#E2FFFE] mt-4 rounded-3xl overflow-hidden"
@@ -312,6 +314,7 @@
         </div>
       </div>
     </div>
+    {/if}
   {/if}
 
   {#if !showLogoOnlyWhenNoUpcoming && showBanner && !isTopBanner}
