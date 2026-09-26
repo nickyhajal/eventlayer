@@ -149,7 +149,6 @@
 								Copy
 							</button>
 						</div>
-						<div class="pt-1 text-xs text-slate-500">Signs this person in directly. Only share it with them.</div>
 					{/if}
 					{#if linkedinHref}
 						<label class="block pb-2.5 pt-3.5 text-sm font-semibold">LinkedIn</label>
