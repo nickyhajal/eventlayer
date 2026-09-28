@@ -14,7 +14,7 @@
 </script>
 
 {#if logoUrl}
-  <img src={logoUrl} alt={$event?.name ?? ""} class="mx-auto mb-10 mt-8 w-20" />
+  <img src={logoUrl} alt={$event?.name ?? ""} class="mx-auto mb-10 mt-8 w-40" />
 {/if}
 <!-- Background photo and circles are ND branding -->
 {#if isND($event)}
