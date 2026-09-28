@@ -400,6 +400,28 @@ export const userProcedures = t.router({
         return data
       }
     }),
+  // Login links for the People CSV export; creates one for anyone without a live link
+  getLoginLinks: procedureWithContext
+    .use(verifyMe('staff'))
+    .use(verifyEvent())
+    .input(z.object({ userIds: z.array(z.string()).max(10000) }))
+    .mutation(async ({ ctx, input }) => {
+      if (!input.userIds.length) return {}
+      // Only users in this event
+      const eventUsers = await db
+        .select({ userId: eventUserTable.userId })
+        .from(eventUserTable)
+        .where(
+          and(
+            eq(eventUserTable.eventId, ctx.event.id),
+            inArray(eventUserTable.userId, input.userIds),
+          ),
+        )
+      const userIds = [
+        ...new Set(eventUsers.map((row) => row.userId).filter((id): id is string => !!id)),
+      ]
+      return ActiveLoginLink.getOrGenerateMany({ userIds, event: ctx.event })
+    }),
   sendMagicLinkEmail: procedureWithContext
     .input(z.object({ email: z.string(), to: z.string().optional() }))
     .mutation(async ({ ctx, input }) => {

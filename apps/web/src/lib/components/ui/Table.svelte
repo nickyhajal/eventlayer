@@ -49,6 +49,8 @@
     label: string;
     default?: boolean;
     accessor?: (row: T) => string;
+    // Async fields (e.g. login links) are fetched only when selected, right before download
+    load?: (rows: T[]) => Promise<(row: T) => string>;
   }[] = [];
   export const numFormat = new Intl.NumberFormat("de-DE", {
     style: "currency",
@@ -79,20 +81,43 @@
     csvModalOpen = false;
   }
 
-  function downloadCsv() {
+  let csvLoading = false;
+
+  async function downloadCsv() {
     const selected = csvFields.filter((f) => csvSelectedFields[f.key]);
-    if (!selected.length) return;
+    if (!selected.length || csvLoading) return;
     const dataRows =
       csvScope === "page"
         ? $table.getRowModel().rows.map((r) => r.original)
         : $table.getPrePaginationRowModel().rows.map((r) => r.original);
+
+    const loadedAccessors: Record<string, (row: T) => string> = {};
+    const toLoad = selected.filter((f) => f.load);
+    if (toLoad.length) {
+      csvLoading = true;
+      try {
+        await Promise.all(
+          toLoad.map(async (f) => {
+            loadedAccessors[f.key] = await f.load!(dataRows as T[]);
+          }),
+        );
+      } catch (e) {
+        console.error(e);
+        alert("Couldn't load all fields for the export. Please try again.");
+        return;
+      } finally {
+        csvLoading = false;
+      }
+    }
 
     const header = selected.map((f) => `"${f.label}"`).join(",");
     const csvRows = dataRows.map((row) => {
       return selected
         .map((f) => {
           let val = "";
-          if (f.accessor) {
+          if (loadedAccessors[f.key]) {
+            val = loadedAccessors[f.key](row as T);
+          } else if (f.accessor) {
             val = f.accessor(row as T);
           } else {
             val = (row as any)?.[f.key] ?? "";
@@ -504,9 +529,10 @@
         </button>
         <button
           on:click={downloadCsv}
-          class="rounded-md bg-sky-600 px-4 py-2 text-sm font-medium text-white hover:bg-sky-700"
+          disabled={csvLoading}
+          class="rounded-md bg-sky-600 px-4 py-2 text-sm font-medium text-white hover:bg-sky-700 disabled:opacity-60"
         >
-          Download CSV
+          {csvLoading ? "Preparing…" : "Download CSV"}
         </button>
       </div>
     </div>

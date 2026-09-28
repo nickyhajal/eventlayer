@@ -4,10 +4,14 @@
 	import { goto } from '$app/navigation'
 	import { Button } from '$lib/components/ui/button'
 	import Table from '$lib/components/ui/Table.svelte'
+	import { trpc } from '$lib/trpc/client'
 	import { normalizeLinkedinPath } from '$lib/util/linkedin'
 
 	import type { User } from '@matterloop/db'
 	import { capitalize, dayjs, getMediaUrl, startCase } from '@matterloop/util'
+
+	// Rows are event users joined with their user, so userId is the user's id and id is the event user's
+	type PersonRow = User & { userId?: string | null }
 
 	export let rows: User[]
 	export let table
@@ -94,6 +98,17 @@
 		{ key: 'onboardStatus', label: 'Onboard Status' },
 		{ key: 'bio', label: 'Bio', default: false },
 		{ key: 'url', label: 'URL', default: false },
+		{
+			key: 'loginLink',
+			label: 'Login Link',
+			default: false,
+			// Reuses each user's live login link, creating one if they don't have one
+			load: async (exportRows: PersonRow[]) => {
+				const userIds = exportRows.map((row) => row.userId).filter(Boolean) as string[]
+				const links = await trpc().user.getLoginLinks.mutate({ userIds })
+				return (row: PersonRow) => (row.userId && links[row.userId]) || ''
+			},
+		},
 	]
 </script>
 
