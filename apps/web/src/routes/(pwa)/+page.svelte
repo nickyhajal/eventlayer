@@ -185,7 +185,7 @@
       <img
         src={getMediaUrl($event.largeLogo)}
         alt="An alt text"
-        class="mx-auto mb-12 mt-2 w-3/12 pb-2 md:-mt-24 md:w-5/12"
+        class="mx-auto mb-12 mt-2 w-5/12 pb-2 md:-mt-24 md:w-5/12"
       />
     {/if}
     {#if shuffledAttendees.length > 0 && currentAttendee}
