@@ -8,7 +8,7 @@
   import { trpc } from "$lib/trpc/client";
 
   import { Markdown } from "@matterloop/ui";
-  import { getMediaUrl } from "@matterloop/util";
+  import { getMediaUrl, isING } from "@matterloop/util";
 
   export let data;
 
@@ -87,7 +87,7 @@
       </div>
     </div>
 
-    {#if data.me}
+    {#if data.me && !isING(data.event)}
       <Button
         disabled={heartLoading}
         on:click={toggleHeart}
