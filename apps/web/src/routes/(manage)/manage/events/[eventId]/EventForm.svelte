@@ -23,6 +23,17 @@
 	export let inDialog = false
 	export let titleClass = ''
 	export let users: FullEventUser[] = []
+	$: sortedUsers = [...(users || [])].sort((a, b) => {
+		if (a.type !== b.type) {
+			if (a.type === 'host') return -1
+			if (b.type === 'host') return 1
+			const typeOrder = (a.type || '').localeCompare(b.type || '')
+			if (typeOrder) return typeOrder
+		}
+		return (a.firstName || '').localeCompare(b.firstName || '', undefined, {
+			sensitivity: 'base',
+		})
+	})
 	export let event: Partial<Event> = {
 		name: '',
 		subtitle: '',
@@ -257,7 +268,7 @@
 				<div
 					class="mb-1 mt-1 flex flex-col divide-y divide-stone-100 rounded-lg border border-stone-200"
 				>
-					{#each users || [] as user}
+					{#each sortedUsers as user}
 						{@const { firstName, lastName, type, id } = user}
 						<div class="group relative flex items-center justify-between gap-2 px-2.5 py-2">
 							<div class="flex w-full items-center justify-between">
